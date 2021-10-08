@@ -53,10 +53,14 @@ White-labeled SaaS applications that require multi-tenant authentication/login, 
 
 ## Supplementary Features
 
-- Analytics
-- A/B testing
+Here are some supplementary features that might be required to build Platforms on Vercel:
+
+- Text Editor
+- Simple Auth
+- Static Tweet Embeds
 - OG-image generator
-- Auth
+
+Check out the full list of features [here](./features).
 
 ## Provide Feedback
 
