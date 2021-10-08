@@ -1,17 +1,8 @@
 # Simple Example
 
-In this example, you'll learn how to build a simple multi-tenant platform on Vercel with custom domains support.
+A dead-simple barebones implementation of Platforms on Vercel. 
 
-For context, here are some example pages:
-
-- [subdomain-1.vercel.sh](https://subdomain-1.vercel.sh/) (subdomain)
-- [subdomain-2.vercel.sh](https://subdomain-2.vercel.sh/) (subdomain)
-- [subdomain-3.vercel.sh](https://subdomain-3.vercel.sh/) (subdomain)
-- [custom-domain-1.com](https://custom-domain-1.com/) (custom domain, maps to [subdomain-1.vercel.sh](https://subdomain-1.vercel.sh/))
-
-All of these generated sites are powered by ISR (no SSR at all) so they load pretty much instantly + the inter-page transitions are lightning fast.
-
-The example above is generated based on the following mock database:
+The example below is generated based on the following mock database:
 
 ```
 const mockDB = [
@@ -23,17 +14,28 @@ const mockDB = [
 
 When deploying your own clone of this example, you will need to replace the data fetching methods in `getStaticPaths` and `getStaticProps` with your own database of choice (BYOD, _Bring-Your-Own-Database_).
 
-## How to Use
+### Demo
+
+- [subdomain-1.vercel.sh](https://subdomain-1.vercel.sh/) (subdomain)
+- [subdomain-2.vercel.sh](https://subdomain-2.vercel.sh/) (subdomain)
+- [subdomain-3.vercel.sh](https://subdomain-3.vercel.sh/) (subdomain)
+- [custom-domain-1.com](https://custom-domain-1.com/) (custom domain, maps to [subdomain-1.vercel.sh](https://subdomain-1.vercel.sh/))
+
+### Features
+
+- 🔀 Hostname Rewrites
+
+### How to Use
 
 You can choose from one of the following two methods to use this repository:
 
-### One-Click Deploy
+**One-Click Deploy**
 
 Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel-customer-feedback/edge-functions/tree/main/examples/hostname-rewrites&project-name=hostname-rewrites&repository-name=hostname-rewrites)
 
-### Clone and Deploy
+**Clone and Deploy**
 
 Download this repository via git:
 
