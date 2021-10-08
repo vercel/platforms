@@ -1,11 +1,23 @@
 <p align="center">
-  <a href="https://vercel.com">
+  <a href="https://vercel.com/platforms">
     <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
     <h3 align="center">Platforms on Vercel</h3>
   </a>
 </p>
 
-Welcome to Vercel's Early Access Program for Platforms on Vercel. We're excited you're here! In this repository, you'll find everything you need to get started building a platform on Vercel.
+<p align="center">
+  The <em>all-in-one</em> starter kit <br/>
+  for building platforms on Vercel.
+</p>
+<br/>
+
+<p align="center">
+  <a href="#introduction"><strong>Introduction</strong></a> ·
+  <a href="#examples"><strong>Examples</strong></a> ·
+  <a href="#features"><strong>Features</strong></a> ·
+  <a href="#contributing"><strong>Contributing</strong></a>
+</p>
+<br/>
 
 ## Introduction
 
@@ -23,7 +35,7 @@ Users can also map their custom domains to their `.substack.com` subdomain for a
 
 At Vercel, we want to provide these platforms with a comprehensive solutions for them to build platforms like Substack super easily.
 
-## Examples of Multi-tenant Apps
+## Examples
 
 Multi-tenancy app infrastructures work really well with the following types of apps:
 
@@ -41,7 +53,7 @@ Site builders that require complex routing, freeform pages. Some examples includ
 
 - Webflow
 
-- [Super.so](http://super.so) (tr.af → traf.super.site)
+- [Super.so](http://super.so) ([tr.af](https://tr.af) → [traf.super.site](https://traf.super.site))
 
 ### 3. B2B2C platforms
 
@@ -51,7 +63,7 @@ White-labeled SaaS applications that require multi-tenant authentication/login, 
 
 - Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
 
-## Supplementary Features
+## Features
 
 Here are some supplementary features that might be required to build Platforms on Vercel:
 
@@ -62,7 +74,7 @@ Here are some supplementary features that might be required to build Platforms o
 
 Check out the full list of features [here](./features).
 
-## Provide Feedback
+## Contributing
 
 - [Start a Discussion](https://github.com/vercel-customer-feedback/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
 - [Open an Issue](https://github.com/vercel-customer-feedback/platforms/issues) if you believe you've encountered a bug that you want to flag for the team.
