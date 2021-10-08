@@ -45,7 +45,7 @@ Site builders that require complex routing, freeform pages. Some examples includ
 
 ### 3. B2B2C platforms
 
-SaaS applications that require multi-tenant authentication/login, role-based access controls (RBAC), etc. Some examples include:
+White-labeled SaaS applications that require multi-tenant authentication/login, role-based access controls (RBAC), etc. Some examples include:
 
 - Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
 
