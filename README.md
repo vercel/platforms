@@ -27,26 +27,29 @@ At Vercel, we want to provide these platforms with a comprehensive solutions for
 
 Multi-tenancy app infrastructures work really well with the following types of apps:
 
-- **Content creation platforms**
-    
-    Content-heavy platforms (blogs) that have a simple, standardized page layouts/route structure. Some examples include:
-    
-    1. Substack
-    2. Medium ([forge.medium.com](http://forge.medium.com/), [marker.medium.com](https://marker.medium.com/))
-    
-- **Website/E-commerce Store Builders**
+### 1. Content creation platforms
 
-    Site builders that require complex routing, freeform pages. Some examples include:
+Content-heavy platforms (blogs) that have a simple, standardized page layouts/route structure. Some examples include:
 
-    1. Webflow
-    2. [Super.so](http://super.so) (tr.af → traf.super.site)
+- Substack
 
-- **B2B2C platforms**
+- Medium ([forge.medium.com](http://forge.medium.com/), [marker.medium.com](https://marker.medium.com/))
 
-    SaaS applications that require multi-tenant authentication/login, role-based access controls (RBAC), etc. Some examples include:
+### 2. Website/E-commerce Store Builders
 
-    1. Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
-    2. Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
+Site builders that require complex routing, freeform pages. Some examples include:
+
+- Webflow
+
+- [Super.so](http://super.so) (tr.af → traf.super.site)
+
+### 3. B2B2C platforms
+
+SaaS applications that require multi-tenant authentication/login, role-based access controls (RBAC), etc. Some examples include:
+
+- Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
+
+- Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
 
 ## Supplementary Features
 
