@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://vercel.com/platforms">
     <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
-    <h3 align="center">Platforms on Vercel</h3>
+    <h2 align="center">Platforms on Vercel</h2>
   </a>
 </p>
 
@@ -9,7 +9,6 @@
   The <em>all-in-one</em> starter kit <br/>
   for building platforms on Vercel.
 </p>
-<br/>
 
 <p align="center">
   <a href="#introduction"><strong>Introduction</strong></a> ·
