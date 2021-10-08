@@ -16,6 +16,19 @@ For context, here's a starter kit of a blogging platform built on Vercel:
 
 All of these generated sites are powered by ISR (no SSR at all) so they load pretty much instantly + the inter-page transitions are lightning fast.
 
+### Features
+
+- 🔀 Hostname Rewrites
+
+- 📍 Custom Domains API
+
+- ✍️ Markdown Text Editor
+
+### Real-world examples
+
+- [Hashnode](https://hashnode.com/)
+- [Medium](https://medium.com/)
+
 ## How to Use
 
 You can choose from one of the following two methods to use this repository:
