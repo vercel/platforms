@@ -29,7 +29,7 @@ All of these generated sites are powered by ISR (no SSR at all) so they load pre
 - [Hashnode](https://hashnode.com/)
 - [Medium](https://medium.com/)
 
-## How to Use
+### How to Use
 
 You can choose from one of the following two methods to use this repository:
 
