@@ -4,15 +4,15 @@ As mentioned earlier, there are a few types of Platforms on Vercel: blogging pla
 
 In this folder, we provide a list of all the potential types of Platforms on Vercel, along with their respective use-cases, required features, etc.
 
-## 1. Barebones Boilerplate
+## 1. [Simple Example](./simple-example)
 
-A dead-simple implementation of Platforms on Vercel. 
+A dead-simple barebones implementation of Platforms on Vercel. 
 
 **Features**
 
 - 🔀 Hostname Rewrites
 
-## 2. Blogging Platform 
+## 2. [Blogging Platform](./blogging-platform) 
 
 A blogging platform that allows users to create blogs with a default subdomain and the option to add a custom domain (usually with a premium monthly subscription).
 
