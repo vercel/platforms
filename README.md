@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://vercel.com/platforms">
     <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
-    <h2 align="center">Platforms on Vercel</h2>
+    <h3 align="center">Platforms on Vercel</h3>
   </a>
 </p>
 
