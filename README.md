@@ -43,7 +43,6 @@ Multi-tenancy app infrastructures work really well with the following types of a
 Content-heavy platforms (blogs) that have a simple, standardized page layouts/route structure. Some examples include:
 
 - Substack
-
 - Medium ([forge.medium.com](http://forge.medium.com/), [marker.medium.com](https://marker.medium.com/))
 
 ### 2. Website/E-commerce Store Builders
@@ -51,7 +50,6 @@ Content-heavy platforms (blogs) that have a simple, standardized page layouts/ro
 Site builders that require complex routing, freeform pages. Some examples include:
 
 - Webflow
-
 - [Super.so](http://super.so) ([tr.af](https://tr.af) → [traf.super.site](https://traf.super.site))
 
 ### 3. B2B2C platforms
@@ -59,7 +57,6 @@ Site builders that require complex routing, freeform pages. Some examples includ
 White-labeled SaaS applications that require multi-tenant authentication/login, role-based access controls (RBAC), etc. Some examples include:
 
 - Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
-
 - Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
 
 ## Features
