@@ -1,6 +1,6 @@
 # Simple Example
 
-A dead-simple barebones implementation of Platforms on Vercel. 
+A dead-simple barebones implementation of Platforms on Vercel.
 
 The example below is generated based on the following mock database:
 

@@ -59,16 +59,16 @@ White-labeled SaaS applications that require multi-tenant authentication/login, 
 - Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
 - Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
 
-## Features
+## Code Snippets
 
-Here are some supplementary features that might be required to build Platforms on Vercel:
+Here are some supplementary code snippets that might be required to build Platforms on Vercel:
 
 - Text Editor
 - Simple Auth
 - Static Tweet Embeds
 - OG-image generator
 
-Check out the full list of features [here](./features).
+Check out the full list of features [here](./code-snippets).
 
 ## Contributing
 

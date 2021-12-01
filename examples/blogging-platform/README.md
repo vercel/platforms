@@ -19,9 +19,7 @@ All of these generated sites are powered by ISR (no SSR at all) so they load pre
 ### Features
 
 - 🔀 Hostname Rewrites
-
 - 📍 Custom Domains API
-
 - ✍️ Markdown Text Editor
 
 ### Real-world examples
