@@ -13,7 +13,7 @@
 <p align="center">
   <a href="#introduction"><strong>Introduction</strong></a> ·
   <a href="#examples"><strong>Examples</strong></a> ·
-  <a href="#features"><strong>Features</strong></a> ·
+  <a href="#code-snippets"><strong>Code Snippets</strong></a> ·
   <a href="#contributing"><strong>Contributing</strong></a>
 </p>
 <br/>
