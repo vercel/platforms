@@ -7,6 +7,7 @@ Here are some code snippets that would be helpful for building Platforms on Verc
 - OG-image generator
 - Simple Auth
 - Cross-domain Auth
-- Static Tweets (Tailwind version VS non-tailwind version)
+- Static Tweets (Tailwind version)
+- Static Tweets (regular CSS version)
 - Simple Text Editor
 - Slate.js Rich Text Editor
