@@ -1,5 +1,7 @@
 import React from 'react'
 import Layout from '@/components/sites/Layout'
+import Loader from "@/components/Loader"
+import { useRouter } from "next/router"
 import Image from 'next/image'
 import matter from 'gray-matter'
 import remark from 'remark'
@@ -15,16 +17,14 @@ const components = {
 };
 
 export default function PostPage (props) {
-    
-    let post = JSON.parse(props.post)
-    if (!post) {
-        post = {}
-        post.title = "Post Not Found"
-        post.description = "Check the URL, there's something fishy going on there..."
-        post.logo = "/logo.png"
-        post.content = ''
-        post.image = '/empty-state.webp'
+  
+    const router = useRouter()
+    if (router.isFallback) {
+        return (
+            <Loader />
+        )
     }
+    let post = JSON.parse(props.post)
 
     return (
         <Layout
@@ -149,6 +149,11 @@ export async function getStaticProps({params: {site, slug}}) {
             slug_site_constraint: constraint
         }
     })
+    
+    if (!siteData || !post) {
+        return { notFound: true, revalidate: 10 };
+    }
+
     const matterResult = post ? matter(post?.content) : ''
 
     // Use remark to convert markdown into HTML string

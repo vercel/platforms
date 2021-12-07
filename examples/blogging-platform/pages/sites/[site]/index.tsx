@@ -1,5 +1,6 @@
 import Layout from "@/components/sites/Layout"
-import Claim from "@/components/sites/Claim"
+import Loader from "@/components/Loader"
+import { useRouter } from "next/router"
 import Link from "next/link"
 import Image from "next/image"
 import React, {useState} from "react"
@@ -10,12 +11,16 @@ function classNames(...classes) {
   }
   
 export default function Index(props){
-
-
-    const site = JSON.parse(props.site)
-    if (!site) {
-      return <Claim subdomain={props.subdomain}/>
+  
+    const router = useRouter()
+    if (router.isFallback) {
+        return (
+            <Loader />
+        )
     }
+    
+    const site = JSON.parse(props.site)
+    
     const pinnedPost = JSON.parse(props.pinPost)
     const [sort, setSort] = useState("date")
 
@@ -174,6 +179,10 @@ export async function getStaticProps({ params: {site} }) {
             },
         }
     })
+    
+    if (!data) {
+        return { notFound: true, revalidate: 10 };
+    }
 
     const pinPost = data && data.posts.length > 0 ? data.posts.filter(post => {
         return post.pinnedPost.length > 0

@@ -2,7 +2,8 @@
 
 import React, {useState} from 'react'
 import Layout from '@/components/sites/Layout'
-import Claim from "@/components/sites/Claim"
+import Loader from "@/components/Loader"
+import { useRouter } from "next/router"
 import prisma from '@/lib/prisma'
 import Image from 'next/image'
 
@@ -11,10 +12,14 @@ function classNames(...classes) {
 }
 
 export default function About (props) {
-
-  if (!props.name) {
-    return <Claim subdomain={props.subdomain}/>
+  
+  const router = useRouter()
+  if (router.isFallback) {
+      return (
+          <Loader />
+      )
   }
+
   const [tab, setTab] = useState("about")
 
   return (
@@ -148,6 +153,10 @@ export async function getStaticProps({params: { site }}) {
         }
         }
     })
+    
+    if (!data) {
+        return { notFound: true, revalidate: 10 };
+    }
 
     return {
         props: {
