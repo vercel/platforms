@@ -20,7 +20,7 @@
 
 ## Introduction
 
-**Welcome to the Platforms on Vercel Early Access Program!**__
+_**Welcome to the Platforms on Vercel Early Access Program!**_
 
 Platforms on Vercel are Vercel customers that allow their users to create unique content pages with a multi-tenant infrastructure. Each user gets assigned a unique subdomain when they create their account, with the (usually paid) option to add a custom domain.
 
