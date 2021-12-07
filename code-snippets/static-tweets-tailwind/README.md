@@ -1,6 +1,6 @@
 # Static Tweets (Tailwind)
 
-This code snippet shows you how you can generate static tweets using Tailwind CSS & `getStaticProps`.
+This code snippet shows you how you can generate static tweets using Tailwind CSS & `getStaticProps` in Next.js.
 
 ## Dependencies
 
