@@ -2,8 +2,8 @@
 
 Here are some code snippets that would be helpful for building Platforms on Vercel:
 
-- Static Tweets (w/ Tailwind)
-- Vercel Domains API
+- [Static Tweets (w/ Tailwind)](./static-tweets-tailwind)
+- [Vercel Domains API](./domains-api)
 - Analytics
 - A/B testing
 - OG-image generator
