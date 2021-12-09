@@ -18,7 +18,7 @@
 </p>
 <br/>
 
-## TLDR:
+## Overview
 1. Welcome to the Platforms on Vercel Early Access Program!
 2. Check out some boilerplate examples [here](./examples).
 3. Check out some code snippets [here](./code-snippets) – especially the one for [adding domains programmatically with Vercel's domains API](./code-snippets/domains-api).
