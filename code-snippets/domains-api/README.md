@@ -1,4 +1,4 @@
-# Static Tweets (Tailwind)
+# Domains API
 
 This code snippet shows you how you can leverage Vercel's Domains API to add and remove domains programmatically from your Platforms on Vercel project.
 
