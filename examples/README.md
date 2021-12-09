@@ -5,4 +5,4 @@
 - Blogging Platform (with Slate.js) (coming soon)
 - Website Builder (coming soon)
 - E-commerce Store Builder (coming soon)
-- Ad-backed media example
+- Ad-backed media
