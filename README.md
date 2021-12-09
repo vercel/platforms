@@ -65,8 +65,8 @@ White-labeled SaaS applications that require multi-tenant authentication/login, 
 
 Here are some supplementary code snippets that might be required to build Platforms on Vercel:
 
+- [Vercel Domains API](./code-snippets/domains-api)
 - [Static Tweet Embeds](./code-snippets/static-tweets-tailwind)
-- Vercel Domains API
 - OG-image generator
 - Text Editor
 - Simple Auth
