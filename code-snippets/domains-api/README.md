@@ -16,9 +16,10 @@ This code snippet shows you how you can leverage Vercel's Domains API to add and
 To add a domain, you can use the `/v8/projects/{idOrName}/domains` endpoint as shown [here](./pages/api/add-domain.js) ([full documentation](https://vercel.com/docs/rest-api#endpoints/projects/add-a-domain-to-a-project)).
 
 When a domain is added, there are 3 possible outcomes:
-a. Domain is added successfully (response code `200`).
-b. Domains is already in use by another project and can't be added (response code `409`).
-c. Domains belongs to a different team but you can potentially request delegation for the domain (response code `403`).
+
+1. Domain is added successfully (response code `200`).
+2. Domains is already in use by another project and can't be added (response code `409`).
+3. Domains belongs to a different team but you can potentially request delegation for the domain (response code `403`).
 
 #### Request Delegation of Domains
 
