@@ -35,6 +35,7 @@ There are two ways that your users can configure their domains after they are ad
   - recommended for apex domains (domain.com)
 
 Example:
+![CleanShot 2021-12-08 at 19 00 52](https://user-images.githubusercontent.com/28986134/145327099-137dc60e-d260-4ba3-b8bb-413e7d70b9b1.png)
 
 ### 3. Removing Domains
 
