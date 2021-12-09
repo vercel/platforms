@@ -18,6 +18,12 @@
 </p>
 <br/>
 
+## TLDR:
+1. Welcome to the Platforms on Vercel Early Access Program!
+2. Check out some boilerplate examples [here](./examples).
+3. Check out some code snippets [here](./code-snippets) – especially the one for [adding domains programmatically with Vercel's domains API](./code-snippets/domains-api).
+4. Participate in [Discussions](https://github.com/vercel-customer-feedback/platforms/discussions/1) or [post an issue](https://github.com/vercel-customer-feedback/platforms/issues) if you run into any bugs.
+
 ## Introduction
 
 _**Welcome to the Platforms on Vercel Early Access Program!**_
