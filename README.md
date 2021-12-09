@@ -71,7 +71,7 @@ Here are some supplementary code snippets that might be required to build Platfo
 - Text Editor
 - Simple Auth
 
-Check out the full list of features [here](./code-snippets).
+Check out the full list of code snippets [here](./code-snippets).
 
 ## Contributing
 
