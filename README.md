@@ -38,6 +38,8 @@ At Vercel, we want to provide these platforms with a comprehensive solutions for
 
 ## Examples
 
+> We've created a few boilerplates based on the examples below for you to get started with [here](./examples).
+
 Multi-tenancy app infrastructures work really well with the following types of apps:
 
 ### 1. Content creation platforms
@@ -60,8 +62,6 @@ White-labeled SaaS applications that require multi-tenant authentication/login, 
 
 - Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
 - Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
-
-> We've created a few boilerplates for you to get started [here](./examples).
 
 ## Code Snippets
 
