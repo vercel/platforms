@@ -13,18 +13,18 @@ This code snippet shows you how you can leverage Vercel's Domains API to add and
 
 ### 1. Adding Domains
 
-To add a domain, you can use the `/v8/projects/{idOrName}/domains` endpoint as shown [here](./pages/api/add-domain) ([full documentation](https://vercel.com/docs/rest-api#endpoints/projects/add-a-domain-to-a-project)).
+To add a domain, you can use the `/v8/projects/{idOrName}/domains` endpoint as shown [here](./pages/api/add-domain.js) ([full documentation](https://vercel.com/docs/rest-api#endpoints/projects/add-a-domain-to-a-project)).
 
 When a domain is added, there are 3 possible outcomes:
 a. Domain is added successfully (response code `200`).
 b. Domains is already in use by another project and can't be added (response code `409`).
 c. Domains belongs to a different team but you can potentially request delegation for the domain (response code `403`).
 
-> Request delegation for domains can be done with the `/v6/domains/{domain}/request-delegation` endpoint as shown [here](./pages/api/request-delegation) ([full documentation](https://vercel.notion.site/Preview-Requesting-Subdomain-Access-79df63d854b24a0abd52da991d50cb81)).
+> Request delegation for domains can be done with the `/v6/domains/{domain}/request-delegation` endpoint as shown [here](./pages/api/request-delegation.js) ([full documentation](https://vercel.notion.site/Preview-Requesting-Subdomain-Access-79df63d854b24a0abd52da991d50cb81)).
 
 ### 2. Auto-checking Domain Configuration
 
-When a domain is first added to a project, we use [SWR](https://swr.vercel.app) to periodically check if the domain's DNS records are configured correctly. This is done using the `/v6/domains/{domain}/config` endpoint as shown [here](./pages/api/check-domain).
+When a domain is first added to a project, we use [SWR](https://swr.vercel.app) to periodically check if the domain's DNS records are configured correctly. This is done using the `/v6/domains/{domain}/config` endpoint as shown [here](./pages/api/check-domain.js).
 
 There are two ways that your users can configure their domains after they are added:
 
