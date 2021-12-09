@@ -24,11 +24,17 @@ c. Domains belongs to a different team but you can potentially request delegatio
 
 ### 2. Auto-checking Domain Configuration
 
-When a domain is first added to a project, we use [SWR](https://swr.vercel.app) to check if the domain's DNS records are configured correctly. This is done using the `/v6/domains/{domain}/config` endpoint as shown [here](./pages/api/check-domain).
+When a domain is first added to a project, we use [SWR](https://swr.vercel.app) to periodically check if the domain's DNS records are configured correctly. This is done using the `/v6/domains/{domain}/config` endpoint as shown [here](./pages/api/check-domain).
 
 There are two ways that your users can configure their domains after they are added:
 
-- CNAME records
+- CNAME record:
+  - recommended for subdomains (blog.domain.com, app.domain.com)
+  - you can set up a branded CNAME value by adding an `A` record for the `cname` subdomain on your domain and point it to to Vercel's IP address `76.76.21.21`
+- A record:
+  - recommended for apex domains (domain.com)
+
+Example:
 
 ### 3. Removing Domains
 
