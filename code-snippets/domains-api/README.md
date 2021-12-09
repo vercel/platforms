@@ -51,6 +51,8 @@ Example:
 
 ### 3. Removing Domains
 
+To remove a domain, you can use the `/v8/projects/{idOrName}/domains` endpoint as shown [here](./pages/api/remove-domain.js) ([full documentation](https://vercel.com/docs/rest-api#endpoints/projects/remove-a-domain-from-a-project)).
+
 ## Demo
 
 https://domains-api.vercel.app/
