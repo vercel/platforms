@@ -61,6 +61,8 @@ White-labeled SaaS applications that require multi-tenant authentication/login, 
 - Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
 - Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
 
+> We've created a few boilerplates for you to get started [here](./examples).
+
 ## Code Snippets
 
 Here are some supplementary code snippets that might be required to build Platforms on Vercel:
