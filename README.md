@@ -20,6 +20,8 @@
 
 ## Introduction
 
+_**Welcome to the Platforms on Vercel Early Access Program!**_
+
 Platforms on Vercel are Vercel customers that allow their users to create unique content pages with a multi-tenant infrastructure. Each user gets assigned a unique subdomain when they create their account, with the (usually paid) option to add a custom domain.
 
 For instance, each writer on Substack has their own unique `.substack.com` subdomain for their newsletters:
@@ -63,10 +65,11 @@ White-labeled SaaS applications that require multi-tenant authentication/login, 
 
 Here are some supplementary code snippets that might be required to build Platforms on Vercel:
 
+- [Static Tweet Embeds](./code-snippets/static-tweets-tailwind)
+- Vercel Domains API
+- OG-image generator
 - Text Editor
 - Simple Auth
-- Static Tweet Embeds
-- OG-image generator
 
 Check out the full list of features [here](./code-snippets).
 
