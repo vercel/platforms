@@ -5,6 +5,7 @@ import LoadingDots from '../components/loading-dots'
 import toast, { Toaster } from 'react-hot-toast';
 import useSWR, { mutate } from 'swr'
 const fetcher = (...args) => fetch(...args).then(res => res.json())
+import Image from 'next/image'
 
 export default function Home() {
 
@@ -42,8 +43,11 @@ export default function Home() {
               duration: 10000,
           }}
       />
+      <a href="https://github.com/vercel-customer-feedback/platforms/tree/main/code-snippets/domains-api" target="_blank" className="fixed top-5 right-5">
+        <Image src="/github.svg" alt="Github" width={24} height={24}/>
+      </a>
 
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center mb-20">
+      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center my-20">
         <h1 className="text-6xl font-bold">
           Domains API
         </h1>
