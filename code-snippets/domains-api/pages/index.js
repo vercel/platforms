@@ -9,7 +9,7 @@ const fetcher = (...args) => fetch(...args).then(res => res.json())
 export default function Home() {
 
   const [domain, setDomain] = useState('')
-  const [domainList, setDomainList] = useState(Cookies.get('domainList') ? JSON.parse(Cookies.get('domainList')) : [])
+  const [domainList, setDomainList] = useState(Cookies.get('domainList') ? JSON.parse(Cookies.get('domainList')) : ['platformizer.co', 'vercel.pub']) // initialize the state with two default domains
   const [disabled, setDisabled] = useState(true)
   const [adding, setAdding] = useState(false)
   const [error, setError] = useState(null)
