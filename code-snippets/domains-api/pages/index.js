@@ -10,6 +10,8 @@ export default function Home() {
   const [domain, setDomain] = useState('')
   const [domainList, setDomainList] = useState(Cookies.get('domainList') ? JSON.parse(Cookies.get('domainList')) : [])
   const [disabled, setDisabled] = useState(true)
+  const [adding, setAdding] = useState(false)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     if (domain.length == 0) {
@@ -18,6 +20,10 @@ export default function Home() {
       setDisabled(false)
     }
   }, [domain])
+
+  useEffect(() => {
+    if (adding) setDisabled(true)
+  }, [adding])
 
   useEffect(() => {
     Cookies.set('domainList', JSON.stringify(domainList))
@@ -36,10 +42,20 @@ export default function Home() {
         </h1>
 
         <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault()
-              setDomainList([...domainList, domain])
-              e.target.domain.value = ''
+              setAdding(true)
+              await fetch(`/api/add-domain?domain=${domain}`).then((res) => {
+                  setAdding(false)
+                  if (res.ok) {
+                    setError(null)
+                    setDomainList([...domainList, domain])
+                    e.target.domain.value = ''
+                  } else {
+                    const errorDomain = domain
+                    setError({code: res.status, domain: errorDomain})
+                  }
+              })
             }}
             className="flex justify-between space-x-4 w-full max-w-2xl h-10 mt-10"
         >
@@ -49,17 +65,33 @@ export default function Home() {
             onInput={(e) => { setDomain(e.target.value) }}
             autoComplete="off"
             placeholder="mydomain.com"
-            pattern="^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
+            pattern="^(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
             required
             className="rounded-md border border-gray-300 focus:ring-0 focus:border-black px-4 flex-auto min-w-0 sm:text-sm"
           />
           <button 
               type="submit"
-              className={`${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-500 border-gray-300' : 'bg-black text-white border-black hover:text-black hover:bg-white'} py-2 px-10 text-sm border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
+              disabled={disabled}
+              className={`${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-500 border-gray-300' : 'bg-black text-white border-black hover:text-black hover:bg-white'} py-2 w-28 text-sm border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
           >
-              Add
+              {adding ?  <LoadingDots /> : 'Add'}
           </button>
         </form>
+
+        {error && 
+          <div className="text-red-500 text-left w-full max-w-2xl mt-5 text-sm flex items-center space-x-2">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" shapeRendering="geometricPrecision" style={{color: "#f44336"}}>
+              <circle cx="12" cy="12" r="10" fill="white"/>
+              <path d="M12 8v4" stroke="#f44336"/>
+              <path d="M12 16h.01" stroke="#f44336"/>
+            </svg>
+            <p dangerouslySetInnerHTML={{__html: 
+              error.code == 403 
+                ? `<b>${error.domain}</b> is already owned by another team. Click here to request access.`
+                : `Cannot add <b>${error.domain}</b> since it's already assigned to another project.`
+            }} />
+          </div>
+        }
         
         <div className="w-full max-w-2xl">
           {domainList.map((domain, index) => {
@@ -89,6 +121,7 @@ const DomainCard = ({ domain, domainList, setDomainList }) => {
 
   const { data: valid, isValidating } = useSWR(`/api/check-domain?domain=${domain}`, fetcher, {revalidateOnMount: true, refreshInterval: 5000})
   const [recordType, setRecordType] = useState('CNAME')
+  const [removing, setRemoving] = useState(false)
 
   return (
     <div className="w-full mt-10 shadow-md border border-gray-50 rounded-lg py-10">
@@ -115,12 +148,21 @@ const DomainCard = ({ domain, domainList, setDomainList }) => {
               }
           </button>
           <button
-              onClick={() => {
-                setDomainList(domainList.filter((item) => item !== domain))
+              onClick={async () => {
+                setRemoving(true)
+                await fetch(`/api/remove-domain?domain=${domain}`).then((res) => {
+                    setRemoving(false)
+                    if (res.ok) {
+                      setDomainList(domainList.filter((item) => item !== domain))
+                    } else {
+                      alert("Error removing domain")
+                    }
+                })
               }}
-              className="bg-red-500 text-white border-red-500 hover:text-red-500 hover:bg-white py-1.5 w-24 text-sm border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
+              disabled={removing}
+              className={`${removing ? "cursor-not-allowed bg-gray-100" : ""}bg-red-500 text-white border-red-500 hover:text-red-500 hover:bg-white py-1.5 w-24 text-sm border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
           >
-              Remove
+              {removing ?  <LoadingDots /> : 'Remove'}
           </button>
         </div>
       </div>
@@ -145,7 +187,7 @@ const DomainCard = ({ domain, domainList, setDomainList }) => {
       {
         !valid &&
         <>
-          <div className="w-full border border-gray-100 mt-5 mb-8" />
+          <div className="w-full border-t border-gray-100 mt-5 mb-8" />
 
           <div className="px-10">
             <div className="flex justify-start space-x-4">

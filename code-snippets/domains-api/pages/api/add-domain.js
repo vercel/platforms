@@ -12,8 +12,13 @@ export default async function addDomain(req, res) {
     })
     
     const data = await response.json();
-
     console.log(data)
-    
-    res.status(200).end();
+
+    if (data.error?.code == 'forbidden') {
+        res.status(403).end();
+    } else if (data.error?.code == 'domain_taken') {
+        res.status(409).end();
+    } else {
+        res.status(200).end();
+    }
 }
