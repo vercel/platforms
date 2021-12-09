@@ -22,7 +22,7 @@ c. Domains belongs to a different team but you can potentially request delegatio
 
 #### Request Delegation of Domains
 
-Requesting delegation of domains can be done with the `/v6/domains/{domain}/request-delegation` endpoint as shown [here](./pages/api/request-delegation) ([full documentation](https://vercel.notion.site/Preview-Requesting-Subdomain-Access-79df63d854b24a0abd52da991d50cb81)).
+Requesting delegation of domains can be done with the `/v6/domains/{domain}/request-delegation` endpoint as shown [here](./pages/api/request-delegation.js) ([full documentation](https://vercel.notion.site/Preview-Requesting-Subdomain-Access-79df63d854b24a0abd52da991d50cb81)).
 
 Below is an example of how to the request delegation flow is like for the end user:
 
