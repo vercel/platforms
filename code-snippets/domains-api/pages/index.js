@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import LoadingDots from '../components/loading-dots'
+import toast, { Toaster } from 'react-hot-toast';
 import useSWR, { mutate } from 'swr'
 const fetcher = (...args) => fetch(...args).then(res => res.json())
 
@@ -35,6 +36,12 @@ export default function Home() {
         <title>Domains API</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Toaster
+          position="bottom-right"
+          toastOptions={{
+              duration: 10000,
+          }}
+      />
 
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center mb-20">
         <h1 className="text-6xl font-bold">
@@ -85,11 +92,32 @@ export default function Home() {
               <path d="M12 8v4" stroke="#f44336"/>
               <path d="M12 16h.01" stroke="#f44336"/>
             </svg>
-            <p dangerouslySetInnerHTML={{__html: 
+            {
               error.code == 403 
-                ? `<b>${error.domain}</b> is already owned by another team. Click here to request access.`
-                : `Cannot add <b>${error.domain}</b> since it's already assigned to another project.`
-            }} />
+              ?
+                <p>
+                  <b>{error.domain}</b> is already owned by another team.
+                  <button 
+                    className="ml-1"
+                    onClick={async (e) => {
+                      e.preventDefault()
+                      await fetch(`/api/request-delegation?domain=${error.domain}`).then((res) => {
+                          if (res.ok) {
+                            toast.success(`Requested delegation for ${error.domain}`)
+                          } else {
+                            alert('There was an error requesting delegation. Please try again later.')
+                          }
+                      })
+                    }}
+                  >
+                    <u>Click here to request access.</u>
+                  </button>
+                </p>
+              :
+                <p>
+                  Cannot add <b>{error.domain}</b> since it's already assigned to another project.
+                </p>
+            }
           </div>
         }
         

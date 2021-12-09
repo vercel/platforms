@@ -9,9 +9,7 @@ export default async function removeDomain(req, res) {
         method: "DELETE"
     })
     
-    const data = await response.json();
-
-    console.log(data)
+    await response.json();
     
     res.status(200).end();
 }
