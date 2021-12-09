@@ -18,6 +18,12 @@
 </p>
 <br/>
 
+## Overview
+1. Welcome to the Platforms on Vercel Early Access Program!
+2. Check out some boilerplate examples [here](./examples).
+3. Check out some code snippets [here](./code-snippets) – especially the one for [adding domains programmatically with Vercel's domains API](./code-snippets/domains-api).
+4. Participate in [discussions](https://github.com/vercel-customer-feedback/platforms/discussions/1) or [post an issue](https://github.com/vercel-customer-feedback/platforms/issues) if you run into any bugs.
+
 ## Introduction
 
 _**Welcome to the Platforms on Vercel Early Access Program!**_
@@ -37,6 +43,8 @@ Users can also map their custom domains to their `.substack.com` subdomain for a
 At Vercel, we want to provide these platforms with a comprehensive solutions for them to build platforms like Substack super easily.
 
 ## Examples
+
+> We've created a few boilerplates based on the examples below for you to get started with [here](./examples).
 
 Multi-tenancy app infrastructures work really well with the following types of apps:
 
@@ -65,13 +73,13 @@ White-labeled SaaS applications that require multi-tenant authentication/login, 
 
 Here are some supplementary code snippets that might be required to build Platforms on Vercel:
 
+- [Adding domains programatically w/ Vercel Domains API](./code-snippets/domains-api)
 - [Static Tweet Embeds](./code-snippets/static-tweets-tailwind)
-- Vercel Domains API
 - OG-image generator
 - Text Editor
 - Simple Auth
 
-Check out the full list of features [here](./code-snippets).
+Check out the full list of code snippets [here](./code-snippets).
 
 ## Contributing
 
