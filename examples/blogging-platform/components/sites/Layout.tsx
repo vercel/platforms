@@ -12,12 +12,12 @@ export default function Layout ({subdomain, siteName, pageTitle, description, lo
         <link rel="apple-touch-icon" sizes="180x180" href={logo}/>
         <meta name="theme-color" content="#7b46f6"/>
 
-        <meta charset="utf-8"/>
+        <meta charSet="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-        <meta itemprop="name" content={pageTitle}/>
-        <meta itemprop="description" content={description}/>
-        <meta itemprop="image" content={thumbnail}/>
+        <meta itemProp="name" content={pageTitle}/>
+        <meta itemProp="description" content={description}/>
+        <meta itemProp="image" content={thumbnail}/>
         <meta name="description" content={description}/>
         <meta property="og:title" content={pageTitle}/>
         <meta property="og:description" content={description}/>

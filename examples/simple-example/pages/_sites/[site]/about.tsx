@@ -1,39 +1,50 @@
 import Head from 'next/head'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { Layout, Page, Text, Link } from '@vercel/edge-functions-ui'
 
 export default function About(props) {
+  
+  const router = useRouter()
+    if (router.isFallback) {
+        return (
+          <Page>
+            <Text variant="h1" className="mb-6">
+              Loading...
+            </Text>
+          </Page>
+        )
+    }
+  
   return (
-    <>
+    <Page>
       <Head>
         <title>{props.name}</title>
         <link rel="icon" href="/favicon.ico" />
         <meta itemProp="description" content={props.description} />
       </Head>
-      <div>
-        <h1>About {props.name}</h1>
-      </div>
-      <div>
-        <Link href="/">
-          <a style={{ marginRight: '10px' }}>Home</a>
+      <Text variant="h1" className="mb-6">
+        About {props.name}
+      </Text>
+      <div className="mb-4">
+        <Link className="mr-2.5" href="/">
+          Home
         </Link>
-        <Link href="/about">
-          <a>About</a>
-        </Link>
+        <Link href="/about">About</Link>
       </div>
-      <div>
-        <p>
-          <b>Properties</b>: {props.description}
-        </p>
-        <p>
-          <b>Subdomain</b>: {props.subdomain}.vercel.sh
-        </p>
-        <p>
-          <b>Custom Domain</b>: {props.customDomain || 'none'}
-        </p>
-      </div>
-    </>
+      <Text className="mb-2">
+        <b>Properties</b>: {props.description}
+      </Text>
+      <Text className="mb-2">
+        <b>Subdomain</b>: {props.subdomain}.vercel.sh
+      </Text>
+      <Text className="mb-2">
+        <b>Custom Domain</b>: {props.customDomain || 'none'}
+      </Text>
+    </Page>
   )
 }
+
+About.Layout = Layout
 
 const mockDB = [
   {
@@ -74,7 +85,7 @@ export async function getStaticPaths() {
   ]
   return {
     paths: paths,
-    fallback: 'blocking', // fallback blocking allows sites to be generated using ISR
+    fallback: true, // fallback true allows sites to be generated using ISR
   }
 }
 

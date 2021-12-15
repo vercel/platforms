@@ -1,47 +1,68 @@
 import Head from 'next/head'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { Layout, Page, Text, Link, List } from '@vercel/edge-functions-ui'
 
 export default function Index(props) {
+  
+  const router = useRouter()
+    if (router.isFallback) {
+        return (
+          <Page>
+            <Text variant="h1" className="mb-6">
+              Loading...
+            </Text>
+          </Page>
+        )
+    }
+  
   return (
-    <>
+    <Page>
       <Head>
-        <title>{props.name}</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>{props.name} - Vercel Edge Functions</title>
         <meta itemProp="description" content={props.description} />
       </Head>
-      <div>
-        <h1>{props.name}</h1>
-      </div>
-      <div>
-        <Link href="/">
-          <a style={{ marginRight: '10px' }}>Home</a>
+      <Text variant="h1" className="mb-6">
+        {props.name}
+      </Text>
+      <div className="mb-4">
+        <Link className="mr-2.5" href="/">
+          Home
         </Link>
-        <Link href="/about">
-          <a>About</a>
-        </Link>
+        <Link href="/about">About</Link>
       </div>
-      <div>
-        <p>More examples:</p>
-        <ul>
-          <li>
-            <a href="https://subdomain-1.vercel.sh">subdomain-1.vercel.sh</a>
-          </li>
-          <li>
-            <a href="https://subdomain-2.vercel.sh">subdomain-2.vercel.sh</a>
-          </li>
-          <li>
-            <a href="https://subdomain-3.vercel.sh">subdomain-3.vercel.sh</a>
-          </li>
-          <li>
-            <a href="https://custom-domain-1.com">custom-domain-1.com</a> (maps
-            to <a href="https://subdomain-1.vercel.sh">subdomain-1.vercel.sh</a>
-            )
-          </li>
-        </ul>
-      </div>
-    </>
+      <Text variant="h2" className="mb-6">
+        More examples:
+      </Text>
+      <List>
+        <li>
+          <Link href="https://subdomain-1.vercel.sh">
+            subdomain-1.vercel.sh
+          </Link>
+        </li>
+        <li>
+          <Link href="https://subdomain-2.vercel.sh">
+            subdomain-2.vercel.sh
+          </Link>
+        </li>
+        <li>
+          <Link href="https://subdomain-3.vercel.sh">
+            subdomain-3.vercel.sh
+          </Link>
+        </li>
+        <li>
+          <Link href="https://custom-domain-1.com">custom-domain-1.com</Link>{' '}
+          (maps to{' '}
+          <Link href="https://subdomain-1.vercel.sh">
+            subdomain-1.vercel.sh
+          </Link>
+          )
+        </li>
+      </List>
+    </Page>
   )
 }
+
+Index.Layout = Layout
 
 const mockDB = [
   {
@@ -82,7 +103,7 @@ export async function getStaticPaths() {
   ]
   return {
     paths: paths,
-    fallback: 'blocking', // fallback blocking allows sites to be generated using ISR
+    fallback: true, // fallback true allows sites to be generated using ISR
   }
 }
 
@@ -97,6 +118,6 @@ export async function getStaticProps({ params: { site } }) {
 
   return {
     props: { ...data[0] },
-    revalidate: 10, // set revalidate interval of 10s
+    revalidate: 3600, // set revalidate interval of 1h
   }
 }
