@@ -7,7 +7,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const Layout = getLayout<LayoutProps>(Component)
 
   return (
-    <Layout path="hostname-rewrites" deployButton={{ env: ['ROOT_URL'] }}>
+    <Layout path="simple-example" deployButton={{ env: ['ROOT_URL'] }}>
       <Component {...pageProps} />
     </Layout>
   )
