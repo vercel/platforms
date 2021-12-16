@@ -5,13 +5,12 @@ export default function middleware(req: NextRequest) {
   // Get hostname (e.g. vercel.com, test.vercel.app, etc.)
   const hostname = req.headers.get('host')
 
-  // If localhost, assign the host value manually
+  // If localhost, get the custom domain/subdomain value by removing localhost:3000
   // If prod, get the custom domain/subdomain value by removing the root URL
   // (in the case of "test.vercel.app", "vercel.app" is the root URL)
-  const currentHost =
-    process.env.NODE_ENV == 'production'
-      ? hostname.replace(`.${process.env.ROOT_URL}`, '')
-      : process.env.CURR_HOST
+  const currentHost = process.env.NODE_ENV === 'production' && process.env.VERCEL === '1'
+  ? hostname.replace(`.${process.env.NEXT_PUBLIC_ROOT_URL}`, '')
+  : hostname.replace(`.localhost:3000`, '')
 
   // Prevent security issues – users should not be able to canonically access
   // the pages/sites folder and its respective contents. This can also be done
