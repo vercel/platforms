@@ -18,7 +18,7 @@ export default function Index(props){
             <Loader />
         )
     }
-    
+        
     const site = JSON.parse(props.site)
     
     const pinnedPost = JSON.parse(props.pinPost)
