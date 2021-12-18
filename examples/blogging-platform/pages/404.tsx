@@ -6,7 +6,6 @@ export default function Custom404() {
     const [subdomain, setSubdomain] = useState("test")
     
     useEffect(() => {
-        if (typeof window !== 'undefined') {
             const host = window.location.hostname
             setSubdomain(host)
         }
