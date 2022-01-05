@@ -16,7 +16,7 @@ export default function Home(props) {
         <title>Static Tweets (Tailwind)</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
+      {/* added link to github repo */}
       <a
         href="https://github.com/vercel-customer-feedback/platforms/tree/main/code-snippets/static-tweets-tailwind"
         target="_blank"
