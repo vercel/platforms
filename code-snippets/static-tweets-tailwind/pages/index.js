@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import { serialize } from "next-mdx-remote/serialize";
 import { MDXRemote } from "next-mdx-remote";
 import Tweet from "@/components/Tweet";
@@ -15,6 +16,14 @@ export default function Home(props) {
         <title>Static Tweets (Tailwind)</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      <a
+        href="https://github.com/vercel-customer-feedback/platforms/tree/main/code-snippets/static-tweets-tailwind"
+        target="_blank"
+        className="fixed top-5 right-5"
+      >
+        <Image src="/github.svg" alt="Github" width={24} height={24} />
+      </a>
 
       <main className="flex flex-col items-center justify-center w-full flex-1">
         <article className="prose lg:prose-xl w-11/12 max-w-3xl mx-auto mt-20 mb-48">
