@@ -24,7 +24,7 @@ export const getTweets = async (id) => {
 
   const tweet = await response.json();
 
-  console.log(JSON.stringify(tweet, null, 4));
+  //console.log(JSON.stringify(tweet, null, 4));
 
   const getAuthorInfo = (author_id) => {
     return tweet.includes.users.find((user) => user.id === author_id);
