@@ -1,0 +1,25 @@
+{
+  "name": "simple-example",
+  "version": "1.0.0",
+  "repository": "https://github.com/vercel/examples.git",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@vercel/edge-functions-ui": "^0.2.1",
+    "next": "^12.0.7",
+    "next-auth": "^4.0.6",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.8",
+    "autoprefixer": "^10.3.7",
+    "postcss": "^8.3.11",
+    "tailwindcss": "^2.2.17",
+    "typescript": "4.3.2"
+  }
+}
