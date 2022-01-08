@@ -69,12 +69,12 @@ model VerificationToken {
 
 model Post {
   id            String       @id @default(cuid())
-  title         String?      @db.Text
-  description   String?     @db.Text
-  content       String?     @db.LongText
+  title         String       @default("Untitled Post")
+  description   String?     
+  content       String?     @db.Text
   slug          String      @default(cuid())
-  image      String?   @db.Text
-  imageBlurhash String?   @db.LongText
+  image         String?
+  imageBlurhash String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   published     Boolean      @default(false)
@@ -86,10 +86,10 @@ model Post {
 model Site {
   id            String  @id @default(cuid())
   name          String?
-  description   String? @db.Text
+  description   String?
   logo          String?
-  image         String? @db.Text
-  imageBlurhash String? @db.LongText
+  image         String?
+  imageBlurhash String?
   subdomain     String? @unique
   customDomain  String? @unique
   createdAt     DateTime     @default(now())
