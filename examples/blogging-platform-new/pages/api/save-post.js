@@ -2,7 +2,6 @@ import prisma from "@/lib/prisma";
 
 export default async function SavePost(req, res) {
   const data = JSON.parse(req.body);
-  console.log(data);
   const response = await prisma.post.update({
     where: {
       id: data.id,
