@@ -11,7 +11,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Layout({ children }) {
+export default function Layout({ siteId, children }) {
   const title = "Platforms on Vercel";
   const description =
     "Create a fullstack application with multi-tenancy and custom domains support using Next.js, Prisma, and PostgreSQL";
@@ -86,16 +86,46 @@ export default function Layout({ children }) {
           </div>
         )}
         {sitePage && (
-          <div className="absolute left-0 right-0 top-16 flex justify-center items-center font-cal space-x-16 py-3 border-b bg-white border-gray-200">
-            <Link href={`/site/${router.query.id}`}>
-              <a>Posts</a>
-            </Link>
-            <Link href={`/site/${router.query.id}/drafts`}>
-              <a>Drafts</a>
-            </Link>
-            <Link href={`/site/${router.query.id}/settings`}>
-              <a>Settings</a>
-            </Link>
+          <div className="absolute left-0 right-0 top-16 font-cal py-3 border-b bg-white border-gray-200">
+            <div className="flex justify-between items-center space-x-16 max-w-screen-xl mx-auto px-10 sm:px-20">
+              <Link href={`/`}>
+                <a>
+                  ←<p className="md:inline-block ml-3 hidden">All Sites</p>
+                </a>
+              </Link>
+              <div className="flex justify-between items-center space-x-10 md:space-x-16">
+                <Link href={`/site/${router.query.id}`}>
+                  <a>Posts</a>
+                </Link>
+                <Link href={`/site/${router.query.id}/drafts`}>
+                  <a>Drafts</a>
+                </Link>
+                <Link href={`/site/${router.query.id}/settings`}>
+                  <a>Settings</a>
+                </Link>
+              </div>
+              <div />
+            </div>
+          </div>
+        )}
+        {postPage && (
+          <div className="absolute left-0 right-0 top-16 font-cal py-3 border-b bg-white border-gray-200">
+            <div className="flex justify-between items-center space-x-16 max-w-screen-xl mx-auto px-10 sm:px-20">
+              <Link href={`/site/${siteId}`}>
+                <a>
+                  ←<p className="md:inline-block ml-3 hidden">All Posts</p>
+                </a>
+              </Link>
+              <div className="flex justify-between items-center space-x-10 md:space-x-16">
+                <Link href={`/post/${router.query.id}`}>
+                  <a>Editor</a>
+                </Link>
+                <Link href={`/post/${router.query.id}/settings`}>
+                  <a>Settings</a>
+                </Link>
+              </div>
+              <div />
+            </div>
           </div>
         )}
         <div className="pt-28">{children}</div>

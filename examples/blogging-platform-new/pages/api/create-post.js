@@ -4,9 +4,6 @@ export default async function CreatePost(req, res) {
   const { siteId } = req.query;
   const response = await prisma.post.create({
     data: {
-      title: "Untitled Post",
-      description:
-        "Lorem ipsum is an overused text filler, but it's still useful for testing.",
       image: `https://og-image.vercel.app/${encodeURIComponent(
         "Untitled Post"
       )}.png?theme=dark&md=1&fontSize=100px&images=${encodeURIComponent(

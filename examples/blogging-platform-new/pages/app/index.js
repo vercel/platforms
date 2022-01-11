@@ -114,7 +114,7 @@ export default function AppIndex() {
           </div>
           <div className="flex justify-between items-center mt-10 w-full">
             <button
-              className="w-full px-5 py-5 text-sm text-gray-400 hover:text-black border-t border-gray-300 rounded-bl text-black focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
+              className="w-full px-5 py-5 text-sm text-gray-400 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
               onClick={() => setShowModal(false)}
             >
               CANCEL
@@ -127,7 +127,7 @@ export default function AppIndex() {
                 creatingSite
                   ? "cursor-not-allowed bg-gray-50"
                   : "bg-white hover:text-black"
-              } w-full px-5 py-5 text-sm text-gray-400 border-t border-l border-gray-300 rounded-br text-black focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+              } w-full px-5 py-5 text-sm text-gray-400 border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
             >
               {creatingSite ? <LoadingDots /> : "CREATE SITE"}
             </button>

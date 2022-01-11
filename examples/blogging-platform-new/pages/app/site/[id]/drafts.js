@@ -75,8 +75,13 @@ export default function SiteDrafts() {
                         />
                       </div>
                       <div className="relative p-10">
-                        <h2 className="font-cal text-3xl">{post.title}</h2>
-                        <p className="text-base my-5">{post.description}</p>
+                        <h2 className="font-cal text-3xl">
+                          {post.title || "Untitled Post"}
+                        </h2>
+                        <p className="text-base my-5">
+                          {post.description ||
+                            "No description provided. Click to edit."}
+                        </p>
                         <a
                           href={`https://${post.site.subdomain}.vercel.pub/${post.slug}`}
                           target="_blank"
