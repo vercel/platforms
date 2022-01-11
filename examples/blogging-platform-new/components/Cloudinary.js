@@ -1,5 +1,5 @@
-import { Component } from "react";
-import Head from "next/head";
+import { Component } from 'react';
+import Head from 'next/head';
 
 export default class CloudinaryUploadWidget extends Component {
   constructor(props) {
@@ -11,15 +11,15 @@ export default class CloudinaryUploadWidget extends Component {
     const { callback } = this.props;
     let widget = window.cloudinary.createUploadWidget(
       {
-        cloudName: "vercel-platforms",
-        uploadPreset: "w0vnflc6",
+        cloudName: 'daojones',
+        uploadPreset: 'ageoaktj',
         cropping: true,
       },
       (error, result) => {
-        if (!error && result && result.event === "success") {
+        if (!error && result && result.event === 'success') {
           callback(result.info);
         }
-      }
+      },
     );
     widget.open();
   };
