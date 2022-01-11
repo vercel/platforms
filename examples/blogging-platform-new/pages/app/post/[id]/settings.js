@@ -80,7 +80,7 @@ export default function Post() {
 
   return (
     <>
-      <Layout siteId={settings?.site.id}>
+      <Layout>
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
           <h1 className="font-cal text-5xl mb-12">Post Settings</h1>
           <div className="mb-28 flex flex-col space-y-6">
