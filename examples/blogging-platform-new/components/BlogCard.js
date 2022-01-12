@@ -1,10 +1,10 @@
-import Link from 'next/link';
-import BlurImage from './BlurImage';
-import Date from './Date';
+import Link from "next/link";
+import BlurImage from "./BlurImage";
+import Date from "./Date";
 
 export default function BlogCard({ data }) {
   return (
-    <Link href={`/blog/${data.slug}`}>
+    <Link href={`/${data.slug}`}>
       <a>
         <div className="rounded-2xl border-2 border-gray-100 overflow-hidden shadow-md bg-white hover:shadow-xl hover:-translate-y-1 transition-all ease duration-200">
           <BlurImage
@@ -15,7 +15,7 @@ export default function BlogCard({ data }) {
             layout="responsive"
             objectFit="cover"
             placeholder="blur"
-            blurDataURL={data.blurhash}
+            blurDataURL={data.imageBlurhash}
           />
           <div className="py-8 px-5 h-36">
             <h3 className="font-cal text-xl tracking-wide">{data.title}</h3>
@@ -23,7 +23,7 @@ export default function BlogCard({ data }) {
               {data.description}
             </p>
             <p className="text-sm text-gray-600 my-2">
-              Published <Date dateString={data.date} />
+              Published <Date dateString={data.createdAt} />
             </p>
           </div>
         </div>

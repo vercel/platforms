@@ -1,54 +1,22 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import remark from 'remark';
-import html from 'remark-html';
-import { serialize } from 'next-mdx-remote/serialize';
-import { getTweets } from '@/lib/twitter';
-import prisma from './prisma';
+import prisma from "./prisma";
+import matter from "gray-matter";
+import remark from "remark";
+import html from "remark-html";
+import { serialize } from "next-mdx-remote/serialize";
+import { getTweets } from "@/lib/twitter";
 
-const postsDirectory = path.join(process.cwd(), 'posts');
-
-export function getSortedPostsData() {
-  // Get file names under /posts
-  const fileNames = fs.readdirSync(postsDirectory);
-  const allPostsData = fileNames.map((fileName) => {
-    // Remove ".md" from file name to get slug
-    const slug = fileName.replace(/\.md$/, '');
-
-    // Read markdown file as string
-    const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-    // Use gray-matter to parse the post metadata section
-    const matterResult = matter(fileContents);
-
-    // Combine the data with the slug
-    return {
-      slug,
-      ...matterResult.data,
-    };
-  });
-  // Sort posts by date
-  return allPostsData.sort((a, b) => {
-    if (a.date < b.date) {
-      return 1;
-    } else {
-      return -1;
-    }
-  });
-}
+const postsDirectory = path.join(process.cwd(), "posts");
 
 export function getAdjacentPostsData(currentSlug) {
   // Get file names under /posts
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsData = fileNames.map((fileName) => {
     // Remove ".md" from file name to get slug
-    const slug = fileName.replace(/\.md$/, '');
+    const slug = fileName.replace(/\.md$/, "");
 
     // Read markdown file as string
     const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const fileContents = fs.readFileSync(fullPath, "utf8");
 
     // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
@@ -86,7 +54,7 @@ export function getAdjacentPostsData(currentSlug) {
   }
 
   const adjacentPostData = allPostsData.filter((el, i) =>
-    filteredIdx.some((j) => i === j),
+    filteredIdx.some((j) => i === j)
   );
 
   // Sort posts by date
@@ -112,7 +80,7 @@ export function getAllPostSlugs() {
   return fileNames.map((fileName) => {
     return {
       params: {
-        slug: fileName.replace(/\.md$/, ''),
+        slug: fileName.replace(/\.md$/, ""),
       },
     };
   });
@@ -120,7 +88,7 @@ export function getAllPostSlugs() {
 
 export async function getPostData(slug) {
   const fullPath = path.join(postsDirectory, `${slug}.md`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
+  const fileContents = fs.readFileSync(fullPath, "utf8");
 
   // Use gray-matter to parse the post metadata section
   const { content, data } = matter(fileContents);
@@ -134,34 +102,34 @@ export async function getPostData(slug) {
   // replace all external links
   const replaceExternalLinks = contentHtml.replace(
     /<a (href="http(s)?.+?")>(.+?)(?=<\/a>)/g,
-    `<a target="_blank" $1>$3 ↗`,
+    `<a target="_blank" $1>$3 ↗`
   );
 
   // replace all internal links
   const replaceInternalLinks = replaceExternalLinks.replace(
     /<a href="\/(.+?)">(.+?)<\/a>/g,
-    `<Link href="/$1"><a className="cursor-pointer">$2</a></Link>`,
+    `<Link href="/$1"><a className="cursor-pointer">$2</a></Link>`
   );
 
   // replace all DaoExamples
   const replaceDaoExamples = await replaceAsync(
     replaceInternalLinks,
     /<DaoExamples (.*)\/>/g,
-    getDaoData,
+    getDaoData
   );
 
   // replace all DaoExamples
   const replaceTestimonials = await replaceAsync(
     replaceDaoExamples,
     /<Testimonials (.*)\/>/g,
-    getTestimonialsData,
+    getTestimonialsData
   );
 
   // Replace all Twitter URLs with their MDX counterparts
   const finalContentHtml = await replaceAsync(
     replaceTestimonials,
     /<p>(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)([^\?])(\?.*)?<\/p>)/g,
-    getTweetMetadata,
+    getTweetMetadata
   );
 
   // serialize the content string into MDX
@@ -190,14 +158,14 @@ const getTweetMetadata = async (tweetUrl) => {
   const id = regex.exec(tweetUrl)[1];
   const tweetData = await getTweets(id);
   const tweetMDX =
-    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + '`}/>';
+    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>";
   return tweetMDX;
 };
 
 const getDaoData = async (str) => {
   const regex = /slugs=\[(.+)\]/gm;
   const raw = regex.exec(str);
-  const slugs = raw[1].split(',');
+  const slugs = raw[1].split(",");
   let data = [];
   for (let i = 0; i < slugs.length; i++) {
     const results = await prisma.dao.findUnique({
@@ -222,7 +190,7 @@ const getDaoData = async (str) => {
 const getTestimonialsData = async (str) => {
   const regex = /tweets=\[(.+)\]/gm;
   const raw = regex.exec(str);
-  const tweets = raw[1].split(',');
+  const tweets = raw[1].split(",");
   let data = [];
   for (let i = 0; i < tweets.length; i++) {
     const tweetData = await getTweets(tweets[i]);

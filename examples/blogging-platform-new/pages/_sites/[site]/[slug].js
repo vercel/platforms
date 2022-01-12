@@ -1,64 +1,55 @@
-import Layout from '@/components/Layout';
-import {
-  getAllPostSlugs,
-  getPostData,
-  getAdjacentPostsData,
-} from '@/lib/posts';
-import Link from 'next/link';
-import Tweet from '@/components/mdx/Tweet';
-import Testimonials from '@/components/mdx/Testimonials';
-import { MDXRemote } from 'next-mdx-remote';
-import BlurImage from '@/components/BlurImage';
-import BlogCard from '@/components/BlogCard';
-import ProfileCard from '@/components/mdx/ProfileCard';
-import DaoExamples from '@/components/mdx/DaoExamples';
-import Date from '@/components/Date';
+import Layout from "@/components/sites/Layout";
+import Link from "next/link";
+import Tweet from "@/components/mdx/Tweet";
+import matter from "gray-matter";
+import remark from "remark";
+import html from "remark-html";
+import { serialize } from "next-mdx-remote/serialize";
+import { MDXRemote } from "next-mdx-remote";
+import BlurImage from "@/components/BlurImage";
+import BlogCard from "@/components/BlogCard";
+import Date from "@/components/Date";
+import prisma from "@/lib/prisma";
+import { getTweets } from "@/lib/twitter";
 
 const components = {
   Tweet,
   Link,
-  DaoExamples,
   BlurImage,
-  ProfileCard,
-  Testimonials,
 };
 
-export default function Post({ postData, adjacentPosts }) {
+export default function Post({ stringifiedData, adjacentPosts }) {
+  const data = JSON.parse(stringifiedData);
+
   const meta = {
-    title: `${postData.title} – DAO Central`,
-    description: postData.description,
-    ogUrl: `https://daocentral.com/blog/${postData.slug}`,
-    ogImage: `https://daocentral.com/blog/${postData.image}`,
-    logo: '/logo.png',
+    title: `${data.title} – ${data.site.name}`,
+    description: data.description,
+    ogUrl: `https://${data.site.subdomain}.vercel.pub/${data.slug}`,
+    ogImage: data.image,
+    logo: "/logo.png",
   };
 
   return (
-    <Layout meta={meta} blog={true}>
+    <Layout meta={meta}>
       <div className="flex flex-col justify-center items-center">
         <div className="text-center w-full md:w-7/12 m-auto">
           <p className="text-sm md:text-base font-light text-gray-500 w-10/12 m-auto my-5">
-            <Date dateString={postData.date} />
+            <Date dateString={data.createdAt} />
           </p>
           <h1 className="font-bold text-3xl font-cal md:text-6xl mb-10 text-gray-800">
-            {postData.title}
+            {data.title}
           </h1>
           <p className="text-md md:text-lg text-gray-600 w-10/12 m-auto">
-            {postData.description}
+            {data.description}
           </p>
         </div>
         <a target="_blank" href="https://twitter.com/StevenTey">
           <div className="my-8">
             <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden inline-block align-middle">
-              <BlurImage
-                width={80}
-                height={80}
-                src={
-                  'https://pbs.twimg.com/profile_images/1431098313823047687/Y25c70l1_400x400.jpg'
-                }
-              />
+              <BlurImage width={80} height={80} src={data.site.user.image} />
             </div>
             <div className="inline-block text-md md:text-lg align-middle ml-3">
-              by <span className="font-semibold">Steven Tey</span>
+              by <span className="font-semibold">{data.site.user.name}</span>
             </div>
           </div>
         </a>
@@ -68,13 +59,13 @@ export default function Post({ postData, adjacentPosts }) {
           layout="fill"
           objectFit="cover"
           placeholder="blur"
-          blurDataURL={postData.blurhash}
-          src={`/blog/${postData.image}`}
+          blurDataURL={data.imageBlurhash}
+          src={data.image}
         />
       </div>
 
       <article className="w-11/12 sm:w-3/4 m-auto prose prose-md sm:prose-lg">
-        <MDXRemote {...postData.mdxSource} components={components} />
+        <MDXRemote {...data.mdxSource} components={components} />
       </article>
 
       <div className="relative mt-10 sm:mt-20 mb-20">
@@ -87,32 +78,142 @@ export default function Post({ postData, adjacentPosts }) {
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 mx-5 lg:mx-12 2xl:mx-auto mb-20 max-w-screen-xl">
-        {adjacentPosts.map((data, index) => (
-          <BlogCard key={index} data={data} />
-        ))}
-      </div>
+      {adjacentPosts && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 mx-5 lg:mx-12 2xl:mx-auto mb-20 max-w-screen-xl">
+          {adjacentPosts.map((data, index) => (
+            <BlogCard key={index} data={data} />
+          ))}
+        </div>
+      )}
     </Layout>
   );
 }
 
 export async function getStaticPaths() {
-  const paths = getAllPostSlugs();
+  const posts = await prisma.post.findMany({
+    where: {
+      published: true,
+    },
+    select: {
+      slug: true,
+      site: {
+        select: {
+          subdomain: true,
+          customDomain: true,
+        },
+      },
+    },
+  });
   return {
-    paths,
-    fallback: false,
+    paths: posts.flatMap((post) => {
+      if (post.site.customDomain) {
+        return [
+          { params: { site: post.site.customDomain, slug: post.slug } },
+          { params: { site: post.site.subdomain, slug: post.slug } },
+        ];
+      } else {
+        return { params: { site: post.site.subdomain, slug: post.slug } };
+      }
+    }),
+    fallback: true,
   };
 }
 
-export async function getStaticProps({ params }) {
-  const postData = await getPostData(params.slug);
-  const adjacentPosts = await getAdjacentPostsData(params.slug);
+export async function getStaticProps({ params: { site, slug } }) {
+  let filter = {
+    subdomain: site,
+  };
+  let constraint = {
+    site: {
+      subdomain: site,
+    },
+    slug: slug,
+  };
+  if (site.includes(".")) {
+    filter = {
+      customDomain: site,
+    };
+    constraint = {
+      site: {
+        customDomain: site,
+      },
+      slug: slug,
+    };
+  }
+  let data = await prisma.post.findFirst({
+    where: constraint,
+    include: {
+      site: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
+
+  data.mdxSource = await getMdxSource(data.content);
+
+  const adjacentPosts = null;
 
   return {
     props: {
-      postData,
+      stringifiedData: JSON.stringify(data),
       adjacentPosts,
     },
     revalidate: 1800,
   };
 }
+
+async function getMdxSource(postContents) {
+  // Use gray-matter to parse the post metadata section
+  const { content, data } = matter(postContents);
+
+  // Use remark to convert markdown into HTML string
+  const processedContent = await remark().use(html).process(content);
+
+  // Convert converted html to string format
+  const contentHtml = processedContent.toString();
+
+  // replace all external links
+  const replacedExternalLinks = contentHtml.replace(
+    /<a (href="http(s)?.+?")>(.+?)(?=<\/a>)/g,
+    `<a target="_blank" $1>$3 ↗`
+  );
+
+  // replace all internal links
+  const replacedInternalLinks = replacedExternalLinks.replace(
+    /<a href="\/(.+?)">(.+?)<\/a>/g,
+    `<Link href="/$1"><a className="cursor-pointer">$2</a></Link>`
+  );
+
+  // Replace all Twitter URLs with their MDX counterparts
+  const replacedTweets = await replaceAsync(
+    replacedInternalLinks,
+    /<p>(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)([^\?])(\?.*)?<\/p>)/g,
+    getTweetMetadata
+  );
+
+  // serialize the content string into MDX
+  const mdxSource = await serialize(replacedTweets);
+
+  return mdxSource;
+}
+
+const replaceAsync = async (str, regex, asyncFn) => {
+  const promises = [];
+  str.replace(regex, (match, ...args) => {
+    const promise = asyncFn(match, ...args);
+    promises.push(promise);
+  });
+  const data = await Promise.all(promises);
+  return str.replace(regex, () => data.shift());
+};
+
+const getTweetMetadata = async (tweetUrl) => {
+  const regex = /\/status\/(\d+)/gm;
+  const id = regex.exec(tweetUrl)[1];
+  const tweetData = await getTweets(id);
+  const tweetMDX =
+    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>";
+  return tweetMDX;
+};

@@ -7,10 +7,6 @@ import { signOut } from "next-auth/react";
 import Loader from "./Loader";
 import useRequireAuth from "../../lib/useRequireAuth";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export default function Layout({ siteId, children }) {
   const title = "Platforms on Vercel";
   const description =

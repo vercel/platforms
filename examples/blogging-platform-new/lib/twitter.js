@@ -1,16 +1,17 @@
-import querystring from 'querystring';
-import { getTwitterMedia } from './twitter-media';
+import querystring from "querystring";
+import { getTwitterMedia } from "./twitter-media";
+import { truncate } from "./util";
 
 export const getTweets = async (id) => {
   const queryParams = querystring.stringify({
     expansions:
-      'author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id,attachments.poll_ids',
-    'tweet.fields':
-      'attachments,author_id,public_metrics,created_at,id,in_reply_to_user_id,referenced_tweets,text,entities',
-    'user.fields': 'id,name,profile_image_url,protected,url,username,verified',
-    'media.fields':
-      'duration_ms,height,media_key,preview_image_url,type,url,width,public_metrics',
-    'poll.fields': 'duration_minutes,end_datetime,id,options,voting_status',
+      "author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id,attachments.poll_ids",
+    "tweet.fields":
+      "attachments,author_id,public_metrics,created_at,id,in_reply_to_user_id,referenced_tweets,text,entities",
+    "user.fields": "id,name,profile_image_url,protected,url,username,verified",
+    "media.fields":
+      "duration_ms,height,media_key,preview_image_url,type,url,width,public_metrics",
+    "poll.fields": "duration_minutes,end_datetime,id,options,voting_status",
   });
 
   const response = await fetch(
@@ -19,7 +20,7 @@ export const getTweets = async (id) => {
       headers: {
         Authorization: `Bearer ${process.env.TWITTER_AUTH_TOKEN}`,
       },
-    },
+    }
   );
 
   const tweet = await response.json();
@@ -34,7 +35,7 @@ export const getTweets = async (id) => {
     return (
       mainTweet?.referenced_tweets?.map((referencedTweet) => {
         const fullReferencedTweet = tweet.includes.tweets.find(
-          (tweet) => tweet.id === referencedTweet.id,
+          (tweet) => tweet.id === referencedTweet.id
         );
 
         return {
@@ -54,10 +55,10 @@ export const getTweets = async (id) => {
     if (externalURLs) {
       externalURLs.map((url) => {
         mappings[`${url.url}`] =
-          !url.display_url.startsWith('pic.twitter.com') &&
-          !url.display_url.startsWith('twitter.com')
-            ? url.expanded_url
-            : '';
+          !url.display_url.startsWith("pic.twitter.com") &&
+          !url.display_url.startsWith("twitter.com")
+            ? truncate(url.expanded_url, 50)
+            : "";
       });
     }
     var processedText = tweet.text;
@@ -73,7 +74,7 @@ export const getTweets = async (id) => {
   });
 
   const media = tweet.data?.attachments?.media_keys?.map((key) =>
-    tweet.includes.media.find((media) => media.media_key === key),
+    tweet.includes.media.find((media) => media.media_key === key)
   );
 
   const referenced_tweets = getReferencedTweets(tweet.data);
@@ -82,7 +83,7 @@ export const getTweets = async (id) => {
     ...tweet.data,
     media: media || [],
     video:
-      media && (media[0].type == 'video' || media[0].type == 'animated_gif')
+      media && (media[0].type == "video" || media[0].type == "animated_gif")
         ? await getTwitterMedia(id)
         : null,
     polls: tweet.includes.polls,

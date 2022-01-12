@@ -5,46 +5,30 @@ import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
 import saveImage from "@/lib/save-image";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
-export default function PostSettings() {
-  const router = useRouter();
-  const { id } = router.query;
-  const postId = id;
-
-  const { data: settings } = useSWR(
-    `/api/get-post-data?postId=${postId}`,
-    fetcher
-  );
+export default function AppSettings() {
+  const { data: session } = useSession();
+  console.log(session);
 
   const [saving, setSaving] = useState(false);
 
-  const [data, setData] = useState({
-    image: settings?.image,
-    imageBlurhash: settings?.imageBlurhash,
-  });
+  const [data, setData] = useState(null);
 
   useEffect(() => {
-    if (settings)
+    if (session)
       setData({
-        slug: settings.slug,
-        image: settings.image,
-        imageBlurhash: settings.imageBlurhash,
+        ...session.user,
       });
-  }, [settings]);
+  }, [session]);
 
-  async function savePostSettings(data) {
+  async function saveSettings(data) {
     setSaving(true);
-    const response = await fetch("/api/save-post-settings", {
+    const response = await fetch("/api/save-settings", {
       method: "POST",
       body: JSON.stringify({
-        id: postId,
-        slug: data.slug,
-        image: data.image,
-        imageBlurhash: data.imageBlurhash,
+        ...data,
       }),
     });
     if (response.ok) {
@@ -54,34 +38,46 @@ export default function PostSettings() {
 
   return (
     <>
-      <Layout siteId={settings?.site.id}>
-        <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-20 mb-16">
-          <h1 className="font-cal text-5xl mb-12">Post Settings</h1>
+      <Layout>
+        <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
+          <h1 className="font-cal text-5xl mb-12">Settings</h1>
           <div className="mb-28 flex flex-col space-y-12">
             <div className="space-y-6">
-              <h2 className="font-cal text-2xl">Post Slug</h2>
-              <div className="border border-gray-700 rounded-lg flex items-center max-w-lg">
-                <span className="px-5 font-cal rounded-l-lg border-r border-gray-600">
-                  {settings?.site.subdomain}.vercel.pub/
-                </span>
+              <h2 className="font-cal text-2xl">Name</h2>
+              <div className="border border-gray-700 rounded-lg flex items-center max-w-lg overflow-hidden">
                 <input
-                  className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-r-lg placeholder-gray-400"
+                  className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-lg placeholder-gray-400"
                   type="text"
-                  name="slug"
-                  placeholder="post-slug"
-                  value={data?.slug}
+                  name="name"
+                  placeholder="Your awesome name"
+                  value={data?.name}
                   onInput={(e) =>
-                    setData((data) => ({ ...data, slug: e.target.value }))
+                    setData((data) => ({ ...data, name: e.target.value }))
                   }
                 />
               </div>
             </div>
             <div className="space-y-6">
-              <h2 className="font-cal text-2xl">Thumbnail Image</h2>
+              <h2 className="font-cal text-2xl">Email</h2>
+              <div className="border border-gray-700 rounded-lg flex items-center max-w-lg overflow-hidden">
+                <input
+                  className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-lg placeholder-gray-400"
+                  type="text"
+                  name="email"
+                  placeholder="panic@thedis.co"
+                  value={data?.email}
+                  onInput={(e) =>
+                    setData((data) => ({ ...data, email: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-6">
+              <h2 className="font-cal text-2xl">Display Picture</h2>
               <div
                 className={`${
-                  data.image ? "" : "animate-pulse bg-gray-300 h-150"
-                } relative mt-5 w-full p-2 border-2 border-gray-800 border-dashed rounded-md`}
+                  data?.image ? "" : "animate-pulse bg-gray-300 h-150"
+                } relative mt-5 w-48 p-2 border-2 border-gray-800 border-dashed rounded-md`}
               >
                 <CloudinaryUploadWidget
                   callback={(e) => saveImage(e, data, setData)}
@@ -89,7 +85,7 @@ export default function PostSettings() {
                   {({ open }) => (
                     <button
                       onClick={open}
-                      className="absolute w-full h-full bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
+                      className="absolute w-44 h-44 bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -104,16 +100,14 @@ export default function PostSettings() {
                   )}
                 </CloudinaryUploadWidget>
 
-                {data.image && (
+                {data?.image && (
                   <BlurImage
                     src={data.image}
                     alt="Cover Photo"
-                    width={800}
-                    height={500}
+                    width={100}
+                    height={100}
                     layout="responsive"
                     objectFit="cover"
-                    placeholder="blur"
-                    blurDataURL={data.imageBlurhash}
                   />
                 )}
               </div>
@@ -124,7 +118,7 @@ export default function PostSettings() {
           <div className="max-w-screen-xl mx-auto px-10 sm:px-20 h-full flex justify-end items-center">
             <button
               onClick={() => {
-                savePostSettings(data);
+                saveSettings(data);
               }}
               disabled={saving}
               className={`${

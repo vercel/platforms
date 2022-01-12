@@ -19,6 +19,7 @@
     "blurhash": "^1.1.4",
     "clsx": "^1.1.1",
     "date-fns": "^2.26.0",
+    "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "js-cookie": "^3.0.1",
     "next": "latest",
