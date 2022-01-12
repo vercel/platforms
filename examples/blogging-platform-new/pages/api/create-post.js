@@ -1,4 +1,4 @@
-import prisma from "../../lib/prisma";
+import prisma from "@/lib/prisma";
 
 export default async function CreatePost(req, res) {
   const { siteId } = req.query;

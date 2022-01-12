@@ -1,4 +1,4 @@
-import prisma from "../../lib/prisma";
+import prisma from "@/lib/prisma";
 
 export default async function CreateSite(req, res) {
   const { name, subdomain, description, userId } = req.body;

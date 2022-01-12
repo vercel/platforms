@@ -8,7 +8,7 @@ export default function BlogCard({ data }) {
       <a>
         <div className="rounded-2xl border-2 border-gray-100 overflow-hidden shadow-md bg-white hover:shadow-xl hover:-translate-y-1 transition-all ease duration-200">
           <BlurImage
-            src={`/blog/${data.image}`}
+            src={data.image}
             alt={data.title}
             width={500}
             height={400}

@@ -7,6 +7,7 @@ import saveImage from "@/lib/save-image";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import DomainCard from "@/components/app/DomainCard";
+import Modal from "@/components/Modal";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -24,6 +25,8 @@ export default function SiteSettings() {
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState(null);
   const [disabled, setDisabled] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingSite, setDeletingSite] = useState(false);
 
   const [data, setData] = useState({
     id: null,
@@ -63,6 +66,14 @@ export default function SiteSettings() {
     });
     if (response.ok) {
       setSaving(false);
+    }
+  }
+
+  async function deleteSite(siteId) {
+    setDeletingSite(true);
+    const response = await fetch(`/api/delete-site?siteId=${siteId}`);
+    if (response.ok) {
+      router.push("/");
     }
   }
 
@@ -230,7 +241,7 @@ export default function SiteSettings() {
             )}
             {data.customDomain && <DomainCard data={data} setData={setData} />}
           </div>
-          <div className="flex flex-col space-y-6">
+          <div className="flex flex-col space-y-6 relative">
             <h2 className="font-cal text-2xl">Thumbnail Image</h2>
             <div
               className={`${
@@ -271,9 +282,74 @@ export default function SiteSettings() {
                 />
               )}
             </div>
+            <div className="w-full h-10" />
+            <div className="flex flex-col space-y-6 max-w-lg">
+              <h2 className="font-cal text-2xl">Delete Site</h2>
+              <p>
+                Permanently delete your site and all of its contents from the
+                our platform. This action is not reversible – please continue
+                with caution.
+              </p>
+              <button
+                onClick={() => {
+                  setShowDeleteModal(true);
+                }}
+                className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
+              >
+                Delete Site
+              </button>
+            </div>
           </div>
         </div>
       </div>
+      <Modal showModal={showDeleteModal} setShowModal={setShowDeleteModal}>
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+            await deleteSite(siteId);
+          }}
+          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all transform bg-white shadow-xl rounded-lg"
+        >
+          <h2 className="font-cal text-2xl mb-6">Delete Site</h2>
+          <div className="grid gap-y-5 w-5/6 mx-auto">
+            <p className="text-gray-600 mb-3">
+              Are you sure you want to delete your site? This action is not
+              reversible. Type in the full name of your site (<b>{data.name}</b>
+              ) to confirm.
+            </p>
+            <div className="border border-gray-700 rounded-lg flex flex-start items-center overflow-hidden">
+              <input
+                className="w-full px-5 py-3 text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-r-lg placeholder-gray-400"
+                type="text"
+                name="name"
+                placeholder={data.name}
+                pattern={data.name}
+              />
+            </div>
+          </div>
+          <div className="flex justify-between items-center mt-10 w-full">
+            <button
+              className="w-full px-5 py-5 text-sm text-gray-400 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
+              onClick={() => setShowDeleteModal(false)}
+            >
+              CANCEL
+            </button>
+
+            <button
+              type="submit"
+              disabled={deletingSite}
+              className={`${
+                deletingSite
+                  ? "cursor-not-allowed bg-gray-50"
+                  : "bg-white hover:text-black"
+              } w-full px-5 py-5 text-sm text-gray-400 border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+            >
+              {deletingSite ? <LoadingDots /> : "DELETE SITE"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
       <footer className="h-20 z-20 fixed bottom-0 inset-x-0 border-solid border-t border-gray-500 bg-white">
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 h-full flex justify-end items-center">
           <button

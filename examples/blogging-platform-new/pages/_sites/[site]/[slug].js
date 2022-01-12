@@ -18,8 +18,9 @@ const components = {
   BlurImage,
 };
 
-export default function Post({ stringifiedData, adjacentPosts }) {
-  const data = JSON.parse(stringifiedData);
+export default function Post(props) {
+  const data = JSON.parse(props.stringifiedData);
+  const adjacentPosts = JSON.parse(props.stringifiedAdjacentPosts);
 
   const meta = {
     title: `${data.title} – ${data.site.name}`,
@@ -120,28 +121,20 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params: { site, slug } }) {
-  let filter = {
-    subdomain: site,
-  };
   let constraint = {
     site: {
       subdomain: site,
     },
-    slug: slug,
   };
   if (site.includes(".")) {
-    filter = {
-      customDomain: site,
-    };
     constraint = {
       site: {
         customDomain: site,
       },
-      slug: slug,
     };
   }
   let data = await prisma.post.findFirst({
-    where: constraint,
+    where: { ...constraint, slug: slug },
     include: {
       site: {
         include: {
@@ -153,12 +146,34 @@ export async function getStaticProps({ params: { site, slug } }) {
 
   data.mdxSource = await getMdxSource(data.content);
 
-  const adjacentPosts = null;
+  const adjacentPosts = await prisma.post.findMany({
+    where: {
+      ...constraint,
+      published: true,
+      NOT: {
+        id: data.id,
+      },
+      createdAt: {
+        gt: data.createdAt,
+      },
+    },
+    take: 1,
+    select: {
+      slug: true,
+      title: true,
+      createdAt: true,
+      description: true,
+      image: true,
+      imageBlurhash: true,
+    },
+  });
+
+  console.log(adjacentPosts);
 
   return {
     props: {
       stringifiedData: JSON.stringify(data),
-      adjacentPosts,
+      stringifiedAdjacentPosts: JSON.stringify(adjacentPosts),
     },
     revalidate: 1800,
   };
