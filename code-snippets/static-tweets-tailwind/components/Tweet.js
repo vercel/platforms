@@ -182,7 +182,11 @@ export default function Tweet({ id, metadata, className }) {
                     autoPlay
                     muted
                     playsInline
-                    src={video.url}
+                    src={
+                      video.variants.length >= 3
+                        ? video.variants[2].url
+                        : video.variants[0].url
+                    }
                     type="video/mp4"
                   />
                 ) : (
