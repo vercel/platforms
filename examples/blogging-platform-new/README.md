@@ -1,82 +1,54 @@
-<p align="center">
-  <a href="https://daocentral.com">
-    <img src="https://user-images.githubusercontent.com/28986134/147528932-796825b5-1742-47bd-982c-39bf9d3eb814.png" height="96">
-    <h3 align="center">DAO Central</h3>
-  </a>
-</p>
+# Blogging Platform
 
-<p align="center">
-  Discover the latest DAOs, learn about their mission & values,
-  and join the ones that you love.
-</p>
+A blogging platform that allows users to create blogs with a default subdomain and the option to add a custom domain (usually with a premium monthly subscription).
 
-<p align="center">
-  <a href="#introduction"><strong>Introduction</strong></a> ·
-  <a href="#stack"><strong>Stack</strong></a> ·
-  <a href="#installation"><strong>Installation</strong></a> ·
-  <a href="#contributing"><strong>Contributing</strong></a>
-</p>
-<br/>
+### Demo
 
-## Introduction
+For context, here's a starter kit of a blogging platform built on Vercel:
 
-Welcome to the DAO Central repo.
+- [demo.vercel.pub](https://demo.vercel.pub)
+- [platformize.co)](https://platformize.co) (custom domain that maps to [demo.vercel.pub](https://demo.vercel.pub))
+- [app.vercel.pub](https://app.vercel.pub) (editing backend)
 
-## Stack
+All of these generated sites are powered by ISR (no SSR at all) so they load pretty much instantly + the inter-page transitions are lightning fast.
 
-- Next.js (React framework)
-- Tailwind (CSS)
-- Prisma (ORM)
-- Next Auth (Auth)
-- Planetscale (DB)
+### Features
 
-## Installation
+- 🔀 Hostname Rewrites
+- 📍 Custom Domains API
+- ✍️ Markdown Text Editor
 
-Below are the steps to get this repo up and running in localhost: 
+### Real-world examples
 
-> Prerequisite: You need to have the [Prisma](https://www.prisma.io/docs/concepts/components/prisma-cli/installatio) and [PlanetScale](https://docs.planetscale.com/reference/planetscale-environment-setup) CLIs installed
+- [Hashnode](https://hashnode.com/)
+- [Medium](https://medium.com/)
 
-1. Clone this repo. Once it's cloned, `cd` into the folder and run:
-```
-npm i
-```
-2. In PlanetScale, create a `daocentral` database
-3. In your database's Settings page, check "Automatically copy migration data" and select "Prisma"
-4. Create an `staging` and `shadow` database branches from `main` branch
-5. Edit the `.env` file: 
-```
-DATABASE_URL="mysql://root@127.0.0.1:3309/daocentral"
-SHADOW_DATABASE_URL="mysql://root@127.0.0.1:3310/daocentral"
-```
-6. Next, we will use `pscale` CLI to locally proxy into our PlanetScale database. In a two different terminal tabs, run:
-```
-pscale connect daocentral staging --port 3309
-```
-```
-pscale connect daocentral shadow --port 3310
-```
-7. In a different terminal, run the following to create the initial data model and do your first Prisma migrate by running the following code. You will notice a `prisma/migrations` folder as well as the schema in your `staging` branch in PlanetScale.
-```
-prisma migrate dev --name init
+### How to Use
+
+You can choose from one of the following two methods to use this repository:
+
+**One-Click Deploy**
+
+Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel-customer-feedback/platforms/tree/main/examples/blogging-platform&project-name=blogging-platform&repository-name=blogging-platform)
+
+**Clone and Deploy**
+
+Download this repository via git:
+
+```bash
+git clone https://github.com/vercel-customer-feedback/platforms.git
 ```
 
-8. Add data using `npx prisma studio`, which will open a browser window. Seed the database with random data – for `imageUrl` and `imageBlurhash`, you can use the following values
-```
-imageUrl: http://res.cloudinary.com/daojones/image/upload/v1637806256/zjnygtqzl09ifsn7n8qy.jpg
-imageBlurhash: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2PYsGHDfwAHNAMQumvbogAAAABJRU5ErkJggg==
+Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
 
-imageUrl: http://res.cloudinary.com/daojones/image/upload/v1637743458/zck20kzjidjswosrzo3f.jpg
-imageBlurhash: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2PYsGHDfwAHNAMQumvbogAAAABJRU5ErkJggg==
-```
- 
-10. Create a `.env` file and populate it with the following values:
-```
-ALCHEMY_API_KEY=fo_hhNev105aZb5N9wmxoLk1jv0WB4EC
-JWT_TOKEN_KEY=c17c860e-82e9-441d-bf29-122d7dd47dc6
+```bash
+npx create-next-app --example edge-middleware/examples/blogging-platform blogging-platform
+# or
+yarn create next-app --example edge-middleware/examples/blogging-platform blogging-platform
 ```
 
-11. Run: 
-```npm run dev```
-Navigate to http://localhost:3000/. You can now try to connect a wallet by clicking on Sign In and connect your Metamask wallet. You'll be asked to sign a message, which will persist your session locally via a JWT token (`daocentral_auth_token`)
+Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=edge-middleware-eap) ([Documentation](https://nextjs.org/docs/deployment)).
 
-12. Set up Prettier to make sure all our commits have the same formats. Prettier is already included in `package.json` so all you need to do is make sure "Format on Save" is enabled on VS Code. Here's a [Stackoverflow thread](https://stackoverflow.com/questions/52586965/why-does-prettier-not-format-code-in-vs-code) that might be helpful.
+> 💡 Don't forget to create an `.env` file based on the `.env.example` file that is provided and fill in all the values with the ones you want to use.
