@@ -11,6 +11,8 @@ import BlogCard from "@/components/BlogCard";
 import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 import { getTweets } from "@/lib/twitter";
+import { useRouter } from "next/router";
+import Loader from "@/components/sites/Loader";
 
 const components = {
   Tweet,
@@ -19,6 +21,11 @@ const components = {
 };
 
 export default function Post(props) {
+  const router = useRouter();
+  if (router.isFallback) {
+    return <Loader />;
+  }
+
   const data = JSON.parse(props.stringifiedData);
   const adjacentPosts = JSON.parse(props.stringifiedAdjacentPosts);
 
@@ -105,6 +112,7 @@ export async function getStaticPaths() {
       },
     },
   });
+  console.log(posts);
   return {
     paths: posts.flatMap((post) => {
       if (post.site.customDomain) {
@@ -143,6 +151,10 @@ export async function getStaticProps({ params: { site, slug } }) {
       },
     },
   });
+
+  if (!data) {
+    return { notFound: true, revalidate: 10 };
+  }
 
   data.mdxSource = await getMdxSource(data.content);
 

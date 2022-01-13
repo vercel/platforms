@@ -4,7 +4,7 @@ import BlurImage from "@/components/BlurImage";
 import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
 import saveImage from "@/lib/save-image";
-
+import Modal from "@/components/Modal";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
@@ -21,6 +21,8 @@ export default function PostSettings() {
   );
 
   const [saving, setSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingPost, setDeletingPost] = useState(false);
 
   const [data, setData] = useState({
     image: settings?.image,
@@ -117,9 +119,64 @@ export default function PostSettings() {
                   />
                 )}
               </div>
+
+              <div className="w-full h-10" />
+              <div className="flex flex-col space-y-6 max-w-lg">
+                <h2 className="font-cal text-2xl">Delete Site</h2>
+                <p>
+                  Permanently delete your site and all of its contents from the
+                  our platform. This action is not reversible – please continue
+                  with caution.
+                </p>
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(true);
+                  }}
+                  className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
+                >
+                  Delete Site
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        <Modal showModal={showDeleteModal} setShowModal={setShowDeleteModal}>
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault();
+              await deletePost(siteId);
+            }}
+            className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all transform bg-white shadow-xl rounded-lg"
+          >
+            <h2 className="font-cal text-2xl mb-6">Delete Post</h2>
+            <div className="grid gap-y-5 w-5/6 mx-auto">
+              <p className="text-gray-600 mb-3">
+                Are you sure you want to delete your post? This action is not
+                reversible.
+              </p>
+            </div>
+            <div className="flex justify-between items-center mt-10 w-full">
+              <button
+                className="w-full px-5 py-5 text-sm text-gray-400 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                CANCEL
+              </button>
+
+              <button
+                type="submit"
+                disabled={deletingPost}
+                className={`${
+                  deletingPost
+                    ? "cursor-not-allowed bg-gray-50"
+                    : "bg-white hover:text-black"
+                } w-full px-5 py-5 text-sm text-gray-400 border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+              >
+                {deletingPost ? <LoadingDots /> : "DELETE POST"}
+              </button>
+            </div>
+          </form>
+        </Modal>
         <footer className="h-20 z-20 fixed bottom-0 inset-x-0 border-solid border-t border-gray-500 bg-white">
           <div className="max-w-screen-xl mx-auto px-10 sm:px-20 h-full flex justify-end items-center">
             <button

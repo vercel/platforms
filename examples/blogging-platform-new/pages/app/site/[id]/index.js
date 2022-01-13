@@ -91,7 +91,7 @@ export default function SiteIndex() {
               ))
             ) : (
               <div className="text-center">
-                <Image
+                <BlurImage
                   src="/empty-state.png"
                   alt="No Posts"
                   width={613}
