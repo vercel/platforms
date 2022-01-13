@@ -54,6 +54,13 @@ export default function PostSettings() {
     }
   }
 
+  async function deletePost(postId) {
+    setDeletingPost(true);
+    const response = await fetch(`/api/delete-post?postId=${postId}`);
+    if (response.ok) {
+      router.push(`/site/${settings.site.id}`);
+    }
+  }
   return (
     <>
       <Layout siteId={settings?.site.id}>
@@ -122,11 +129,11 @@ export default function PostSettings() {
 
               <div className="w-full h-10" />
               <div className="flex flex-col space-y-6 max-w-lg">
-                <h2 className="font-cal text-2xl">Delete Site</h2>
+                <h2 className="font-cal text-2xl">Delete Post</h2>
                 <p>
-                  Permanently delete your site and all of its contents from the
-                  our platform. This action is not reversible – please continue
-                  with caution.
+                  Permanently delete your post and all of its contents from our
+                  platform. This action is not reversible – please continue with
+                  caution.
                 </p>
                 <button
                   onClick={() => {
@@ -134,7 +141,7 @@ export default function PostSettings() {
                   }}
                   className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
                 >
-                  Delete Site
+                  Delete Post
                 </button>
               </div>
             </div>
@@ -144,7 +151,7 @@ export default function PostSettings() {
           <form
             onSubmit={async (event) => {
               event.preventDefault();
-              await deletePost(siteId);
+              await deletePost(postId);
             }}
             className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all transform bg-white shadow-xl rounded-lg"
           >
@@ -157,6 +164,7 @@ export default function PostSettings() {
             </div>
             <div className="flex justify-between items-center mt-10 w-full">
               <button
+                type="button"
                 className="w-full px-5 py-5 text-sm text-gray-400 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
                 onClick={() => setShowDeleteModal(false)}
               >

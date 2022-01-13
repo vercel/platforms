@@ -69,16 +69,16 @@ model VerificationToken {
 
 model Post {
   id            String       @id @default(cuid())
-  title         String       @default("Untitled Post")
-  description   String?     
-  content       String?     @db.Text
+  title         String?      @db.Text
+  description   String?     @db.Text
+  content       String?     @db.LongText
   slug          String      @default(cuid())
-  image         String?
-  imageBlurhash String?
+  image      String?   @db.Text
+  imageBlurhash String?   @db.LongText
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   published     Boolean      @default(false)
-  site          Site? @relation(fields: [siteId], references: [id])
+  site          Site? @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   siteId        String?
   @@unique([id, siteId], name: "post_site_constraint")
 }
@@ -86,10 +86,10 @@ model Post {
 model Site {
   id            String  @id @default(cuid())
   name          String?
-  description   String?
+  description   String? @db.Text
   logo          String?
-  image         String?
-  imageBlurhash String?
+  image         String? @db.Text
+  imageBlurhash String? @db.LongText
   subdomain     String? @unique
   customDomain  String? @unique
   createdAt     DateTime     @default(now())

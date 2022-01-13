@@ -286,9 +286,9 @@ export default function SiteSettings() {
             <div className="flex flex-col space-y-6 max-w-lg">
               <h2 className="font-cal text-2xl">Delete Site</h2>
               <p>
-                Permanently delete your site and all of its contents from the
-                our platform. This action is not reversible – please continue
-                with caution.
+                Permanently delete your site and all of its contents from our
+                platform. This action is not reversible – please continue with
+                caution.
               </p>
               <button
                 onClick={() => {
@@ -329,6 +329,7 @@ export default function SiteSettings() {
           </div>
           <div className="flex justify-between items-center mt-10 w-full">
             <button
+              type="button"
               className="w-full px-5 py-5 text-sm text-gray-400 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
               onClick={() => setShowDeleteModal(false)}
             >
