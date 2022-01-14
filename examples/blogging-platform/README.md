@@ -17,6 +17,7 @@ All of these generated sites are powered by ISR (no SSR at all) so they load pre
 - Multitenancy (subdomains + custom domains) with Vercel Domains API
 - Static generation with ISR
 - Static tweets (supports image, video, gif, poll, retweets, quote retweets, etc.)
+- Uploading custom images (with a Cloudinary integration)
 - Empty states
 - Error states (for adding custom domains + subdomains)
 - Fallback states for ISR on the frontend
