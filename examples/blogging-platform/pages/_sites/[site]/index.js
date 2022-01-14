@@ -123,7 +123,6 @@ export async function getStaticPaths() {
       return customDomain.customDomain;
     }),
   ];
-  console.log(allPaths);
   return {
     paths: allPaths.map((path) => {
       return { params: { site: path } };
@@ -141,7 +140,6 @@ export async function getStaticProps({ params: { site } }) {
       customDomain: site,
     };
   }
-  console.log("filter", filter);
   const data = await prisma.site.findUnique({
     where: filter,
     include: {

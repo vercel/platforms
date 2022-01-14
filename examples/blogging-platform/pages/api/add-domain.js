@@ -1,3 +1,5 @@
+import prisma from "@/lib/prisma";
+
 export default async function addDomain(req, res) {
   const { domain, siteId } = req.query;
 
