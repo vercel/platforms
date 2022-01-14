@@ -10,12 +10,14 @@ export default function middleware(req) {
       : hostname.replace(`.localhost:3000`, "");
 
   console.log("currentHost is ", currentHost);
+  console.log("pathname is ", pathname);
 
   if (pathname.startsWith(`/_sites`)) {
     return new Response(null, { status: 404 });
   }
 
   if (!pathname.includes(".") && !pathname.startsWith("/api")) {
+    console.log("first logic passed, pathname is not broken");
     if (currentHost == "app") {
       if (
         pathname === "/login" &&
