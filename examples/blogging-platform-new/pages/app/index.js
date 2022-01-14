@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/app/Layout";
 import BlurImage from "@/components/BlurImage";
 import Modal from "@/components/Modal";
@@ -7,12 +7,30 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
+import { useDebounce } from "use-debounce";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function AppIndex() {
   const [showModal, setShowModal] = useState(false);
   const [creatingSite, setCreatingSite] = useState(false);
+  const [subdomain, setSubdomain] = useState("");
+  const [debouncedSubdomain] = useDebounce(subdomain, 1500);
+  const [error, setError] = useState(null);
+
+  useEffect(async () => {
+    if (debouncedSubdomain.length > 0) {
+      const response = await fetch(
+        `/api/check-subdomain?subdomain=${debouncedSubdomain}`
+      );
+      const available = await response.json();
+      if (available) {
+        setError(null);
+      } else {
+        setError(`${debouncedSubdomain}.vercel.pub`);
+      }
+    }
+  }, [debouncedSubdomain]);
 
   const router = useRouter();
 
@@ -72,11 +90,18 @@ export default function AppIndex() {
                 type="text"
                 name="subdomain"
                 placeholder="Subdomain"
+                onInput={(e) => setSubdomain(e.target.value)}
               />
               <span className="px-5 bg-gray-100 h-full flex items-center rounded-r-lg border-l border-gray-600">
                 .vercel.pub
               </span>
             </div>
+            {error && (
+              <p className="px-5 text-left text-red-500">
+                <b>{error}</b> is not available. Please choose another
+                subdomain.
+              </p>
+            )}
             <div className="border border-gray-700 rounded-lg flex flex-start items-top">
               <span className="pl-5 pr-1 mt-3">✍️</span>
               <textarea
@@ -99,9 +124,9 @@ export default function AppIndex() {
 
             <button
               type="submit"
-              disabled={creatingSite}
+              disabled={creatingSite || error}
               className={`${
-                creatingSite
+                creatingSite || error
                   ? "cursor-not-allowed bg-gray-50"
                   : "bg-white hover:text-black"
               } w-full px-5 py-5 text-sm text-gray-400 border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}

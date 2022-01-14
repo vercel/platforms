@@ -165,11 +165,7 @@ export async function getStaticProps({ params: { site, slug } }) {
       NOT: {
         id: data.id,
       },
-      createdAt: {
-        gt: data.createdAt,
-      },
     },
-    take: 1,
     select: {
       slug: true,
       title: true,
@@ -179,8 +175,6 @@ export async function getStaticProps({ params: { site, slug } }) {
       imageBlurhash: true,
     },
   });
-
-  console.log(adjacentPosts);
 
   return {
     props: {
