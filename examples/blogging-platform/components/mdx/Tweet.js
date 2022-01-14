@@ -1,4 +1,4 @@
-import BlurImage from "./BlurImage";
+import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
 
@@ -182,11 +182,7 @@ export default function Tweet({ id, metadata, className }) {
                     autoPlay
                     muted
                     playsInline
-                    src={
-                      video.variants.length >= 3
-                        ? video.variants[2].url
-                        : video.variants[0].url
-                    }
+                    src={video.url}
                     type="video/mp4"
                   />
                 ) : (
@@ -213,7 +209,7 @@ export default function Tweet({ id, metadata, className }) {
           ))}
         </div>
       ) : null}
-      {url_meta ? (
+      {url_meta?.images ? (
         <a
           className="!no-underline"
           href={url_meta.unwound_url}
@@ -224,9 +220,8 @@ export default function Tweet({ id, metadata, className }) {
               key={url_meta.unwound_url}
               alt={url_meta.title}
               width={2048}
-              height={
-                url_meta.images[0].height * (2048 / url_meta.images[0].width)
-              }
+              height={1000}
+              objectFit="cover"
               src={url_meta.images[0].url}
               className="hover:brightness-90 transition-all ease-in-out duration-150"
             />
