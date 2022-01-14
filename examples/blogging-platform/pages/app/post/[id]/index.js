@@ -61,7 +61,6 @@ export default function Post() {
   }, [debouncedData]);
 
   const [publishing, setPublishing] = useState(false);
-  const firstRender = useRef(false);
 
   useEffect(() => {
     const clickedSave = (e) => {
@@ -126,7 +125,7 @@ export default function Post() {
       method: "POST",
     });
     await response.json();
-    router.push(`https://${post.site.subdomain}.vercel.pub/p/${post.slug}`);
+    router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
   };
 
   return (
