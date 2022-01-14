@@ -6,13 +6,9 @@ A blogging platform that allows users to create blogs with a default subdomain a
 
 For context, here's a starter kit of a blogging platform built on Vercel:
 
-- [steven.platformize.co](https://steven.platformize.co)
-- [vercel.platformize.co](https://vercel.platformize.co)
-- [retreat.platformize.co](https://retreat.platformize.co)
-- [stey.me](https://stey.me) (custom domain)
-- [vercel.pub](https://vercel.pub) (custom domain)
-- [retreat.vercel.pub](https://retreat.vercel.pub) (custom subdomain)
-- [app.platformize.co](https://app.platformize.co) (editing backend)
+- [demo.vercel.pub](https://demo.vercel.pub)
+- [platformize.co)](https://platformize.co) (custom domain that maps to [demo.vercel.pub](https://demo.vercel.pub))
+- [app.vercel.pub](https://app.vercel.pub) (editing backend)
 
 All of these generated sites are powered by ISR (no SSR at all) so they load pretty much instantly + the inter-page transitions are lightning fast.
 
