@@ -78,7 +78,7 @@ model Post {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   published     Boolean      @default(false)
-  site          Site? @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  site          Site? @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   siteId        String?
   @@unique([id, siteId], name: "post_site_constraint")
 }

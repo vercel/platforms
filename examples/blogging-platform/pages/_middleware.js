@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 export default function middleware(req) {
   const { pathname } = req.nextUrl;
   const hostname = req.headers.get("host");
@@ -7,7 +9,7 @@ export default function middleware(req) {
       ? hostname.replace(`.vercel.pub`, "")
       : hostname.replace(`.localhost:3000`, "");
 
-  if (pathname.startsWith(`/sites`)) {
+  if (pathname.startsWith(`/_sites`)) {
     return new Response(null, { status: 404 });
   }
 
@@ -28,6 +30,6 @@ export default function middleware(req) {
       return NextResponse.rewrite(`/home${pathname}`);
     }
 
-    return NextResponse.rewrite(`/sites/${currentHost}${pathname}`);
+    return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
   }
 }

@@ -1,200 +1,132 @@
-import Layout from '../../../../components/app/Layout'
-import InnerLayout from '../../../../components/app/InnerLayout'
-import DeletePostOverlay from '../../../../components/app/DeletePostOverlay'
-import useSWR from 'swr'
-import Image from 'next/image'
-import Link from 'next/link'
-import {useRouter} from 'next/router'
-import { Fragment, useState } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import {
-  DotsHorizontalIcon,
-  PlusIcon,
-} from '@heroicons/react/outline'
+import { useState } from "react";
+import Layout from "@/components/app/Layout";
+import BlurImage from "@/components/BlurImage";
+import LoadingDots from "@/components/app/loading-dots";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import useSWR from "swr";
 
-function stopPropagation(e) {
-    e.stopPropagation();
-}
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-const publish = async (siteId, postId) => {
-    await fetch(`/api/publish-post?siteId=${siteId}&postId=${postId}`, {
-        method: 'POST',
-    })
-    window.location.reload();
-}
+export default function SiteDrafts() {
+  const [creatingPost, setCreatingPost] = useState(false);
 
-const fetcher = (...args) => fetch(...args).then(res => res.json())
+  const router = useRouter();
+  const { id } = router.query;
+  const siteId = id;
 
-export default function Drafts () {
-    
-    const router = useRouter()
-    const { id } = router.query
-    const siteId = id
+  const { data: posts } = useSWR(
+    siteId && `/api/get-posts?siteId=${siteId}&published=false`,
+    fetcher
+  );
 
-    const [creating, setCreating] = useState(false)
-    const [openDelete, setOpenDelete] = useState(false)
-    const [toDelete, setToDelete] = useState('')
-
-    const { data } = useSWR(`/api/get-drafts?siteId=${siteId}`, fetcher)
-
-    async function createPost(siteUrl) {
-        const res = await fetch(
-            `/api/create-post?siteUrl=${siteUrl}`, 
-            { method: 'POST' }
-        )
-        if (res.ok) {
-          const data = await res.json()
-          router.push(`/post/${data.postId}`)
-        }
+  async function createPost(siteId) {
+    const res = await fetch(`/api/create-post?siteId=${siteId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      router.push(`/post/${data.postId}`);
     }
+  }
 
-    return (
-        <>
-            <Layout>
-                <DeletePostOverlay
-                    data={data}
-                    openDelete={openDelete}
-                    setOpenDelete={setOpenDelete}
-                    toDelete={toDelete}
-                    draft={true}
-                />
-                
-                <InnerLayout siteId={siteId} tab="drafts">
-                    <div className="pt-16 sm:pl-10 col-span-4 sm:col-span-3">
-                        <div className="flex justify-between">
-                        <h1 className="font-bold text-2xl sm:text-3xl m-5 mb-10">
-                            My Drafts
-                        </h1>
-                        <button 
-                            onClick={() => {setCreating(true); ; createPost(data.site.url)}}
-                            className="inline-flex justify-center bg-gray-900 px-5 py-2 h-12 mt-5 rounded-3xl text-lg text-white hover:bg-gray-700 focus:outline-none"
+  return (
+    <Layout>
+      <div className="py-20 max-w-screen-xl mx-auto px-10 sm:px-20">
+        <div className="flex justify-between items-center">
+          <h1 className="font-cal text-5xl">My Drafts</h1>
+          <button
+            onClick={() => {
+              setCreatingPost(true);
+              createPost(siteId);
+            }}
+            className={`${
+              creatingPost
+                ? "cursor-not-allowed bg-gray-300 border-gray-300"
+                : "text-white bg-black hover:bg-white hover:text-black border-black"
+            } font-cal text-lg w-40 tracking-wide border-2 px-5 py-3 transition-all ease-in-out duration-150`}
+          >
+            {creatingPost ? (
+              <LoadingDots />
+            ) : (
+              <>
+                New Draft <span className="ml-2">＋</span>
+              </>
+            )}
+          </button>
+        </div>
+        <div className="my-10 grid gap-y-10">
+          {posts ? (
+            posts.length > 0 ? (
+              posts.map((post) => (
+                <Link href={`/post/${post.id}`} key={post.id}>
+                  <a>
+                    <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
+                      <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
+                        <BlurImage
+                          src={post.image}
+                          layout="fill"
+                          objectFit="cover"
+                          alt={post.name}
+                        />
+                      </div>
+                      <div className="relative p-10">
+                        <h2 className="font-cal text-3xl">
+                          {post.title || "Untitled Post"}
+                        </h2>
+                        <p className="text-base my-5">
+                          {post.description ||
+                            "No description provided. Click to edit."}
+                        </p>
+                        <a
+                          href={`https://${post.site.subdomain}.vercel.pub/${post.slug}`}
+                          target="_blank"
+                          className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
                         >
-                            {creating ? 
-                                <>
-                                    Creating post...
-                                    <svg
-                                    className="animate-spin ml-3 mt-2 h-4 w-4 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        stroke-width="4"
-                                    />
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    />
-                                    </svg>
-                                </>
-                            : 
-                            <>
-                                New Post
-                                <PlusIcon
-                                    className="h-5 w-5 inline-block ml-2 mt-1"
-                                />
-                            </>}
-                        </button>
-                        </div>
-                        {data && data.drafts.length == 0 ?
-                        <>
-                        <img className="mt-10 mb-20" src="/empty-state.webp" />
-                        <p className="text-center mb-48 mt-10 text-gray-800 font-semibold text-xl">No drafts yet. Click the button above to create one.</p>
-                        </>
-                        : null}
-                        {data ? data.drafts.map((post) => (
-                            <Link href={`/post/${post.id}`}>
-                                <div className="p-8 mb-3 pr-20 flex justify-between bg-gray-200 hover:bg-gray-300 rounded-lg cursor-pointer">                    
-                                    <div className="relative space-y-5">
-                                        <p className="text-2xl font-semibold text-gray-900">{post.title}</p>
-                                        <p className="mt-3 text-lg text-gray-600">
-                                            <time dateTime={post.createdAt}>
-                                                {`${Intl.DateTimeFormat('en', { month: 'short' }).format(new Date(post.createdAt))} ${Intl.DateTimeFormat('en', { day: '2-digit' }).format(new Date(post.createdAt))} at ${Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric' }).format(new Date(post.createdAt))}`}
-                                            </time>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <Menu onClick={stopPropagation} as="div" className="absolute inline-block my-6">
-                                            <div>
-                                            <Menu.Button className="focus:outline-none">
-                                                <DotsHorizontalIcon
-                                                    className="h-10 w-10 p-2"
-                                                />
-                                            </Menu.Button>
-                                            </div>
-                                            <Transition
-                                            as={Fragment}
-                                            enter="transition ease-out duration-100"
-                                            enterFrom="transform opacity-0 scale-95"
-                                            enterTo="transform opacity-100 scale-100"
-                                            leave="transition ease-in duration-75"
-                                            leaveFrom="transform opacity-100 scale-100"
-                                            leaveTo="transform opacity-0 scale-95"
-                                            >
-                                            <Menu.Items className="absolute z-20 right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-300 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                <div className="px-1 py-1 ">
-                                                    <Menu.Item>
-                                                        <Link href={`/post/${post.id}`}>
-                                                            <a className='text-gray-900 hover:bg-gray-300 group flex rounded-md items-center w-full px-2 py-2 text-sm'>
-                                                                Edit draft
-                                                            </a>
-                                                        </Link>
-                                                    </Menu.Item>
-                                                    <Menu.Item>
-                                                        {({ active }) => (
-                                                            <button
-                                                                onClick={(e)=> {e.stopPropagation(); publish(data.site.id, post.id)}}
-                                                                className={`${
-                                                                active ? 'bg-gray-300' : null
-                                                                } group flex text-gray-900 focus:outline-none rounded-md items-center w-full px-2 py-2 text-sm`}
-                                                            >
-                                                                Publish draft
-                                                            </button>  
-                                                        )}
-                                                    </Menu.Item>
-                                                    <Menu.Item>
-                                                        <Link href={`/post/${post.id}/settings`}>
-                                                            <a className='text-gray-900 hover:bg-gray-300 group flex rounded-md items-center w-full px-2 py-2 text-sm'>
-                                                                Settings
-                                                            </a>
-                                                        </Link>
-                                                    </Menu.Item>
-                                                </div>
-                                                <div className="px-1 py-1">
-                                                <Menu.Item>
-                                                    {({ active }) => (
-                                                    <button
-                                                        onClick={()=>{setOpenDelete(true); setToDelete(post.id)}}
-                                                        className={`${
-                                                        active ? 'bg-red-300 text-red-700' : 'text-red-700'
-                                                        } group flex focus:outline-none rounded-md items-center w-full px-2 py-2 text-sm`}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                    )}
-                                                </Menu.Item>
-                                                </div>
-                                            </Menu.Items>
-                                            </Transition>
-                                        </Menu>
-                                    </div>
-                                </div>
-                            </Link>
-                        )) : 
-                            [...Array(4)].map((_) => (
-                                <div className="w-full h-36 mb-3 bg-gray-200 animate-pulse rounded-lg">
-                                </div>
-                            ))
-                        }
+                          {post.site.subdomain}.vercel.pub/{post.slug} ↗
+                        </a>
+                      </div>
                     </div>
-                </InnerLayout>
-            </Layout>
-        </>
-    )
+                  </a>
+                </Link>
+              ))
+            ) : (
+              <div className="text-center">
+                <Image
+                  src="/empty-state.png"
+                  alt="No Drafts"
+                  width={613}
+                  height={420}
+                  placeholder="blur"
+                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAA6ZJREFUWEe1VwFuGzEMk2///+8uydmDSFGWfdduKLAUQYqsiyiKpJQ2xhj2t4f/RR82RreO18FX/xlm+oDWzKw1a63Z4c+Dz3YcX1ZoPwLQh/VBIF48O2he/78BiO57R3ECMIDAw7s3L27WvGswcCQT+IeHx78x4HR7Ye9cIygM5Oc+MnBgDD8HkDPvNgJAHz27XwRUAfj8G4tTBxDIjYPvGfAuUfSJfo7AH/4SE5gaQOE5Av/9iYWvAWzFvWvQXwVYDQTxFRF68dTCBLODeAYQImPnon7VgBxQOYUDQL1e5wj4njNCq2ocNwD4YPicxSm8+bsYcP7r/GW/BFE0IFBiBH8D0zQrADhTCKzM3YtfVQMhSrIf03fq/adSro4XRmhPPsO93av5R8lWpTgLx/Ny788k9No1ATOAQnjoOoTITFiL+3sg4epXhiE9ziIofrE4fycAx0uwMX11X4pA/bJfWHGCCOojvdr780EvSrU6dy98BYj5PgEU82X2q4gAZBo+da8RvN7vGwBR78UnEyHGGJX4l6Co8Ek7KQ8rSgfwqawaGjhfr0UDolydJ4gtimU/iK/ZLXS0BaclqQFuS7oQ//d8nWAUqzWiFtRj7hdGMEeh+U8DEkB0rgWkFIxVLBC5rmVBx/H7PJMBbLlQPQqX4hqLRFgZyC4lvtwBcwQ1J9h9iHEBgJjdCl8XnQAxcg0jhAY/5L7/vahccCzJmP6XBR3IIwOl8w8KcxRax0rBnwEIIYqB83whVNnYzACOYNeAr+Gwoe6Q5QKanSuEMoA2K4YKXYTFBQqgEGHqwIFEQtYg0gqGBm4CLIvoONYIzihu1pADxQV7BogJ2pNOSRZ4hH3jgpIDhQFYMc44JmHcdtqCsl3aT4GkpRRC1DGIHCjXD0Wo4gyouqaVAXi9PheDdVnDg/MP9e9xXBnQIYoUbKH64oJcSCUN5/lu1rrzGgCYA3sWEIgvJn/d7wGMwEdRL+ESRIslyyrObYhVuIyAAOoikhjzQsptyHsg7agVjHEcdvyqdyHZURbkDsldHCBuDJTusZ5xK8ZVHBtJQty3Ye1+2Q2xkKDD5ZuRg4gRLG74diXrC0lxQ45gzYX9MLkD8He6zSNEEby7YLOibDVvv1p4i+UaSDcG4sxzFpaLSJfRPoJylueyKafYPgJ9T6g74fEsH85CLbpdRvp2LPekosNqa+FtDPE3ukqfvxdoDBuIeq4td2Gc+uxsjeB0Q1nRPEx4lPwBA2anSbfNT08AAAAASUVORK5CYII="
+                />
+                <p className="text-2xl font-cal text-gray-600">
+                  No drafts yet. Click "New Draft" to create one.
+                </p>
+              </div>
+            )
+          ) : (
+            [0, 1].map((i) => (
+              <div
+                key={i}
+                className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200"
+              >
+                <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none bg-gray-300 animate-pulse" />
+                <div className="relative p-10 grid gap-5">
+                  <div className="w-28 h-10 rounded-md bg-gray-300 animate-pulse" />
+                  <div className="w-48 h-6 rounded-md bg-gray-300 animate-pulse" />
+                  <div className="w-48 h-6 rounded-md bg-gray-300 animate-pulse" />
+                  <div className="w-48 h-6 rounded-md bg-gray-300 animate-pulse" />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </Layout>
+  );
 }

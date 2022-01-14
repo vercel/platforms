@@ -30,7 +30,7 @@ export default NextAuth({
   },
   adapter: PrismaAdapter(prisma),
   callbacks: {
-    session: (session, user) => {
+    async session({ session, user }) {
       session.user.id = user.id;
       return session;
     },
