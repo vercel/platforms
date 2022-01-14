@@ -57,7 +57,7 @@ export const getTweets = async (id) => {
         mappings[`${url.url}`] =
           !url.display_url.startsWith("pic.twitter.com") &&
           !url.display_url.startsWith("twitter.com")
-            ? truncate(url.expanded_url, 50)
+            ? url.expanded_url
             : "";
       });
     }

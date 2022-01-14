@@ -112,7 +112,6 @@ export async function getStaticPaths() {
       },
     },
   });
-  console.log(posts);
   return {
     paths: posts.flatMap((post) => {
       if (post.site.customDomain) {
