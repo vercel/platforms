@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import DomainCard from "@/components/app/DomainCard";
 import Modal from "@/components/Modal";
+import toast, { Toaster } from "react-hot-toast";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -79,6 +80,12 @@ export default function SiteSettings() {
 
   return (
     <Layout>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 10000,
+        }}
+      />
       <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-20 mb-16">
         <h1 className="font-cal text-5xl mb-12">Site Settings</h1>
         <div className="mb-28 flex flex-col space-y-12">
@@ -218,7 +225,7 @@ export default function SiteSettings() {
                         ).then((res) => {
                           if (res.ok) {
                             toast.success(
-                              `Requested delegation for ${error.domain}`
+                              `Requested delegation for ${error.domain}. Try adding the domain again in a few minutes.`
                             );
                           } else {
                             alert(
