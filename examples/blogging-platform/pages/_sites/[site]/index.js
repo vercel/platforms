@@ -123,6 +123,7 @@ export async function getStaticPaths() {
       return customDomain.customDomain;
     }),
   ];
+  console.log(allPaths);
   return {
     paths: allPaths.map((path) => {
       return { params: { site: path } };

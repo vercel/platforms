@@ -17,23 +17,6 @@ export default function middleware(req) {
   }
 
   if (!pathname.includes(".") && !pathname.startsWith("/api")) {
-    console.log("first logic passed, pathname is not broken");
-    if (currentHost == "app") {
-      if (
-        pathname === "/login" &&
-        (req.cookies["next-auth.session-token"] ||
-          req.cookies["__Secure-next-auth.session-token"])
-      ) {
-        return NextResponse.redirect("/");
-      }
-      return NextResponse.rewrite(`/app${pathname}`);
-    } else if (
-      currentHost == "localhost:3000" ||
-      currentHost == process.env.NEXT_PUBLIC_ROOT_URL
-    ) {
-      return NextResponse.rewrite(`/home${pathname}`);
-    }
-    console.log("should be good ", currentHost, pathname);
     return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
   }
 }
