@@ -37,7 +37,7 @@ export default function SiteIndex() {
   return (
     <Layout>
       <div className="py-20 max-w-screen-xl mx-auto px-10 sm:px-20">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row space-y-5 sm:space-y-0 justify-between items-center">
           <h1 className="font-cal text-5xl">My Posts</h1>
           <button
             onClick={() => {
@@ -48,7 +48,7 @@ export default function SiteIndex() {
               creatingPost
                 ? "cursor-not-allowed bg-gray-300 border-gray-300"
                 : "text-white bg-black hover:bg-white hover:text-black border-black"
-            } font-cal text-lg w-40 tracking-wide border-2 px-5 py-3 transition-all ease-in-out duration-150`}
+            } font-cal text-lg w-3/4 sm:w-40 tracking-wide border-2 px-5 py-3 transition-all ease-in-out duration-150`}
           >
             {creatingPost ? (
               <LoadingDots />
@@ -76,7 +76,9 @@ export default function SiteIndex() {
                       </div>
                       <div className="relative p-10">
                         <h2 className="font-cal text-3xl">{post.title}</h2>
-                        <p className="text-base my-5">{post.description}</p>
+                        <p className="text-base my-5 line-clamp-3">
+                          {post.description}
+                        </p>
                         <a
                           onClick={(e) => e.stopPropagation()}
                           href={`https://${post.site.subdomain}.vercel.pub/${post.slug}`}

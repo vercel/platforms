@@ -14,6 +14,7 @@
     "@next-auth/prisma-adapter": "^0.5.2-next.19",
     "@prisma/client": "^3.5.0",
     "@tailwindcss/forms": "^0.3.4",
+    "@tailwindcss/line-clamp": "^0.3.1",
     "@tailwindcss/typography": "^0.4.1",
     "array-to-image": "^1.0.0",
     "blurhash": "^1.1.4",

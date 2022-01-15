@@ -1,4 +1,4 @@
-import { getPlaiceholder } from 'plaiceholder';
+import { getPlaiceholder } from "plaiceholder";
 
 export default async function blurhash(req, res) {
   const { url } = req.query;
