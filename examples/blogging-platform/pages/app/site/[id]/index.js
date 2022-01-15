@@ -78,6 +78,7 @@ export default function SiteIndex() {
                         <h2 className="font-cal text-3xl">{post.title}</h2>
                         <p className="text-base my-5">{post.description}</p>
                         <a
+                          onClick={(e) => e.stopPropagation()}
                           href={`https://${post.site.subdomain}.vercel.pub/${post.slug}`}
                           target="_blank"
                           className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"

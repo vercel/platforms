@@ -139,7 +139,7 @@ export default function PostSettings() {
                   onClick={() => {
                     setShowDeleteModal(true);
                   }}
-                  className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
+                  className="bg-red-500 text-white border-red-500 hover:text-red-500 hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
                 >
                   Delete Post
                 </button>

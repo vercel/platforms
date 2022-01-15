@@ -4,6 +4,10 @@ export default function middleware(req) {
   const { pathname } = req.nextUrl;
   const hostname = req.headers.get("host");
 
+  if (hostname === "vercel.pub") {
+    return NextResponse.redirect("app.vercel.pub");
+  }
+
   const currentHost =
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
       ? hostname.replace(`.vercel.pub`, "")
@@ -23,8 +27,6 @@ export default function middleware(req) {
         return NextResponse.redirect("/");
       }
       return NextResponse.rewrite(`/app${pathname}`);
-    } else if (currentHost == "localhost:3000" || currentHost == "") {
-      return NextResponse.rewrite(`/home${pathname}`);
     } else {
       return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
     }

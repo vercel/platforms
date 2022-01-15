@@ -14,11 +14,11 @@ const DomainCard = ({ data, setData }) => {
 
   return (
     <div className="w-full max-w-2xl mt-10 border border-black rounded-lg py-10">
-      <div className="flex justify-between space-x-4 px-10">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 justify-between px-10">
         <a
           href={`http://${data.customDomain}`}
           target="_blank"
-          className="text-xl font-semibold flex items-center"
+          className="text-xl font-semibold flex justify-center sm:justify-start items-center"
         >
           {data.customDomain}
           <span className="inline-block ml-2">

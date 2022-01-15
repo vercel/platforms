@@ -116,8 +116,11 @@ export default function AppIndex() {
           <div className="flex justify-between items-center mt-10 w-full">
             <button
               type="button"
-              className="w-full px-5 py-5 text-sm text-gray-400 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
-              onClick={() => setShowModal(false)}
+              className="w-full px-5 py-5 text-sm text-gray-600 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
+              onClick={() => {
+                setError(null);
+                setShowModal(false);
+              }}
             >
               CANCEL
             </button>
@@ -127,9 +130,9 @@ export default function AppIndex() {
               disabled={creatingSite || error}
               className={`${
                 creatingSite || error
-                  ? "cursor-not-allowed bg-gray-50"
-                  : "bg-white hover:text-black"
-              } w-full px-5 py-5 text-sm text-gray-400 border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+                  ? "cursor-not-allowed text-gray-400 bg-gray-50"
+                  : "bg-white text-gray-600 hover:text-black"
+              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
             >
               {creatingSite ? <LoadingDots /> : "CREATE SITE"}
             </button>
@@ -166,7 +169,8 @@ export default function AppIndex() {
                         <h2 className="font-cal text-3xl">{site.name}</h2>
                         <p className="text-base my-5">{site.description}</p>
                         <a
-                          href={`${site.subdomain}.vercel.pub`}
+                          onClick={(e) => e.stopPropagation()}
+                          href={`https://${site.subdomain}.vercel.pub`}
                           target="_blank"
                           className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10"
                         >

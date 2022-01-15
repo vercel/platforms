@@ -9,6 +9,7 @@ import useSWR from "swr";
 import DomainCard from "@/components/app/DomainCard";
 import Modal from "@/components/Modal";
 import toast, { Toaster } from "react-hot-toast";
+import { useDebounce } from "use-debounce";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -67,6 +68,7 @@ export default function SiteSettings() {
     });
     if (response.ok) {
       setSaving(false);
+      toast.success(`Changes Saved`);
     }
   }
 
@@ -77,6 +79,25 @@ export default function SiteSettings() {
       router.push("/");
     }
   }
+  const [debouncedSubdomain] = useDebounce(data?.subdomain, 1500);
+  const [subdomainError, setSubdomainError] = useState(null);
+
+  useEffect(async () => {
+    if (
+      debouncedSubdomain != settings?.subdomain &&
+      debouncedSubdomain?.length > 0
+    ) {
+      const response = await fetch(
+        `/api/check-subdomain?subdomain=${debouncedSubdomain}`
+      );
+      const available = await response.json();
+      if (available) {
+        setSubdomainError(null);
+      } else {
+        setSubdomainError(`${debouncedSubdomain}.vercel.pub`);
+      }
+    }
+  }, [debouncedSubdomain]);
 
   return (
     <Layout>
@@ -137,6 +158,12 @@ export default function SiteSettings() {
                 vercel.pub
               </div>
             </div>
+            {subdomainError && (
+              <p className="px-5 text-left text-red-500">
+                <b>{subdomainError}</b> is not available. Please choose another
+                subdomain.
+              </p>
+            )}
           </div>
           <div className="flex flex-col space-y-6">
             <h2 className="font-cal text-2xl">Custom Domain</h2>
@@ -301,7 +328,7 @@ export default function SiteSettings() {
                 onClick={() => {
                   setShowDeleteModal(true);
                 }}
-                className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
+                className="bg-red-500 text-white border-red-500 hover:text-red-500 hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
               >
                 Delete Site
               </button>
@@ -364,9 +391,9 @@ export default function SiteSettings() {
             onClick={() => {
               saveSiteSettings(data);
             }}
-            disabled={saving}
+            disabled={saving || subdomainError}
             className={`${
-              saving
+              saving || subdomainError
                 ? "cursor-not-allowed bg-gray-300 border-gray-300"
                 : "bg-black hover:bg-white hover:text-black border-black"
             } mx-2 rounded-md w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
