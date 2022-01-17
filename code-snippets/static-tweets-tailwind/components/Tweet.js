@@ -84,7 +84,7 @@ export default function Tweet({ id, metadata, className }) {
     >
       <div className="flex items-center">
         <a
-          className="flex h-12 w-12"
+          className="flex h-12 w-12 rounded-full overflow-hidden"
           href={authorUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -94,7 +94,6 @@ export default function Tweet({ id, metadata, className }) {
             height={48}
             width={48}
             src={author.profile_image_url}
-            className="rounded-full"
           />
         </a>
         <a
