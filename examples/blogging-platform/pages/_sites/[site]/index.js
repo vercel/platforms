@@ -29,10 +29,10 @@ export default function Index(props) {
     <Layout meta={meta} subdomain={data.subdomain}>
       <div className="w-full mb-20">
         {data.posts.length > 0 ? (
-          <div className="w-full max-w-screen-xl md:w-3/4 mx-auto md:mb-28">
+          <div className="w-full max-w-screen-xl lg:w-5/6 mx-auto md:mb-28">
             <Link href={`/${data.posts[0].slug}`}>
               <a>
-                <div className="relative group h-80 sm:h-150 w-full mx-auto overflow-hidden md:rounded-xl">
+                <div className="relative group h-80 sm:h-150 w-full mx-auto overflow-hidden lg:rounded-xl">
                   <BlurImage
                     src={data.posts[0].image}
                     alt={data.posts[0].title}
@@ -43,7 +43,7 @@ export default function Index(props) {
                     blurDataURL={data.posts[0].imageBlurhash}
                   />
                 </div>
-                <div className="mt-10 w-5/6 mx-auto md:w-full">
+                <div className="mt-10 w-5/6 mx-auto lg:w-full">
                   <h2 className="font-cal text-4xl md:text-6xl my-10">
                     {data.posts[0].title}
                   </h2>
