@@ -9,12 +9,14 @@ export default async function getPosts(req, res) {
       },
       published: JSON.parse(published),
     },
-    include: {
-      site: true,
-    },
     orderBy: {
       createdAt: "desc",
     },
   });
-  res.status(200).json(posts);
+  const site = await prisma.site.findFirst({
+    where: {
+      id: siteId,
+    },
+  });
+  res.status(200).json({ posts, site });
 }

@@ -16,7 +16,7 @@ export default function SiteIndex() {
   const { id } = router.query;
   const siteId = id;
 
-  const { data: posts } = useSWR(
+  const { data } = useSWR(
     siteId && `/api/get-posts?siteId=${siteId}&published=true`,
     fetcher
   );
@@ -38,7 +38,9 @@ export default function SiteIndex() {
     <Layout>
       <div className="py-20 max-w-screen-xl mx-auto px-10 sm:px-20">
         <div className="flex flex-col sm:flex-row space-y-5 sm:space-y-0 justify-between items-center">
-          <h1 className="font-cal text-5xl">My Posts</h1>
+          <h1 className="font-cal text-5xl">
+            Posts for {data ? data?.site?.name : "..."}
+          </h1>
           <button
             onClick={() => {
               setCreatingPost(true);
@@ -60,9 +62,9 @@ export default function SiteIndex() {
           </button>
         </div>
         <div className="my-10 grid gap-y-10">
-          {posts ? (
-            posts.length > 0 ? (
-              posts.map((post) => (
+          {data ? (
+            data.posts.length > 0 ? (
+              data.posts.map((post) => (
                 <Link href={`/post/${post.id}`} key={post.id}>
                   <a>
                     <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
@@ -81,11 +83,11 @@ export default function SiteIndex() {
                         </p>
                         <a
                           onClick={(e) => e.stopPropagation()}
-                          href={`https://${post.site.subdomain}.vercel.pub/${post.slug}`}
+                          href={`https://${data.site.subdomain}.vercel.pub/${post.slug}`}
                           target="_blank"
                           className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
                         >
-                          {post.site.subdomain}.vercel.pub/{post.slug} ↗
+                          {data.site.subdomain}.vercel.pub/{post.slug} ↗
                         </a>
                       </div>
                     </div>

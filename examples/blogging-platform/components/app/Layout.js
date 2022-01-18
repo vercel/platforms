@@ -16,6 +16,9 @@ export default function Layout({ siteId, children }) {
   const sitePage = router.pathname.startsWith("/app/site/[id]");
   const postPage = router.pathname.startsWith("/app/post/[id]");
   const rootPage = !sitePage && !postPage;
+  const tab = rootPage
+    ? router.asPath.split("/")[1]
+    : router.asPath.split("/")[3];
 
   const session = useRequireAuth();
   if (!session) return <Loader />;
@@ -72,17 +75,29 @@ export default function Layout({ siteId, children }) {
           </div>
         </div>
         {rootPage && (
-          <div className="absolute left-0 right-0 top-16 flex justify-center items-center font-cal space-x-16 py-3 border-b bg-white border-gray-200">
+          <div className="absolute left-0 right-0 top-16 flex justify-center items-center font-cal space-x-16 border-b bg-white border-gray-200">
             <Link href="/">
-              <a>My Sites</a>
+              <a
+                className={`border-b-2 ${
+                  tab == "" ? "border-black" : "border-transparent"
+                } py-3`}
+              >
+                My Sites
+              </a>
             </Link>
             <Link href="/settings">
-              <a>Settings</a>
+              <a
+                className={`border-b-2 ${
+                  tab == "settings" ? "border-black" : "border-transparent"
+                } py-3`}
+              >
+                Settings
+              </a>
             </Link>
           </div>
         )}
         {sitePage && (
-          <div className="absolute left-0 right-0 top-16 font-cal py-3 border-b bg-white border-gray-200">
+          <div className="absolute left-0 right-0 top-16 font-cal border-b bg-white border-gray-200">
             <div className="flex justify-between items-center space-x-16 max-w-screen-xl mx-auto px-10 sm:px-20">
               <Link href={`/`}>
                 <a>
@@ -91,13 +106,31 @@ export default function Layout({ siteId, children }) {
               </Link>
               <div className="flex justify-between items-center space-x-10 md:space-x-16">
                 <Link href={`/site/${router.query.id}`}>
-                  <a>Posts</a>
+                  <a
+                    className={`border-b-2 ${
+                      !tab ? "border-black" : "border-transparent"
+                    } py-3`}
+                  >
+                    Posts
+                  </a>
                 </Link>
                 <Link href={`/site/${router.query.id}/drafts`}>
-                  <a>Drafts</a>
+                  <a
+                    className={`border-b-2 ${
+                      tab == "drafts" ? "border-black" : "border-transparent"
+                    } py-3`}
+                  >
+                    Drafts
+                  </a>
                 </Link>
                 <Link href={`/site/${router.query.id}/settings`}>
-                  <a>Settings</a>
+                  <a
+                    className={`border-b-2 ${
+                      tab == "settings" ? "border-black" : "border-transparent"
+                    } py-3`}
+                  >
+                    Settings
+                  </a>
                 </Link>
               </div>
               <div />
@@ -105,7 +138,7 @@ export default function Layout({ siteId, children }) {
           </div>
         )}
         {postPage && (
-          <div className="absolute left-0 right-0 top-16 font-cal py-3 border-b bg-white border-gray-200">
+          <div className="absolute left-0 right-0 top-16 font-cal border-b bg-white border-gray-200">
             <div className="flex justify-between items-center space-x-16 max-w-screen-xl mx-auto px-10 sm:px-20">
               <Link href={`/site/${siteId}`}>
                 <a>
@@ -114,10 +147,22 @@ export default function Layout({ siteId, children }) {
               </Link>
               <div className="flex justify-between items-center space-x-10 md:space-x-16">
                 <Link href={`/post/${router.query.id}`}>
-                  <a>Editor</a>
+                  <a
+                    className={`border-b-2 ${
+                      !tab ? "border-black" : "border-transparent"
+                    } py-3`}
+                  >
+                    Editor
+                  </a>
                 </Link>
                 <Link href={`/post/${router.query.id}/settings`}>
-                  <a>Settings</a>
+                  <a
+                    className={`border-b-2 ${
+                      tab == "settings" ? "border-black" : "border-transparent"
+                    } py-3`}
+                  >
+                    Settings
+                  </a>
                 </Link>
               </div>
               <div />

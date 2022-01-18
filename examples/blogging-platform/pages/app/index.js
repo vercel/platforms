@@ -174,7 +174,7 @@ export default function AppIndex() {
                           onClick={(e) => e.stopPropagation()}
                           href={`https://${site.subdomain}.vercel.pub`}
                           target="_blank"
-                          className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10"
+                          className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
                         >
                           {site.subdomain}.vercel.pub ↗
                         </a>
