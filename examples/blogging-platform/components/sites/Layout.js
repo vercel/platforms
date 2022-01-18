@@ -71,36 +71,38 @@ export default function Layout({ meta, children, subdomain }) {
 
       <div className="mt-20">{children}</div>
 
-      <div
-        className="max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 py-3 flex flex-col lg:flex-row space-y-3 lg:space-y-0 justify-between items-center sticky bottom-5 bg-white border-t-4 border-black
-       drop-shadow-lg"
-      >
-        <div className="text-center lg:text-left">
-          <p className="font-cal text-xl text-black">
-            Platforms on Vercel Demo
-          </p>
-          <p className="text-sm">
-            This is a demo site showcasing how to build a multi-tenant
-            application with custom domain support.
-          </p>
+      {subdomain == "demo" && (
+        <div
+          className="max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 py-3 flex flex-col lg:flex-row space-y-3 lg:space-y-0 justify-between items-center sticky bottom-5 bg-white border-t-4 border-black
+     drop-shadow-lg"
+        >
+          <div className="text-center lg:text-left">
+            <p className="font-cal text-xl text-black">
+              Platforms on Vercel Demo
+            </p>
+            <p className="text-sm">
+              This is a demo site showcasing how to build a multi-tenant
+              application with custom domain support.
+            </p>
+          </div>
+          <div className="flex space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row flex-col lg:w-auto w-full text-center">
+            <a
+              href="https://app.vercel.pub"
+              target="_blank"
+              className="flex-auto font-cal text-lg rounded-md py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
+            >
+              Create your publication
+            </a>
+            <a
+              href="https://github.com/vercel/platforms"
+              target="_blank"
+              className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
+            >
+              Clone and Deploy
+            </a>
+          </div>
         </div>
-        <div className="flex space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row flex-col lg:w-auto w-full text-center">
-          <a
-            href="https://app.vercel.pub"
-            target="_blank"
-            className="flex-auto font-cal text-lg rounded-md py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
-          >
-            Create your publication
-          </a>
-          <a
-            href="https://github.com/vercel/platforms"
-            target="_blank"
-            className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
-          >
-            Clone and Deploy
-          </a>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
