@@ -38,7 +38,7 @@ export default function Post(props) {
   };
 
   return (
-    <Layout meta={meta}>
+    <Layout meta={meta} subdomain={data.site.subdomain}>
       <div className="flex flex-col justify-center items-center">
         <div className="text-center w-full md:w-7/12 m-auto">
           <p className="text-sm md:text-base font-light text-gray-500 w-10/12 m-auto my-5">
