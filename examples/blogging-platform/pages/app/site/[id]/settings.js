@@ -18,10 +18,16 @@ export default function SiteSettings() {
   const { id } = router.query;
   const siteId = id;
 
-  const { data: settings } = useSWR(
+  const { data: settings, isValidating } = useSWR(
     siteId && `/api/get-site-settings?siteId=${siteId}`,
     fetcher
   );
+
+  useEffect(() => {
+    if (!isValidating && !settings) {
+      router.push("/");
+    }
+  }, [settings, isValidating]);
 
   const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState(false);

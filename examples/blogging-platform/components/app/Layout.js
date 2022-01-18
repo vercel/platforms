@@ -140,11 +140,19 @@ export default function Layout({ siteId, children }) {
         {postPage && (
           <div className="absolute left-0 right-0 top-16 font-cal border-b bg-white border-gray-200">
             <div className="flex justify-between items-center space-x-16 max-w-screen-xl mx-auto px-10 sm:px-20">
-              <Link href={`/site/${siteId}`}>
-                <a>
+              {siteId ? (
+                <Link href={`/site/${siteId}`}>
+                  <a>
+                    ←<p className="md:inline-block ml-3 hidden">All Posts</p>
+                  </a>
+                </Link>
+              ) : (
+                <div>
+                  {" "}
                   ←<p className="md:inline-block ml-3 hidden">All Posts</p>
-                </a>
-              </Link>
+                </div>
+              )}
+
               <div className="flex justify-between items-center space-x-10 md:space-x-16">
                 <Link href={`/post/${router.query.id}`}>
                   <a

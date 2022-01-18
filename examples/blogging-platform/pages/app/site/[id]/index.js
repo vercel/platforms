@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/app/Layout";
 import BlurImage from "@/components/BlurImage";
 import LoadingDots from "@/components/app/loading-dots";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
@@ -16,10 +15,16 @@ export default function SiteIndex() {
   const { id } = router.query;
   const siteId = id;
 
-  const { data } = useSWR(
+  const { data, isValidating } = useSWR(
     siteId && `/api/get-posts?siteId=${siteId}&published=true`,
     fetcher
   );
+
+  useEffect(() => {
+    if (!isValidating && !data?.site) {
+      router.push("/");
+    }
+  }, [data, isValidating]);
 
   async function createPost(siteId) {
     const res = await fetch(`/api/create-post?siteId=${siteId}`, {

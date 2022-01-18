@@ -5,8 +5,9 @@ import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
 import saveImage from "@/lib/save-image";
 import Modal from "@/components/Modal";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Loader from "@/components/app/Loader";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -15,7 +16,7 @@ export default function PostSettings() {
   const { id } = router.query;
   const postId = id;
 
-  const { data: settings } = useSWR(
+  const { data: settings, isValidating } = useSWR(
     `/api/get-post-data?postId=${postId}`,
     fetcher
   );
@@ -61,6 +62,14 @@ export default function PostSettings() {
       router.push(`/site/${settings.site.id}`);
     }
   }
+
+  if (isValidating)
+    return (
+      <Layout>
+        <Loader />
+      </Layout>
+    );
+
   return (
     <>
       <Layout siteId={settings?.site.id}>

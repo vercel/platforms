@@ -1,10 +1,11 @@
 import Layout from "@/components/app/Layout";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
+import Loader from "@/components/app/Loader";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -13,32 +14,25 @@ export default function Post() {
   const { id } = router.query;
   const postId = id;
 
-  const { data: post } = useSWR(
+  const { data: post, isValidating } = useSWR(
     `/api/get-post-data?postId=${postId}`,
     fetcher,
     {
-      fallbackData: {
-        updatedAt: "2021-06-26T22:39:53.071Z",
-        title: "",
-        description: "",
-        content: "",
-        site: {
-          id: "",
-        },
-      },
-      revalidateOnMount: true,
+      revalidateOnFocus: false,
     }
   );
 
   const [savedState, setSavedState] = useState(
-    `Last saved at ${Intl.DateTimeFormat("en", { month: "short" }).format(
-      new Date(post.updatedAt)
-    )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
-      new Date(post.updatedAt)
-    )} ${Intl.DateTimeFormat("en", {
-      hour: "numeric",
-      minute: "numeric",
-    }).format(new Date(post.updatedAt))}`
+    post
+      ? `Last saved at ${Intl.DateTimeFormat("en", { month: "short" }).format(
+          new Date(post.updatedAt)
+        )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
+          new Date(post.updatedAt)
+        )} ${Intl.DateTimeFormat("en", {
+          hour: "numeric",
+          minute: "numeric",
+        }).format(new Date(post.updatedAt))}`
+      : "Saving changes..."
   );
 
   const [data, setData] = useState({
@@ -75,20 +69,6 @@ export default function Post() {
       window.removeEventListener("keydown", clickedSave);
     };
   }, [data]);
-
-  //   useEffect(() => {
-  //     if (firstRender.current) {
-  //       setSavedState("Unsaved changes");
-  //       let timer = setTimeout(() => {
-  //         saveChanges(data);
-  //       }, 3000);
-  //       return () => {
-  //         clearTimeout(timer);
-  //       };
-  //     } else {
-  //       firstRender.current = true;
-  //     }
-  //   }, [title, description, content]);
 
   async function saveChanges(data) {
     setSavedState("Saving changes...");
@@ -128,9 +108,16 @@ export default function Post() {
     router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
   };
 
+  if (isValidating)
+    return (
+      <Layout>
+        <Loader />
+      </Layout>
+    );
+
   return (
     <>
-      <Layout siteId={post.site.id}>
+      <Layout siteId={post?.site.id}>
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
           <TextareaAutosize
             name="title"
@@ -159,7 +146,36 @@ export default function Post() {
             name="content"
             onInput={(e) => setData({ ...data, content: e.target.value })}
             className="w-full px-2 py-3 text-gray-800 placeholder-gray-500 text-lg mb-5 resize-none border-none focus:outline-none focus:ring-0"
-            placeholder="Write some content here..."
+            placeholder={`Write some content. Markdown supported:
+
+# A H1 header
+
+## A H2 header
+
+Fun fact: You embed tweets by pasting the tweet URL in a new line:
+
+https://twitter.com/nextjs/status/1468044361082580995
+
+Paragraphs are separated by a blank line.
+
+2nd paragraph. *Italic*, and **bold**. Itemized lists look like:
+
+  * this one
+  * that one
+  * the other one
+
+Ordered lists look like:
+
+  1. first item
+  2. second item
+  3. third item
+
+> Block quotes are written like so.
+>
+> They can span multiple paragraphs,
+> if you like.
+
+            `}
             value={data.content}
           />
         </div>
