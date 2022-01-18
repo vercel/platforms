@@ -73,16 +73,32 @@ export default function Layout({ meta, children, subdomain }) {
 
       <div
         className="max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 py-3 flex justify-between items-center sticky bottom-5 bg-white
-       border border-gray-100 drop-shadow-lg"
+       drop-shadow-lg"
       >
-        <p className="font-cal text-lg">Demo Site</p>
-        <a
-          href="https://app.vercel.pub"
-          target="_blank"
-          className="font-cal text-lg bg-black text-white rounded-lg py-3 px-5"
-        >
-          Make your own
-        </a>
+        <div>
+          <p className="font-cal text-xl text-black">
+            Platforms on Vercel Demo
+          </p>
+          <p className="text-sm">
+            This is a demo site showcasing Platforms on Vercel.
+          </p>
+        </div>
+        <div className="flex space-x-3">
+          <a
+            href="https://app.vercel.pub"
+            target="_blank"
+            className="font-cal text-lg rounded-lg py-3 px-5 text-black transition-all ease-in-out duration-150"
+          >
+            Make your own
+          </a>
+          <a
+            href="https://app.vercel.pub"
+            target="_blank"
+            className="font-cal text-lg bg-black text-white border-2 border-black rounded-lg py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150"
+          >
+            Clone and Deploy
+          </a>
+        </div>
       </div>
     </div>
   );
