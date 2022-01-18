@@ -77,10 +77,10 @@ export default function Layout({ meta, children, subdomain }) {
      drop-shadow-lg"
         >
           <div className="text-center lg:text-left">
-            <p className="font-cal text-xl text-black">
+            <p className="font-cal text-2xl text-black">
               Platforms on Vercel Demo
             </p>
-            <p className="text-sm">
+            <p className="text-sm text-gray-700 mt-2 lg:mt-0">
               This is a demo site showcasing how to build a multi-tenant
               application with custom domain support.
             </p>
