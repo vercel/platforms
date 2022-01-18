@@ -55,6 +55,13 @@ export default function Post() {
   }, [debouncedData]);
 
   const [publishing, setPublishing] = useState(false);
+  const [disabled, setDisabled] = useState(true);
+
+  useEffect(() => {
+    if (data.title && data.description && data.content && !publishing)
+      setDisabled(false);
+    else setDisabled(true);
+  }, [publishing, data]);
 
   useEffect(() => {
     const clickedSave = (e) => {
@@ -191,9 +198,14 @@ Ordered lists look like:
               onClick={async () => {
                 await publish(postId);
               }}
-              disabled={publishing}
+              title={
+                disabled
+                  ? "Post must have a title, description, and content to be published."
+                  : "Publish"
+              }
+              disabled={disabled}
               className={`${
-                publishing
+                disabled
                   ? "cursor-not-allowed bg-gray-300 border-gray-300"
                   : "bg-black hover:bg-white hover:text-black border-black"
               } mx-2 rounded-md w-32 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}

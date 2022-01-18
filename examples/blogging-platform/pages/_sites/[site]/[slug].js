@@ -76,16 +76,21 @@ export default function Post(props) {
         <MDXRemote {...data.mdxSource} components={components} />
       </article>
 
-      <div className="relative mt-10 sm:mt-20 mb-20">
-        <div className="absolute inset-0 flex items-center" aria-hidden="true">
-          <div className="w-full border-t border-gray-300" />
+      {adjacentPosts.length > 0 && (
+        <div className="relative mt-10 sm:mt-20 mb-20">
+          <div
+            className="absolute inset-0 flex items-center"
+            aria-hidden="true"
+          >
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="px-2 bg-white text-sm text-gray-500">
+              Continue Reading
+            </span>
+          </div>
         </div>
-        <div className="relative flex justify-center">
-          <span className="px-2 bg-white text-sm text-gray-500">
-            Continue Reading
-          </span>
-        </div>
-      </div>
+      )}
       {adjacentPosts && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 mx-5 lg:mx-12 2xl:mx-auto mb-20 max-w-screen-xl">
           {adjacentPosts.map((data, index) => (

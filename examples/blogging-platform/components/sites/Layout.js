@@ -98,7 +98,7 @@ export default function Layout({ meta, children, subdomain }) {
               target="_blank"
               className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
             >
-              Clone and Deploy
+              Clone and deploy
             </a>
           </div>
         </div>
