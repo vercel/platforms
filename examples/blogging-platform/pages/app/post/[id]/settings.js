@@ -176,9 +176,9 @@ export default function PostSettings() {
                 disabled={deletingPost}
                 className={`${
                   deletingPost
-                    ? "cursor-not-allowed bg-gray-50"
-                    : "bg-white hover:text-black"
-                } w-full px-5 py-5 text-sm text-gray-400 border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+                    ? "cursor-not-allowed text-gray-400 bg-gray-50"
+                    : "bg-white text-gray-600 hover:text-black"
+                } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
               >
                 {deletingPost ? <LoadingDots /> : "DELETE POST"}
               </button>
