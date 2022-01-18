@@ -26,7 +26,7 @@ export default function Index(props) {
   };
 
   return (
-    <Layout meta={meta}>
+    <Layout meta={meta} subdomain={data.subdomain}>
       <div className="w-full mb-20">
         {data.posts.length > 0 ? (
           <div className="w-full max-w-screen-xl md:w-3/4 mx-auto md:mb-28">

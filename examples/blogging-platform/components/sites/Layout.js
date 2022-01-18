@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 
-export default function Layout({ meta, children }) {
+export default function Layout({ meta, children, subdomain }) {
   const [scrolled, setScrolled] = useState(false);
 
   const onScroll = useCallback(() => {
@@ -70,6 +70,20 @@ export default function Layout({ meta, children }) {
       </div>
 
       <div className="mt-20">{children}</div>
+
+      <div
+        className="max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 py-3 flex justify-between items-center sticky bottom-5 bg-white
+       border border-gray-100 drop-shadow-lg"
+      >
+        <p className="font-cal text-lg">Demo Site</p>
+        <a
+          href="https://app.vercel.pub"
+          target="_blank"
+          className="font-cal text-lg bg-black text-white rounded-lg py-3 px-5"
+        >
+          Make your own
+        </a>
+      </div>
     </div>
   );
 }
