@@ -1,25 +1,7 @@
-# Simple Example
+# Subdomain Auth Example
 
-A dead-simple barebones implementation of Platforms on Vercel.
-
-The example below is generated based on the following mock database:
-
-```
-const mockDB = [
-    {name: "Site 1", description: "Subdomain + custom domain", subdomain: "subdomain-1", customDomain: "custom-domain-1.com"},
-    {name: "Site 2", description: "Subdomain only", subdomain: "subdomain-2", customDomain: null},
-    {name: "Site 3", description: "Subdomain only", subdomain: "subdomain-3", customDomain: null},
-]
-```
-
-When deploying your own clone of this example, you will need to replace the data fetching methods in `getStaticPaths` and `getStaticProps` with your own database of choice (BYOD, _Bring-Your-Own-Database_).
-
-### Demo
-
-- [subdomain-1.vercel.sh](https://subdomain-1.vercel.sh/) (subdomain)
-- [subdomain-2.vercel.sh](https://subdomain-2.vercel.sh/) (subdomain)
-- [subdomain-3.vercel.sh](https://subdomain-3.vercel.sh/) (subdomain)
-- [custom-domain-1.com](https://custom-domain-1.com/) (custom domain, maps to [subdomain-1.vercel.sh](https://subdomain-1.vercel.sh/))
+- [subdomain-auth.com](http://subdomain-auth.com) (login from here)
+- [sub1.subdomain-auth.com](http://sub1.subdomain-auth.com)
 
 ### Features
 
