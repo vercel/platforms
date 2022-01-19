@@ -15,6 +15,8 @@ export default function Layout({ meta, children, subdomain }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [onScroll]);
 
+  const [closeModal, setCloseModal] = useState(false);
+
   return (
     <div>
       <Head>
@@ -73,19 +75,49 @@ export default function Layout({ meta, children, subdomain }) {
 
       {subdomain == "demo" && (
         <div
-          className="max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 py-3 flex flex-col lg:flex-row space-y-3 lg:space-y-0 justify-between items-center sticky bottom-5 bg-white border-t-4 border-black
-     drop-shadow-lg"
+          className={`${
+            closeModal ? "h-14 lg:h-auto" : "lg:h-auto sm:h-40 h-60"
+          } max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 lg:pt-3 pt-0 pb-3 flex flex-col lg:flex-row space-y-3 lg:space-y-0 justify-between items-center sticky bottom-5 bg-white border-t-4 border-black
+          drop-shadow-lg transition-all ease-in-out duration-150`}
         >
+          <button
+            onClick={() => setCloseModal(!closeModal)}
+            className={`${
+              closeModal ? "rotate-180" : "rotate-0"
+            } lg:hidden absolute top-2 right-3 text-black transition-all ease-in-out duration-150`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="30"
+              height="30"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              shapeRendering="geometricPrecision"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
           <div className="text-center lg:text-left">
             <p className="font-cal text-2xl text-black">
               Platforms on Vercel Demo
             </p>
-            <p className="text-sm text-gray-700 mt-2 lg:mt-0">
+            <p
+              className={`${
+                closeModal ? "lg:block hidden" : ""
+              } text-sm text-gray-700 mt-2 lg:mt-0`}
+            >
               This is a demo site showcasing how to build a multi-tenant
               application with custom domain support.
             </p>
           </div>
-          <div className="flex space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row flex-col lg:w-auto w-full text-center">
+          <div
+            className={`${
+              closeModal ? "lg:flex hidden" : ""
+            } flex space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row flex-col lg:w-auto w-full text-center`}
+          >
             <a
               href="https://app.vercel.pub"
               target="_blank"
