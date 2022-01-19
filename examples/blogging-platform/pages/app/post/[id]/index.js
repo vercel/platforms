@@ -129,14 +129,14 @@ export default function Post() {
           <TextareaAutosize
             name="title"
             onInput={(e) => setData({ ...data, title: e.target.value })}
-            className="w-full px-2 py-4 text-gray-800 placeholder-gray-500 mt-6 text-5xl font-cal resize-none border-none focus:outline-none focus:ring-0"
+            className="w-full px-2 py-4 text-gray-800 placeholder-gray-400 mt-6 text-5xl font-cal resize-none border-none focus:outline-none focus:ring-0"
             placeholder="Untitled Post"
             value={data.title}
           />
           <TextareaAutosize
             name="description"
             onInput={(e) => setData({ ...data, description: e.target.value })}
-            className="w-full px-2 py-3 text-gray-800 placeholder-gray-500 text-xl mb-3 resize-none border-none focus:outline-none focus:ring-0"
+            className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-xl mb-3 resize-none border-none focus:outline-none focus:ring-0"
             placeholder="No description provided. Click to edit."
             value={data.description}
           />
@@ -152,7 +152,7 @@ export default function Post() {
           <TextareaAutosize
             name="content"
             onInput={(e) => setData({ ...data, content: e.target.value })}
-            className="w-full px-2 py-3 text-gray-800 placeholder-gray-500 text-lg mb-5 resize-none border-none focus:outline-none focus:ring-0"
+            className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-lg mb-5 resize-none border-none focus:outline-none focus:ring-0"
             placeholder={`Write some content. Markdown supported:
 
 # A H1 header

@@ -119,7 +119,15 @@ export default function Layout({ meta, children, subdomain }) {
               } text-sm text-gray-700 mt-2 lg:mt-0`}
             >
               This is a demo site showcasing how to build a multi-tenant
-              application with custom domain support.
+              application with{" "}
+              <a
+                href="https://platformize.co"
+                target="_blank"
+                className="text-black font-semibold underline"
+              >
+                custom domain
+              </a>{" "}
+              support.
             </p>
           </div>
           <div
