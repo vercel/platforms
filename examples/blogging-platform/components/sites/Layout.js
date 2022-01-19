@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
+import Cookies from "js-cookie";
 
 export default function Layout({ meta, children, subdomain }) {
   const [scrolled, setScrolled] = useState(false);
@@ -15,7 +16,15 @@ export default function Layout({ meta, children, subdomain }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [onScroll]);
 
-  const [closeModal, setCloseModal] = useState(false);
+  const [closeModal, setCloseModal] = useState(Cookies.get("closeModal"));
+
+  useEffect(() => {
+    if (closeModal) {
+      Cookies.set("closeModal", true);
+    } else {
+      Cookies.remove("closeModal");
+    }
+  }, [closeModal]);
 
   return (
     <div>

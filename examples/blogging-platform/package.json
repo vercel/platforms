@@ -23,7 +23,7 @@
     "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "js-cookie": "^3.0.1",
-    "next": "latest",
+    "next": "^12.0.8",
     "next-auth": "^4.0.0-beta.7",
     "next-mdx-remote": "^3.0.8",
     "plaiceholder": "^2.2.0",
