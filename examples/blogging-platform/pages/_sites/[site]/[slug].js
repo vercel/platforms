@@ -8,6 +8,7 @@ import { serialize } from "next-mdx-remote/serialize";
 import { MDXRemote } from "next-mdx-remote";
 import BlurImage from "@/components/BlurImage";
 import BlogCard from "@/components/BlogCard";
+import Examples from "@/components/mdx/Examples";
 import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 import { getTweets } from "@/lib/twitter";
@@ -18,6 +19,7 @@ const components = {
   Tweet,
   Link,
   BlurImage,
+  Examples,
 };
 
 export default function Post(props) {
@@ -214,9 +216,16 @@ async function getMdxSource(postContents) {
     `<Link href="/$1"><a className="cursor-pointer">$2</a></Link>`
   );
 
+  // replace all Examples
+  const replacedExamples = await replaceAsync(
+    replacedInternalLinks,
+    /<Examples (.*)\/>/g,
+    getExamples
+  );
+
   // Replace all Twitter URLs with their MDX counterparts
   const replacedTweets = await replaceAsync(
-    replacedInternalLinks,
+    replacedExamples,
     /<p>(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)([^\?])(\?.*)?<\/p>)/g,
     getTweetMetadata
   );
@@ -244,4 +253,20 @@ const getTweetMetadata = async (tweetUrl) => {
   const tweetMDX =
     "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>";
   return tweetMDX;
+};
+
+const getExamples = async (str) => {
+  const regex = /names=\[(.+)\]/gm;
+  const raw = regex.exec(str);
+  const names = raw[1].split(",");
+  let data = [];
+  for (let i = 0; i < names.length; i++) {
+    const results = await prisma.example.findUnique({
+      where: {
+        id: parseInt(names[i]),
+      },
+    });
+    data.push(results);
+  }
+  return `<Examples data={${JSON.stringify(data)}} />`;
 };
