@@ -5,13 +5,17 @@ export default function middleware(req) {
   const hostname = req.headers.get("host");
 
   if (hostname === "vercel.pub") {
-    return NextResponse.redirect("app.vercel.pub");
+    return NextResponse.redirect("https://demo.vercel.pub");
   }
 
-  const currentHost =
+  let currentHost =
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
       ? hostname.replace(`.vercel.pub`, "")
       : hostname.replace(`.localhost:3000`, "");
+
+  if (hostname === "localhost:3000") {
+    currentHost = "demo";
+  }
 
   if (pathname.startsWith(`/_sites`)) {
     return new Response(null, { status: 404 });

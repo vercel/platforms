@@ -51,7 +51,10 @@ export default function Post(props) {
             {data.description}
           </p>
         </div>
-        <a target="_blank" href="https://twitter.com/StevenTey">
+        <a
+          target="_blank"
+          href={`https://twitter.com/${data.site.user.username}`}
+        >
           <div className="my-8">
             <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden inline-block align-middle">
               <BlurImage width={80} height={80} src={data.site.user.image} />
