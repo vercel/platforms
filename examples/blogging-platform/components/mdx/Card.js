@@ -5,17 +5,18 @@ export default function Card({ data }) {
   return (
     <a href={`https://${data.url}`} target="_blank" className="!no-underline">
       <div className="hidden lg:block rounded-2xl border-2 border-gray-100 shadow-md bg-white hover:shadow-xl hover:-translate-y-1 transition-all ease duration-200">
-        <BlurImage
-          src={`/examples/${data.image}`}
-          alt={data.name}
-          width={500}
-          height={400}
-          layout="responsive"
-          objectFit="cover"
-          placeholder="blur"
-          className="rounded-t-2xl overflow-hidden"
-          blurDataURL={data.imageBlurhash}
-        />
+        <div className="rounded-t-2xl overflow-hidden">
+          <BlurImage
+            src={`/examples/${data.image}`}
+            alt={data.name}
+            width={500}
+            height={400}
+            layout="responsive"
+            objectFit="cover"
+            placeholder="blur"
+            blurDataURL={data.imageBlurhash}
+          />
+        </div>
         <div className="py-6 px-5 h-36">
           <h3 className="font-cal !my-0 !text-2xl font-bold tracking-wide truncate">
             {data.name}
