@@ -54,6 +54,7 @@ export default function Layout({ meta, children, subdomain }) {
         <meta name="twitter:title" content={meta?.title} />
         <meta name="twitter:description" content={meta?.description} />
         <meta name="twitter:image" content={meta?.ogImage} />
+        {subdomain != "demo" && <meta name="robots" content="noindex" />}
       </Head>
       <div
         className={`fixed w-full ${
