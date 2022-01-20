@@ -59,7 +59,7 @@ export default function Layout({ meta, children, subdomain }) {
       <div
         className={`fixed w-full ${
           scrolled ? "drop-shadow-md" : ""
-        }  top-0 left-0 right-0 h-16 bg-white z-30 transition-all ease duration-150`}
+        }  top-0 left-0 right-0 h-16 bg-black z-30 transition-all ease duration-150`}
       >
         {" "}
         <div className="flex justify-center items-center h-full max-w-screen-xl mx-auto px-10 sm:px-20">
@@ -87,7 +87,7 @@ export default function Layout({ meta, children, subdomain }) {
         <div
           className={`${
             closeModal ? "h-14 lg:h-auto" : "lg:h-auto sm:h-40 h-60"
-          } max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 lg:pt-3 pt-0 pb-3 flex flex-col lg:flex-row space-y-3 lg:space-y-0 justify-between items-center sticky bottom-5 bg-white border-t-4 border-black
+          } max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 lg:pt-3 pt-0 pb-3 flex flex-col lg:flex-row space-y-3 lg:space-y-0 justify-between items-center sticky bottom-5 bg-black border-t-4 border-black
           drop-shadow-lg transition-all ease-in-out duration-150`}
         >
           <button
@@ -111,20 +111,20 @@ export default function Layout({ meta, children, subdomain }) {
             </svg>
           </button>
           <div className="text-center lg:text-left">
-            <p className="font-cal text-2xl text-black">
+            <p className="font-cal text-2xl text-white">
               Platforms Starter Kit Demo
             </p>
             <p
               className={`${
                 closeModal ? "lg:block hidden" : ""
-              } text-sm text-gray-700 mt-2 lg:mt-0`}
+              } text-sm text-gray-300 mt-2 lg:mt-0`}
             >
               This is a demo site showcasing how to build a multi-tenant
               application with{" "}
               <a
                 href="https://platformize.co"
                 target="_blank"
-                className="text-black font-semibold underline"
+                className="text-white font-semibold underline"
               >
                 custom domain
               </a>{" "}
@@ -139,14 +139,14 @@ export default function Layout({ meta, children, subdomain }) {
             <a
               href="https://app.vercel.pub"
               target="_blank"
-              className="flex-auto font-cal text-lg rounded-md py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
+              className="flex-auto font-cal text-lg rounded-md py-3 px-5 text-white border border-gray-800 hover:border-white transition-all ease-in-out duration-150 whitespace-no-wrap"
             >
               Create your publication
             </a>
             <a
               href="https://github.com/vercel/platforms"
               target="_blank"
-              className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
+              className="flex-auto font-cal text-lg bg-black text-white border border-white rounded-md py-3 px-5 hover:text-white hover:bg-black transition-all ease-in-out duration-150 whitespace-no-wrap"
             >
               Clone and deploy
             </a>
