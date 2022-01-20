@@ -81,7 +81,7 @@ export default function Layout({ siteId, children }) {
             <a
               href="https://github.com/vercel/platforms"
               target="_blank"
-              className="font-cal flex items-center space-x-2 sm:border-2 sm:border-black sm:bg-black sm:text-white text-black px-5 py-3 sm:hover:text-black sm:hover:bg-white transition-all ease-in-out duration-150"
+              className="font-cal flex items-center space-x-2 text-gray-700 px-5 py-3 sm:hover:text-black sm:hover:bg-white transition-all ease-in-out duration-150"
             >
               <p className="hidden sm:block">Build my own</p>
               <svg
