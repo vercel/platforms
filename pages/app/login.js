@@ -6,7 +6,7 @@ import LoadingDots from "@/components/app/loading-dots";
 const pageTitle = "Login";
 const logo = "/favicon.ico";
 const description =
-  "Platformize is a NextJS solution that allows you to build your own Substack/Webflow clone with built-in multi-tenancy and custom domains. ";
+  "Platforms Starter Kit is a comprehensive template for building multi-tenant applications with custom domains.";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -43,7 +43,7 @@ export default function Login() {
         <img
           className="mx-auto h-12 w-auto"
           src="/logo.png"
-          alt="Platformize"
+          alt="Platforms Starter Kit"
         />
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Platforms Starter Kit

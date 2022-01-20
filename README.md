@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://vercel.com/platforms">
     <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
-    <h3 align="center">Platforms on Vercel</h3>
+    <h3 align="center">Platforms Starter Kit</h3>
   </a>
 </p>
 
@@ -12,77 +12,89 @@
 
 <p align="center">
   <a href="#introduction"><strong>Introduction</strong></a> ·
-  <a href="#examples"><strong>Examples</strong></a> ·
-  <a href="#code-snippets"><strong>Code Snippets</strong></a> ·
+  <a href="#"><strong>Guide</strong></a> ·
+  <a href="https://demo.vercel.pub/"><strong>Demo</strong></a> ·
   <a href="#contributing"><strong>Contributing</strong></a>
 </p>
 <br/>
 
-## Overview
-
-1. Welcome to the Platforms on Vercel Early Access Program!
-2. Check out some boilerplate examples [here](./examples).
-3. Check out some code snippets [here](./code-snippets) – especially the one for [adding domains programmatically with Vercel's domains API](./code-snippets/domains-api).
-4. Participate in [discussions](https://github.com/vercel-customer-feedback/platforms/discussions/1) or [post an issue](https://github.com/vercel-customer-feedback/platforms/issues) if you run into any bugs.
-
 ## Introduction
 
-_**Welcome to the Platforms on Vercel Early Access Program!**_
+Multi-tenant applications serve multiple customers across different subdomains/custom domains with a single unified codebase. 
 
-Platforms on Vercel are Vercel customers that allow their users to create unique content pages with a multi-tenant infrastructure. Each user gets assigned a unique subdomain when they create their account, with the (usually paid) option to add a custom domain.
+For example, our demo is a multi-tenant application:
 
-For instance, each writer on Substack has their own unique `.substack.com` subdomain for their newsletters:
+- Subdomain: [demo.vercel.pub](http://demo.vercel.pub)
+- Custom domain: [platformize.co](http://platformize.co) (maps to [demo.vercel.pub](http://demo.vercel.pub))
+- Build your own: [app.vercel.pub](http://app.vercel.pub)
 
-- [pomp.substack.com](http://pomp.substack.com/)
-- [platformer.substack.com](http://platformer.substack.com/)
-- [astralcodexten.substack.com](http://astralcodexten.substack.com/)
+Another example is [Hashnode](https://vercel.com/customers/hashnode), a popular blogging platform. Each writer has their own unique `.hashnode.dev` subdomain for their blog:
 
-Users can also map their custom domains to their `.substack.com` subdomain for an extra fee:
+- [eda.hashnode.dev](https://eda.hashnode.dev/)
+- [katycodesstuff.hashnode.dev](https://katycodesstuff.hashnode.dev/)
+- [pit.hashnode.dev](https://pit.hashnode.dev/)
 
-- [platformer.news](http://platformer.news) → [platformer.substack.com](http://platformer.substack.com/)
+Users can also map custom domains to their `.hashnode.dev` subdomain:
 
-At Vercel, we want to provide these platforms with a comprehensive solutions for them to build platforms like Substack super easily.
+- [catalins.tech](https://catalins.tech/) → [pit.hashnode.dev](https://pit.hashnode.dev/)
 
-## Examples
+This repository makes it easier than ever for creators to build their own platform.
 
-> We've created a few boilerplates based on the examples below for you to get started with [here](./examples).
+## Template features
 
-Multi-tenancy app infrastructures work really well with the following types of apps:
+Forget manually setting up CNAME records, wrestling with DNS, or making custom server rewrite rules with NGINX. With Vercel and the Platforms Starter Kit, you can focus on building the next big thing.
+
+- **Custom domains**: Subdomain and custom domains support with [Edge Functions](https://vercel.com/features/edge-functions) and the [Vercel Domains API](https://domains-api.vercel.app/).
+- **Static generation with ISR**: Performance without sacrificing personalization, by combining [Incremental Static Regeneration](https://vercel.com/docs/concepts/next.js/incremental-static-regeneration) (ISR) and [Middleware](https://vercel.com/docs/concepts/functions/edge-functions#middleware). ISR allows you to create new content (with custom domains) on demand without needing to redeploy your application.
+- **Uploading custom images**: Allow your customers to upload custom thumbnail images with our Cloudinary integration.
+- **Static tweets**: Avoid [Cumulative Layout Shift](https://vercel.com/blog/core-web-vitals) (CLS) from the native Twitter embed by using our [static tweets implementation](https://static-tweets-tailwind.vercel.app/) (supports image, video, gif, poll, retweets, quote retweets, and more).
+
+## Examples of platforms
+
+Vercel customers like [Hashnode](https://vercel.com/customers/hashnode), [Super](https://super.so), and [Cal.com](https://cal.com) are building scalable platforms on top of Vercel and Next.js. There are multiple types of platforms you can build with this starter kit:
 
 ### 1. Content creation platforms
 
-Content-heavy platforms (blogs) that have a simple, standardized page layouts/route structure. Some examples include:
+These are content-heavy platforms (blogs) with simple, standardized page layouts and route structure. 
 
-- Substack
-- Medium ([forge.medium.com](http://forge.medium.com/), [marker.medium.com](https://marker.medium.com/))
+> “With Vercel, we spend less time managing our infrastructure and more time delivering value to our users.” — Sandeep Panda, Co-founder, Hashnode
 
-### 2. Website/E-commerce Store Builders
+1. [Hashnode](https://hashnode.com)
+2. [Mirror.xyz](https://mirror.xyz/)
+3. [Papyrus.so](https://papyrus.so/)
 
-Site builders that require complex routing, freeform pages. Some examples include:
+### 2. Website & e-commerce store builders
 
-- Webflow
-- [Super.so](http://super.so) ([tr.af](https://tr.af) → [traf.super.site](https://traf.super.site))
+No-code site builders with customizable pages. 
+
+By using Next.js and Vercel, [Super](https://super.so/) has fast, globally distributed websites with a no-code editor (Notion). Their customers get all the benefits of Next.js (like [Image Optimization](https://nextjs.org/docs/basic-features/image-optimization)) without touching any code.
+
+1. [Super.so](https://super.so)
+2. [Typedream](https://typedream.com)
+3. [Makeswift](https://www.makeswift.com/)
 
 ### 3. B2B2C platforms
 
-White-labeled SaaS applications that require multi-tenant authentication/login, role-based access controls (RBAC), etc. Some examples include:
+Multi-tenant authentication, login, and access controls.
 
-- Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
-- Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
+With Vercel and Next.js, platforms like [Instatus](https://instatus.com) are able to create status pages that are *10x faster* than competitors.
 
-## Code Snippets
+1. [Instatus](https://instatus.com/)
+2. [Cal.com](https://cal.com/)
+3. [DAO Central](https://daocentral.com/)
 
-Here are some supplementary code snippets that might be required to build Platforms on Vercel:
+## Built on open source
 
-- [Adding domains programatically w/ Vercel Domains API](./code-snippets/domains-api)
-- [Static Tweet Embeds](./code-snippets/static-tweets-tailwind)
-- OG-image generator
-- Text Editor
-- Simple Auth
+This working demo site was built using the Platforms Starter Kit and:
 
-Check out the full list of code snippets [here](./code-snippets).
+- [Next.js](https://nextjs.org/) as the React framework
+- [Tailwind](https://tailwindcss.com/) for CSS styling
+- [Prisma](https://prisma.io/) as the ORM for database access
+- [PlanetScale](https://planetscale.com/) as the database (MySQL)
+- [NextAuth.js](https://next-auth.js.org/) for authentication
+- [Vercel](http://vercel.com/) for deployment
 
 ## Contributing
 
-- [Start a Discussion](https://github.com/vercel-customer-feedback/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
-- [Open an Issue](https://github.com/vercel-customer-feedback/platforms/issues) if you believe you've encountered a bug that you want to flag for the team.
+- [Start a discussion](https://github.com/vercel/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
+- [Open an issue](https://github.com/vercel/platforms/issues) if you believe you've encountered a bug with the starter kit.

@@ -111,7 +111,7 @@ export default function Layout({ meta, children, subdomain }) {
           </button>
           <div className="text-center lg:text-left">
             <p className="font-cal text-2xl text-black">
-              Platforms on Vercel Demo
+              Platforms Starter Kit Demo
             </p>
             <p
               className={`${
