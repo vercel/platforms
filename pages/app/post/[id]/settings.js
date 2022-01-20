@@ -8,6 +8,7 @@ import Modal from "@/components/Modal";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Loader from "@/components/app/Loader";
+import toast, { Toaster } from "react-hot-toast";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -20,6 +21,7 @@ export default function PostSettings() {
     `/api/get-post-data?postId=${postId}`,
     fetcher,
     {
+      revalidateOnFocus: false,
       onError: () => {
         router.push("/");
       },
@@ -57,6 +59,7 @@ export default function PostSettings() {
     });
     if (response.ok) {
       setSaving(false);
+      toast.success(`Changes Saved`);
     }
   }
 
@@ -78,6 +81,12 @@ export default function PostSettings() {
   return (
     <>
       <Layout siteId={settings?.site.id}>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 10000,
+          }}
+        />
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-20 mb-16">
           <h1 className="font-cal text-5xl mb-12">Post Settings</h1>
           <div className="mb-28 flex flex-col space-y-12">
@@ -104,7 +113,7 @@ export default function PostSettings() {
               <div
                 className={`${
                   data.image ? "" : "animate-pulse bg-gray-300 h-150"
-                } relative mt-5 w-full p-2 border-2 border-gray-800 border-dashed rounded-md`}
+                } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
               >
                 <CloudinaryUploadWidget
                   callback={(e) => saveImage(e, data, setData)}
@@ -112,7 +121,7 @@ export default function PostSettings() {
                   {({ open }) => (
                     <button
                       onClick={open}
-                      className="absolute w-full h-full bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
+                      className="absolute w-full h-full rounded-md bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -136,6 +145,7 @@ export default function PostSettings() {
                     layout="responsive"
                     objectFit="cover"
                     placeholder="blur"
+                    className="rounded-md"
                     blurDataURL={data.imageBlurhash}
                   />
                 )}

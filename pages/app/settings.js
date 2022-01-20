@@ -1,5 +1,5 @@
 import Layout from "@/components/app/Layout";
-import useSWR from "swr";
+import toast, { Toaster } from "react-hot-toast";
 import BlurImage from "@/components/BlurImage";
 import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
@@ -33,12 +33,19 @@ export default function AppSettings() {
     });
     if (response.ok) {
       setSaving(false);
+      toast.success(`Changes Saved`);
     }
   }
 
   return (
     <>
       <Layout>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 10000,
+          }}
+        />
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
           <h1 className="font-cal text-5xl mb-12">Settings</h1>
           <div className="mb-28 flex flex-col space-y-12">
@@ -77,7 +84,7 @@ export default function AppSettings() {
               <div
                 className={`${
                   data?.image ? "" : "animate-pulse bg-gray-300 h-150"
-                } relative mt-5 w-48 p-2 border-2 border-gray-800 border-dashed rounded-md`}
+                } relative mt-5 w-48 border-2 border-gray-800 border-dashed rounded-md`}
               >
                 <CloudinaryUploadWidget
                   callback={(e) => saveImage(e, data, setData)}
@@ -85,7 +92,7 @@ export default function AppSettings() {
                   {({ open }) => (
                     <button
                       onClick={open}
-                      className="absolute w-44 h-44 bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
+                      className="absolute w-full h-full rounded-md bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -107,6 +114,7 @@ export default function AppSettings() {
                     width={100}
                     height={100}
                     layout="responsive"
+                    className="rounded-md"
                     objectFit="cover"
                   />
                 )}

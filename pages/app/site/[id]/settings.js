@@ -22,6 +22,7 @@ export default function SiteSettings() {
     siteId && `/api/get-site-settings?siteId=${siteId}`,
     fetcher,
     {
+      revalidateOnFocus: false,
       onError: () => {
         router.push("/");
       },
@@ -107,7 +108,7 @@ export default function SiteSettings() {
   return (
     <Layout>
       <Toaster
-        position="bottom-right"
+        position="top-right"
         toastOptions={{
           duration: 10000,
         }}
@@ -285,7 +286,7 @@ export default function SiteSettings() {
             <div
               className={`${
                 data.image ? "" : "animate-pulse bg-gray-300 h-150"
-              } relative mt-5 w-full p-2 border-2 border-gray-800 border-dashed rounded-md`}
+              } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
             >
               <CloudinaryUploadWidget
                 callback={(e) => saveImage(e, data, setData)}
@@ -293,7 +294,7 @@ export default function SiteSettings() {
                 {({ open }) => (
                   <button
                     onClick={open}
-                    className="absolute w-full h-full bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
+                    className="absolute w-full h-full rounded-md bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -317,6 +318,7 @@ export default function SiteSettings() {
                   layout="responsive"
                   objectFit="cover"
                   placeholder="blur"
+                  className="rounded-md"
                   blurDataURL={data.imageBlurhash}
                 />
               )}

@@ -46,16 +46,16 @@ export default function Login() {
           alt="Platformize"
         />
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Auth with Twitter
+          Platforms Starter Kit
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Password-less auth powered by{" "}
+          Build multi-tenant applications with custom domains. <br /> Read the{" "}
           <a
-            href="https://next-auth.js.org/"
+            href="https://demo.vercel.pub/platforms-starter-kit"
             target="_blank"
             className="font-medium text-black hover:text-gray-800"
           >
-            next-auth
+            blog post
           </a>
         </p>
       </div>
