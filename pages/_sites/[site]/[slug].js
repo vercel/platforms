@@ -32,7 +32,7 @@ export default function Post(props) {
   const adjacentPosts = JSON.parse(props.stringifiedAdjacentPosts);
 
   const meta = {
-    title: `${data.title} – ${data.site.name}`,
+    title: data.title,
     description: data.description,
     ogUrl: `https://${data.site.subdomain}.vercel.pub/${data.slug}`,
     ogImage: data.image,
