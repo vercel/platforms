@@ -12,6 +12,9 @@ module.exports = {
       cal: ["Cal Sans", "Inter var", "sans-serif"],
     },
     extend: {
+      colors: {
+        current: 'currentColor',
+      },
       width: {
         1536: "1536px",
       },
