@@ -144,7 +144,7 @@ export default function Layout({ meta, children, subdomain }) {
               Create your publication
             </a>
             <a
-              href="https://github.com/vercel/platforms"
+              href="https://vercel.com/guides/nextjs-multi-tenant-application"
               target="_blank"
               className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-1 sm:py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
             >
