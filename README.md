@@ -18,6 +18,10 @@
 </p>
 <br/>
 
+## Deploy Your Own
+
+[Read the guide](https://vercel.com/guides/nextjs-multi-tenant-application) to learn how to deploy your own version of this template.
+
 ## Introduction
 
 Multi-tenant applications serve multiple customers across different subdomains/custom domains with a single unified codebase. 
