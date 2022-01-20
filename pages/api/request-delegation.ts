@@ -1,4 +1,9 @@
-export default async function requestDelegation(req, res) {
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function requestDelegation(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { domain } = req.query;
 
   const response = await fetch(

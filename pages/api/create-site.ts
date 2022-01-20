@@ -1,8 +1,14 @@
 import prisma from "@/lib/prisma";
 import cuid from "cuid";
 
-export default async function CreateSite(req, res) {
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function CreateSite(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { name, subdomain, description, userId } = req.body;
+
   const sub = subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
 
   const response = await prisma.site.create({
@@ -21,5 +27,8 @@ export default async function CreateSite(req, res) {
       },
     },
   });
-  res.status(200).json({ siteId: response.id });
+
+  res.status(201).json({
+    siteId: response.id,
+  });
 }

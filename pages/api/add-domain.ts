@@ -1,7 +1,15 @@
 import prisma from "@/lib/prisma";
 
-export default async function addDomain(req, res) {
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function addDomain(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { domain, siteId } = req.query;
+
+  if (Array.isArray(domain) || Array.isArray(siteId))
+    res.status(400).end("Bad request. Query parameters are not valid.");
 
   const response = await fetch(
     `https://api.vercel.com/v8/projects/${process.env.VERCEL_PROJECT_ID}/domains?teamId=${process.env.VERCEL_TEAM_ID}`,
@@ -25,10 +33,10 @@ export default async function addDomain(req, res) {
     // domain is successfully added
     await prisma.site.update({
       where: {
-        id: siteId,
+        id: siteId as string,
       },
       data: {
-        customDomain: domain,
+        customDomain: domain as string,
       },
     });
     res.status(200).end();

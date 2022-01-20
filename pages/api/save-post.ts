@@ -1,7 +1,13 @@
 import prisma from "@/lib/prisma";
 
-export default async function SavePost(req, res) {
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function SavePost(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const data = JSON.parse(req.body);
+
   const response = await prisma.post.update({
     where: {
       id: data.id,

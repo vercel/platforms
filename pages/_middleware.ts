@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 
-export default function middleware(req) {
+import type { NextRequest } from "next/server";
+
+export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl; // get pathname of request (e.g. /blog-slug)
   const hostname = req.headers.get("host"); // get hostname of request (e.g. demo.vercel.pub)
+
+  // TODO: Implement better error handling
+  if (!hostname) return NextResponse.error();
 
   if (hostname === "vercel.pub") {
     // only for demo purposes – remove this if you want to use your root domain as the landing page

@@ -82,7 +82,9 @@ export default function SiteSettings() {
 
   async function deleteSite(siteId) {
     setDeletingSite(true);
-    const response = await fetch(`/api/delete-site?siteId=${siteId}`);
+    const response = await fetch(`/api/delete-site?siteId=${siteId}`, {
+      method: "DELETE"
+    });
     if (response.ok) {
       router.push("/");
     }

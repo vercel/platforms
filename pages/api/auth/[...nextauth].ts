@@ -3,6 +3,9 @@ import TwitterProvider from "next-auth/providers/twitter";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 
+if (!process.env.TWITTER_ID || !process.env.TWITTER_SECRET)
+  throw new Error("Failed to initialize Twitter authentication");
+
 export default NextAuth({
   providers: [
     TwitterProvider({
@@ -30,7 +33,10 @@ export default NextAuth({
   adapter: PrismaAdapter(prisma),
   callbacks: {
     async session({ session, user }) {
+      // TODO: Fix type errors
+      // @ts-ignore
       session.user.id = user.id;
+      // @ts-ignore
       session.user.username = user.username;
       return session;
     },

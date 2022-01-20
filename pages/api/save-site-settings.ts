@@ -1,6 +1,11 @@
 import prisma from "@/lib/prisma";
 
-export default async function SaveSiteSettings(req, res) {
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function SaveSiteSettings(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const data = JSON.parse(req.body);
   const subdomain = data.subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
   const response = await prisma.site.update({

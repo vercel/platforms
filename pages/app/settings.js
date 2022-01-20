@@ -10,7 +10,6 @@ import { useSession } from "next-auth/react";
 
 export default function AppSettings() {
   const { data: session } = useSession();
-  console.log(session);
 
   const [saving, setSaving] = useState(false);
 

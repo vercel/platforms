@@ -65,7 +65,9 @@ export default function PostSettings() {
 
   async function deletePost(postId) {
     setDeletingPost(true);
-    const response = await fetch(`/api/delete-post?postId=${postId}`);
+    const response = await fetch(`/api/delete-post?postId=${postId}`, {
+      method: "DELETE"
+    });
     if (response.ok) {
       router.push(`/site/${settings.site.id}`);
     }
