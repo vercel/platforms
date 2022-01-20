@@ -18,10 +18,11 @@ export default async function addDomain(req, res) {
   const data = await response.json();
 
   if (data.error?.code == "forbidden") {
-    res.status(403).end();
+    res.status(403).end(); // domain is already owned by another team but you can request delegation to access it
   } else if (data.error?.code == "domain_taken") {
-    res.status(409).end();
+    res.status(409).end(); // domain is already being used by a different project
   } else {
+    // domain is successfully added
     await prisma.site.update({
       where: {
         id: siteId,

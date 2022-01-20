@@ -1,58 +1,88 @@
-# Blogging Platform
+<p align="center">
+  <a href="https://vercel.com/platforms">
+    <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
+    <h3 align="center">Platforms on Vercel</h3>
+  </a>
+</p>
 
-A blogging platform that allows users to create blogs with a default subdomain and the option to add a custom domain (usually with a premium monthly subscription).
+<p align="center">
+  The <em>all-in-one</em> starter kit <br/>
+  for building platforms on Vercel.
+</p>
 
-### Demo
+<p align="center">
+  <a href="#introduction"><strong>Introduction</strong></a> ·
+  <a href="#examples"><strong>Examples</strong></a> ·
+  <a href="#code-snippets"><strong>Code Snippets</strong></a> ·
+  <a href="#contributing"><strong>Contributing</strong></a>
+</p>
+<br/>
 
-For context, here's a starter kit of a blogging platform built on Vercel:
+## Overview
 
-- [demo.vercel.pub](https://demo.vercel.pub)
-- [platformize.co](https://platformize.co) (custom domain that maps to [demo.vercel.pub](https://demo.vercel.pub))
-- [app.vercel.pub](https://app.vercel.pub) (editing backend)
+1. Welcome to the Platforms on Vercel Early Access Program!
+2. Check out some boilerplate examples [here](./examples).
+3. Check out some code snippets [here](./code-snippets) – especially the one for [adding domains programmatically with Vercel's domains API](./code-snippets/domains-api).
+4. Participate in [discussions](https://github.com/vercel-customer-feedback/platforms/discussions/1) or [post an issue](https://github.com/vercel-customer-feedback/platforms/issues) if you run into any bugs.
 
-All of these generated sites are powered by ISR (no SSR at all) so they load pretty much instantly + the inter-page transitions are lightning fast.
+## Introduction
 
-### Features
+_**Welcome to the Platforms on Vercel Early Access Program!**_
 
-- Multitenancy (subdomains + custom domains) with Vercel Domains API
-- Static generation with ISR
-- Static tweets (supports image, video, gif, poll, retweets, quote retweets, etc.)
-- Uploading custom images (with a Cloudinary integration)
-- Empty states
-- Error states (for adding custom domains + subdomains)
-- Fallback states for ISR on the frontend
+Platforms on Vercel are Vercel customers that allow their users to create unique content pages with a multi-tenant infrastructure. Each user gets assigned a unique subdomain when they create their account, with the (usually paid) option to add a custom domain.
 
-### Real-world examples
+For instance, each writer on Substack has their own unique `.substack.com` subdomain for their newsletters:
 
-- [Hashnode](https://hashnode.com/)
-- [Medium](https://medium.com/)
+- [pomp.substack.com](http://pomp.substack.com/)
+- [platformer.substack.com](http://platformer.substack.com/)
+- [astralcodexten.substack.com](http://astralcodexten.substack.com/)
 
-### How to Use
+Users can also map their custom domains to their `.substack.com` subdomain for an extra fee:
 
-You can choose from one of the following two methods to use this repository:
+- [platformer.news](http://platformer.news) → [platformer.substack.com](http://platformer.substack.com/)
 
-**One-Click Deploy**
+At Vercel, we want to provide these platforms with a comprehensive solutions for them to build platforms like Substack super easily.
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+## Examples
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel-customer-feedback/platforms/tree/main/examples/blogging-platform&project-name=blogging-platform&repository-name=blogging-platform)
+> We've created a few boilerplates based on the examples below for you to get started with [here](./examples).
 
-**Clone and Deploy**
+Multi-tenancy app infrastructures work really well with the following types of apps:
 
-Download this repository via git:
+### 1. Content creation platforms
 
-```bash
-git clone https://github.com/vercel-customer-feedback/platforms.git
-```
+Content-heavy platforms (blogs) that have a simple, standardized page layouts/route structure. Some examples include:
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+- Substack
+- Medium ([forge.medium.com](http://forge.medium.com/), [marker.medium.com](https://marker.medium.com/))
 
-```bash
-npx create-next-app --example edge-middleware/examples/blogging-platform blogging-platform
-# or
-yarn create next-app --example edge-middleware/examples/blogging-platform blogging-platform
-```
+### 2. Website/E-commerce Store Builders
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=edge-middleware-eap) ([Documentation](https://nextjs.org/docs/deployment)).
+Site builders that require complex routing, freeform pages. Some examples include:
 
-> 💡 Don't forget to create an `.env` file based on the `.env.example` file that is provided and fill in all the values with the ones you want to use.
+- Webflow
+- [Super.so](http://super.so) ([tr.af](https://tr.af) → [traf.super.site](https://traf.super.site))
+
+### 3. B2B2C platforms
+
+White-labeled SaaS applications that require multi-tenant authentication/login, role-based access controls (RBAC), etc. Some examples include:
+
+- Instatus ([sketch.instatus.com](http://sketch.instatus.com/), [linear.instatus.com](http://linear.instatus.com/))
+- Canny ([framer.canny.io](https://framer.canny.io/), [ahrefs.canny.io](http://ahrefs.canny.io/))
+
+## Code Snippets
+
+Here are some supplementary code snippets that might be required to build Platforms on Vercel:
+
+- [Adding domains programatically w/ Vercel Domains API](./code-snippets/domains-api)
+- [Static Tweet Embeds](./code-snippets/static-tweets-tailwind)
+- OG-image generator
+- Text Editor
+- Simple Auth
+
+Check out the full list of code snippets [here](./code-snippets).
+
+## Contributing
+
+- [Start a Discussion](https://github.com/vercel-customer-feedback/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
+- [Open an Issue](https://github.com/vercel-customer-feedback/platforms/issues) if you believe you've encountered a bug that you want to flag for the team.
