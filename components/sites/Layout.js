@@ -111,7 +111,7 @@ export default function Layout({ meta, children, subdomain }) {
             </svg>
           </button>
           <div className="text-center lg:text-left">
-            <p className="font-cal text-2xl text-black">
+            <p className="font-cal text-lg sm:text-2xl text-black">
               Platforms Starter Kit Demo
             </p>
             <p
@@ -139,14 +139,14 @@ export default function Layout({ meta, children, subdomain }) {
             <a
               href="https://app.vercel.pub"
               target="_blank"
-              className="flex-auto font-cal text-lg rounded-md py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
+              className="flex-auto font-cal text-lg rounded-md py-1 sm:py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
             >
               Create your publication
             </a>
             <a
               href="https://github.com/vercel/platforms"
               target="_blank"
-              className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
+              className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-1 sm:py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
             >
               Clone and deploy
             </a>
