@@ -5,7 +5,7 @@ import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
 import saveImage from "@/lib/save-image";
 import { useRouter } from "next/router";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import DomainCard from "@/components/app/DomainCard";
 import Modal from "@/components/Modal";
 import toast, { Toaster } from "react-hot-toast";
@@ -69,11 +69,13 @@ export default function SiteSettings() {
       method: "POST",
       body: JSON.stringify({
         id: siteId,
+        currentSubdomain: settings.subdomain,
         ...data,
       }),
     });
     if (response.ok) {
       setSaving(false);
+      mutate(`/api/get-site-settings?siteId=${siteId}`);
       toast.success(`Changes Saved`);
     }
   }
@@ -154,7 +156,7 @@ export default function SiteSettings() {
                 className="w-1/2 px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-l-lg placeholder-gray-400"
                 type="text"
                 name="subdomain"
-                placeholder="post-slug"
+                placeholder="subdomain"
                 value={data.subdomain}
                 onInput={(e) =>
                   setData((data) => ({ ...data, subdomain: e.target.value }))

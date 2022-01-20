@@ -1,12 +1,15 @@
 import prisma from "@/lib/prisma";
+import cuid from "cuid";
 
 export default async function CreateSite(req, res) {
   const { name, subdomain, description, userId } = req.body;
+  const sub = subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
+
   const response = await prisma.site.create({
     data: {
       name: name,
       description: description,
-      subdomain: subdomain,
+      subdomain: sub.length > 0 ? sub : cuid(),
       logo: "/logo.png",
       image: `/placeholder.png`,
       imageBlurhash:
