@@ -18,7 +18,12 @@ export default function PostSettings() {
 
   const { data: settings, isValidating } = useSWR(
     `/api/get-post-data?postId=${postId}`,
-    fetcher
+    fetcher,
+    {
+      onError: () => {
+        router.push("/");
+      },
+    }
   );
 
   const [saving, setSaving] = useState(false);

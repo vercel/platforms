@@ -17,14 +17,15 @@ export default function SiteIndex() {
 
   const { data, isValidating } = useSWR(
     siteId && `/api/get-posts?siteId=${siteId}&published=true`,
-    fetcher
-  );
-
-  useEffect(() => {
-    if (!isValidating && !data?.site) {
-      router.push("/");
+    fetcher,
+    {
+      onSuccess: (data) => {
+        if (!data?.site) {
+          router.push("/");
+        }
+      },
     }
-  }, [data, isValidating]);
+  );
 
   async function createPost(siteId) {
     const res = await fetch(`/api/create-post?siteId=${siteId}`, {

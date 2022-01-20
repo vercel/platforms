@@ -18,7 +18,14 @@ export default function SiteDrafts() {
 
   const { data } = useSWR(
     siteId && `/api/get-posts?siteId=${siteId}&published=false`,
-    fetcher
+    fetcher,
+    {
+      onSuccess: (data) => {
+        if (!data?.site) {
+          router.push("/");
+        }
+      },
+    }
   );
 
   async function createPost(siteId) {
