@@ -10,7 +10,7 @@ import useRequireAuth from "../../lib/useRequireAuth";
 import type { WithChildren } from "@/types";
 
 interface LayoutProps extends WithChildren {
-  siteId: string;
+  siteId?: string;
 }
 
 export default function Layout({ siteId, children }: LayoutProps) {
