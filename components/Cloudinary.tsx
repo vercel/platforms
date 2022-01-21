@@ -1,10 +1,10 @@
 import Head from "next/head";
 
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import type { CloudinaryWidget, CloudinaryWidgetResult } from "@/types";
 
 interface ChildrenProps {
-  open: (e: Event) => void;
+  open: (e: MouseEvent) => void;
 }
 
 interface CloudinaryUploadWidgetProps {
@@ -33,7 +33,7 @@ export default function CloudinaryUploadWidget({
     widget.open();
   }
 
-  function open(e: Event) {
+  function open(e: MouseEvent) {
     e.preventDefault();
     showWidget();
   }
