@@ -1,5 +1,6 @@
 export default function Loader() {
-  let circleCommonClasses = "h-4 w-4 bg-black rounded-full";
+  const circleCommonClasses = "h-4 w-4 bg-black rounded-full";
+
   return (
     <div className="flex h-screen">
       <div className="flex m-auto">

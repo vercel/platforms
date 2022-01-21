@@ -7,7 +7,13 @@ import { signOut } from "next-auth/react";
 import Loader from "./Loader";
 import useRequireAuth from "../../lib/useRequireAuth";
 
-export default function Layout({ siteId, children }) {
+import type { WithChildren } from "@/types";
+
+interface LayoutProps extends WithChildren {
+  siteId: string;
+}
+
+export default function Layout({ siteId, children }: LayoutProps) {
   const title = "Platforms on Vercel";
   const description =
     "Create a fullstack application with multi-tenancy and custom domains support using Next.js, Prisma, and PostgreSQL";
@@ -57,16 +63,18 @@ export default function Layout({ siteId, children }) {
             <div className="flex space-x-4">
               <Link href="/">
                 <a className="flex justify-center items-center">
-                  <div className="h-8 w-8 inline-block rounded-full overflow-hidden align-middle">
-                    <Image
-                      src={session.user.image}
-                      width={40}
-                      height={40}
-                      alt={session.user.name}
-                    />
-                  </div>
+                  {session.user && session.user.image && (
+                    <div className="h-8 w-8 inline-block rounded-full overflow-hidden align-middle">
+                      <Image
+                        src={session.user.image}
+                        width={40}
+                        height={40}
+                        alt={session.user.name ?? "User avatar"}
+                      />
+                    </div>
+                  )}
                   <span className="sm:block inline-block ml-3 font-medium truncate">
-                    {session.user.name}
+                    {session.user?.name}
                   </span>
                 </a>
               </Link>

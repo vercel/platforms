@@ -1,6 +1,10 @@
 import styles from "./loading-dots.module.css";
 
-const LoadingDots = ({ color = "#000" }) => {
+interface LoadingDotsProps {
+  color?: string;
+}
+
+const LoadingDots = ({ color = "#000" }: LoadingDotsProps) => {
   return (
     <span className={styles.loading}>
       <span style={{ backgroundColor: color }} />

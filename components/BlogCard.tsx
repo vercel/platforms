@@ -2,7 +2,13 @@ import Link from "next/link";
 import BlurImage from "./BlurImage";
 import Date from "./Date";
 
-export default function BlogCard({ data }) {
+import type { PostData } from "@/types";
+
+interface BlogCardProps {
+  data: PostData;
+}
+
+export default function BlogCard({ data }: BlogCardProps) {
   return (
     <Link href={`/${data.slug}`}>
       <a>

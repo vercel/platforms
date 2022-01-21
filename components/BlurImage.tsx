@@ -1,8 +1,15 @@
+import cn from "clsx";
 import Image from "next/image";
 import { useState } from "react";
-import cn from "clsx";
 
-export default function BlurImage(props) {
+import type { ComponentProps } from "react";
+import type { WithClassName } from "@/types";
+
+interface BlurImageProps extends WithClassName, ComponentProps<typeof Image> {
+  alt: string;
+}
+
+export default function BlurImage(props: BlurImageProps) {
   const [isLoading, setLoading] = useState(true);
 
   return (

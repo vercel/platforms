@@ -1,4 +1,8 @@
-const XIcon = ({ color, width, height, className }) => {
+import type { BaseIconProps } from "@/types";
+
+interface XIconProps extends BaseIconProps {}
+
+const XIcon = ({ className, color, height, width }: XIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -1,4 +1,11 @@
-const LogoSmall = (props) => {
+import type { WithClassName } from "@/types";
+
+interface LogoSmallProps extends WithClassName {
+  height?: number;
+  width: number;
+}
+
+const LogoSmall = (props: LogoSmallProps) => {
   return (
     <svg
       className={props.className}

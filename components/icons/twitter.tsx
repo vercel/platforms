@@ -1,4 +1,8 @@
-const TwitterIcon = ({ color, width, height, className }) => {
+import type { BaseIconProps } from "@/types";
+
+interface TwitterIconProps extends BaseIconProps {}
+
+const TwitterIcon = ({ className, color, height, width }: TwitterIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

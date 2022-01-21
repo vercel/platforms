@@ -1,4 +1,8 @@
-const SearchIcon = ({ color, width, height, className }) => {
+import type { BaseIconProps } from "@/types";
+
+interface SearchIconProps extends BaseIconProps {}
+
+const SearchIcon = ({ className, color, height, width }: SearchIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
