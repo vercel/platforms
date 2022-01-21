@@ -7,23 +7,34 @@ import Loader from "@/components/sites/Loader";
 import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 
-export default function Index(props) {
-  const router = useRouter();
-  if (router.isFallback) {
-    return <Loader />;
-  }
+import type { GetStaticPaths, GetStaticPropsContext } from "next";
+import type { Meta, PostData } from "@/types";
+import type { ParsedUrlQuery } from "querystring";
 
-  const data = JSON.parse(props.data);
+interface PathProps extends ParsedUrlQuery {
+  site: string;
+}
+
+interface IndexProps {
+  stringifiedData: string;
+}
+
+export default function Index({ stringifiedData }: IndexProps) {
+  const router = useRouter();
+  if (router.isFallback) return <Loader />;
+
+  // TODO: Cast parsed type
+  const data = JSON.parse(stringifiedData);
 
   const meta = {
     title: data.name,
     description: data.description,
+    logo: "/logo.png",
+    ogImage: data.image,
     ogUrl: data.customDomain
       ? data.customDomain
       : `https://${data.subdomain}.vercel.pub`,
-    ogImage: data.image,
-    logo: "/logo.png",
-  };
+  } as Meta;
 
   return (
     <Layout meta={meta} subdomain={data.subdomain}>
@@ -53,6 +64,7 @@ export default function Index(props) {
                   <div className="flex justify-start items-center space-x-4 w-full">
                     <div className="relative w-8 h-8 flex-none rounded-full overflow-hidden">
                       <BlurImage
+                        alt={data.user.name}
                         layout="fill"
                         objectFit="cover"
                         src={data.user.image}
@@ -89,7 +101,7 @@ export default function Index(props) {
         <div className="mx-5 lg:mx-24 2xl:mx-auto mb-20 max-w-screen-xl">
           <h2 className="font-cal text-4xl md:text-5xl mb-10">More stories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 w-full">
-            {data.posts.slice(1).map((metadata, index) => (
+            {data.posts.slice(1).map((metadata: PostData, index: number) => (
               <BlogCard key={index} data={metadata} />
             ))}
           </div>
@@ -99,47 +111,54 @@ export default function Index(props) {
   );
 }
 
-export async function getStaticPaths() {
-  const subdomains = await prisma.site.findMany({
-    select: {
-      subdomain: true,
-    },
-  });
-  const customDomains = await prisma.site.findMany({
-    where: {
-      NOT: {
-        customDomain: null,
+export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
+  const [subdomains, customDomains] = await Promise.all([
+    prisma.site.findMany({
+      select: {
+        subdomain: true,
       },
-    },
-    select: {
-      customDomain: true,
-    },
-  });
-  const allPaths = [
-    ...subdomains.map((subdomain) => {
-      return subdomain.subdomain;
     }),
-    ...customDomains.map((customDomain) => {
-      return customDomain.customDomain;
+    prisma.site.findMany({
+      where: {
+        NOT: {
+          customDomain: null,
+        },
+      },
+      select: {
+        customDomain: true,
+      },
     }),
-  ];
+  ]);
+
+  // TODO: TypeScript doesn't like the null filter here for some reason
+  // @ts-ignore
+  const allPaths: Array<string> = [
+    ...subdomains.map(({ subdomain }) => subdomain),
+    ...customDomains.map(({ customDomain }) => customDomain),
+  ].filter((path) => path !== null);
+
   return {
-    paths: allPaths.map((path) => {
-      return { params: { site: path } };
-    }),
+    paths: allPaths.map((path) => ({
+      params: {
+        site: path,
+      },
+    })),
     fallback: true,
   };
-}
+};
 
-export async function getStaticProps({ params: { site } }) {
-  let filter = {
+export async function getStaticProps({
+  params,
+}: GetStaticPropsContext<PathProps>) {
+  if (!params) throw new Error("No path parameters found");
+
+  const { site } = params;
+
+  const filter = {
+    customDomain: site.includes(".") ? site : undefined,
     subdomain: site,
   };
-  if (site.includes(".")) {
-    filter = {
-      customDomain: site,
-    };
-  }
+
   const data = await prisma.site.findUnique({
     where: filter,
     include: {
@@ -157,13 +176,11 @@ export async function getStaticProps({ params: { site } }) {
     },
   });
 
-  if (!data) {
-    return { notFound: true, revalidate: 10 };
-  }
+  if (!data) return { notFound: true, revalidate: 10 };
 
   return {
     props: {
-      data: JSON.stringify(data),
+      stringifiedData: JSON.stringify(data),
     },
     revalidate: 10,
   };

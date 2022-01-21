@@ -43,6 +43,7 @@ export default function Post({
   const router = useRouter();
   if (router.isFallback) return <Loader />;
 
+  // TODO: Cast parsed type
   const data = JSON.parse(stringifiedData);
   const adjacentPosts = JSON.parse(stringifiedAdjacentPosts) as Array<PostData>;
 
