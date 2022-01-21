@@ -15,6 +15,10 @@ import { getTweets } from "@/lib/twitter";
 import { useRouter } from "next/router";
 import Loader from "@/components/sites/Loader";
 
+import type { GetStaticPaths, GetStaticPropsContext } from "next";
+import type { Meta, PostData } from "@/types";
+import type { ParsedUrlQuery } from "querystring";
+
 const components = {
   Tweet,
   Link,
@@ -22,14 +26,25 @@ const components = {
   Examples,
 };
 
-export default function Post(props) {
-  const router = useRouter();
-  if (router.isFallback) {
-    return <Loader />;
-  }
+interface PathProps extends ParsedUrlQuery {
+  site: string;
+  slug: string;
+}
 
-  const data = JSON.parse(props.stringifiedData);
-  const adjacentPosts = JSON.parse(props.stringifiedAdjacentPosts);
+interface PostProps {
+  stringifiedData: string;
+  stringifiedAdjacentPosts: string;
+}
+
+export default function Post({
+  stringifiedAdjacentPosts,
+  stringifiedData,
+}: PostProps) {
+  const router = useRouter();
+  if (router.isFallback) return <Loader />;
+
+  const data = JSON.parse(stringifiedData);
+  const adjacentPosts = JSON.parse(stringifiedAdjacentPosts) as Array<PostData>;
 
   const meta = {
     title: data.title,
@@ -37,7 +52,7 @@ export default function Post(props) {
     ogUrl: `https://${data.site.subdomain}.vercel.pub/${data.slug}`,
     ogImage: data.image,
     logo: "/logo.png",
-  };
+  } as Meta;
 
   return (
     <Layout meta={meta} subdomain={data.site.subdomain}>
@@ -59,7 +74,12 @@ export default function Post(props) {
         >
           <div className="my-8">
             <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden inline-block align-middle">
-              <BlurImage width={80} height={80} src={data.site.user.image} />
+              <BlurImage
+                alt={data.site.user.name}
+                width={80}
+                height={80}
+                src={data.site.user.image}
+              />
             </div>
             <div className="inline-block text-md md:text-lg align-middle ml-3">
               by <span className="font-semibold">{data.site.user.name}</span>
@@ -69,6 +89,7 @@ export default function Post(props) {
       </div>
       <div className="relative h-80 md:h-150 w-full max-w-screen-lg lg:2/3 md:w-5/6 m-auto mb-10 md:mb-20 md:rounded-2xl overflow-hidden">
         <BlurImage
+          alt={data}
           layout="fill"
           objectFit="cover"
           placeholder="blur"
@@ -107,7 +128,7 @@ export default function Post(props) {
   );
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
   const posts = await prisma.post.findMany({
     where: {
       published: true,
@@ -122,36 +143,58 @@ export async function getStaticPaths() {
       },
     },
   });
+
   return {
     paths: posts.flatMap((post) => {
+      if (post.site === null || post.site.subdomain === null) return [];
+
       if (post.site.customDomain) {
         return [
-          { params: { site: post.site.customDomain, slug: post.slug } },
-          { params: { site: post.site.subdomain, slug: post.slug } },
+          {
+            params: {
+              site: post.site.customDomain,
+              slug: post.slug,
+            },
+          },
+          {
+            params: {
+              site: post.site.subdomain,
+              slug: post.slug,
+            },
+          },
         ];
       } else {
-        return { params: { site: post.site.subdomain, slug: post.slug } };
+        return {
+          params: {
+            site: post.site.subdomain,
+            slug: post.slug,
+          },
+        };
       }
     }),
     fallback: true,
   };
-}
+};
 
-export async function getStaticProps({ params: { site, slug } }) {
-  let constraint = {
+export async function getStaticProps({
+  params,
+}: GetStaticPropsContext<PathProps>) {
+  if (!params) throw new Error("No path parameters found");
+
+  const { site, slug } = params;
+
+  const constraint = {
     site: {
+      customDomain: site.includes(".") ? site : undefined,
       subdomain: site,
     },
   };
-  if (site.includes(".")) {
-    constraint = {
-      site: {
-        customDomain: site,
-      },
-    };
-  }
-  let data = await prisma.post.findFirst({
-    where: { ...constraint, slug: slug },
+
+  const data = await prisma.post.findFirst({
+    where: {
+      ...constraint,
+      slug,
+    },
     include: {
       site: {
         include: {
@@ -161,40 +204,42 @@ export async function getStaticProps({ params: { site, slug } }) {
     },
   });
 
-  if (!data) {
-    return { notFound: true, revalidate: 10 };
-  }
+  if (!data) return { notFound: true, revalidate: 10 };
 
-  data.mdxSource = await getMdxSource(data.content);
-
-  const adjacentPosts = await prisma.post.findMany({
-    where: {
-      ...constraint,
-      published: true,
-      NOT: {
-        id: data.id,
+  const [mdxSource, adjacentPosts] = await Promise.all([
+    getMdxSource(data.content!),
+    prisma.post.findMany({
+      where: {
+        ...constraint,
+        published: true,
+        NOT: {
+          id: data.id,
+        },
       },
-    },
-    select: {
-      slug: true,
-      title: true,
-      createdAt: true,
-      description: true,
-      image: true,
-      imageBlurhash: true,
-    },
-  });
+      select: {
+        slug: true,
+        title: true,
+        createdAt: true,
+        description: true,
+        image: true,
+        imageBlurhash: true,
+      },
+    }),
+  ]);
 
   return {
     props: {
-      stringifiedData: JSON.stringify(data),
+      stringifiedData: JSON.stringify({
+        ...data,
+        mdxSource,
+      }),
       stringifiedAdjacentPosts: JSON.stringify(adjacentPosts),
     },
     revalidate: 10,
   };
 }
 
-async function getMdxSource(postContents) {
+async function getMdxSource(postContents: string) {
   // Use gray-matter to parse the post metadata section
   const { content, data } = matter(postContents);
 
@@ -236,30 +281,52 @@ async function getMdxSource(postContents) {
   return mdxSource;
 }
 
-const replaceAsync = async (str, regex, asyncFn) => {
-  const promises = [];
-  str.replace(regex, (match, ...args) => {
-    const promise = asyncFn(match, ...args);
-    promises.push(promise);
+// TODO: Validate TypeScript migration did not modify the functionality
+const replaceAsync = async (
+  str: string,
+  regex: RegExp,
+  asyncFn: (str: string) => Promise<string>
+): Promise<string> => {
+  const matches = new Array<string>();
+
+  str.replace(regex, (match) => {
+    matches.push(match);
+    return match;
   });
-  const data = await Promise.all(promises);
-  return str.replace(regex, () => data.shift());
+
+  const data = await Promise.all(matches.map((match) => asyncFn(match)));
+
+  return str.replace(regex, () => {
+    const str = data.shift();
+    if (!str) throw new Error("Unable to shift string from promised data");
+
+    return str;
+  });
 };
 
-const getTweetMetadata = async (tweetUrl) => {
+const getTweetMetadata = async (tweetUrl: string): Promise<string> => {
   const regex = /\/status\/(\d+)/gm;
-  const id = regex.exec(tweetUrl)[1];
+
+  // TODO: Regex could return null
+  const id = regex.exec(tweetUrl)![1];
+
   const tweetData = await getTweets(id);
-  const tweetMDX =
-    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>";
-  return tweetMDX;
+
+  return (
+    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>"
+  );
 };
 
-const getExamples = async (str) => {
+const getExamples = async (str: string): Promise<string> => {
   const regex = /names=\[(.+)\]/gm;
+
+  // TODO: Regex could return null
   const raw = regex.exec(str);
-  const names = raw[1].split(",");
+
+  const names = raw![1].split(",");
+
   let data = [];
+
   for (let i = 0; i < names.length; i++) {
     const results = await prisma.example.findUnique({
       where: {
@@ -268,5 +335,6 @@ const getExamples = async (str) => {
     });
     data.push(results);
   }
+
   return `<Examples data={${JSON.stringify(data)}} />`;
 };
