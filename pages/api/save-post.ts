@@ -6,6 +6,11 @@ export default async function SavePost(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+
   const data = JSON.parse(req.body);
 
   const response = await prisma.post.update({

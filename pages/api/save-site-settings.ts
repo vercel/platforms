@@ -6,8 +6,15 @@ export default async function SaveSiteSettings(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+
   const data = JSON.parse(req.body);
+
   const subdomain = data.subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
+
   const response = await prisma.site.update({
     where: {
       id: data.id,
