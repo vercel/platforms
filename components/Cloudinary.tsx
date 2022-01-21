@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import type { ReactNode } from "react";
-import type { CloudinaryWidget } from "@/types";
+import type { CloudinaryWidget, CloudinaryWidgetResult } from "@/types";
 
 interface ChildrenProps {
   open: (e: Event) => void;
@@ -17,13 +17,13 @@ export default function CloudinaryUploadWidget({
   children,
 }: CloudinaryUploadWidgetProps) {
   function showWidget() {
-    const widget = window.cloudinary.createUploadWidget(
+    const widget: CloudinaryWidget = window.cloudinary.createUploadWidget(
       {
         cloudName: "vercel-platforms",
         uploadPreset: "w0vnflc6",
         cropping: true,
       },
-      (error: unknown | undefined, result: CloudinaryWidget) => {
+      (error: unknown | undefined, result: CloudinaryWidgetResult) => {
         if (!error && result && result.event === "success") {
           callback(result.info);
         }

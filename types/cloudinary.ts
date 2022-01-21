@@ -8,7 +8,7 @@ declare global {
     createUploadWidget: (
       options: CloudinaryWidgetOptions,
       widgetCallback?: Function
-    ) => void;
+    ) => CloudinaryWidget;
     openUploadWidget: (
       options: CloudinaryWidgetOptions,
       widgetCallback?: Function
@@ -35,13 +35,26 @@ enum CloudinaryWidgetSource {
   URL = "url",
 }
 
+export interface CloudinaryWidget {
+  close: (t?: unknown) => void;
+  destroy: (t?: unknown) => void;
+  hide: () => void;
+  isDestroyed: () => void;
+  isMinimized: () => void;
+  isShowing: () => void;
+  minimize: () => void;
+  open: (t?: unknown, e?: unknown) => void;
+  show: () => void;
+  update: (t?: unknown) => void;
+}
+
 interface CloudinaryWidgetOptions {
   cloudName: string;
   cropping: boolean;
   uploadPreset: string;
 }
 
-export interface CloudinaryWidget {
+export interface CloudinaryWidgetResult {
   data: {
     event: string;
     info: string;
