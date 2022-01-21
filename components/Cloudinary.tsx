@@ -24,7 +24,6 @@ export default function CloudinaryUploadWidget({
         cropping: true,
       },
       (error: unknown | undefined, result: CloudinaryWidget) => {
-        console.log({ result, error });
         if (!error && result && result.event === "success") {
           callback(result.info);
         }
