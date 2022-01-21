@@ -8,15 +8,13 @@ import saveImage from "@/lib/save-image";
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 
-import type { User as NextAuthUser } from "next-auth";
-
-type User = Pick<NextAuthUser, "name" | "email" | "image">;
+import type { UserSettings } from "@/types";
 
 export default function AppSettings() {
   const { data: session } = useSession();
 
   const [saving, setSaving] = useState<boolean>(false);
-  const [data, setData] = useState<User | null>(null);
+  const [data, setData] = useState<UserSettings | null>(null);
 
   const nameRef = useRef<HTMLInputElement | null>(null);
   const emailRef = useRef<HTMLInputElement | null>(null);
@@ -28,7 +26,7 @@ export default function AppSettings() {
       });
   }, [session]);
 
-  async function saveSettings(data: User | null) {
+  async function saveSettings(data: UserSettings | null) {
     setSaving(true);
     const response = await fetch("/api/save-settings", {
       method: "POST",
