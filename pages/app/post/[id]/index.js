@@ -6,8 +6,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
 import Loader from "@/components/app/Loader";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import { fetcher } from "@/lib/fetcher"
 
 export default function Post() {
   const router = useRouter();

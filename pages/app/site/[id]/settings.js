@@ -10,8 +10,7 @@ import DomainCard from "@/components/app/DomainCard";
 import Modal from "@/components/Modal";
 import toast, { Toaster } from "react-hot-toast";
 import { useDebounce } from "use-debounce";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import { fetcher } from "@/lib/fetcher"
 
 export default function SiteSettings() {
   const router = useRouter();

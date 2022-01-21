@@ -9,8 +9,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Loader from "@/components/app/Loader";
 import toast, { Toaster } from "react-hot-toast";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import { fetcher } from "@/lib/fetcher"
 
 export default function PostSettings() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 import useSWR, { mutate } from "swr";
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
 import { useState } from "react";
 import LoadingDots from "@/components/app/loading-dots";
+import { fetcher } from "@/lib/fetcher"
 
 const DomainCard = ({ data, setData }) => {
   const { data: valid, isValidating } = useSWR(

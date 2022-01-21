@@ -8,8 +8,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import { fetcher } from "@/lib/fetcher"
 
 export default function AppIndex() {
   const [showModal, setShowModal] = useState(false);

@@ -5,8 +5,7 @@ import LoadingDots from "@/components/app/loading-dots";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useSWR from "swr";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import { fetcher } from "@/lib/fetcher"
 
 export default function SiteIndex() {
   const [creatingPost, setCreatingPost] = useState(false);

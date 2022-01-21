@@ -6,8 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import useSWR from "swr";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import { fetcher } from "@/lib/fetcher"
 
 export default function SiteDrafts() {
   const [creatingPost, setCreatingPost] = useState(false);
