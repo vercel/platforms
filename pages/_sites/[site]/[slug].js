@@ -121,6 +121,10 @@ export async function getStaticPaths() {
         },
       },
     },
+    take: 80,
+    orderBy: {
+      createdAt: "asc",
+    },
   });
   return {
     paths: posts.flatMap((post) => {
