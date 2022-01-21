@@ -46,7 +46,7 @@ export default function Layout({ siteId, children }) {
           <meta property="og:type" content="website" />
 
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:site" content="@Elegance" />
+          <meta name="twitter:site" content="@Vercel" />
           <meta name="twitter:creator" content="@StevenTey" />
           <meta name="twitter:title" content={title} />
           <meta name="twitter:description" content={description} />
