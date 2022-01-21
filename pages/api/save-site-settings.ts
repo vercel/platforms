@@ -15,18 +15,23 @@ export default async function SaveSiteSettings(
 
   const subdomain = data.subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
 
-  const response = await prisma.site.update({
-    where: {
-      id: data.id,
-    },
-    data: {
-      name: data.name,
-      description: data.description,
-      subdomain: subdomain.length > 0 ? subdomain : data.currentSubdomain,
-      image: data.image,
-      imageBlurhash: data.imageBlurhash,
-    },
-  });
+  try {
+    const response = await prisma.site.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        name: data.name,
+        description: data.description,
+        subdomain: subdomain.length > 0 ? subdomain : data.currentSubdomain,
+        image: data.image,
+        imageBlurhash: data.imageBlurhash,
+      },
+    });
 
-  res.status(200).json(response);
+    res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

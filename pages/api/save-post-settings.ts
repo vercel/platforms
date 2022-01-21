@@ -13,16 +13,21 @@ export default async function SavePostSettings(
 
   const data = JSON.parse(req.body);
 
-  const response = await prisma.post.update({
-    where: {
-      id: data.id,
-    },
-    data: {
-      slug: data.slug,
-      image: data.image,
-      imageBlurhash: data.imageBlurhash,
-    },
-  });
+  try {
+    const response = await prisma.post.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        slug: data.slug,
+        image: data.image,
+        imageBlurhash: data.imageBlurhash,
+      },
+    });
 
-  res.status(200).json(response);
+    res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

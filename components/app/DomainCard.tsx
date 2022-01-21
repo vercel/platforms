@@ -75,7 +75,10 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
             onClick={async () => {
               setRemoving(true);
               await fetch(
-                `/api/remove-domain?domain=${data.customDomain}&siteId=${data.id}`
+                `/api/remove-domain?domain=${data.customDomain}&siteId=${data.id}`,
+                {
+                  method: "DELETE",
+                }
               ).then((res) => {
                 setRemoving(false);
                 if (res.ok) {

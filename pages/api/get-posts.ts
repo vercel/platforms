@@ -16,22 +16,32 @@ export default async function getPosts(
   if (Array.isArray(siteId) || Array.isArray(published))
     res.status(400).end("Bad request. Query parameters cannot be an array.");
 
-  const posts = await prisma.post.findMany({
-    where: {
-      site: {
-        id: siteId as string,
-      },
-      published: JSON.parse(published as string),
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  const site = await prisma.site.findFirst({
-    where: {
-      id: siteId as string,
-    },
-  });
+  try {
+    const [posts, site] = await Promise.all([
+      prisma.post.findMany({
+        where: {
+          site: {
+            id: siteId as string,
+          },
+          published: JSON.parse(published as string),
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      prisma.site.findFirst({
+        where: {
+          id: siteId as string,
+        },
+      }),
+    ]);
 
-  res.status(200).json({ posts, site });
+    res.status(200).json({
+      posts,
+      site,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

@@ -13,13 +13,18 @@ export default async function checkSubdomain(
 
   const sub = (subdomain as string).replace(/[^a-zA-Z0-9/-]+/g, "");
 
-  const data = await prisma.site.findUnique({
-    where: {
-      subdomain: sub,
-    },
-  });
+  try {
+    const data = await prisma.site.findUnique({
+      where: {
+        subdomain: sub,
+      },
+    });
 
-  const available = data === null && sub.length !== 0;
+    const available = data === null && sub.length !== 0;
 
-  res.status(200).json(available);
+    res.status(200).json(available);
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

@@ -16,10 +16,16 @@ export default async function getSiteSettings(
   if (Array.isArray(siteId))
     res.status(400).end("Bad request. siteId parameter cannot be an array.");
 
-  const settings = await prisma.site.findUnique({
-    where: {
-      id: siteId as string,
-    },
-  });
-  res.status(200).json(settings);
+  try {
+    const settings = await prisma.site.findUnique({
+      where: {
+        id: siteId as string,
+      },
+    });
+
+    res.status(200).json(settings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

@@ -16,17 +16,25 @@ export default async function DeleteSite(
   if (Array.isArray(siteId))
     res.status(400).end("Bad request. siteId parameter cannot be an array.");
 
-  await prisma.post.deleteMany({
-    where: {
-      site: {
-        id: siteId as string,
-      },
-    },
-  });
-  await prisma.site.delete({
-    where: {
-      id: siteId as string,
-    },
-  });
-  res.status(200).end();
+  try {
+    await Promise.all([
+      prisma.post.deleteMany({
+        where: {
+          site: {
+            id: siteId as string,
+          },
+        },
+      }),
+      prisma.site.delete({
+        where: {
+          id: siteId as string,
+        },
+      }),
+    ]);
+
+    res.status(200).end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

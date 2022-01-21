@@ -6,20 +6,21 @@ export default async function requestDelegation(
 ) {
   const { domain } = req.query;
 
-  const response = await fetch(
-    `https://api.vercel.com/v6/domains/${domain}/request-delegation?teamId=${process.env.VERCEL_TEAM_ID}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-    }
-  );
+  try {
+    const response = await fetch(
+      `https://api.vercel.com/v6/domains/${domain}/request-delegation?teamId=${process.env.VERCEL_TEAM_ID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      }
+    );
 
-  if (response.ok) {
-    res.status(200).end();
-  } else {
-    res.status(403).end();
+    res.status(response.ok ? 200 : 403).end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
   }
 }

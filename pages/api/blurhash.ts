@@ -13,7 +13,12 @@ export default async function blurhash(
       .status(400)
       .end("Bad request. URL parameter cannot be an array of urls.");
 
-  const { blurhash } = await getPlaiceholder(url as string);
+  try {
+    const { blurhash } = await getPlaiceholder(url as string);
 
-  res.status(200).json(blurhash);
+    res.status(200).json(blurhash);
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

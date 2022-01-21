@@ -16,12 +16,18 @@ export default async function getSites(
   if (Array.isArray(sessionId))
     res.status(400).end("Bad request. sessionId parameter cannot be an array.");
 
-  const sites = await prisma.site.findMany({
-    where: {
-      user: {
-        id: sessionId as string,
+  try {
+    const sites = await prisma.site.findMany({
+      where: {
+        user: {
+          id: sessionId as string,
+        },
       },
-    },
-  });
-  res.status(200).json(sites);
+    });
+
+    res.status(200).json(sites);
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

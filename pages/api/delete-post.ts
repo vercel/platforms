@@ -16,11 +16,16 @@ export default async function DeletePost(
   if (Array.isArray(postId))
     res.status(400).end("Bad request. postId parameter cannot be an array.");
 
-  await prisma.post.delete({
-    where: {
-      id: postId as string,
-    },
-  });
+  try {
+    await prisma.post.delete({
+      where: {
+        id: postId as string,
+      },
+    });
 
-  res.status(200).end();
+    res.status(200).end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }

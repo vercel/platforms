@@ -11,14 +11,19 @@ export default async function PublishPost(
   if (Array.isArray(postId))
     res.status(400).end("Bad request. postId parameter cannot be an array.");
 
-  const post = await prisma.post.update({
-    where: {
-      id: postId as string,
-    },
-    data: {
-      published: true,
-    },
-  });
+  try {
+    const post = await prisma.post.update({
+      where: {
+        id: postId as string,
+      },
+      data: {
+        published: true,
+      },
+    });
 
-  res.status(200).json(post);
+    res.status(200).json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).end(error);
+  }
 }
