@@ -32,13 +32,13 @@ export default NextAuth({
   },
   adapter: PrismaAdapter(prisma),
   callbacks: {
-    async session({ session, user }) {
-      // TODO: Fix type errors
-      // @ts-ignore
-      session.user.id = user.id;
-      // @ts-ignore
-      session.user.username = user.username;
-      return session;
-    },
+    session: ({ session, user }) => ({
+      ...session,
+      user: {
+        ...session.user,
+        id: user.id,
+        username: user.username,
+      },
+    }),
   },
 });
