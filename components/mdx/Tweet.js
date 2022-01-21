@@ -26,8 +26,6 @@ function getRemainingTime(ISOString) {
 export default function Tweet({ id, metadata, className }) {
   const parsedMetadata = JSON.parse(metadata.replace(/\n/g, "\\n"));
 
-  //console.log(JSON.stringify(parsedMetadata, null, 4));
-
   const text = parsedMetadata.text;
   const author = parsedMetadata.author;
   const media = parsedMetadata.media;
