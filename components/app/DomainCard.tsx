@@ -1,10 +1,28 @@
 import useSWR, { mutate } from "swr";
 import { useState } from "react";
 import LoadingDots from "@/components/app/loading-dots";
-import { fetcher } from "@/lib/fetcher"
+import { fetcher } from "@/lib/fetcher";
 
-const DomainCard = ({ data, setData }) => {
-  const { data: valid, isValidating } = useSWR(
+import type { Site } from "@prisma/client";
+
+type DomainData = Pick<
+  Site,
+  | "customDomain"
+  | "description"
+  | "id"
+  | "image"
+  | "imageBlurhash"
+  | "name"
+  | "subdomain"
+>;
+
+interface DomainCardProps<T = DomainData> {
+  data: T;
+  setData: (data: T) => void;
+}
+
+export default function DomainCard({ data, setData }: DomainCardProps) {
+  const { data: valid, isValidating } = useSWR<Site>(
     `/api/check-domain?domain=${data.customDomain}`,
     fetcher,
     { revalidateOnMount: true, refreshInterval: 5000 }
@@ -167,6 +185,4 @@ const DomainCard = ({ data, setData }) => {
       )}
     </div>
   );
-};
-
-export default DomainCard;
+}
