@@ -44,7 +44,6 @@ export default function AppIndex() {
   const router = useRouter();
 
   const { data: session } = useSession();
-  // @ts-ignore
   const sessionId = session?.user?.id;
 
   const { data: sites } = useSWR<Array<Site>>(
