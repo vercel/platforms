@@ -351,7 +351,7 @@ export default function SiteSettings() {
             event.preventDefault();
             await deleteSite(siteId);
           }}
-          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all transform bg-white shadow-xl rounded-lg"
+          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg"
         >
           <h2 className="font-cal text-2xl mb-6">Delete Site</h2>
           <div className="grid gap-y-5 w-5/6 mx-auto">

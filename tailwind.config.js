@@ -1,18 +1,20 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-  mode: "jit",
-  purge: [
+  content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
     "./lib/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'media',
   theme: {
     fontFamily: {
       cal: ["Cal Sans", "Inter var", "sans-serif"],
     },
     extend: {
+      colors: {
+        current: 'currentColor',
+      },
       width: {
         1536: "1536px",
       },
@@ -60,9 +62,6 @@ module.exports = {
         wiggle: "wiggle 0.8s both",
       },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [
     require("@tailwindcss/typography"),
