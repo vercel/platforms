@@ -3,7 +3,6 @@ import Layout from "@/components/app/Layout";
 import BlurImage from "@/components/BlurImage";
 import LoadingDots from "@/components/app/loading-dots";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
@@ -17,7 +16,7 @@ export default function SiteDrafts() {
   const siteId = id;
 
   const { data } = useSWR(
-    siteId && `/api/get-posts?siteId=${siteId}&published=false`,
+    siteId && `/api/post?siteId=${siteId}&published=false`,
     fetcher,
     {
       onSuccess: (data) => {
@@ -29,7 +28,7 @@ export default function SiteDrafts() {
   );
 
   async function createPost(siteId) {
-    const res = await fetch(`/api/create-post?siteId=${siteId}`, {
+    const res = await fetch(`/api/post?siteId=${siteId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
