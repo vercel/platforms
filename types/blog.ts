@@ -1,3 +1,5 @@
+import type { Post, Site, User } from "@prisma/client";
+
 export interface PostData {
   createdAt: string;
   description: string;
@@ -13,4 +15,9 @@ export interface CardData {
   imageBlurhash: string;
   name: string;
   url: string;
+}
+
+export interface _SiteData extends Site {
+  user: User | null;
+  posts: Array<Post>;
 }

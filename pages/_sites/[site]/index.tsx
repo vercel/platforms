@@ -8,7 +8,7 @@ import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 
 import type { GetStaticPaths, GetStaticPropsContext } from "next";
-import type { Meta, PostData } from "@/types";
+import type { _SiteData, Meta, PostData } from "@/types";
 import type { ParsedUrlQuery } from "querystring";
 
 interface PathProps extends ParsedUrlQuery {
@@ -23,8 +23,7 @@ export default function Index({ stringifiedData }: IndexProps) {
   const router = useRouter();
   if (router.isFallback) return <Loader />;
 
-  // TODO: Cast parsed type
-  const data = JSON.parse(stringifiedData);
+  const data = JSON.parse(stringifiedData) as _SiteData;
 
   const meta = {
     title: data.name,
@@ -44,15 +43,21 @@ export default function Index({ stringifiedData }: IndexProps) {
             <Link href={`/${data.posts[0].slug}`}>
               <a>
                 <div className="relative group h-80 sm:h-150 w-full mx-auto overflow-hidden lg:rounded-xl">
-                  <BlurImage
-                    src={data.posts[0].image}
-                    alt={data.posts[0].title}
-                    layout="fill"
-                    objectFit="cover"
-                    className="group-hover:scale-105 group-hover:duration-300"
-                    placeholder="blur"
-                    blurDataURL={data.posts[0].imageBlurhash}
-                  />
+                  {data.posts[0].image ? (
+                    <BlurImage
+                      alt={data.posts[0].title ?? ""}
+                      blurDataURL={data.posts[0].imageBlurhash ?? undefined}
+                      className="group-hover:scale-105 group-hover:duration-300"
+                      layout="fill"
+                      objectFit="cover"
+                      placeholder="blur"
+                      src={data.posts[0].image}
+                    />
+                  ) : (
+                    <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
+                      ?
+                    </div>
+                  )}
                 </div>
                 <div className="mt-10 w-5/6 mx-auto lg:w-full">
                   <h2 className="font-cal text-4xl md:text-6xl my-10">
@@ -63,19 +68,25 @@ export default function Index({ stringifiedData }: IndexProps) {
                   </p>
                   <div className="flex justify-start items-center space-x-4 w-full">
                     <div className="relative w-8 h-8 flex-none rounded-full overflow-hidden">
-                      <BlurImage
-                        alt={data.user.name}
-                        layout="fill"
-                        objectFit="cover"
-                        src={data.user.image}
-                      />
+                      {data.user?.image ? (
+                        <BlurImage
+                          alt={data.user?.name ?? "User Avatar"}
+                          layout="fill"
+                          objectFit="cover"
+                          src={data.user?.image}
+                        />
+                      ) : (
+                        <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
+                          ?
+                        </div>
+                      )}
                     </div>
                     <p className="inline-block font-semibold text-sm md:text-base align-middle ml-3 whitespace-nowrap">
-                      {data.user.name}
+                      {data.user?.name}
                     </p>
                     <div className="border-l border-gray-600 h-6" />
                     <p className="text-sm md:text-base font-light text-gray-500 w-10/12 m-auto my-5">
-                      <Date dateString={data.posts[0].createdAt} />
+                      <Date dateString={data.posts[0].createdAt.toString()} />
                     </p>
                   </div>
                 </div>
@@ -101,7 +112,7 @@ export default function Index({ stringifiedData }: IndexProps) {
         <div className="mx-5 lg:mx-24 2xl:mx-auto mb-20 max-w-screen-xl">
           <h2 className="font-cal text-4xl md:text-5xl mb-10">More stories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 w-full">
-            {data.posts.slice(1).map((metadata: PostData, index: number) => (
+            {data.posts.slice(1).map((metadata, index) => (
               <BlogCard key={index} data={metadata} />
             ))}
           </div>
@@ -157,7 +168,7 @@ export async function getStaticProps({
     subdomain: site,
   };
 
-  const data = await prisma.site.findUnique({
+  const data = (await prisma.site.findUnique({
     where: filter,
     include: {
       user: true,
@@ -172,7 +183,7 @@ export async function getStaticProps({
         ],
       },
     },
-  });
+  })) as _SiteData;
 
   if (!data) return { notFound: true, revalidate: 10 };
 

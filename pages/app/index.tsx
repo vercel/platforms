@@ -178,7 +178,7 @@ export default function AppIndex() {
                             alt={site.name ?? "Site thumbnail"}
                           />
                         ) : (
-                          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl">
+                          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
                             ?
                           </div>
                         )}
