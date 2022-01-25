@@ -3,10 +3,12 @@ import TwitterProvider from "next-auth/providers/twitter";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 
+import type { NextAuthOptions } from "next-auth";
+
 if (!process.env.TWITTER_ID || !process.env.TWITTER_SECRET)
   throw new Error("Failed to initialize Twitter authentication");
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     TwitterProvider({
       clientId: process.env.TWITTER_ID,
@@ -41,4 +43,6 @@ export default NextAuth({
       },
     }),
   },
-});
+} as NextAuthOptions;
+
+export default NextAuth(authOptions);

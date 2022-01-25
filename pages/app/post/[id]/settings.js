@@ -17,7 +17,7 @@ export default function PostSettings() {
   const postId = id;
 
   const { data: settings, isValidating } = useSWR(
-    `/api/get-post-data?postId=${postId}`,
+    `/api/post?postId=${postId}`,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -47,8 +47,11 @@ export default function PostSettings() {
 
   async function savePostSettings(data) {
     setSaving(true);
-    const response = await fetch("/api/save-post-settings", {
-      method: "POST",
+    const response = await fetch("/api/post", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         id: postId,
         slug: data.slug,
@@ -64,8 +67,8 @@ export default function PostSettings() {
 
   async function deletePost(postId) {
     setDeletingPost(true);
-    const response = await fetch(`/api/delete-post?postId=${postId}`, {
-      method: "DELETE"
+    const response = await fetch(`/api/post?postId=${postId}`, {
+      method: "DELETE",
     });
     if (response.ok) {
       router.push(`/site/${settings.site.id}`);
@@ -221,7 +224,7 @@ export default function PostSettings() {
                 saving
                   ? "cursor-not-allowed bg-gray-300 border-gray-300"
                   : "bg-black hover:bg-white hover:text-black border-black"
-              } mx-2 rounded-md w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
+              } mx-2 w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
             >
               {saving ? <LoadingDots /> : "Save Changes"}
             </button>

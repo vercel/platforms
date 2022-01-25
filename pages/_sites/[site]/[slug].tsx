@@ -159,6 +159,10 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
         },
       },
     },
+    take: 80,
+    orderBy: {
+      createdAt: "asc",
+    },
   });
 
   return {

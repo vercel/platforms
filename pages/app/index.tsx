@@ -47,12 +47,12 @@ export default function AppIndex() {
   const sessionId = session?.user?.id;
 
   const { data: sites } = useSWR<Array<Site>>(
-    sessionId && `/api/get-sites?sessionId=${sessionId}`,
+    sessionId && `/api/site`,
     fetcher
   );
 
   async function createSite(e: FormEvent<HTMLFormElement>) {
-    const res = await fetch("/api/create-site", {
+    const res = await fetch("/api/site", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
