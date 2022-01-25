@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { HttpMethod } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -6,8 +7,8 @@ export default async function checkSubdomain(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", ["GET"]);
+  if (req.method !== HttpMethod.GET) {
+    res.setHeader("Allow", [HttpMethod.GET]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 

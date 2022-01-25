@@ -1,6 +1,8 @@
-import { authOptions } from "./auth/[...nextauth]";
 import { createSite, deleteSite, getSite, updateSite } from "@/lib/api";
 import { getServerSession } from "next-auth/next";
+
+import { authOptions } from "./auth/[...nextauth]";
+import { HttpMethod } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,16 +11,21 @@ export default async function site(req: NextApiRequest, res: NextApiResponse) {
   if (!session) return res.status(401).end();
 
   switch (req.method) {
-    case "GET":
+    case HttpMethod.GET:
       return getSite(req, res, session);
-    case "POST":
+    case HttpMethod.POST:
       return createSite(req, res);
-    case "DELETE":
+    case HttpMethod.DELETE:
       return deleteSite(req, res);
-    case "PUT":
+    case HttpMethod.PUT:
       return updateSite(req, res);
     default:
-      res.setHeader("Allow", ["GET", "POST", "DELETE", "PUT"]);
+      res.setHeader("Allow", [
+        HttpMethod.GET,
+        HttpMethod.POST,
+        HttpMethod.DELETE,
+        HttpMethod.PUT,
+      ]);
       return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

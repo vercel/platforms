@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { HttpMethod } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -6,8 +7,8 @@ export default async function SaveSiteSettings(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", ["POST"]);
+  if (req.method !== HttpMethod.POST) {
+    res.setHeader("Allow", [HttpMethod.POST]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 

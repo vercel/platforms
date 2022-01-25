@@ -1,11 +1,13 @@
+import { HttpMethod } from "@/types";
+
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function checkDomain(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", ["GET"]);
+  if (req.method !== HttpMethod.GET) {
+    res.setHeader("Allow", [HttpMethod.GET]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
@@ -15,7 +17,7 @@ export default async function checkDomain(
     const response = await fetch(
       `https://api.vercel.com/v6/domains/${domain}/config?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
-        method: "GET",
+        method: HttpMethod.GET,
         headers: {
           Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
           "Content-Type": "application/json",

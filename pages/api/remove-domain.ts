@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { HttpMethod } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -6,8 +7,8 @@ export default async function removeDomain(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "DELETE") {
-    res.setHeader("Allow", ["DELETE"]);
+  if (req.method !== HttpMethod.DELETE) {
+    res.setHeader("Allow", [HttpMethod.DELETE]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
@@ -23,7 +24,7 @@ export default async function removeDomain(
         headers: {
           Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
         },
-        method: "DELETE",
+        method: HttpMethod.DELETE,
       }
     );
 

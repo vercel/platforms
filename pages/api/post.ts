@@ -2,6 +2,7 @@ import { createPost, deletePost, getPost, updatePost } from "@/lib/api";
 import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "./auth/[...nextauth]";
+import { HttpMethod } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -10,16 +11,21 @@ export default async function post(req: NextApiRequest, res: NextApiResponse) {
   if (!session) return res.status(401).end();
 
   switch (req.method) {
-    case "GET":
+    case HttpMethod.GET:
       return getPost(req, res);
-    case "POST":
+    case HttpMethod.POST:
       return createPost(req, res);
-    case "DELETE":
+    case HttpMethod.DELETE:
       return deletePost(req, res);
-    case "PUT":
+    case HttpMethod.PUT:
       return updatePost(req, res);
     default:
-      res.setHeader("Allow", ["GET", "POST", "DELETE", "PUT"]);
+      res.setHeader("Allow", [
+        HttpMethod.GET,
+        HttpMethod.POST,
+        HttpMethod.DELETE,
+        HttpMethod.PUT,
+      ]);
       return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

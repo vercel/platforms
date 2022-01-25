@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
 import { fetcher } from "@/lib/fetcher";
+import { HttpMethod } from "@/types";
 
 import type { FormEvent } from "react";
 import type { Site } from "@prisma/client";
@@ -53,7 +54,7 @@ export default function AppIndex() {
 
   async function createSite(e: FormEvent<HTMLFormElement>) {
     const res = await fetch("/api/site", {
-      method: "POST",
+      method: HttpMethod.POST,
       headers: {
         "Content-Type": "application/json",
       },

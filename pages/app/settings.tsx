@@ -4,6 +4,7 @@ import BlurImage from "@/components/BlurImage";
 import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
 import saveImage from "@/lib/save-image";
+import { HttpMethod } from "@/types";
 
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
@@ -29,7 +30,7 @@ export default function AppSettings() {
   async function saveSettings(data: UserSettings | null) {
     setSaving(true);
     const response = await fetch("/api/save-settings", {
-      method: "POST",
+      method: HttpMethod.POST,
       body: JSON.stringify({
         ...data,
       }),
