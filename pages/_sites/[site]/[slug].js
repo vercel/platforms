@@ -120,10 +120,6 @@ export async function getStaticPaths() {
         },
       },
     },
-    take: 80,
-    orderBy: {
-      createdAt: "asc",
-    },
   });
   return {
     paths: posts.flatMap((post) => {
@@ -205,8 +201,6 @@ async function getMdxSource(postContents) {
 
   // Convert converted html to string format
   const contentHtml = String(processedContent);
-
-  console.log(contentHtml);
 
   // replace all external links
   const replacedExternalLinks = contentHtml.replace(
