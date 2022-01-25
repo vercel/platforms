@@ -1,9 +1,8 @@
 import Layout from "@/components/sites/Layout";
 import Link from "next/link";
 import Tweet from "@/components/mdx/Tweet";
-import matter from "gray-matter";
-import remark from "remark";
-import html from "remark-html";
+import { remark } from "remark";
+import remarkMdx from "remark-mdx";
 import { serialize } from "next-mdx-remote/serialize";
 import { MDXRemote } from "next-mdx-remote";
 import BlurImage from "@/components/BlurImage";
@@ -121,10 +120,6 @@ export async function getStaticPaths() {
         },
       },
     },
-    take: 80,
-    orderBy: {
-      createdAt: "asc",
-    },
   });
   return {
     paths: posts.flatMap((post) => {
@@ -199,14 +194,13 @@ export async function getStaticProps({ params: { site, slug } }) {
 }
 
 async function getMdxSource(postContents) {
-  // Use gray-matter to parse the post metadata section
-  const { content, data } = matter(postContents);
-
   // Use remark to convert markdown into HTML string
-  const processedContent = await remark().use(html).process(content);
+  const processedContent = await remark()
+    .use(remarkMdx)
+    .processSync(postContents);
 
   // Convert converted html to string format
-  const contentHtml = processedContent.toString();
+  const contentHtml = String(processedContent);
 
   // replace all external links
   const replacedExternalLinks = contentHtml.replace(
@@ -219,7 +213,6 @@ async function getMdxSource(postContents) {
     /<a href="\/(.+?)">(.+?)<\/a>/g,
     `<Link href="/$1"><a className="cursor-pointer">$2</a></Link>`
   );
-
   // replace all Examples
   const replacedExamples = await replaceAsync(
     replacedInternalLinks,
@@ -260,7 +253,7 @@ const getTweetMetadata = async (tweetUrl) => {
 };
 
 const getExamples = async (str) => {
-  const regex = /names=\[(.+)\]/gm;
+  const regex = /names="(.+)"/gm;
   const raw = regex.exec(str);
   const names = raw[1].split(",");
   let data = [];
