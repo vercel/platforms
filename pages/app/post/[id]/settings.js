@@ -18,7 +18,7 @@ export default function PostSettings() {
   const postId = id;
 
   const { data: settings, isValidating } = useSWR(
-    `/api/get-post-data?postId=${postId}`,
+    `/api/post?postId=${postId}`,
     fetcher,
     {
       revalidateOnFocus: false,

@@ -11,27 +11,42 @@ export default async function post(req, res) {
 
   switch (req.method) {
     case "GET": {
-      const { siteId, published } = req.query;
-      const posts = await prisma.post.findMany({
-        where: {
-          site: {
+      const { postId, siteId, published } = req.query;
+      if (postId) {
+        // get individual post
+        const post = await prisma.post.findUnique({
+          where: {
+            id: postId,
+          },
+          include: {
+            site: true,
+          },
+        });
+        res.status(200).json(post);
+      } else {
+        // get all posts
+        const posts = await prisma.post.findMany({
+          where: {
+            site: {
+              id: siteId,
+            },
+            published: JSON.parse(published),
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+        const site = await prisma.site.findFirst({
+          where: {
             id: siteId,
           },
-          published: JSON.parse(published),
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-      const site = await prisma.site.findFirst({
-        where: {
-          id: siteId,
-        },
-      });
-      res.status(200).json({ posts, site });
+        });
+        res.status(200).json({ posts, site });
+      }
       return;
     }
     case "POST": {
+      // create post
       const { siteId } = req.query;
       const response = await prisma.post.create({
         data: {
@@ -49,7 +64,7 @@ export default async function post(req, res) {
       return;
     }
     case "DELETE": {
-      console.log("its a delete");
+      // delete post
       const { postId } = req.query;
       await prisma.post.delete({
         where: {
@@ -60,7 +75,7 @@ export default async function post(req, res) {
       return;
     }
     case "PUT": {
-      console.log("its a put");
+      // publish post, update post content, update post settings
       const {
         id,
         title,
@@ -71,7 +86,6 @@ export default async function post(req, res) {
         imageBlurhash,
         published,
       } = req.body;
-      console.log(id, title, description, content, published);
       const post = await prisma.post.update({
         where: {
           id: id,
