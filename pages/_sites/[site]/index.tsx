@@ -8,7 +8,7 @@ import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 
 import type { GetStaticPaths, GetStaticPropsContext } from "next";
-import type { _SiteData, Meta, PostData } from "@/types";
+import type { _SiteData, Meta } from "@/types";
 import type { ParsedUrlQuery } from "querystring";
 
 interface PathProps extends ParsedUrlQuery {

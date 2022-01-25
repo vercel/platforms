@@ -1,9 +1,9 @@
 import Card from "./Card";
 
-import type { CardData } from "@/types";
+import type { MdxCardData } from "@/types";
 
 interface ExamplesProps {
-  data: Array<CardData>;
+  data: Array<MdxCardData>;
 }
 
 export default function Examples({ data }: ExamplesProps) {

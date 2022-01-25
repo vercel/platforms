@@ -1,10 +1,10 @@
 import Link from "next/link";
 import BlurImage from "../BlurImage";
 
-import type { CardData } from "@/types";
+import type { MdxCardData } from "@/types";
 
 interface CardProps {
-  data: CardData;
+  data: MdxCardData;
 }
 
 export default function Card({ data }: CardProps) {
@@ -14,14 +14,14 @@ export default function Card({ data }: CardProps) {
         <div className="hidden lg:block rounded-2xl border-2 border-gray-100 shadow-md bg-white hover:shadow-xl hover:-translate-y-1 transition-all ease duration-200">
           <div className="rounded-t-2xl overflow-hidden">
             <BlurImage
-              src={`/examples/${data.image}`}
-              alt={data.name}
-              width={500}
+              alt={data.name ?? "Example card thumbnail"}
+              blurDataURL={data.imageBlurhash ?? undefined}
               height={400}
               layout="responsive"
               objectFit="cover"
               placeholder="blur"
-              blurDataURL={data.imageBlurhash}
+              src={`/examples/${data.image}`}
+              width={500}
             />
           </div>
           <div className="py-6 px-5 h-36">
@@ -37,11 +37,11 @@ export default function Card({ data }: CardProps) {
           <div className="w-2/5 relative h-full">
             <BlurImage
               src={`/examples/${data.image}`}
-              alt={data.name}
+              alt={data.name ?? "Example card thumbnail"}
               layout="fill"
               objectFit="cover"
               placeholder="blur"
-              blurDataURL={data.imageBlurhash}
+              blurDataURL={data.imageBlurhash ?? undefined}
             />
           </div>
           <div className="py-6 px-5 w-3/5">

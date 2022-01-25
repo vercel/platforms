@@ -4,11 +4,14 @@ import Date from "./Date";
 
 import type { Post } from "@prisma/client";
 
-interface BlogCardProps<T extends Post> {
-  data: T;
+interface BlogCardProps {
+  data: Pick<
+    Post,
+    "slug" | "image" | "imageBlurhash" | "title" | "description" | "createdAt"
+  >;
 }
 
-export default function BlogCard<T extends Post>({ data }: BlogCardProps<T>) {
+export default function BlogCard({ data }: BlogCardProps) {
   return (
     <Link href={`/${data.slug}`}>
       <a>

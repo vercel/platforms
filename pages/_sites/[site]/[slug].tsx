@@ -15,8 +15,9 @@ import { getTweets } from "@/lib/twitter";
 import { useRouter } from "next/router";
 import Loader from "@/components/sites/Loader";
 
+import type { AdjacentPost, Meta, _SiteSlugData } from "@/types";
 import type { GetStaticPaths, GetStaticPropsContext } from "next";
-import type { Meta, PostData } from "@/types";
+import type { MDXRemoteSerializeResult } from "next-mdx-remote";
 import type { ParsedUrlQuery } from "querystring";
 
 const components = {
@@ -43,24 +44,27 @@ export default function Post({
   const router = useRouter();
   if (router.isFallback) return <Loader />;
 
-  // TODO: Cast parsed type
-  const data = JSON.parse(stringifiedData);
-  const adjacentPosts = JSON.parse(stringifiedAdjacentPosts) as Array<PostData>;
+  const data = JSON.parse(stringifiedData) as _SiteSlugData & {
+    mdxSource: MDXRemoteSerializeResult<Record<string, unknown>>;
+  };
+  const adjacentPosts = JSON.parse(
+    stringifiedAdjacentPosts
+  ) as Array<AdjacentPost>;
 
   const meta = {
     title: data.title,
     description: data.description,
-    ogUrl: `https://${data.site.subdomain}.vercel.pub/${data.slug}`,
+    ogUrl: `https://${data.site?.subdomain}.vercel.pub/${data.slug}`,
     ogImage: data.image,
     logo: "/logo.png",
   } as Meta;
 
   return (
-    <Layout meta={meta} subdomain={data.site.subdomain}>
+    <Layout meta={meta} subdomain={data.site?.subdomain}>
       <div className="flex flex-col justify-center items-center">
         <div className="text-center w-full md:w-7/12 m-auto">
           <p className="text-sm md:text-base font-light text-gray-500 w-10/12 m-auto my-5">
-            <Date dateString={data.createdAt} />
+            <Date dateString={data.createdAt.toString()} />
           </p>
           <h1 className="font-bold text-3xl font-cal md:text-6xl mb-10 text-gray-800">
             {data.title}
@@ -71,32 +75,44 @@ export default function Post({
         </div>
         <a
           target="_blank"
-          href={`https://twitter.com/${data.site.user.username}`}
+          href={`https://twitter.com/${data.site?.user?.username}`}
         >
           <div className="my-8">
             <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden inline-block align-middle">
-              <BlurImage
-                alt={data.site.user.name}
-                width={80}
-                height={80}
-                src={data.site.user.image}
-              />
+              {data.site?.user?.image ? (
+                <BlurImage
+                  alt={data.site?.user?.name ?? "User Avatar"}
+                  height={80}
+                  src={data.site.user.image}
+                  width={80}
+                />
+              ) : (
+                <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
+                  ?
+                </div>
+              )}
             </div>
             <div className="inline-block text-md md:text-lg align-middle ml-3">
-              by <span className="font-semibold">{data.site.user.name}</span>
+              by <span className="font-semibold">{data.site?.user?.name}</span>
             </div>
           </div>
         </a>
       </div>
       <div className="relative h-80 md:h-150 w-full max-w-screen-lg lg:2/3 md:w-5/6 m-auto mb-10 md:mb-20 md:rounded-2xl overflow-hidden">
-        <BlurImage
-          alt={data}
-          layout="fill"
-          objectFit="cover"
-          placeholder="blur"
-          blurDataURL={data.imageBlurhash}
-          src={data.image}
-        />
+        {data.image ? (
+          <BlurImage
+            alt={data.title ?? "Post image"}
+            layout="fill"
+            objectFit="cover"
+            placeholder="blur"
+            blurDataURL={data.imageBlurhash ?? undefined}
+            src={data.image}
+          />
+        ) : (
+          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
+            ?
+          </div>
+        )}
       </div>
 
       <article className="w-11/12 sm:w-3/4 m-auto prose prose-md sm:prose-lg">
@@ -191,7 +207,7 @@ export async function getStaticProps({
     },
   };
 
-  const data = await prisma.post.findFirst({
+  const data = (await prisma.post.findFirst({
     where: {
       ...constraint,
       slug,
@@ -203,7 +219,7 @@ export async function getStaticProps({
         },
       },
     },
-  });
+  })) as _SiteSlugData | null;
 
   if (!data) return { notFound: true, revalidate: 10 };
 
@@ -308,10 +324,11 @@ const replaceAsync = async (
 const getTweetMetadata = async (tweetUrl: string): Promise<string> => {
   const regex = /\/status\/(\d+)/gm;
 
-  // TODO: Regex could return null
-  const id = regex.exec(tweetUrl)![1];
+  const id = regex.exec(tweetUrl);
+  if (!id)
+    throw new Error("Regex pattern failed to find Twitter metadata to replace");
 
-  const tweetData = await getTweets(id);
+  const tweetData = await getTweets(id[1]);
 
   return (
     "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>"
@@ -321,10 +338,10 @@ const getTweetMetadata = async (tweetUrl: string): Promise<string> => {
 const getExamples = async (str: string): Promise<string> => {
   const regex = /names=\[(.+)\]/gm;
 
-  // TODO: Regex could return null
   const raw = regex.exec(str);
+  if (!raw) throw new Error("Regex pattern failed to find examples to replace");
 
-  const names = raw![1].split(",");
+  const names = raw[1].split(",");
 
   let data = [];
 
