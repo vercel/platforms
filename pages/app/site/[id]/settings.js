@@ -19,7 +19,7 @@ export default function SiteSettings() {
   const siteId = id;
 
   const { data: settings } = useSWR(
-    siteId && `/api/get-site-settings?siteId=${siteId}`,
+    siteId && `/api/site?siteId=${siteId}`,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -65,8 +65,11 @@ export default function SiteSettings() {
 
   async function saveSiteSettings(data) {
     setSaving(true);
-    const response = await fetch("/api/save-site-settings", {
-      method: "POST",
+    const response = await fetch("/api/site", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         id: siteId,
         currentSubdomain: settings.subdomain,
@@ -82,7 +85,9 @@ export default function SiteSettings() {
 
   async function deleteSite(siteId) {
     setDeletingSite(true);
-    const response = await fetch(`/api/delete-site?siteId=${siteId}`);
+    const response = await fetch(`/api/site?siteId=${siteId}`, {
+      method: "DELETE",
+    });
     if (response.ok) {
       router.push("/");
     }

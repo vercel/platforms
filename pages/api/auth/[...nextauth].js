@@ -3,7 +3,7 @@ import TwitterProvider from "next-auth/providers/twitter";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     TwitterProvider({
       clientId: process.env.TWITTER_ID,
@@ -35,4 +35,6 @@ export default NextAuth({
       return session;
     },
   },
-});
+};
+
+export default NextAuth(authOptions);

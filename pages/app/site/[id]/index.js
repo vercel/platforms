@@ -15,8 +15,8 @@ export default function SiteIndex() {
   const { id } = router.query;
   const siteId = id;
 
-  const { data, isValidating } = useSWR(
-    siteId && `/api/get-posts?siteId=${siteId}&published=true`,
+  const { data } = useSWR(
+    siteId && `/api/post?siteId=${siteId}&published=true`,
     fetcher,
     {
       onSuccess: (data) => {
@@ -28,7 +28,7 @@ export default function SiteIndex() {
   );
 
   async function createPost(siteId) {
-    const res = await fetch(`/api/create-post?siteId=${siteId}`, {
+    const res = await fetch(`/api/post?siteId=${siteId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

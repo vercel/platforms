@@ -15,7 +15,7 @@ export default function Post() {
   const postId = id;
 
   const { data: post, isValidating } = useSWR(
-    `/api/get-post-data?postId=${postId}`,
+    `/api/post?postId=${postId}`,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -82,8 +82,11 @@ export default function Post() {
 
   async function saveChanges(data) {
     setSavedState("Saving changes...");
-    const response = await fetch("/api/save-post", {
-      method: "POST",
+    const response = await fetch("/api/post", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         id: postId,
         title: data.title,
@@ -108,11 +111,20 @@ export default function Post() {
     }
   }
 
-  const publish = async (postId) => {
+  const publish = async () => {
     setPublishing(true);
-    await saveChanges(data);
-    const response = await fetch(`/api/publish-post?postId=${postId}`, {
-      method: "POST",
+    const response = await fetch(`/api/post`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: postId,
+        title: data.title,
+        description: data.description,
+        content: data.content,
+        published: true,
+      }),
     });
     await response.json();
     router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
@@ -199,7 +211,7 @@ Ordered lists look like:
             </div>
             <button
               onClick={async () => {
-                await publish(postId);
+                await publish();
               }}
               title={
                 disabled

@@ -18,7 +18,7 @@ export default function PostSettings() {
   const postId = id;
 
   const { data: settings, isValidating } = useSWR(
-    `/api/get-post-data?postId=${postId}`,
+    `/api/post?postId=${postId}`,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -48,8 +48,11 @@ export default function PostSettings() {
 
   async function savePostSettings(data) {
     setSaving(true);
-    const response = await fetch("/api/save-post-settings", {
-      method: "POST",
+    const response = await fetch("/api/post", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         id: postId,
         slug: data.slug,
@@ -65,7 +68,9 @@ export default function PostSettings() {
 
   async function deletePost(postId) {
     setDeletingPost(true);
-    const response = await fetch(`/api/delete-post?postId=${postId}`);
+    const response = await fetch(`/api/post?postId=${postId}`, {
+      method: "DELETE",
+    });
     if (response.ok) {
       router.push(`/site/${settings.site.id}`);
     }
