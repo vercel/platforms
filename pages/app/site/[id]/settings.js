@@ -186,7 +186,10 @@ export default function SiteSettings() {
                   const customDomain = e.target.customDomain.value;
                   setAdding(true);
                   await fetch(
-                    `/api/add-domain?domain=${customDomain}&siteId=${siteId}`
+                    `/api/add-domain?domain=${customDomain}&siteId=${siteId}`,
+                    {
+                      method: "POST"
+                    }
                   ).then((res) => {
                     setAdding(false);
                     if (res.ok) {

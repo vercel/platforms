@@ -9,12 +9,12 @@ export default async function blurhash(
   const { url } = req.query;
 
   if (Array.isArray(url))
-    res
+    return res
       .status(400)
       .end("Bad request. URL parameter cannot be an array of urls.");
 
   try {
-    const { blurhash } = await getPlaiceholder(url as string);
+    const { blurhash } = await getPlaiceholder(url);
 
     res.status(200).json(blurhash);
   } catch (error) {

@@ -6,6 +6,11 @@ export default async function checkSubdomain(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method !== "GET") {
+    res.setHeader("Allow", ["GET"]);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+
   const { subdomain } = req.query;
 
   if (Array.isArray(subdomain))

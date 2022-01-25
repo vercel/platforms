@@ -14,7 +14,7 @@ export default async function addDomain(
   const { domain, siteId } = req.query;
 
   if (Array.isArray(domain) || Array.isArray(siteId))
-    res.status(400).end("Bad request. Query parameters are not valid.");
+    return res.status(400).end("Bad request. Query parameters are not valid.");
 
   try {
     const response = await fetch(
@@ -39,10 +39,10 @@ export default async function addDomain(
       // domain is successfully added
       await prisma.site.update({
         where: {
-          id: siteId as string,
+          id: siteId,
         },
         data: {
-          customDomain: domain as string,
+          customDomain: domain,
         },
       });
       res.status(200).end();
