@@ -130,12 +130,10 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
     }),
   ]);
 
-  // TODO: TypeScript doesn't like the null filter here for some reason
-  // @ts-ignore
-  const allPaths: Array<string> = [
+  const allPaths = [
     ...subdomains.map(({ subdomain }) => subdomain),
     ...customDomains.map(({ customDomain }) => customDomain),
-  ].filter((path) => path !== null);
+  ].filter((path) => path) as Array<string>;
 
   return {
     paths: allPaths.map((path) => ({

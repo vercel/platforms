@@ -27,7 +27,6 @@ export default async function removeDomain(
       }
     );
 
-    // TODO: Could do with some further checks
     await response.json();
 
     await prisma.site.update({
