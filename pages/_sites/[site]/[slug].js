@@ -121,10 +121,6 @@ export async function getStaticPaths() {
         },
       },
     },
-    take: 80,
-    orderBy: {
-      createdAt: "asc",
-    },
   });
   return {
     paths: posts.flatMap((post) => {
@@ -169,7 +165,12 @@ export async function getStaticProps({ params: { site, slug } }) {
     return { notFound: true, revalidate: 10 };
   }
 
-  data.mdxSource = await getMdxSource(data.content);
+  try {
+    data.mdxSource = await getMdxSource(data.content);
+  } catch (e) {
+    console.log(e);
+    data.mdxSource = "error rendering mdx";
+  }
 
   const adjacentPosts = await prisma.post.findMany({
     where: {
