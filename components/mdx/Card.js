@@ -1,9 +1,8 @@
-import Link from "next/link";
 import BlurImage from "../BlurImage";
 
 export default function Card({ data }) {
   return (
-    <a href={`https://${data.url}`} target="_blank" className="!no-underline">
+    <a href={`https://${data.url}`} target="_blank">
       <div className="hidden lg:block rounded-2xl border-2 border-gray-100 shadow-md bg-white hover:shadow-xl hover:-translate-y-1 transition-all ease duration-200">
         <div className="rounded-t-2xl overflow-hidden">
           <BlurImage
@@ -18,10 +17,10 @@ export default function Card({ data }) {
           />
         </div>
         <div className="py-6 px-5 h-36">
-          <h3 className="font-cal !my-0 !text-2xl font-bold tracking-wide truncate">
+          <h3 className="font-cal text-2xl font-bold tracking-wide truncate">
             {data.name}
           </h3>
-          <p className="!mt-3 !text-gray-800 italic !text-base !leading-snug !font-normal">
+          <p className="mt-3 text-gray-800 italic text-base leading-snug">
             {data.description}
           </p>
         </div>
@@ -38,10 +37,10 @@ export default function Card({ data }) {
           />
         </div>
         <div className="py-6 px-5 w-3/5">
-          <h3 className="font-cal !my-0 !text-xl sm:!text-2xl font-bold tracking-wide truncate">
+          <h3 className="font-cal my-0 text-xl font-bold tracking-wide truncate">
             {data.name}
           </h3>
-          <p className="!mt-3 !text-gray-800 italic !text-sm sm:!text-base !leading-snug !font-normal">
+          <p className="mt-3 text-gray-800 italic text-sm leading-snug font-normal">
             {data.description}
           </p>
         </div>
