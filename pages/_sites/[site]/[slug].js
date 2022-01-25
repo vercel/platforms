@@ -208,8 +208,6 @@ async function getMdxSource(postContents) {
   // Convert converted html to string format
   const contentHtml = processedContent.toString();
 
-  console.log(contentHtml);
-
   // replace all external links
   const replacedExternalLinks = contentHtml.replace(
     /<a (href="http(s)?.+?")>(.+?)(?=<\/a>)/g,
