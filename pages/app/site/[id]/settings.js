@@ -11,6 +11,7 @@ import Modal from "@/components/Modal";
 import toast, { Toaster } from "react-hot-toast";
 import { useDebounce } from "use-debounce";
 import { fetcher } from "@/lib/fetcher"
+import { HttpMethod } from "@/types";
 
 export default function SiteSettings() {
   const router = useRouter();
@@ -100,7 +101,7 @@ export default function SiteSettings() {
       debouncedSubdomain?.length > 0
     ) {
       const response = await fetch(
-        `/api/check-subdomain?subdomain=${debouncedSubdomain}`
+        `/api/domain/check?domain=${debouncedSubdomain}&subdomain=1`
       );
       const available = await response.json();
       if (available) {
@@ -186,9 +187,9 @@ export default function SiteSettings() {
                   const customDomain = e.target.customDomain.value;
                   setAdding(true);
                   await fetch(
-                    `/api/add-domain?domain=${customDomain}&siteId=${siteId}`,
+                    `/api/domain?domain=${customDomain}&siteId=${siteId}`,
                     {
-                      method: "POST"
+                      method: HttpMethod.POST,
                     }
                   ).then((res) => {
                     setAdding(false);
@@ -227,11 +228,10 @@ export default function SiteSettings() {
                 <button
                   type="submit"
                   disabled={disabled}
-                  className={`${
-                    disabled
-                      ? "cursor-not-allowed bg-gray-100 text-gray-500 border-gray-300"
-                      : "bg-black text-white border-black hover:text-black hover:bg-white"
-                  } px-5 py-3 w-28 font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
+                  className={`${disabled
+                    ? "cursor-not-allowed bg-gray-100 text-gray-500 border-gray-300"
+                    : "bg-black text-white border-black hover:text-black hover:bg-white"
+                    } px-5 py-3 w-28 font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
                 >
                   {adding ? <LoadingDots /> : "Add"}
                 </button>
@@ -293,9 +293,8 @@ export default function SiteSettings() {
           <div className="flex flex-col space-y-6 relative">
             <h2 className="font-cal text-2xl">Thumbnail Image</h2>
             <div
-              className={`${
-                data.image ? "" : "animate-pulse bg-gray-300 h-150"
-              } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
+              className={`${data.image ? "" : "animate-pulse bg-gray-300 h-150"
+                } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
             >
               <CloudinaryUploadWidget
                 callback={(e) => saveImage(e, data, setData)}
@@ -389,11 +388,10 @@ export default function SiteSettings() {
             <button
               type="submit"
               disabled={deletingSite}
-              className={`${
-                deletingSite
-                  ? "cursor-not-allowed text-gray-400 bg-gray-50"
-                  : "bg-white text-gray-600 hover:text-black"
-              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+              className={`${deletingSite
+                ? "cursor-not-allowed text-gray-400 bg-gray-50"
+                : "bg-white text-gray-600 hover:text-black"
+                } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
             >
               {deletingSite ? <LoadingDots /> : "DELETE SITE"}
             </button>
@@ -408,11 +406,10 @@ export default function SiteSettings() {
               saveSiteSettings(data);
             }}
             disabled={saving || subdomainError}
-            className={`${
-              saving || subdomainError
-                ? "cursor-not-allowed bg-gray-300 border-gray-300"
-                : "bg-black hover:bg-white hover:text-black border-black"
-            } mx-2 rounded-md w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
+            className={`${saving || subdomainError
+              ? "cursor-not-allowed bg-gray-300 border-gray-300"
+              : "bg-black hover:bg-white hover:text-black border-black"
+              } mx-2 rounded-md w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
           >
             {saving ? <LoadingDots /> : "Save Changes"}
           </button>
