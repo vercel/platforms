@@ -3,25 +3,31 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export default function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl; // get pathname of request (e.g. /blog-slug)
-  const hostname = req.headers.get("host"); // get hostname of request (e.g. demo.vercel.pub)
+  // Get pathname of request (e.g. /blog-slug)
+  const { pathname } = req.nextUrl;
 
-  // TODO: Implement better error handling
-  if (!hostname) return NextResponse.error();
+  // Get hostname of request (e.g. demo.vercel.pub)
+  const hostname = req.headers.get("host");
+  if (!hostname)
+    return new Response(null, {
+      status: 400,
+      statusText: "No hostname found in request headers",
+    });
 
-  if (hostname === "vercel.pub") {
-    // only for demo purposes – remove this if you want to use your root domain as the landing page
+  // Only for demo purposes – remove this if you want to use your root domain as the landing page
+  if (hostname === "vercel.pub")
     return NextResponse.redirect("https://demo.vercel.pub");
-  }
 
-  const currentHost =
+  // Strip root domain from hostname string
+  const currentHost = hostname.replace(
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
-      ? hostname.replace(`.vercel.pub`, "")
-      : hostname.replace(`.localhost:3000`, "");
+      ? `.vercel.pub`
+      : `.localhost:3000`,
+    ""
+  );
 
-  if (pathname.startsWith(`/_sites`)) {
+  if (pathname.startsWith(`/_sites`))
     return new Response(null, { status: 404 });
-  }
 
   if (!pathname.includes(".") && !pathname.startsWith("/api")) {
     if (currentHost == "app") {
@@ -29,14 +35,14 @@ export default function middleware(req: NextRequest) {
         pathname === "/login" &&
         (req.cookies["next-auth.session-token"] ||
           req.cookies["__Secure-next-auth.session-token"])
-      ) {
+      )
         return NextResponse.redirect("/");
-      }
+
       return NextResponse.rewrite(`/app${pathname}`);
-    } else if (hostname === "localhost:3000") {
-      return NextResponse.rewrite(`/home`);
-    } else {
-      return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
     }
+
+    if (hostname === "localhost:3000") return NextResponse.rewrite(`/home`);
+
+    return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
   }
 }
