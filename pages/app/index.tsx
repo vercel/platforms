@@ -170,12 +170,18 @@ export default function AppIndex() {
                   <a>
                     <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
                       <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
-                        <BlurImage
-                          src={site.image!} // TODO: Add failover to placeholder
-                          layout="fill"
-                          objectFit="cover"
-                          alt={site.name ?? "Site thumbnail"}
-                        />
+                        {site.image ? (
+                          <BlurImage
+                            src={site.image}
+                            layout="fill"
+                            objectFit="cover"
+                            alt={site.name ?? "Site thumbnail"}
+                          />
+                        ) : (
+                          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl">
+                            ?
+                          </div>
+                        )}
                       </div>
                       <div className="relative p-10">
                         <h2 className="font-cal text-3xl">{site.name}</h2>
