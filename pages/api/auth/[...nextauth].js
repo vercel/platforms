@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 
 export const authOptions = {
   providers: [
+    // Github OAuth is recommended
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
@@ -19,6 +20,7 @@ export const authOptions = {
         };
       },
     }),
+    // Twitter OAuth is optional
     TwitterProvider({
       clientId: process.env.TWITTER_ID,
       clientSecret: process.env.TWITTER_SECRET,
