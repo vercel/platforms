@@ -13,7 +13,8 @@ import saveImage from "@/lib/save-image";
 import { fetcher } from "@/lib/fetcher";
 
 import type { ChangeEvent } from "react";
-import type { Post, Site } from "@prisma/client";
+
+import type { WithSitePost } from "@/types";
 
 interface SettingsData {
   slug: string;
@@ -22,17 +23,13 @@ interface SettingsData {
   imageBlurhash: string;
 }
 
-interface PostWithSite extends Post {
-  site: Site | null;
-}
-
 export default function PostSettings() {
   const router = useRouter();
 
   // TODO: Undefined check redirects to error
   const { id: postId } = router.query;
 
-  const { data: settings, isValidating } = useSWR<PostWithSite>(
+  const { data: settings, isValidating } = useSWR<WithSitePost>(
     `/api/post?postId=${postId}`,
     fetcher,
     {

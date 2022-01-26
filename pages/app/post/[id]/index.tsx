@@ -10,16 +10,14 @@ import LoadingDots from "@/components/app/loading-dots";
 import { fetcher } from "@/lib/fetcher";
 
 import type { ChangeEvent } from "react";
-import type { Post, Site } from ".prisma/client";
+import type { Post } from ".prisma/client";
+
+import type { WithSitePost } from "@/types";
 
 interface PostData {
   title: string;
   description: string;
   content: string;
-}
-
-interface PostWithSite extends Post {
-  site: Site | null;
 }
 
 const CONTENT_PLACEHOLDER = `Write some content. Markdown supported:
@@ -59,7 +57,7 @@ export default function Post() {
   // TODO: Undefined check redirects to error
   const { id: postId } = router.query;
 
-  const { data: post, isValidating } = useSWR<PostWithSite>(
+  const { data: post, isValidating } = useSWR<WithSitePost>(
     `/api/post?postId=${postId}`,
     fetcher,
     {
