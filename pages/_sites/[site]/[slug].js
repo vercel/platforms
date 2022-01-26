@@ -54,7 +54,12 @@ export default function Post(props) {
         </div>
         <a
           target="_blank"
-          href={`https://twitter.com/${data.site.user.username}`}
+          // if you are using Github OAuth, you can get rid of the Twitter option
+          href={
+            data.site.user.username
+              ? `https://twitter.com/${data.site.user.username}`
+              : `https://github.com/${data.site.user.gh_username}`
+          }
         >
           <div className="my-8">
             <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden inline-block align-middle">
