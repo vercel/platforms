@@ -1,19 +1,30 @@
 import Layout from "@/components/app/Layout";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
 import Loader from "@/components/app/Loader";
 import { fetcher } from "@/lib/fetcher"
+import type { Post, Site } from ".prisma/client";
+
+interface PostData {
+  title: string;
+  description: string;
+  content: string;
+}
+
+interface PostWithSite extends Post {
+  site: Site | null;
+}
 
 export default function Post() {
   const router = useRouter();
   const { id } = router.query;
   const postId = id;
 
-  const { data: post, isValidating } = useSWR(
+  const { data: post, isValidating } = useSWR<PostWithSite>(
     `/api/post?postId=${postId}`,
     fetcher,
     {
@@ -27,17 +38,17 @@ export default function Post() {
   const [savedState, setSavedState] = useState(
     post
       ? `Last saved at ${Intl.DateTimeFormat("en", { month: "short" }).format(
-          new Date(post.updatedAt)
-        )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
-          new Date(post.updatedAt)
-        )} ${Intl.DateTimeFormat("en", {
-          hour: "numeric",
-          minute: "numeric",
-        }).format(new Date(post.updatedAt))}`
+        new Date(post.updatedAt)
+      )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
+        new Date(post.updatedAt)
+      )} ${Intl.DateTimeFormat("en", {
+        hour: "numeric",
+        minute: "numeric",
+      }).format(new Date(post.updatedAt))}`
       : "Saving changes..."
   );
 
-  const [data, setData] = useState({
+  const [data, setData] = useState<PostData>({
     title: "",
     description: "",
     content: "",
@@ -45,9 +56,9 @@ export default function Post() {
   useEffect(() => {
     if (post)
       setData({
-        title: post.title,
-        description: post.description,
-        content: post.content,
+        title: post.title ?? "",
+        description: post.description ?? "",
+        content: post.content ?? "",
       });
   }, [post]);
   const [debouncedData] = useDebounce(data, 1000);
@@ -66,7 +77,7 @@ export default function Post() {
   }, [publishing, data]);
 
   useEffect(() => {
-    const clickedSave = (e) => {
+    const clickedSave = (e: KeyboardEvent) => {
       let charCode = String.fromCharCode(e.which).toLowerCase();
       if ((e.ctrlKey || e.metaKey) && charCode === "s") {
         e.preventDefault();
@@ -79,7 +90,7 @@ export default function Post() {
     };
   }, [data]);
 
-  async function saveChanges(data) {
+  async function saveChanges(data: PostData) {
     setSavedState("Saving changes...");
     const response = await fetch("/api/post", {
       method: "PUT",
@@ -126,7 +137,7 @@ export default function Post() {
       }),
     });
     await response.json();
-    router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
+    router.push(`https://${post?.site?.subdomain}.vercel.pub/${post?.slug}`);
   };
 
   if (isValidating)
@@ -138,18 +149,18 @@ export default function Post() {
 
   return (
     <>
-      <Layout siteId={post?.site.id}>
+      <Layout siteId={post?.site?.id}>
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
           <TextareaAutosize
             name="title"
-            onInput={(e) => setData({ ...data, title: e.target.value })}
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) => setData({ ...data, title: e.currentTarget.value })}
             className="w-full px-2 py-4 text-gray-800 placeholder-gray-400 mt-6 text-5xl font-cal resize-none border-none focus:outline-none focus:ring-0"
             placeholder="Untitled Post"
             value={data.title}
           />
           <TextareaAutosize
             name="description"
-            onInput={(e) => setData({ ...data, description: e.target.value })}
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) => setData({ ...data, description: e.currentTarget.value })}
             className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-xl mb-3 resize-none border-none focus:outline-none focus:ring-0"
             placeholder="No description provided. Click to edit."
             value={data.description}
@@ -165,7 +176,7 @@ export default function Post() {
           </div>
           <TextareaAutosize
             name="content"
-            onInput={(e) => setData({ ...data, content: e.target.value })}
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) => setData({ ...data, content: e.currentTarget.value })}
             className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-lg mb-5 resize-none border-none focus:outline-none focus:ring-0"
             placeholder={`Write some content. Markdown supported:
 
@@ -218,11 +229,10 @@ Ordered lists look like:
                   : "Publish"
               }
               disabled={disabled}
-              className={`${
-                disabled
+              className={`${disabled
                   ? "cursor-not-allowed bg-gray-300 border-gray-300"
                   : "bg-black hover:bg-white hover:text-black border-black"
-              } mx-2 w-32 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
+                } mx-2 w-32 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
             >
               {publishing ? <LoadingDots /> : "Publish  →"}
             </button>
