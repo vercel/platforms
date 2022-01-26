@@ -1,18 +1,21 @@
-import Layout from "@/components/app/Layout";
+import toast, { Toaster } from "react-hot-toast";
 import useSWR from "swr";
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+
 import BlurImage from "@/components/BlurImage";
 import CloudinaryUploadWidget from "@/components/Cloudinary";
-import LoadingDots from "@/components/app/loading-dots";
-import saveImage from "@/lib/save-image";
-import Modal from "@/components/Modal";
-import { useState, useEffect, ChangeEvent } from "react";
-import { useRouter } from "next/router";
+import Layout from "@/components/app/Layout";
 import Loader from "@/components/app/Loader";
-import toast, { Toaster } from "react-hot-toast";
-import { fetcher } from "@/lib/fetcher"
-import { Post, Site } from '@prisma/client';
+import LoadingDots from "@/components/app/loading-dots";
+import Modal from "@/components/Modal";
+import saveImage from "@/lib/save-image";
+import { fetcher } from "@/lib/fetcher";
 
-interface PostSettings {
+import type { ChangeEvent } from "react";
+import type { Post, Site } from "@prisma/client";
+
+interface SettingsData {
   slug: string;
   id: string;
   image: string;
@@ -25,17 +28,16 @@ interface PostWithSite extends Post {
 
 export default function PostSettings() {
   const router = useRouter();
-  const { id } = router.query;
-  const postId: string = id as string;
+
+  // TODO: Undefined check redirects to error
+  const { id: postId } = router.query;
 
   const { data: settings, isValidating } = useSWR<PostWithSite>(
     `/api/post?postId=${postId}`,
     fetcher,
     {
+      onError: () => router.push("/"),
       revalidateOnFocus: false,
-      onError: () => {
-        router.push("/");
-      },
     }
   );
 
@@ -43,7 +45,7 @@ export default function PostSettings() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingPost, setDeletingPost] = useState(false);
 
-  const [data, setData] = useState<PostSettings>({
+  const [data, setData] = useState<SettingsData>({
     image: settings?.image ?? "",
     imageBlurhash: settings?.imageBlurhash ?? "",
     slug: settings?.slug ?? "",
@@ -60,33 +62,43 @@ export default function PostSettings() {
       });
   }, [settings]);
 
-  async function savePostSettings(data: PostSettings) {
+  async function savePostSettings(data: SettingsData) {
     setSaving(true);
-    const response = await fetch("/api/post", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: postId,
-        slug: data.slug,
-        image: data.image,
-        imageBlurhash: data.imageBlurhash,
-      }),
-    });
-    if (response.ok) {
+
+    try {
+      const response = await fetch("/api/post", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: postId,
+          slug: data.slug,
+          image: data.image,
+          imageBlurhash: data.imageBlurhash,
+        }),
+      });
+
+      if (response.ok) toast.success(`Changes Saved`);
+    } catch (error) {
+      console.error(error);
+    } finally {
       setSaving(false);
-      toast.success(`Changes Saved`);
     }
   }
 
   async function deletePost(postId: string) {
     setDeletingPost(true);
-    const response = await fetch(`/api/post?postId=${postId}`, {
-      method: "DELETE",
-    });
-    if (response.ok) {
-      router.push(`/site/${settings?.site?.id}`);
+    try {
+      const response = await fetch(`/api/post?postId=${postId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) router.push(`/site/${settings?.site?.id}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeletingPost(false);
     }
   }
 
@@ -130,8 +142,9 @@ export default function PostSettings() {
             <div className="space-y-6">
               <h2 className="font-cal text-2xl">Thumbnail Image</h2>
               <div
-                className={`${data.image ? "" : "animate-pulse bg-gray-300 h-150"
-                  } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
+                className={`${
+                  data.image ? "" : "animate-pulse bg-gray-300 h-150"
+                } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
               >
                 <CloudinaryUploadWidget
                   callback={(e) => saveImage(e, data, setData)}
@@ -193,7 +206,7 @@ export default function PostSettings() {
           <form
             onSubmit={async (event) => {
               event.preventDefault();
-              await deletePost(postId);
+              await deletePost(postId as string);
             }}
             className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg"
           >
@@ -216,10 +229,11 @@ export default function PostSettings() {
               <button
                 type="submit"
                 disabled={deletingPost}
-                className={`${deletingPost
+                className={`${
+                  deletingPost
                     ? "cursor-not-allowed text-gray-400 bg-gray-50"
                     : "bg-white text-gray-600 hover:text-black"
-                  } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+                } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
               >
                 {deletingPost ? <LoadingDots /> : "DELETE POST"}
               </button>
@@ -233,10 +247,11 @@ export default function PostSettings() {
                 savePostSettings(data);
               }}
               disabled={saving}
-              className={`${saving
+              className={`${
+                saving
                   ? "cursor-not-allowed bg-gray-300 border-gray-300"
                   : "bg-black hover:bg-white hover:text-black border-black"
-                } mx-2 w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
+              } mx-2 w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
             >
               {saving ? <LoadingDots /> : "Save Changes"}
             </button>
