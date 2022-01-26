@@ -5,18 +5,41 @@ import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
 import saveImage from "@/lib/save-image";
 import Modal from "@/components/Modal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/router";
 import Loader from "@/components/app/Loader";
 import toast, { Toaster } from "react-hot-toast";
 import { fetcher } from "@/lib/fetcher"
+import { Post, Site } from '@prisma/client';
+
+interface PostSettings {
+  slug: string;
+  id: string;
+  image: string;
+  imageBlurhash: string;
+}
+
+interface PostWithSite {
+  id: string;
+  title: string | null;
+  description: string | null;
+  content: string | null;
+  slug: string;
+  image: string | null;
+  imageBlurhash: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  published: boolean;
+  siteId: string | null;
+  site: Site | null;
+}
 
 export default function PostSettings() {
   const router = useRouter();
   const { id } = router.query;
-  const postId = id;
+  const postId: string = id as string;
 
-  const { data: settings, isValidating } = useSWR(
+  const { data: settings, isValidating } = useSWR<PostWithSite>(
     `/api/post?postId=${postId}`,
     fetcher,
     {
@@ -31,21 +54,24 @@ export default function PostSettings() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingPost, setDeletingPost] = useState(false);
 
-  const [data, setData] = useState({
-    image: settings?.image,
-    imageBlurhash: settings?.imageBlurhash,
+  const [data, setData] = useState<PostSettings>({
+    image: settings?.image ?? "",
+    imageBlurhash: settings?.imageBlurhash ?? "",
+    slug: settings?.slug ?? "",
+    id: settings?.id ?? "",
   });
 
   useEffect(() => {
     if (settings)
       setData({
         slug: settings.slug,
-        image: settings.image,
-        imageBlurhash: settings.imageBlurhash,
+        image: settings.image ?? "",
+        imageBlurhash: settings.imageBlurhash ?? "",
+        id: settings.id,
       });
   }, [settings]);
 
-  async function savePostSettings(data) {
+  async function savePostSettings(data: PostSettings) {
     setSaving(true);
     const response = await fetch("/api/post", {
       method: "PUT",
@@ -65,13 +91,13 @@ export default function PostSettings() {
     }
   }
 
-  async function deletePost(postId) {
+  async function deletePost(postId: string) {
     setDeletingPost(true);
     const response = await fetch(`/api/post?postId=${postId}`, {
       method: "DELETE",
     });
     if (response.ok) {
-      router.push(`/site/${settings.site.id}`);
+      router.push(`/site/${settings?.site?.id}`);
     }
   }
 
@@ -84,7 +110,7 @@ export default function PostSettings() {
 
   return (
     <>
-      <Layout siteId={settings?.site.id}>
+      <Layout siteId={settings?.siteId ?? ""}>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -98,7 +124,7 @@ export default function PostSettings() {
               <h2 className="font-cal text-2xl">Post Slug</h2>
               <div className="border border-gray-700 rounded-lg flex items-center max-w-lg">
                 <span className="px-5 font-cal rounded-l-lg border-r border-gray-600">
-                  {settings?.site.subdomain}.vercel.pub/
+                  {settings?.site?.subdomain}.vercel.pub/
                 </span>
                 <input
                   className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-r-lg placeholder-gray-400"
@@ -106,8 +132,8 @@ export default function PostSettings() {
                   name="slug"
                   placeholder="post-slug"
                   value={data?.slug}
-                  onInput={(e) =>
-                    setData((data) => ({ ...data, slug: e.target.value }))
+                  onInput={(e: FormEvent<HTMLInputElement>) =>
+                    setData((data) => ({ ...data, slug: e.currentTarget.value }))
                   }
                 />
               </div>
@@ -115,9 +141,8 @@ export default function PostSettings() {
             <div className="space-y-6">
               <h2 className="font-cal text-2xl">Thumbnail Image</h2>
               <div
-                className={`${
-                  data.image ? "" : "animate-pulse bg-gray-300 h-150"
-                } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
+                className={`${data.image ? "" : "animate-pulse bg-gray-300 h-150"
+                  } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
               >
                 <CloudinaryUploadWidget
                   callback={(e) => saveImage(e, data, setData)}
@@ -202,11 +227,10 @@ export default function PostSettings() {
               <button
                 type="submit"
                 disabled={deletingPost}
-                className={`${
-                  deletingPost
+                className={`${deletingPost
                     ? "cursor-not-allowed text-gray-400 bg-gray-50"
                     : "bg-white text-gray-600 hover:text-black"
-                } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+                  } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
               >
                 {deletingPost ? <LoadingDots /> : "DELETE POST"}
               </button>
@@ -220,11 +244,10 @@ export default function PostSettings() {
                 savePostSettings(data);
               }}
               disabled={saving}
-              className={`${
-                saving
+              className={`${saving
                   ? "cursor-not-allowed bg-gray-300 border-gray-300"
                   : "bg-black hover:bg-white hover:text-black border-black"
-              } mx-2 w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
+                } mx-2 w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
             >
               {saving ? <LoadingDots /> : "Save Changes"}
             </button>
