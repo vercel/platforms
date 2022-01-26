@@ -5,6 +5,7 @@ module.exports = {
       "abs.twimg.com",
       "pbs.twimg.com",
       "api.producthunt.com",
+      "avatars.githubusercontent.com",
     ],
   },
 };
