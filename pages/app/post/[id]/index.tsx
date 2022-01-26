@@ -1,13 +1,13 @@
 import Layout from "@/components/app/Layout";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
 import Loader from "@/components/app/Loader";
 import { fetcher } from "@/lib/fetcher"
-import type { Site } from ".prisma/client";
+import type { Post, Site } from ".prisma/client";
 
 interface PostData {
   title: string;
@@ -15,14 +15,7 @@ interface PostData {
   content: string;
 }
 
-interface PostWithSite {
-  title: string | null;
-  description: string | null;
-  content: string | null;
-  slug: string;
-  updatedAt: Date;
-  published: boolean;
-  siteId: string | null;
+interface PostWithSite extends Post {
   site: Site | null;
 }
 
@@ -156,18 +149,18 @@ export default function Post() {
 
   return (
     <>
-      <Layout siteId={post?.siteId ?? undefined}>
+      <Layout siteId={post?.site?.id}>
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
           <TextareaAutosize
             name="title"
-            onInput={(e: FormEvent<HTMLTextAreaElement>) => setData({ ...data, title: e.currentTarget.value })}
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) => setData({ ...data, title: e.currentTarget.value })}
             className="w-full px-2 py-4 text-gray-800 placeholder-gray-400 mt-6 text-5xl font-cal resize-none border-none focus:outline-none focus:ring-0"
             placeholder="Untitled Post"
             value={data.title}
           />
           <TextareaAutosize
             name="description"
-            onInput={(e: FormEvent<HTMLTextAreaElement>) => setData({ ...data, description: e.currentTarget.value })}
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) => setData({ ...data, description: e.currentTarget.value })}
             className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-xl mb-3 resize-none border-none focus:outline-none focus:ring-0"
             placeholder="No description provided. Click to edit."
             value={data.description}
@@ -183,7 +176,7 @@ export default function Post() {
           </div>
           <TextareaAutosize
             name="content"
-            onInput={(e: FormEvent<HTMLTextAreaElement>) => setData({ ...data, content: e.currentTarget.value })}
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) => setData({ ...data, content: e.currentTarget.value })}
             className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-lg mb-5 resize-none border-none focus:outline-none focus:ring-0"
             placeholder={`Write some content. Markdown supported:
 

@@ -5,7 +5,7 @@ import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
 import saveImage from "@/lib/save-image";
 import Modal from "@/components/Modal";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from "next/router";
 import Loader from "@/components/app/Loader";
 import toast, { Toaster } from "react-hot-toast";
@@ -19,18 +19,7 @@ interface PostSettings {
   imageBlurhash: string;
 }
 
-interface PostWithSite {
-  id: string;
-  title: string | null;
-  description: string | null;
-  content: string | null;
-  slug: string;
-  image: string | null;
-  imageBlurhash: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  published: boolean;
-  siteId: string | null;
+interface PostWithSite extends Post {
   site: Site | null;
 }
 
@@ -110,7 +99,7 @@ export default function PostSettings() {
 
   return (
     <>
-      <Layout siteId={settings?.siteId ?? ""}>
+      <Layout siteId={settings?.site?.id}>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -132,8 +121,8 @@ export default function PostSettings() {
                   name="slug"
                   placeholder="post-slug"
                   value={data?.slug}
-                  onInput={(e: FormEvent<HTMLInputElement>) =>
-                    setData((data) => ({ ...data, slug: e.currentTarget.value }))
+                  onInput={(e: ChangeEvent<HTMLInputElement>) =>
+                    setData((data) => ({ ...data, slug: e.target.value }))
                   }
                 />
               </div>
