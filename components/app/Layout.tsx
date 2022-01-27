@@ -106,7 +106,7 @@ export default function Layout({ siteId, children }: LayoutProps) {
         </div>
         {rootPage && (
           <div className="absolute left-0 right-0 top-16 flex justify-center items-center font-cal space-x-16 border-b bg-white border-gray-200">
-            <Link href="/">
+            <Link href="/" passHref>
               <a
                 className={`border-b-2 ${
                   tab == "" ? "border-black" : "border-transparent"
@@ -115,7 +115,7 @@ export default function Layout({ siteId, children }: LayoutProps) {
                 My Sites
               </a>
             </Link>
-            <Link href="/settings">
+            <Link href="/settings" passHref>
               <a
                 className={`border-b-2 ${
                   tab == "settings" ? "border-black" : "border-transparent"
@@ -129,13 +129,13 @@ export default function Layout({ siteId, children }: LayoutProps) {
         {sitePage && (
           <div className="absolute left-0 right-0 top-16 font-cal border-b bg-white border-gray-200">
             <div className="flex justify-between items-center space-x-16 max-w-screen-xl mx-auto px-10 sm:px-20">
-              <Link href={`/`}>
+              <Link href="/" passHref>
                 <a>
                   ←<p className="md:inline-block ml-3 hidden">All Sites</p>
                 </a>
               </Link>
               <div className="flex justify-between items-center space-x-10 md:space-x-16">
-                <Link href={`/site/${router.query.id}`}>
+                <Link href={`/site/${router.query.id}`} passHref>
                   <a
                     className={`border-b-2 ${
                       !tab ? "border-black" : "border-transparent"
@@ -144,7 +144,7 @@ export default function Layout({ siteId, children }: LayoutProps) {
                     Posts
                   </a>
                 </Link>
-                <Link href={`/site/${router.query.id}/drafts`}>
+                <Link href={`/site/${router.query.id}/drafts`} passHref>
                   <a
                     className={`border-b-2 ${
                       tab == "drafts" ? "border-black" : "border-transparent"
@@ -153,7 +153,7 @@ export default function Layout({ siteId, children }: LayoutProps) {
                     Drafts
                   </a>
                 </Link>
-                <Link href={`/site/${router.query.id}/settings`}>
+                <Link href={`/site/${router.query.id}/settings`} passHref>
                   <a
                     className={`border-b-2 ${
                       tab == "settings" ? "border-black" : "border-transparent"
@@ -171,7 +171,7 @@ export default function Layout({ siteId, children }: LayoutProps) {
           <div className="absolute left-0 right-0 top-16 font-cal border-b bg-white border-gray-200">
             <div className="flex justify-between items-center space-x-16 max-w-screen-xl mx-auto px-10 sm:px-20">
               {siteId ? (
-                <Link href={`/site/${siteId}`}>
+                <Link href={`/site/${siteId}`} passHref>
                   <a>
                     ←<p className="md:inline-block ml-3 hidden">All Posts</p>
                   </a>
@@ -184,7 +184,7 @@ export default function Layout({ siteId, children }: LayoutProps) {
               )}
 
               <div className="flex justify-between items-center space-x-10 md:space-x-16">
-                <Link href={`/post/${router.query.id}`}>
+                <Link href={`/post/${router.query.id}`} passHref>
                   <a
                     className={`border-b-2 ${
                       !tab ? "border-black" : "border-transparent"
@@ -193,7 +193,7 @@ export default function Layout({ siteId, children }: LayoutProps) {
                     Editor
                   </a>
                 </Link>
-                <Link href={`/post/${router.query.id}/settings`}>
+                <Link href={`/post/${router.query.id}/settings`} passHref>
                   <a
                     className={`border-b-2 ${
                       tab == "settings" ? "border-black" : "border-transparent"
