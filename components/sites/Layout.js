@@ -61,68 +61,22 @@ export default function Layout({ meta, children, subdomain }) {
           scrolled ? "drop-shadow-md" : ""
         }  top-0 left-0 right-0 h-16 bg-white z-30 transition-all ease duration-150 flex`}
       >
-        {" "}
         <div className="flex justify-center items-center space-x-5 h-full max-w-screen-xl mx-auto px-10 sm:px-20">
-          {subdomain == "demo" ? (
-            <>
-              <Link href="/">
-                <a className="flex justify-center items-center">
-                  <div className="h-8 w-8 inline-block rounded-full overflow-hidden align-middle">
-                    <Image
-                      src={meta?.logo}
-                      width={40}
-                      height={40}
-                      alt={meta?.title}
-                    />
-                  </div>
-                  <span className="inline-block ml-3 font-medium truncate">
-                    {meta?.title}
-                  </span>
-                </a>
-              </Link>
-              <a
-                href="https://www.producthunt.com/posts/platforms-starter-kit?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-platforms-starter-kit"
-                target="_blank"
-                className="mt-1 sm:block hidden flex-shrink-0"
-              >
+          <Link href="/">
+            <a className="flex justify-center items-center">
+              <div className="h-8 w-8 inline-block rounded-full overflow-hidden align-middle">
                 <Image
-                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=327608&theme=light"
-                  alt="Platforms Starter Kit - Build the fastest multi-tenant apps with custom domains | Product Hunt"
-                  width={250}
-                  height={44}
+                  src={meta?.logo}
+                  width={40}
+                  height={40}
+                  alt={meta?.title}
                 />
-              </a>
-              <a
-                href="https://www.producthunt.com/posts/platforms-starter-kit?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-platforms-starter-kit"
-                target="_blank"
-                className="mt-2 sm:hidden flex-shrink-0"
-              >
-                <Image
-                  src="/producthunt.png"
-                  alt="Platforms Starter Kit - Build the fastest multi-tenant apps with custom domains | Product Hunt"
-                  width={30}
-                  height={30}
-                  className="sm:hidden"
-                />
-              </a>
-            </>
-          ) : (
-            <Link href="/">
-              <a className="flex justify-center items-center">
-                <div className="h-8 w-8 inline-block rounded-full overflow-hidden align-middle">
-                  <Image
-                    src={meta?.logo}
-                    width={40}
-                    height={40}
-                    alt={meta?.title}
-                  />
-                </div>
-                <span className="inline-block ml-3 font-medium truncate">
-                  {meta?.title}
-                </span>
-              </a>
-            </Link>
-          )}
+              </div>
+              <span className="inline-block ml-3 font-medium truncate">
+                {meta?.title}
+              </span>
+            </a>
+          </Link>
         </div>
       </div>
 

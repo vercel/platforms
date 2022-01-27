@@ -17,7 +17,9 @@ generator client {
 model User {
   id            String        @id @default(cuid())
   name          String?
+  // if you are using Github OAuth, you can get rid of the username attribute (that is for Twitter OAuth)
   username      String?
+  gh_username   String?
   email         String?       @unique
   emailVerified DateTime?
   image         String?
@@ -35,6 +37,7 @@ model Account {
   provider           String
   providerAccountId  String
   refresh_token      String?
+  refresh_token_expires_in Int?
   access_token       String?
   expires_at         Int?
   token_type         String?
