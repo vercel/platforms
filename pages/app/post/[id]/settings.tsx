@@ -11,6 +11,7 @@ import LoadingDots from "@/components/app/loading-dots";
 import Modal from "@/components/Modal";
 import saveImage from "@/lib/save-image";
 import { fetcher } from "@/lib/fetcher";
+import { HttpMethod } from "@/types";
 
 import type { ChangeEvent } from "react";
 
@@ -64,7 +65,7 @@ export default function PostSettings() {
 
     try {
       const response = await fetch("/api/post", {
-        method: "PUT",
+        method: HttpMethod.PUT,
         headers: {
           "Content-Type": "application/json",
         },
@@ -88,7 +89,7 @@ export default function PostSettings() {
     setDeletingPost(true);
     try {
       const response = await fetch(`/api/post?postId=${postId}`, {
-        method: "DELETE",
+        method: HttpMethod.DELETE,
       });
 
       if (response.ok) router.push(`/site/${settings?.site?.id}`);

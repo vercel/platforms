@@ -8,6 +8,7 @@ import Layout from "@/components/app/Layout";
 import Loader from "@/components/app/Loader";
 import LoadingDots from "@/components/app/loading-dots";
 import { fetcher } from "@/lib/fetcher";
+import { HttpMethod } from "@/types";
 
 import type { ChangeEvent } from "react";
 import type { Post } from ".prisma/client";
@@ -129,7 +130,7 @@ export default function Post() {
 
     try {
       const response = await fetch("/api/post", {
-        method: "PUT",
+        method: HttpMethod.PUT,
         headers: {
           "Content-Type": "application/json",
         },
@@ -167,7 +168,7 @@ export default function Post() {
 
     try {
       const response = await fetch(`/api/post`, {
-        method: "PUT",
+        method: HttpMethod.PUT,
         headers: {
           "Content-Type": "application/json",
         },
