@@ -10,9 +10,13 @@ import BlogCard from "@/components/BlogCard";
 import Examples from "@/components/mdx/Examples";
 import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
-import { getTweets } from "@/lib/twitter";
 import { useRouter } from "next/router";
 import Loader from "@/components/sites/Loader";
+import {
+  replaceLinks,
+  replaceTweets,
+  replaceExamples,
+} from "@/lib/remark-plugins";
 
 const components = {
   Tweet,
@@ -199,76 +203,19 @@ export async function getStaticProps({ params: { site, slug } }) {
 }
 
 async function getMdxSource(postContents) {
-  // Use remark to convert markdown into HTML string
+  // Use remark plugins to convert markdown into HTML string
   const processedContent = await remark()
-    .use(remarkMdx)
-    .processSync(postContents);
+    .use(remarkMdx) // native remark plugin that parses markdown into MDX
+    .use(replaceLinks) // replaces internal links with <Link /> component, external links with <a target="_blank" />
+    .use(replaceTweets) // replaces tweets with static <Tweet /> component
+    .use(replaceExamples) // replaces examples with <Example /> component (only for demo.vercel.pub)
+    .process(postContents);
 
   // Convert converted html to string format
   const contentHtml = String(processedContent);
 
-  // replace all external links
-  const replacedExternalLinks = contentHtml.replace(
-    /<a (href="http(s)?.+?")>(.+?)(?=<\/a>)/g,
-    `<a target="_blank" $1>$3 ↗`
-  );
-
-  // replace all internal links
-  const replacedInternalLinks = replacedExternalLinks.replace(
-    /<a href="\/(.+?)">(.+?)<\/a>/g,
-    `<Link href="/$1"><a className="cursor-pointer">$2</a></Link>`
-  );
-  // replace all Examples
-  const replacedExamples = await replaceAsync(
-    replacedInternalLinks,
-    /<Examples (.*)\/>/g,
-    getExamples
-  );
-
-  // Replace all Twitter URLs with their MDX counterparts
-  const replacedTweets = await replaceAsync(
-    replacedExamples,
-    /<p>(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)([^\?])(\?.*)?<\/p>)/g,
-    getTweetMetadata
-  );
-
   // serialize the content string into MDX
-  const mdxSource = await serialize(replacedTweets);
+  const mdxSource = await serialize(contentHtml);
 
   return mdxSource;
 }
-
-const replaceAsync = async (str, regex, asyncFn) => {
-  const promises = [];
-  str.replace(regex, (match, ...args) => {
-    const promise = asyncFn(match, ...args);
-    promises.push(promise);
-  });
-  const data = await Promise.all(promises);
-  return str.replace(regex, () => data.shift());
-};
-
-const getTweetMetadata = async (tweetUrl) => {
-  const regex = /\/status\/(\d+)/gm;
-  const id = regex.exec(tweetUrl)[1];
-  const tweetData = await getTweets(id);
-  const tweetMDX =
-    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>";
-  return tweetMDX;
-};
-
-const getExamples = async (str) => {
-  const regex = /names="(.+)"/gm;
-  const raw = regex.exec(str);
-  const names = raw[1].split(",");
-  let data = [];
-  for (let i = 0; i < names.length; i++) {
-    const results = await prisma.example.findUnique({
-      where: {
-        id: parseInt(names[i]),
-      },
-    });
-    data.push(results);
-  }
-  return `<Examples data={${JSON.stringify(data)}} />`;
-};
