@@ -1,14 +1,7 @@
 export interface TweetData {
-  created_at: Date;
-  id: string;
-  text: string;
-  public_metrics: {
-    like_count: number;
-    quote_count: number;
-    reply_count: number;
-    retweet_count: number;
-  };
+  attachments?: { media_keys: Array<string> };
   author_id: string;
+  created_at: Date;
   entities?: {
     urls?: Array<{
       display_url: string;
@@ -18,9 +11,18 @@ export interface TweetData {
       url: string;
     }>;
   };
-  attachments?: {
-    media_keys: Array<string>;
+  id: string;
+  public_metrics: {
+    like_count: number;
+    quote_count: number;
+    reply_count: number;
+    retweet_count: number;
   };
+  referenced_tweets?: Array<{
+    id: string;
+    type: string;
+  }>;
+  text: string;
 }
 
 export interface Tweet {
@@ -33,6 +35,7 @@ export interface Tweet {
       url: string;
       width: number;
     }>;
+    polls?: Array<unknown>;
     tweets?: Array<Tweet["data"]>;
     users: Array<{
       id: string;
