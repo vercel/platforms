@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import TwitterProvider from "next-auth/providers/twitter";
+import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 
@@ -10,19 +10,16 @@ if (!process.env.TWITTER_ID || !process.env.TWITTER_SECRET)
 
 export const authOptions = {
   providers: [
-    TwitterProvider({
-      clientId: process.env.TWITTER_ID,
-      clientSecret: process.env.TWITTER_SECRET,
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
       profile(profile) {
         return {
-          id: profile.id_str,
-          name: profile.name,
-          username: profile.screen_name,
-          email: profile.email && profile.email != "" ? profile.email : null,
-          image: profile.profile_image_url_https.replace(
-            /_normal\.(jpg|png|gif)$/,
-            ".$1"
-          ),
+          id: profile.id.toString(),
+          name: profile.name || profile.login,
+          gh_username: profile.login,
+          email: profile.email,
+          image: profile.avatar_url,
         };
       },
     }),

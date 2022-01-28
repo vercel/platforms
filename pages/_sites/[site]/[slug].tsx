@@ -1,19 +1,23 @@
-import Layout from "@/components/sites/Layout";
 import Link from "next/link";
-import Tweet from "@/components/mdx/Tweet";
-import matter from "gray-matter";
-import remark from "remark";
-import html from "remark-html";
-import { serialize } from "next-mdx-remote/serialize";
+import remarkMdx from "remark-mdx";
 import { MDXRemote } from "next-mdx-remote";
-import BlurImage from "@/components/BlurImage";
-import BlogCard from "@/components/BlogCard";
-import Examples from "@/components/mdx/Examples";
-import Date from "@/components/Date";
-import prisma from "@/lib/prisma";
-import { getTweets } from "@/lib/twitter";
+import { remark } from "remark";
+import { serialize } from "next-mdx-remote/serialize";
 import { useRouter } from "next/router";
+
+import BlogCard from "@/components/BlogCard";
+import BlurImage from "@/components/BlurImage";
+import Date from "@/components/Date";
+import Examples from "@/components/mdx/Examples";
+import Layout from "@/components/sites/Layout";
 import Loader from "@/components/sites/Loader";
+import prisma from "@/lib/prisma";
+import Tweet from "@/components/mdx/Tweet";
+import {
+  replaceExamples,
+  replaceLinks,
+  replaceTweets,
+} from "@/lib/remark-plugins";
 
 import type { AdjacentPost, Meta, _SiteSlugData } from "@/types";
 import type { GetStaticPaths, GetStaticPropsContext } from "next";
@@ -75,7 +79,12 @@ export default function Post({
         </div>
         <a
           target="_blank"
-          href={`https://twitter.com/${data.site?.user?.username}`}
+          // if you are using Github OAuth, you can get rid of the Twitter option
+          href={
+            data.site?.user?.username
+              ? `https://twitter.com/${data.site?.user?.username}`
+              : `https://github.com/${data.site?.user?.gh_username}`
+          }
         >
           <div className="my-8">
             <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden inline-block align-middle">
@@ -158,10 +167,6 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
           customDomain: true,
         },
       },
-    },
-    take: 80,
-    orderBy: {
-      createdAt: "asc",
     },
   });
 
@@ -261,102 +266,23 @@ export async function getStaticProps({
 }
 
 async function getMdxSource(postContents: string) {
-  // Use gray-matter to parse the post metadata section
-  const { content, data } = matter(postContents);
-
-  // Use remark to convert markdown into HTML string
-  const processedContent = await remark().use(html).process(content);
+  // Use remark plugins to convert markdown into HTML string
+  const processedContent = await remark()
+    // Native remark plugin that parses markdown into MDX
+    .use(remarkMdx)
+    // Replaces internal links with <Link /> component, external links with <a target="_blank" />
+    .use(replaceLinks)
+    // Replaces tweets with static <Tweet /> component
+    .use(replaceTweets)
+    // Replaces examples with <Example /> component (only for demo.vercel.pub)
+    .use(replaceExamples)
+    .process(postContents);
 
   // Convert converted html to string format
-  const contentHtml = processedContent.toString();
+  const contentHtml = String(processedContent);
 
-  // replace all external links
-  const replacedExternalLinks = contentHtml.replace(
-    /<a (href="http(s)?.+?")>(.+?)(?=<\/a>)/g,
-    `<a target="_blank" $1>$3 ↗`
-  );
-
-  // replace all internal links
-  const replacedInternalLinks = replacedExternalLinks.replace(
-    /<a href="\/(.+?)">(.+?)<\/a>/g,
-    `<Link href="/$1"><a className="cursor-pointer">$2</a></Link>`
-  );
-
-  // replace all Examples
-  const replacedExamples = await replaceAsync(
-    replacedInternalLinks,
-    /<Examples (.*)\/>/g,
-    getExamples
-  );
-
-  // Replace all Twitter URLs with their MDX counterparts
-  const replacedTweets = await replaceAsync(
-    replacedExamples,
-    /<p>(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)([^\?])(\?.*)?<\/p>)/g,
-    getTweetMetadata
-  );
-
-  // serialize the content string into MDX
-  const mdxSource = await serialize(replacedTweets);
+  // Serialize the content string into MDX
+  const mdxSource = await serialize(contentHtml);
 
   return mdxSource;
 }
-
-// TODO: Validate TypeScript migration did not modify the functionality
-const replaceAsync = async (
-  str: string,
-  regex: RegExp,
-  asyncFn: (str: string) => Promise<string>
-): Promise<string> => {
-  const matches = new Array<string>();
-
-  str.replace(regex, (match) => {
-    matches.push(match);
-    return match;
-  });
-
-  const data = await Promise.all(matches.map((match) => asyncFn(match)));
-
-  return str.replace(regex, () => {
-    const str = data.shift();
-    if (!str) throw new Error("Unable to shift string from promised data");
-
-    return str;
-  });
-};
-
-const getTweetMetadata = async (tweetUrl: string): Promise<string> => {
-  const regex = /\/status\/(\d+)/gm;
-
-  const id = regex.exec(tweetUrl);
-  if (!id)
-    throw new Error("Regex pattern failed to find Twitter metadata to replace");
-
-  const tweetData = await getTweets(id[1]);
-
-  return (
-    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>"
-  );
-};
-
-const getExamples = async (str: string): Promise<string> => {
-  const regex = /names=\[(.+)\]/gm;
-
-  const raw = regex.exec(str);
-  if (!raw) throw new Error("Regex pattern failed to find examples to replace");
-
-  const names = raw[1].split(",");
-
-  let data = [];
-
-  for (let i = 0; i < names.length; i++) {
-    const results = await prisma.example.findUnique({
-      where: {
-        id: parseInt(names[i]),
-      },
-    });
-    data.push(results);
-  }
-
-  return `<Examples data={${JSON.stringify(data)}} />`;
-};

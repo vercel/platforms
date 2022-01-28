@@ -6,14 +6,14 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./lib/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'media',
+  darkMode: "media",
   theme: {
     fontFamily: {
       cal: ["Cal Sans", "Inter var", "sans-serif"],
     },
     extend: {
       colors: {
-        current: 'currentColor',
+        current: "currentColor",
       },
       width: {
         1536: "1536px",
