@@ -80,7 +80,7 @@ export default function Tweet({ id, metadata, className }) {
 
   return (
     <div
-      className={`${className} tweet rounded-lg border border-gray-300 dark:border-gray-800 bg-white px-8 pt-6 pb-2 my-4 w-full`}
+      className={`${className} tweet rounded-lg border border-gray-300 bg-white px-8 pt-6 pb-2 my-4 w-full`}
     >
       <div className="flex items-center">
         <a
@@ -103,14 +103,14 @@ export default function Tweet({ id, metadata, className }) {
           className="author flex flex-col ml-4 !no-underline"
         >
           <span
-            className="flex items-center font-bold !text-gray-900 dark:!text-gray-100 leading-5 mt-1"
+            className="flex items-center font-bold text-gray-900 leading-5 mt-1"
             title={author.name}
           >
             {author.name}
             {author.verified ? (
               <svg
                 aria-label="Verified Account"
-                className="ml-1 text-blue-500 dark:text-white inline h-4 w-4"
+                className="ml-1 text-blue-500 inline h-4 w-4"
                 viewBox="0 0 24 24"
               >
                 <g fill="currentColor">
@@ -158,7 +158,7 @@ export default function Tweet({ id, metadata, className }) {
         </div>
       )}
       <div
-        className="mt-4 mb-2 leading-normal whitespace-pre-wrap text-lg !text-gray-700 dark:!text-gray-300"
+        className="mt-4 mb-2 leading-normal whitespace-pre-wrap text-lg text-gray-700"
         dangerouslySetInnerHTML={{ __html: formattedText }}
       />
       {media && media.length ? (
@@ -309,7 +309,7 @@ export default function Tweet({ id, metadata, className }) {
           {format(createdAt, "h:mm a - MMM d, y")}
         </time>
       </a>
-      <div className="border-t border-gray-300 pt-1 flex space-x-2 md:space-x-6 text-base !text-gray-700 dark:!text-gray-300 mt-2">
+      <div className="border-t border-gray-300 pt-1 flex space-x-2 md:space-x-6 text-base text-gray-700 mt-2">
         <a
           className="flex items-center !text-gray-500 group transition !no-underline space-x-1"
           href={likeUrl}
