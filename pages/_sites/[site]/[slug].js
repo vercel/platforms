@@ -206,7 +206,7 @@ async function getMdxSource(postContents) {
   // Use remark plugins to convert markdown into HTML string
   const processedContent = await remark()
     .use(remarkMdx) // native remark plugin that parses markdown into MDX
-    .use(replaceLinks) // replaces internal links with <Link /> component, external links with <a target="_blank" />
+    //.use(replaceLinks) // replaces internal links with <Link /> component, external links with <a target="_blank" />
     .use(replaceTweets) // replaces tweets with static <Tweet /> component
     .use(replaceExamples) // replaces examples with <Example /> component (only for demo.vercel.pub)
     .process(postContents);
