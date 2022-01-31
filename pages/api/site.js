@@ -62,19 +62,19 @@ export default async function site(req, res) {
       // delete site
       const { siteId } = req.query;
       await prisma.$transaction([
-        await prisma.post.deleteMany({
+        prisma.post.deleteMany({
           where: {
             site: {
               id: siteId,
             },
           },
         }),
-        await prisma.site.delete({
+        prisma.site.delete({
           where: {
             id: siteId,
           },
-        })
-      ])
+        }),
+      ]);
       res.status(200).end();
       return;
     }
