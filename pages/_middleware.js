@@ -11,7 +11,9 @@ export default function middleware(req) {
 
   const currentHost =
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
-      ? hostname.replace(`.vercel.pub`, "")
+      ? hostname
+          .replace(`.vercel.pub`, "")
+          .replace(`.platformize.vercel.app`, "")
       : hostname.replace(`.localhost:3000`, "");
 
   if (pathname.startsWith(`/_sites`)) {
@@ -28,7 +30,10 @@ export default function middleware(req) {
         return NextResponse.redirect("/");
       }
       return NextResponse.rewrite(`/app${pathname}`);
-    } else if (hostname === "localhost:3000") {
+    } else if (
+      hostname === "localhost:3000" ||
+      hostname === "platformize.vercel.app"
+    ) {
       return NextResponse.rewrite(`/home`);
     } else {
       return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
