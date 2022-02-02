@@ -103,3 +103,13 @@ This working demo site was built using the Platforms Starter Kit and:
 
 - [Start a discussion](https://github.com/vercel/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
 - [Open an issue](https://github.com/vercel/platforms/issues) if you believe you've encountered a bug with the starter kit.
+
+## Author
+
+- Steven Tey ([@steventey](https://twitter.com/steventey))
+
+---
+
+<a aria-label="Vercel logo" href="https://vercel.com">
+  <img src="https://badgen.net/badge/icon/Made%20by%20Vercel?icon=zeit&label&color=black&labelColor=black">
+</a>
