@@ -23,6 +23,7 @@ export const authOptions = {
   pages: {
     signIn: `/login`,
     verifyRequest: `/login`,
+    error: "/login", // Error code passed in query string as ?error=
   },
   adapter: PrismaAdapter(prisma),
   callbacks: {
