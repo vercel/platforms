@@ -2,13 +2,13 @@ import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-function getRemainingTime(ISOString) {
-  const currentTime = new Date();
-  const endTime = new Date(ISOString);
+function getRemainingTime(ISOString: string) {
+  const currentTime = Date.now();
+  const endTime = new Date(ISOString).getTime();
   const diff = endTime - currentTime;
   if (diff > 36e5 * 24) {
     const days = Math.floor(diff / (36e5 * 24));
@@ -23,8 +23,67 @@ function getRemainingTime(ISOString) {
   }
 }
 
-export default function Tweet({ id, metadata, className }) {
-  const parsedMetadata = JSON.parse(metadata.replace(/\n/g, "\\n"));
+interface TweetProps {
+  id: string;
+  metadata: string;
+  className?: string;
+}
+
+interface Author {
+  name: string;
+  username: string;
+  profile_image_url: string;
+  verified: boolean;
+}
+
+interface Metadata {
+  text: string;
+  author: Author;
+  media: Array<{
+    type: string;
+    media_key: string;
+    height: number;
+    width: number;
+    preview_image_url: string;
+    url: string;
+  }>;
+  video: {
+    url: string;
+  };
+  polls: Array<{
+    total_votes: number;
+    options: Array<{
+      votes: number;
+      label: string;
+      position: number;
+    }>;
+    voting_status: string;
+    end_datetime: string;
+  }>;
+  url_meta: {
+    title: string;
+    description: string;
+    unwound_url: string;
+    images: Array<{
+      url: string;
+    }>;
+  };
+  created_at: string;
+  public_metrics: {
+    like_count: number;
+    retweet_count: number;
+    reply_count: number;
+  };
+  referenced_tweets: Array<{
+    id: string;
+    username: string;
+    author: Author;
+    type: string;
+  }>;
+}
+
+export default function Tweet({ id, metadata, className }: TweetProps) {
+  const parsedMetadata = JSON.parse(metadata.replace(/\n/g, "\\n")) as Metadata;
 
   const text = parsedMetadata.text;
   const author = parsedMetadata.author;
@@ -180,7 +239,6 @@ export default function Tweet({ id, metadata, className }) {
                     muted
                     playsInline
                     src={video.url}
-                    type="video/mp4"
                   />
                 ) : (
                   <BlurImage
