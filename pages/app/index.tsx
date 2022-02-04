@@ -29,7 +29,7 @@ export default function AppIndex() {
     async function checkSubDomain() {
       if (debouncedSubdomain.length > 0) {
         const response = await fetch(
-          `/api/check-subdomain?subdomain=${debouncedSubdomain}`
+          `/api/domain/check?domain=${debouncedSubdomain}&subdomain=1`
         );
         const available = await response.json();
         if (available) {

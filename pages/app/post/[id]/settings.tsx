@@ -1,29 +1,41 @@
-import Layout from "@/components/app/Layout";
+import toast, { Toaster } from "react-hot-toast";
 import useSWR from "swr";
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+
 import BlurImage from "@/components/BlurImage";
 import CloudinaryUploadWidget from "@/components/Cloudinary";
-import LoadingDots from "@/components/app/loading-dots";
-import saveImage from "@/lib/save-image";
-import Modal from "@/components/Modal";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import Layout from "@/components/app/Layout";
 import Loader from "@/components/app/Loader";
-import toast, { Toaster } from "react-hot-toast";
-import { fetcher } from "@/lib/fetcher"
+import LoadingDots from "@/components/app/loading-dots";
+import Modal from "@/components/Modal";
+import saveImage from "@/lib/save-image";
+import { fetcher } from "@/lib/fetcher";
+import { HttpMethod } from "@/types";
+
+import type { ChangeEvent } from "react";
+
+import type { WithSitePost } from "@/types";
+
+interface SettingsData {
+  slug: string;
+  id: string;
+  image: string;
+  imageBlurhash: string;
+}
 
 export default function PostSettings() {
   const router = useRouter();
-  const { id } = router.query;
-  const postId = id;
 
-  const { data: settings, isValidating } = useSWR(
+  // TODO: Undefined check redirects to error
+  const { id: postId } = router.query;
+
+  const { data: settings, isValidating } = useSWR<WithSitePost>(
     `/api/post?postId=${postId}`,
     fetcher,
     {
+      onError: () => router.push("/"),
       revalidateOnFocus: false,
-      onError: () => {
-        router.push("/");
-      },
     }
   );
 
@@ -31,47 +43,60 @@ export default function PostSettings() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingPost, setDeletingPost] = useState(false);
 
-  const [data, setData] = useState({
-    image: settings?.image,
-    imageBlurhash: settings?.imageBlurhash,
+  const [data, setData] = useState<SettingsData>({
+    image: settings?.image ?? "",
+    imageBlurhash: settings?.imageBlurhash ?? "",
+    slug: settings?.slug ?? "",
+    id: settings?.id ?? "",
   });
 
   useEffect(() => {
     if (settings)
       setData({
         slug: settings.slug,
-        image: settings.image,
-        imageBlurhash: settings.imageBlurhash,
+        image: settings.image ?? "",
+        imageBlurhash: settings.imageBlurhash ?? "",
+        id: settings.id,
       });
   }, [settings]);
 
-  async function savePostSettings(data) {
+  async function savePostSettings(data: SettingsData) {
     setSaving(true);
-    const response = await fetch("/api/post", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: postId,
-        slug: data.slug,
-        image: data.image,
-        imageBlurhash: data.imageBlurhash,
-      }),
-    });
-    if (response.ok) {
+
+    try {
+      const response = await fetch("/api/post", {
+        method: HttpMethod.PUT,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: postId,
+          slug: data.slug,
+          image: data.image,
+          imageBlurhash: data.imageBlurhash,
+        }),
+      });
+
+      if (response.ok) toast.success(`Changes Saved`);
+    } catch (error) {
+      console.error(error);
+    } finally {
       setSaving(false);
-      toast.success(`Changes Saved`);
     }
   }
 
-  async function deletePost(postId) {
+  async function deletePost(postId: string) {
     setDeletingPost(true);
-    const response = await fetch(`/api/post?postId=${postId}`, {
-      method: "DELETE",
-    });
-    if (response.ok) {
-      router.push(`/site/${settings.site.id}`);
+    try {
+      const response = await fetch(`/api/post?postId=${postId}`, {
+        method: HttpMethod.DELETE,
+      });
+
+      if (response.ok) router.push(`/site/${settings?.site?.id}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeletingPost(false);
     }
   }
 
@@ -84,7 +109,7 @@ export default function PostSettings() {
 
   return (
     <>
-      <Layout siteId={settings?.site.id}>
+      <Layout siteId={settings?.site?.id}>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -98,7 +123,7 @@ export default function PostSettings() {
               <h2 className="font-cal text-2xl">Post Slug</h2>
               <div className="border border-gray-700 rounded-lg flex items-center max-w-lg">
                 <span className="px-5 font-cal rounded-l-lg border-r border-gray-600">
-                  {settings?.site.subdomain}.vercel.pub/
+                  {settings?.site?.subdomain}.vercel.pub/
                 </span>
                 <input
                   className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-r-lg placeholder-gray-400"
@@ -106,7 +131,7 @@ export default function PostSettings() {
                   name="slug"
                   placeholder="post-slug"
                   value={data?.slug}
-                  onInput={(e) =>
+                  onInput={(e: ChangeEvent<HTMLInputElement>) =>
                     setData((data) => ({ ...data, slug: e.target.value }))
                   }
                 />
@@ -179,7 +204,7 @@ export default function PostSettings() {
           <form
             onSubmit={async (event) => {
               event.preventDefault();
-              await deletePost(postId);
+              await deletePost(postId as string);
             }}
             className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg"
           >

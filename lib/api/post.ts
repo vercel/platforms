@@ -3,6 +3,13 @@ import prisma from "@/lib/prisma";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { Post, Site } from ".prisma/client";
 
+import type { WithSitePost } from "@/types";
+
+interface AllPosts {
+  posts: Array<Post>;
+  site: Site | null;
+}
+
 /**
  * Get Post
  *
@@ -16,10 +23,7 @@ import type { Post, Site } from ".prisma/client";
 export async function getPost(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<void | NextApiResponse<{
-  posts: Array<Post>;
-  site: Site | null;
-}>> {
+): Promise<void | NextApiResponse<AllPosts | (WithSitePost | null)>> {
   const { postId, siteId, published } = req.query;
 
   if (

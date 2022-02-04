@@ -1,6 +1,7 @@
 import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
+import { TweetData } from "@/types";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -29,61 +30,10 @@ interface TweetProps {
   className?: string;
 }
 
-interface Author {
-  name: string;
-  username: string;
-  profile_image_url: string;
-  verified: boolean;
-}
-
-interface Metadata {
-  text: string;
-  author: Author;
-  media: Array<{
-    type: string;
-    media_key: string;
-    height: number;
-    width: number;
-    preview_image_url: string;
-    url: string;
-  }>;
-  video: {
-    url: string;
-  };
-  polls: Array<{
-    total_votes: number;
-    options: Array<{
-      votes: number;
-      label: string;
-      position: number;
-    }>;
-    voting_status: string;
-    end_datetime: string;
-  }>;
-  url_meta: {
-    title: string;
-    description: string;
-    unwound_url: string;
-    images: Array<{
-      url: string;
-    }>;
-  };
-  created_at: string;
-  public_metrics: {
-    like_count: number;
-    retweet_count: number;
-    reply_count: number;
-  };
-  referenced_tweets: Array<{
-    id: string;
-    username: string;
-    author: Author;
-    type: string;
-  }>;
-}
-
 export default function Tweet({ id, metadata, className }: TweetProps) {
-  const parsedMetadata = JSON.parse(metadata.replace(/\n/g, "\\n")) as Metadata;
+  const parsedMetadata = JSON.parse(
+    metadata.replace(/\n/g, "\\n")
+  ) as TweetData;
 
   const text = parsedMetadata.text;
   const author = parsedMetadata.author;

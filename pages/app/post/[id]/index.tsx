@@ -1,173 +1,27 @@
-import Layout from "@/components/app/Layout";
+import TextareaAutosize from "react-textarea-autosize";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
-import { useState, useEffect } from "react";
-import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/router";
-import LoadingDots from "@/components/app/loading-dots";
+import { useState, useEffect } from "react";
+
+import Layout from "@/components/app/Layout";
 import Loader from "@/components/app/Loader";
-import { fetcher } from "@/lib/fetcher"
+import LoadingDots from "@/components/app/loading-dots";
+import { fetcher } from "@/lib/fetcher";
+import { HttpMethod } from "@/types";
 
-export default function Post() {
-  const router = useRouter();
-  const { id } = router.query;
-  const postId = id;
+import type { ChangeEvent } from "react";
+import type { Post } from ".prisma/client";
 
-  const { data: post, isValidating } = useSWR(
-    `/api/post?postId=${postId}`,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      onError: () => {
-        router.push("/");
-      },
-    }
-  );
+import type { WithSitePost } from "@/types";
 
-  const [savedState, setSavedState] = useState(
-    post
-      ? `Last saved at ${Intl.DateTimeFormat("en", { month: "short" }).format(
-          new Date(post.updatedAt)
-        )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
-          new Date(post.updatedAt)
-        )} ${Intl.DateTimeFormat("en", {
-          hour: "numeric",
-          minute: "numeric",
-        }).format(new Date(post.updatedAt))}`
-      : "Saving changes..."
-  );
+interface PostData {
+  title: string;
+  description: string;
+  content: string;
+}
 
-  const [data, setData] = useState({
-    title: "",
-    description: "",
-    content: "",
-  });
-  useEffect(() => {
-    if (post)
-      setData({
-        title: post.title,
-        description: post.description,
-        content: post.content,
-      });
-  }, [post]);
-  const [debouncedData] = useDebounce(data, 1000);
-
-  useEffect(() => {
-    if (debouncedData.title) saveChanges(debouncedData);
-  }, [debouncedData]);
-
-  const [publishing, setPublishing] = useState(false);
-  const [disabled, setDisabled] = useState(true);
-
-  useEffect(() => {
-    if (data.title && data.description && data.content && !publishing)
-      setDisabled(false);
-    else setDisabled(true);
-  }, [publishing, data]);
-
-  useEffect(() => {
-    const clickedSave = (e) => {
-      let charCode = String.fromCharCode(e.which).toLowerCase();
-      if ((e.ctrlKey || e.metaKey) && charCode === "s") {
-        e.preventDefault();
-        saveChanges(data);
-      }
-    };
-    window.addEventListener("keydown", clickedSave);
-    return () => {
-      window.removeEventListener("keydown", clickedSave);
-    };
-  }, [data]);
-
-  async function saveChanges(data) {
-    setSavedState("Saving changes...");
-    const response = await fetch("/api/post", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: postId,
-        title: data.title,
-        description: data.description,
-        content: data.content,
-      }),
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      setSavedState(
-        `Last save ${Intl.DateTimeFormat("en", { month: "short" }).format(
-          new Date(responseData.updatedAt)
-        )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
-          new Date(responseData.updatedAt)
-        )} at ${Intl.DateTimeFormat("en", {
-          hour: "numeric",
-          minute: "numeric",
-        }).format(new Date(responseData.updatedAt))}`
-      );
-    } else {
-      setSavedState("Failed to save.");
-    }
-  }
-
-  const publish = async () => {
-    setPublishing(true);
-    const response = await fetch(`/api/post`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: postId,
-        title: data.title,
-        description: data.description,
-        content: data.content,
-        published: true,
-      }),
-    });
-    await response.json();
-    router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
-  };
-
-  if (isValidating)
-    return (
-      <Layout>
-        <Loader />
-      </Layout>
-    );
-
-  return (
-    <>
-      <Layout siteId={post?.site.id}>
-        <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
-          <TextareaAutosize
-            name="title"
-            onInput={(e) => setData({ ...data, title: e.target.value })}
-            className="w-full px-2 py-4 text-gray-800 placeholder-gray-400 mt-6 text-5xl font-cal resize-none border-none focus:outline-none focus:ring-0"
-            placeholder="Untitled Post"
-            value={data.title}
-          />
-          <TextareaAutosize
-            name="description"
-            onInput={(e) => setData({ ...data, description: e.target.value })}
-            className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-xl mb-3 resize-none border-none focus:outline-none focus:ring-0"
-            placeholder="No description provided. Click to edit."
-            value={data.description}
-          />
-
-          <div className="relative mb-6">
-            <div
-              className="absolute inset-0 flex items-center"
-              aria-hidden="true"
-            >
-              <div className="w-full border-t border-gray-300" />
-            </div>
-          </div>
-          <TextareaAutosize
-            name="content"
-            onInput={(e) => setData({ ...data, content: e.target.value })}
-            className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-lg mb-5 resize-none border-none focus:outline-none focus:ring-0"
-            placeholder={`Write some content. Markdown supported:
+const CONTENT_PLACEHOLDER = `Write some content. Markdown supported:
 
 # A H1 header
 
@@ -196,7 +50,192 @@ Ordered lists look like:
 > They can span multiple paragraphs,
 > if you like.
 
-            `}
+            `;
+
+export default function Post() {
+  const router = useRouter();
+
+  // TODO: Undefined check redirects to error
+  const { id: postId } = router.query;
+
+  const { data: post, isValidating } = useSWR<WithSitePost>(
+    `/api/post?postId=${postId}`,
+    fetcher,
+    {
+      onError: () => router.push("/"),
+      revalidateOnFocus: false,
+    }
+  );
+
+  const [savedState, setSavedState] = useState(
+    post
+      ? `Last saved at ${Intl.DateTimeFormat("en", { month: "short" }).format(
+          new Date(post.updatedAt)
+        )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
+          new Date(post.updatedAt)
+        )} ${Intl.DateTimeFormat("en", {
+          hour: "numeric",
+          minute: "numeric",
+        }).format(new Date(post.updatedAt))}`
+      : "Saving changes..."
+  );
+
+  const [data, setData] = useState<PostData>({
+    title: "",
+    description: "",
+    content: "",
+  });
+
+  useEffect(() => {
+    if (post)
+      setData({
+        title: post.title ?? "",
+        description: post.description ?? "",
+        content: post.content ?? "",
+      });
+  }, [post]);
+
+  const [debouncedData] = useDebounce(data, 1000);
+
+  useEffect(() => {
+    if (debouncedData.title) saveChanges(debouncedData);
+  }, [debouncedData]);
+
+  const [publishing, setPublishing] = useState(false);
+  const [disabled, setDisabled] = useState(true);
+
+  useEffect(() => {
+    if (data.title && data.description && data.content && !publishing)
+      setDisabled(false);
+    else setDisabled(true);
+  }, [publishing, data]);
+
+  useEffect(() => {
+    function clickedSave(e: KeyboardEvent) {
+      let charCode = String.fromCharCode(e.which).toLowerCase();
+
+      if ((e.ctrlKey || e.metaKey) && charCode === "s") {
+        e.preventDefault();
+        saveChanges(data);
+      }
+    }
+
+    window.addEventListener("keydown", clickedSave);
+
+    return () => window.removeEventListener("keydown", clickedSave);
+  }, [data]);
+
+  async function saveChanges(data: PostData) {
+    setSavedState("Saving changes...");
+
+    try {
+      const response = await fetch("/api/post", {
+        method: HttpMethod.PUT,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: postId,
+          title: data.title,
+          description: data.description,
+          content: data.content,
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        setSavedState(
+          `Last save ${Intl.DateTimeFormat("en", { month: "short" }).format(
+            new Date(responseData.updatedAt)
+          )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
+            new Date(responseData.updatedAt)
+          )} at ${Intl.DateTimeFormat("en", {
+            hour: "numeric",
+            minute: "numeric",
+          }).format(new Date(responseData.updatedAt))}`
+        );
+      } else {
+        // TODO: Add error toast prompting that the save failed
+        setSavedState("Failed to save.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function publish() {
+    setPublishing(true);
+
+    try {
+      const response = await fetch(`/api/post`, {
+        method: HttpMethod.PUT,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: postId,
+          title: data.title,
+          description: data.description,
+          content: data.content,
+          published: true,
+        }),
+      });
+
+      await response.json();
+
+      router.push(`https://${post?.site?.subdomain}.vercel.pub/${post?.slug}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setPublishing(false);
+    }
+  }
+
+  if (isValidating)
+    return (
+      <Layout>
+        <Loader />
+      </Layout>
+    );
+
+  return (
+    <>
+      <Layout siteId={post?.site?.id}>
+        <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
+          <TextareaAutosize
+            name="title"
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              setData({ ...data, title: e.currentTarget.value })
+            }
+            className="w-full px-2 py-4 text-gray-800 placeholder-gray-400 mt-6 text-5xl font-cal resize-none border-none focus:outline-none focus:ring-0"
+            placeholder="Untitled Post"
+            value={data.title}
+          />
+          <TextareaAutosize
+            name="description"
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              setData({ ...data, description: e.currentTarget.value })
+            }
+            className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-xl mb-3 resize-none border-none focus:outline-none focus:ring-0"
+            placeholder="No description provided. Click to edit."
+            value={data.description}
+          />
+
+          <div className="relative mb-6">
+            <div
+              className="absolute inset-0 flex items-center"
+              aria-hidden="true"
+            >
+              <div className="w-full border-t border-gray-300" />
+            </div>
+          </div>
+          <TextareaAutosize
+            name="content"
+            onInput={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              setData({ ...data, content: e.currentTarget.value })
+            }
+            className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-lg mb-5 resize-none border-none focus:outline-none focus:ring-0"
+            placeholder={CONTENT_PLACEHOLDER}
             value={data.content}
           />
         </div>

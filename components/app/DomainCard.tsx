@@ -2,6 +2,7 @@ import useSWR, { mutate } from "swr";
 import { useState } from "react";
 import LoadingDots from "@/components/app/loading-dots";
 import { fetcher } from "@/lib/fetcher";
+import { HttpMethod } from "@/types";
 
 import type { Site } from "@prisma/client";
 
@@ -23,7 +24,7 @@ interface DomainCardProps<T = DomainData> {
 
 export default function DomainCard({ data, setData }: DomainCardProps) {
   const { data: valid, isValidating } = useSWR<Site>(
-    `/api/check-domain?domain=${data.customDomain}`,
+    `/api/domain/check?domain=${data.customDomain}`,
     fetcher,
     { revalidateOnMount: true, refreshInterval: 5000 }
   );
@@ -60,7 +61,7 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
         <div className="flex space-x-3">
           <button
             onClick={() => {
-              mutate(`/api/check-domain?domain=${data.customDomain}`);
+              mutate(`/api/domain/check?domain=${data.customDomain}`);
             }}
             disabled={isValidating}
             className={`${
@@ -75,9 +76,9 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
             onClick={async () => {
               setRemoving(true);
               await fetch(
-                `/api/remove-domain?domain=${data.customDomain}&siteId=${data.id}`,
+                `/api/domain?domain=${data.customDomain}&siteId=${data.id}`,
                 {
-                  method: "DELETE",
+                  method: HttpMethod.DELETE,
                 }
               ).then((res) => {
                 setRemoving(false);

@@ -20,7 +20,7 @@ export async function getSite(
   req: NextApiRequest,
   res: NextApiResponse,
   session: Session
-): Promise<void | NextApiResponse<Array<Site>>> {
+): Promise<void | NextApiResponse<Array<Site> | (Site | null)>> {
   const { sessionId, siteId } = req.query;
 
   if (Array.isArray(sessionId) || Array.isArray(siteId))

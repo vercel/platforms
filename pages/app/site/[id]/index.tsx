@@ -1,41 +1,50 @@
-import { useState, useEffect } from "react";
-import Layout from "@/components/app/Layout";
-import BlurImage from "@/components/BlurImage";
-import LoadingDots from "@/components/app/loading-dots";
-import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import Link from "next/link";
 import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher"
+
+import BlurImage from "@/components/BlurImage";
+import Layout from "@/components/app/Layout";
+import LoadingDots from "@/components/app/loading-dots";
+import { fetcher } from "@/lib/fetcher";
+import { HttpMethod } from "@/types";
+
+import type { Post, Site } from "@prisma/client";
+
+interface SitePostData {
+  posts: Array<Post>;
+  site: Site | null;
+}
 
 export default function SiteIndex() {
   const [creatingPost, setCreatingPost] = useState(false);
 
   const router = useRouter();
-  const { id } = router.query;
-  const siteId = id;
+  const { id: siteId } = router.query;
 
-  const { data } = useSWR(
+  const { data } = useSWR<SitePostData>(
     siteId && `/api/post?siteId=${siteId}&published=true`,
     fetcher,
     {
-      onSuccess: (data) => {
-        if (!data?.site) {
-          router.push("/");
-        }
-      },
+      onSuccess: (data) => !data?.site && router.push("/"),
     }
   );
 
-  async function createPost(siteId) {
-    const res = await fetch(`/api/post?siteId=${siteId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      router.push(`/post/${data.postId}`);
+  async function createPost(siteId: string) {
+    try {
+      const res = await fetch(`/api/post?siteId=${siteId}`, {
+        method: HttpMethod.POST,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        router.push(`/post/${data.postId}`);
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -49,7 +58,7 @@ export default function SiteIndex() {
           <button
             onClick={() => {
               setCreatingPost(true);
-              createPost(siteId);
+              createPost(siteId as string);
             }}
             className={`${
               creatingPost
@@ -74,12 +83,18 @@ export default function SiteIndex() {
                   <a>
                     <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
                       <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
-                        <BlurImage
-                          src={post.image}
-                          layout="fill"
-                          objectFit="cover"
-                          alt={post.name}
-                        />
+                        {post.image ? (
+                          <BlurImage
+                            alt={post.title ?? "Unknown Thumbnail"}
+                            layout="fill"
+                            objectFit="cover"
+                            src={post.image}
+                          />
+                        ) : (
+                          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl">
+                            ?
+                          </div>
+                        )}
                       </div>
                       <div className="relative p-10">
                         <h2 className="font-cal text-3xl">{post.title}</h2>
@@ -88,11 +103,11 @@ export default function SiteIndex() {
                         </p>
                         <a
                           onClick={(e) => e.stopPropagation()}
-                          href={`https://${data.site.subdomain}.vercel.pub/${post.slug}`}
+                          href={`https://${data.site?.subdomain}.vercel.pub/${post.slug}`}
                           target="_blank"
                           className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
                         >
-                          {data.site.subdomain}.vercel.pub/{post.slug} ↗
+                          {data.site?.subdomain}.vercel.pub/{post.slug} ↗
                         </a>
                       </div>
                     </div>
