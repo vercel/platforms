@@ -1,9 +1,9 @@
 import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
-import { TweetData } from "@/types";
+import type { TweetData, WithClassName } from "@/types";
 
-function classNames(...classes: string[]) {
+function classNames(...classes: Array<string>) {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -24,10 +24,9 @@ function getRemainingTime(ISOString: string) {
   }
 }
 
-interface TweetProps {
+interface TweetProps extends WithClassName {
   id: string;
   metadata: string;
-  className?: string;
 }
 
 export default function Tweet({ id, metadata, className }: TweetProps) {
