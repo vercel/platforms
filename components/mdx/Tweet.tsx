@@ -1,6 +1,7 @@
 import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
+
 import type { TweetData, WithClassName } from "@/types";
 
 function classNames(...classes: Array<string>) {
@@ -8,20 +9,22 @@ function classNames(...classes: Array<string>) {
 }
 
 function getRemainingTime(ISOString: string) {
-  const currentTime = Date.now();
+  const currentTime = new Date();
   const endTime = new Date(ISOString).getTime();
-  const diff = endTime - currentTime;
+  const diff = endTime - currentTime.getTime();
+
   if (diff > 36e5 * 24) {
     const days = Math.floor(diff / (36e5 * 24));
     const hours = Math.floor((diff - days * 36e5 * 24) / 36e5);
+
     return `${days} day${days > 1 ? "s" : ""} ${hours} hours`;
-  } else if (diff > 36e5) {
-    return `${Math.floor(diff / 36e5)} hours`;
-  } else if (diff > 60e3) {
-    return `${Math.floor(diff / 60e3)} minutes`;
-  } else {
-    return "Less than a minute";
   }
+
+  if (diff > 36e5) return `${Math.floor(diff / 36e5)} hours`;
+
+  if (diff > 60e3) return `${Math.floor(diff / 60e3)} minutes`;
+
+  return "Less than a minute";
 }
 
 interface TweetProps extends WithClassName {
@@ -34,15 +37,17 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
     metadata.replace(/\n/g, "\\n")
   ) as TweetData;
 
-  const text = parsedMetadata.text;
-  const author = parsedMetadata.author;
-  const media = parsedMetadata.media;
-  const video = parsedMetadata.video;
-  const polls = parsedMetadata.polls;
-  const url_meta = parsedMetadata.url_meta;
-  const created_at = parsedMetadata.created_at;
-  const public_metrics = parsedMetadata.public_metrics;
-  const referenced_tweets = parsedMetadata.referenced_tweets;
+  const {
+    author,
+    created_at,
+    media,
+    polls,
+    public_metrics,
+    referenced_tweets,
+    text,
+    url_meta,
+    video,
+  } = parsedMetadata;
 
   const authorUrl = `https://twitter.com/${author.username}`;
   const likeUrl = `https://twitter.com/intent/like?tweet_id=${id}`;
@@ -53,28 +58,35 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
 
   const regexToMatchURL =
     /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/;
+
   const formattedText = text
-    .replace(regexToMatchURL, (match) => {
-      // format all hyperlinks
-      return `<a style="color: rgb(29,161,242); font-weight:normal; text-decoration: none" href="${match}" target="_blank">${match.replace(
-        /^http(s?):\/\//i,
-        ""
-      )}</a>`;
-    })
-    .replace(/\B\@([\w\-]+)/gim, (match) => {
-      // format all @ mentions
-      return `<a style="color: rgb(29,161,242); font-weight:normal; text-decoration: none" href="https://twitter.com/${match.replace(
-        "@",
-        ""
-      )}" target="_blank">${match}</a>`;
-    })
-    .replace(/(#+[a-zA-Z0-9(_)]{1,})/g, (match) => {
-      // format all # hashtags
-      return `<a style="color: rgb(29,161,242); font-weight:normal; text-decoration: none" href="https://twitter.com/hashtag/${match.replace(
-        "#",
-        ""
-      )}" target="_blank">${match}</a>`;
-    });
+    // Format all hyperlinks
+    .replace(
+      regexToMatchURL,
+      (match) =>
+        `<a style="color: rgb(29,161,242); font-weight:normal; text-decoration: none" href="${match}" target="_blank">${match.replace(
+          /^http(s?):\/\//i,
+          ""
+        )}</a>`
+    )
+    // Format all @ mentions
+    .replace(
+      /\B\@([\w\-]+)/gim,
+      (match) =>
+        `<a style="color: rgb(29,161,242); font-weight:normal; text-decoration: none" href="https://twitter.com/${match.replace(
+          "@",
+          ""
+        )}" target="_blank">${match}</a>`
+    )
+    // Format all # hashtags
+    .replace(
+      /(#+[a-zA-Z0-9(_)]{1,})/g,
+      (match) =>
+        `<a style="color: rgb(29,161,242); font-weight:normal; text-decoration: none" href="https://twitter.com/hashtag/${match.replace(
+          "#",
+          ""
+        )}" target="_blank">${match}</a>`
+    );
 
   const quoteTweet =
     referenced_tweets && referenced_tweets.find((t) => t.type === "quoted");
