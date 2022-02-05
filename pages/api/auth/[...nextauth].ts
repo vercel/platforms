@@ -5,14 +5,14 @@ import prisma from "@/lib/prisma";
 
 import type { NextAuthOptions } from "next-auth";
 
-if (!process.env.TWITTER_ID || !process.env.TWITTER_SECRET)
+if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET)
   throw new Error("Failed to initialize Twitter authentication");
 
 export const authOptions = {
   providers: [
     GitHubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
       profile(profile) {
         return {
           id: profile.id.toString(),
