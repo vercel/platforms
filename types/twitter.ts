@@ -2,6 +2,36 @@ export interface TweetData {
   attachments?: { media_keys: Array<string> };
   author_id: string;
   created_at: Date;
+  author: TwitterUser;
+  media: Array<{
+    type: string;
+    media_key: string;
+    height: number;
+    width: number;
+    preview_image_url: string;
+    url: string;
+  }>;
+  video: {
+    url: string;
+  };
+  polls: Array<{
+    total_votes: number;
+    options: Array<{
+      votes: number;
+      label: string;
+      position: number;
+    }>;
+    voting_status: string;
+    end_datetime: string;
+  }>;
+  url_meta: {
+    title: string;
+    description: string;
+    unwound_url: string;
+    images: Array<{
+      url: string;
+    }>;
+  };
   entities?: {
     urls?: Array<{
       display_url: string;
@@ -21,6 +51,8 @@ export interface TweetData {
   referenced_tweets?: Array<{
     id: string;
     type: string;
+    username: string;
+    author: TwitterUser;
   }>;
   text: string;
 }
@@ -37,15 +69,7 @@ export interface Tweet {
     }>;
     polls?: Array<unknown>;
     tweets?: Array<Tweet["data"]>;
-    users: Array<{
-      id: string;
-      name: string;
-      profile_image_url: string;
-      protected: boolean;
-      url: string;
-      username: string;
-      verified: boolean;
-    }>;
+    users: Array<TwitterUser>;
   };
 }
 
@@ -161,4 +185,14 @@ interface TwitterExtendedEntitiesMedia {
       url: string;
     }>;
   };
+}
+
+export interface TwitterUser {
+  id: string;
+  name: string;
+  profile_image_url: string;
+  protected: boolean;
+  url: string;
+  username: string;
+  verified: boolean;
 }

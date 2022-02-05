@@ -1,14 +1,15 @@
 import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
+import type { TweetData, WithClassName } from "@/types";
 
-function classNames(...classes) {
+function classNames(...classes: Array<string>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function getRemainingTime(ISOString) {
-  const currentTime = new Date();
-  const endTime = new Date(ISOString);
+function getRemainingTime(ISOString: string) {
+  const currentTime = Date.now();
+  const endTime = new Date(ISOString).getTime();
   const diff = endTime - currentTime;
   if (diff > 36e5 * 24) {
     const days = Math.floor(diff / (36e5 * 24));
@@ -23,8 +24,15 @@ function getRemainingTime(ISOString) {
   }
 }
 
-export default function Tweet({ id, metadata, className }) {
-  const parsedMetadata = JSON.parse(metadata.replace(/\n/g, "\\n"));
+interface TweetProps extends WithClassName {
+  id: string;
+  metadata: string;
+}
+
+export default function Tweet({ id, metadata, className }: TweetProps) {
+  const parsedMetadata = JSON.parse(
+    metadata.replace(/\n/g, "\\n")
+  ) as TweetData;
 
   const text = parsedMetadata.text;
   const author = parsedMetadata.author;
@@ -180,7 +188,6 @@ export default function Tweet({ id, metadata, className }) {
                     muted
                     playsInline
                     src={video.url}
-                    type="video/mp4"
                   />
                 ) : (
                   <BlurImage

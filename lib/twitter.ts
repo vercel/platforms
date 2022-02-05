@@ -42,7 +42,6 @@ export const getTweets = async (id: string) => {
 
         return {
           type: referencedTweet.type,
-          author: getAuthorInfo(fullReferencedTweet.author_id),
           ...fullReferencedTweet,
         };
       }) || [];
