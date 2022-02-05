@@ -1,30 +1,31 @@
+import Link from "next/link";
 import visit from "unist-util-visit";
 
-import prisma from "./prisma";
+import prisma from "@/lib/prisma";
 import { getTweets } from "@/lib/twitter";
 
 import type { Literal, Node } from "unist";
 import type { Example } from "@prisma/client";
 
+import type { WithChildren } from "@/types";
+
 interface NodesToChange {
   node: Literal<string>;
 }
 
-export function replaceLinks() {
-  return function transforme<T extends Node>(tree: T) {
-    visit(tree, "link", (node: any) => {
-      node.type = "html";
-      node.value = node.url.startsWith("http")
-        ? `<a href="${node.url}" target="_blank">${node.children
-            .map((child: any) => child.value)
-            .join(" ")} ↗</a>`
-        : `<Link href="${
-            node.url
-          }"><a className="cursor-pointer">${node.children
-            .map((child: any) => child.value)
-            .join(" ")}</a></Link>`;
-    });
-  };
+export function replaceLinks(options: { href: string } & WithChildren) {
+  // this is technically not a remark plugin but it
+  // replaces internal links with <Link /> component
+  // and external links with <a target="_blank" />
+  return options.href.startsWith("/") || options.href === "" ? (
+    <Link href={options.href}>
+      <a className="cursor-pointer">{options.children}</a>
+    </Link>
+  ) : (
+    <a href={options.href} target="_blank" rel="noopener noreferrer">
+      {options.children} ↗
+    </a>
+  );
 }
 
 export function replaceTweets<T extends Node>() {
@@ -37,19 +38,19 @@ export function replaceTweets<T extends Node>() {
           node.value.match(
             /https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)([^\?])(\?.*)?/g
           )
-        )
+        ) {
           nodesToChange.push({
             node,
           });
+        }
       });
-
       for (const { node } of nodesToChange) {
         try {
           node.type = "html";
           const mdx = await getTweet(node);
           node.value = mdx;
         } catch (e) {
-          console.error(e);
+          console.log("ERROR", e);
           return reject(e);
         }
       }
@@ -80,24 +81,19 @@ export function replaceExamples<T extends Node>() {
       const nodesToChange = new Array<NodesToChange>();
 
       visit(tree, "mdxJsxFlowElement", (node: any) => {
-        if (!node.data)
-          throw new Error(
-            "Failed to replace examples as no node data was found"
-          );
-
-        if (node.data.name == "Examples")
+        if (node.name == "Examples") {
           nodesToChange.push({
             node,
           });
+        }
       });
-
       for (const { node } of nodesToChange) {
         try {
           node.type = "html";
           const mdx = await getExamples(node);
           node.value = mdx;
         } catch (e) {
-          console.error(e);
+          console.log("ERROR", e);
           return reject(e);
         }
       }
@@ -107,7 +103,7 @@ export function replaceExamples<T extends Node>() {
 }
 
 async function getExamples(node: any) {
-  const names = node.attributes[0].value.split(",");
+  const names = node?.attributes[0].value.split(",");
 
   const data = new Array<Example | null>();
 
@@ -117,7 +113,6 @@ async function getExamples(node: any) {
         id: parseInt(names[i]),
       },
     });
-
     data.push(results);
   }
 

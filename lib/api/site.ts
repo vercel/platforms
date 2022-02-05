@@ -21,17 +21,15 @@ export async function getSite(
   res: NextApiResponse,
   session: Session
 ): Promise<void | NextApiResponse<Array<Site> | (Site | null)>> {
-  const { sessionId, siteId } = req.query;
+  const { siteId } = req.query;
 
-  if (Array.isArray(sessionId) || Array.isArray(siteId))
+  if (Array.isArray(siteId))
     return res
       .status(400)
-      .end("Bad request. sessionId parameter cannot be an array.");
+      .end("Bad request. siteId parameter cannot be an array.");
 
   try {
     if (siteId) {
-      const { siteId } = req.query;
-
       const settings = await prisma.site.findUnique({
         where: {
           id: siteId as string,
@@ -130,7 +128,7 @@ export async function deleteSite(
       .end("Bad request. siteId parameter cannot be an array.");
 
   try {
-    await Promise.all([
+    await prisma.$transaction([
       prisma.post.deleteMany({
         where: {
           site: {

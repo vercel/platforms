@@ -25,10 +25,10 @@ import type { MDXRemoteSerializeResult } from "next-mdx-remote";
 import type { ParsedUrlQuery } from "querystring";
 
 const components = {
-  Tweet,
-  Link,
+  a: replaceLinks,
   BlurImage,
   Examples,
+  Tweet,
 };
 
 interface PathProps extends ParsedUrlQuery {
@@ -56,11 +56,11 @@ export default function Post({
   ) as Array<AdjacentPost>;
 
   const meta = {
-    title: data.title,
     description: data.description,
-    ogUrl: `https://${data.site?.subdomain}.vercel.pub/${data.slug}`,
-    ogImage: data.image,
     logo: "/logo.png",
+    ogImage: data.image,
+    ogUrl: `https://${data.site?.subdomain}.vercel.pub/${data.slug}`,
+    title: data.title,
   } as Meta;
 
   return (
@@ -82,7 +82,7 @@ export default function Post({
           // if you are using Github OAuth, you can get rid of the Twitter option
           href={
             data.site?.user?.username
-              ? `https://twitter.com/${data.site?.user?.username}`
+              ? `https://twitter.com/${data.site.user.username}`
               : `https://github.com/${data.site?.user?.gh_username}`
           }
         >
@@ -270,8 +270,6 @@ async function getMdxSource(postContents: string) {
   const processedContent = await remark()
     // Native remark plugin that parses markdown into MDX
     .use(remarkMdx)
-    // Replaces internal links with <Link /> component, external links with <a target="_blank" />
-    .use(replaceLinks)
     // Replaces tweets with static <Tweet /> component
     .use(replaceTweets)
     // Replaces examples with <Example /> component (only for demo.vercel.pub)

@@ -14,6 +14,7 @@
   <a href="#introduction"><strong>Introduction</strong></a> ·
   <a href="https://vercel.com/guides/nextjs-multi-tenant-application"><strong>Guide</strong></a> ·
   <a href="https://demo.vercel.pub/"><strong>Demo</strong></a> ·
+  <a href="https://steven.vercel.pub/kitchen-sink"><strong>Kitchen Sink</strong></a> ·
   <a href="#contributing"><strong>Contributing</strong></a>
 </p>
 <br/>
@@ -102,3 +103,13 @@ This working demo site was built using the Platforms Starter Kit and:
 
 - [Start a discussion](https://github.com/vercel/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
 - [Open an issue](https://github.com/vercel/platforms/issues) if you believe you've encountered a bug with the starter kit.
+
+## Author
+
+- Steven Tey ([@steventey](https://twitter.com/steventey))
+
+---
+
+<a aria-label="Vercel logo" href="https://vercel.com">
+  <img src="https://badgen.net/badge/icon/Made%20by%20Vercel?icon=zeit&label&color=black&labelColor=black">
+</a>

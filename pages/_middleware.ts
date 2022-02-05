@@ -19,12 +19,14 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect("https://demo.vercel.pub");
 
   // Strip root domain from hostname string
-  const currentHost = hostname.replace(
+  const currentHost =
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
-      ? `.vercel.pub`
-      : `.localhost:3000`,
-    ""
-  );
+      ? // you can use wildcard subdomains on .vercel.app links that are associated with your Vercel team slug
+        // in this case, our team slug is "platformize", thus *.platformize.vercel.app works
+        hostname
+          .replace(`.vercel.pub`, "")
+          .replace(`.platformize.vercel.app`, "")
+      : hostname.replace(`.localhost:3000`, "");
 
   if (pathname.startsWith(`/_sites`))
     return new Response(null, { status: 404 });
@@ -41,7 +43,8 @@ export default function middleware(req: NextRequest) {
       return NextResponse.rewrite(`/app${pathname}`);
     }
 
-    if (hostname === "localhost:3000") return NextResponse.rewrite(`/home`);
+    if (hostname === "localhost:3000" || hostname === "platformize.vercel.app")
+      return NextResponse.rewrite(`/home`);
 
     return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
   }

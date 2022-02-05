@@ -1,7 +1,9 @@
 import { signIn } from "next-auth/react";
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
+import toast, { Toaster } from "react-hot-toast";
 
 const pageTitle = "Login";
 const logo = "/favicon.ico";
@@ -10,6 +12,15 @@ const description =
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
+
+  // Get error message added by next/auth in URL.
+  const { query } = useRouter();
+  const { error } = query;
+
+  useEffect(() => {
+    const errorMessage = Array.isArray(error) ? error.pop() : error;
+    errorMessage && toast.error(errorMessage);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -87,6 +98,7 @@ export default function Login() {
           </button>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
