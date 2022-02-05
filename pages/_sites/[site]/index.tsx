@@ -36,7 +36,7 @@ export default function Index({ stringifiedData }: IndexProps) {
   } as Meta;
 
   return (
-    <Layout meta={meta} subdomain={data.subdomain}>
+    <Layout meta={meta} subdomain={data.subdomain ?? undefined}>
       <div className="w-full mb-20">
         {data.posts.length > 0 ? (
           <div className="w-full max-w-screen-xl lg:w-5/6 mx-auto md:mb-28">
