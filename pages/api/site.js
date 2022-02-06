@@ -11,13 +11,16 @@ export default async function site(req, res) {
 
   switch (req.method) {
     case "GET": {
-      const { sessionId, siteId } = req.query;
+      const { siteId } = req.query;
       if (siteId) {
         // get individual site
         const { siteId } = req.query;
-        const settings = await prisma.site.findUnique({
+        const settings = await prisma.site.findFirst({
           where: {
             id: siteId,
+            user: {
+              id: session.user.id,
+            },
           },
         });
         res.status(200).json(settings);
