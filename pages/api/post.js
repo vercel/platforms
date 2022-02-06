@@ -14,9 +14,14 @@ export default async function post(req, res) {
       const { postId, siteId, published } = req.query;
       if (postId) {
         // get individual post
-        const post = await prisma.post.findUnique({
+        const post = await prisma.post.findFirst({
           where: {
             id: postId,
+            site: {
+              user: {
+                id: session.user.id,
+              },
+            },
           },
           include: {
             site: true,
@@ -25,22 +30,27 @@ export default async function post(req, res) {
         res.status(200).json(post);
       } else {
         // get all posts
-        const posts = await prisma.post.findMany({
-          where: {
-            site: {
-              id: siteId,
-            },
-            published: JSON.parse(published),
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
         const site = await prisma.site.findFirst({
           where: {
             id: siteId,
+            user: {
+              id: session.user.id,
+            },
           },
         });
+        const posts = !site
+          ? []
+          : await prisma.post.findMany({
+              where: {
+                site: {
+                  id: siteId,
+                },
+                published: JSON.parse(published),
+              },
+              orderBy: {
+                createdAt: "desc",
+              },
+            });
         res.status(200).json({ posts, site });
       }
       return;
