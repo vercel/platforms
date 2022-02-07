@@ -28,11 +28,17 @@ export async function getSite(
       .status(400)
       .end("Bad request. siteId parameter cannot be an array.");
 
+  if (!session.user.id)
+    return res.status(500).end("Server failed to get session user ID");
+
   try {
     if (siteId) {
-      const settings = await prisma.site.findUnique({
+      const settings = await prisma.site.findFirst({
         where: {
-          id: siteId as string,
+          id: siteId,
+          user: {
+            id: session.user.id,
+          },
         },
       });
 
@@ -42,8 +48,7 @@ export async function getSite(
     const sites = await prisma.site.findMany({
       where: {
         user: {
-          // TODO: Null check
-          id: session.user.id as string,
+          id: session.user.id,
         },
       },
     });

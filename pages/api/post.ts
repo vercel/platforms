@@ -12,7 +12,7 @@ export default async function post(req: NextApiRequest, res: NextApiResponse) {
 
   switch (req.method) {
     case HttpMethod.GET:
-      return getPost(req, res);
+      return getPost(req, res, session);
     case HttpMethod.POST:
       return createPost(req, res);
     case HttpMethod.DELETE:

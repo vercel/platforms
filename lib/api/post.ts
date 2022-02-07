@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { Post, Site } from ".prisma/client";
+import type { Session } from "next-auth";
 
 import type { WithSitePost } from "@/types";
 
@@ -22,7 +23,8 @@ interface AllPosts {
  */
 export async function getPost(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  session: Session
 ): Promise<void | NextApiResponse<AllPosts | (WithSitePost | null)>> {
   const { postId, siteId, published } = req.query;
 
@@ -33,11 +35,19 @@ export async function getPost(
   )
     return res.status(400).end("Bad request. Query parameters are not valid.");
 
+  if (!session.user.id)
+    return res.status(500).end("Server failed to get session user ID");
+
   try {
     if (postId) {
-      const post = await prisma.post.findUnique({
+      const post = await prisma.post.findFirst({
         where: {
           id: postId,
+          site: {
+            user: {
+              id: session.user.id,
+            },
+          },
         },
         include: {
           site: true,
@@ -45,30 +55,35 @@ export async function getPost(
       });
 
       return res.status(200).json(post);
-    } else {
-      const posts = await prisma.post.findMany({
-        where: {
-          site: {
-            id: siteId,
-          },
-          published: JSON.parse(published),
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-
-      const site = await prisma.site.findFirst({
-        where: {
-          id: siteId,
-        },
-      });
-
-      return res.status(200).json({
-        posts,
-        site,
-      });
     }
+
+    const site = await prisma.site.findFirst({
+      where: {
+        id: siteId,
+        user: {
+          id: session.user.id,
+        },
+      },
+    });
+
+    const posts = !site
+      ? []
+      : await prisma.post.findMany({
+          where: {
+            site: {
+              id: siteId,
+            },
+            published: JSON.parse(published),
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+    return res.status(200).json({
+      posts,
+      site,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).end(error);
