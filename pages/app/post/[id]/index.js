@@ -128,7 +128,7 @@ export default function Post() {
       }),
     });
     await revalidate(post.site.subdomain, post.slug);
-    router.push(`${siteUrl}/${post.slug}`);
+    router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
   };
 
   if (isValidating)
