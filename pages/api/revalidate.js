@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     // e.g.
     // await revalidate('/blog')
     // await revalidate('/blog/hello-world')
-    await res.revalidate(urlPath);
+    await res.unstable_revalidate(urlPath);
   } catch {
     res.status(500);
     return res.json({ message: `Failed to revalidate "${urlPath}"` });
