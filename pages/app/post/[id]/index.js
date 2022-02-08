@@ -113,7 +113,7 @@ export default function Post() {
 
   const publish = async () => {
     setPublishing(true);
-    const response = await fetch(`/api/post`, {
+    await fetch(`/api/post`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -126,8 +126,30 @@ export default function Post() {
         published: true,
       }),
     });
-    await response.json();
-    router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
+    const siteUrl = `https://${post.site.subdomain}.vercel.pub`;
+    try {
+      await fetch(`${siteUrl}/api/revalidate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          urlPath: `/${post.slug}`,
+        }),
+      });
+      await fetch(`${siteUrl}/api/revalidate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          urlPath: `/`,
+        }),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    router.push(`${siteUrl}/${post.slug}`);
   };
 
   if (isValidating)
