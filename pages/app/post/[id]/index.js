@@ -6,7 +6,6 @@ import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
 import Loader from "@/components/app/Loader";
-import { revalidate } from "@/lib/revalidate";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -114,7 +113,7 @@ export default function Post() {
 
   const publish = async () => {
     setPublishing(true);
-    await fetch(`/api/post`, {
+    const response = await fetch(`/api/post`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -126,8 +125,11 @@ export default function Post() {
         content: data.content,
         published: true,
         subdomain: post.site.subdomain,
+        slug: post.slug,
       }),
     });
+    if (response.ok)
+      router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
   };
 
   if (isValidating)
