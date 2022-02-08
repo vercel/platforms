@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  res.header("Access-Control-Allow-Origin", "app.vercel.pub");
+  res.header("Access-Control-Allow-Origin", "https://app.vercel.pub");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
