@@ -1,26 +1,24 @@
+import { HttpMethod } from "@/types";
+
 export async function revalidate(subdomain?: string | null, slug?: string) {
   const siteUrl = `https://${subdomain}.vercel.pub`;
 
-  try {
-    await fetch(`${siteUrl}/api/revalidate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        urlPath: `/${slug}`,
-      }),
-    });
+  const urlPaths = [`/${slug}`, `/`];
 
-    await fetch(`${siteUrl}/api/revalidate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        urlPath: `/`,
-      }),
-    });
+  try {
+    await Promise.all(
+      urlPaths.map((urlPath) =>
+        fetch(`${siteUrl}/api/revalidate`, {
+          method: HttpMethod.POST,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            urlPath,
+          }),
+        })
+      )
+    );
   } catch (err) {
     console.error(err);
   }
