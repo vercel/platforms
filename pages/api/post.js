@@ -77,11 +77,17 @@ export default async function post(req, res) {
     case "DELETE": {
       // delete post
       const { postId } = req.query;
-      await prisma.post.delete({
+      const response = await prisma.post.delete({
         where: {
           id: postId,
         },
+        include: {
+          site: {
+            select: { subdomain: true },
+          },
+        },
       });
+      await revalidate(response.site.subdomain, response.slug);
       res.status(200).end();
       return;
     }
