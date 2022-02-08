@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 export default function middleware(req) {
+  const url = req.nextUrl.clone(); // clone the request url
   const { pathname } = req.nextUrl; // get pathname of request (e.g. /blog-slug)
   const hostname = req.headers.get("host"); // get hostname of request (e.g. demo.vercel.pub)
 
@@ -21,10 +22,7 @@ export default function middleware(req) {
     return new Response(null, { status: 404 });
   }
 
-  if (
-    !pathname.includes(".") &&
-    (!pathname.startsWith("/api") || pathname.startsWith("/api/revalidate"))
-  ) {
+  if (!pathname.includes(".") && !pathname.startsWith("/api")) {
     if (currentHost == "app") {
       if (
         pathname === "/login" &&
@@ -33,14 +31,17 @@ export default function middleware(req) {
       ) {
         return NextResponse.redirect("/");
       }
-      return NextResponse.rewrite(`/app${pathname}`);
+      url.pathname = `/app${pathname}`;
+      return NextResponse.rewrite(url);
     } else if (
       hostname === "localhost:3000" ||
       hostname === "platformize.vercel.app"
     ) {
-      return NextResponse.rewrite(`/home`);
+      url.pathname = `/home`;
+      return NextResponse.rewrite(url);
     } else {
-      return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
+      url.pathname = `/_sites/${currentHost}${pathname}`;
+      return NextResponse.rewrite(url);
     }
   }
 }
