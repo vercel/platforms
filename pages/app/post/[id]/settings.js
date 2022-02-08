@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Loader from "@/components/app/Loader";
 import toast, { Toaster } from "react-hot-toast";
+import { revalidate } from "@/lib/revalidate";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -72,6 +73,7 @@ export default function PostSettings() {
       method: "DELETE",
     });
     if (response.ok) {
+      await revalidate(settings.site.subdomain, settings.slug);
       router.push(`/site/${settings.site.id}`);
     }
   }

@@ -6,6 +6,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
 import Loader from "@/components/app/Loader";
+import { revalidate } from "@/lib/revalidate";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -126,29 +127,7 @@ export default function Post() {
         published: true,
       }),
     });
-    const siteUrl = `https://${post.site.subdomain}.vercel.pub`;
-    try {
-      await fetch(`${siteUrl}/api/revalidate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          urlPath: `/${post.slug}`,
-        }),
-      });
-      await fetch(`${siteUrl}/api/revalidate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          urlPath: `/`,
-        }),
-      });
-    } catch (e) {
-      console.error(e);
-    }
+    await revalidate(post.site.subdomain, post.slug);
     router.push(`${siteUrl}/${post.slug}`);
   };
 
