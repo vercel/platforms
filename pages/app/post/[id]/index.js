@@ -125,11 +125,9 @@ export default function Post() {
         description: data.description,
         content: data.content,
         published: true,
+        subdomain: post.site.subdomain,
       }),
     });
-    await revalidate(post.site.subdomain, post.slug).then(() =>
-      router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`)
-    );
   };
 
   if (isValidating)

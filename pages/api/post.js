@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
+import { revalidate } from "@/lib/revalidate";
 
 export default async function post(req, res) {
   const session = await getServerSession({ req, res }, authOptions);
@@ -95,6 +96,7 @@ export default async function post(req, res) {
         image,
         imageBlurhash,
         published,
+        subdomain,
       } = req.body;
       const post = await prisma.post.update({
         where: {
@@ -110,6 +112,7 @@ export default async function post(req, res) {
           published,
         },
       });
+      if (subdomain) await revalidate(subdomain, slug);
       res.status(200).json(post);
     }
     default:
