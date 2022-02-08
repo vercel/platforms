@@ -1,21 +1,25 @@
 import { decode } from "blurhash";
 
-import type { UserSettings } from "@/types";
+import type { CloudinaryCallbackImage, UserSettings } from "@/types";
 
 export async function saveImage<U = UserSettings | null>(
-  imageData: string,
+  imageData: CloudinaryCallbackImage,
   data: U,
   setData: (data: U) => void
 ): Promise<void> {
   try {
-    const res = await fetch(`/api/blurhash?url=${imageData}`);
+    const res = await fetch(`/api/blurhash?url=${imageData.url}`);
 
     if (res.ok) {
       const blurhash = await res.json();
       const pixels = decode(blurhash.hash, 32, 32);
       const image = getImgFromArr(pixels, 32, 32);
 
-      setData({ ...data, image: imageData, imageBlurhash: image.src });
+      setData({
+        ...data,
+        image: imageData.url,
+        imageBlurhash: image.src,
+      });
     }
   } catch (error) {
     console.error(error);

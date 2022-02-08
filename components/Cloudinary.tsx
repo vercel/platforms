@@ -1,14 +1,18 @@
 import Head from "next/head";
 
 import type { MouseEvent, ReactNode } from "react";
-import type { CloudinaryWidget, CloudinaryWidgetResult } from "@/types";
+import type {
+  CloudinaryCallbackImage,
+  CloudinaryWidget,
+  CloudinaryWidgetResult,
+} from "@/types";
 
 interface ChildrenProps {
   open: (e: MouseEvent) => void;
 }
 
 interface CloudinaryUploadWidgetProps {
-  callback: (info: string) => void;
+  callback: (image: CloudinaryCallbackImage) => void;
   children: (props: ChildrenProps) => ReactNode;
 }
 

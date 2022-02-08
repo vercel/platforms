@@ -60,6 +60,31 @@ export interface CloudinaryWidgetResult {
     info: string;
   };
   event: string;
-  info: string;
+  info: CloudinaryCallbackImage;
   uw_event: boolean;
+}
+
+export interface CloudinaryCallbackImage {
+  asset_id: string;
+  batchId: string;
+  bytes: number;
+  created_at: Date;
+  etag: string;
+  format: string;
+  height: number;
+  id: string;
+  original_filename: string;
+  path: string;
+  placeholder: boolean;
+  public_id: string;
+  resource_type: string;
+  secure_url: string;
+  signature: string;
+  tags: Array<string>;
+  thumbnail_url: string;
+  type: string;
+  url: string;
+  version_id: string;
+  version: number;
+  width: number;
 }
