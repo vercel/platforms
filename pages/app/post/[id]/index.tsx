@@ -9,6 +9,7 @@ import Loader from "@/components/app/Loader";
 import LoadingDots from "@/components/app/loading-dots";
 import { fetcher } from "@/lib/fetcher";
 import { HttpMethod } from "@/types";
+import { revalidate } from "@/lib/revalidate";
 
 import type { ChangeEvent } from "react";
 import type { Post } from ".prisma/client";
@@ -167,7 +168,7 @@ export default function Post() {
     setPublishing(true);
 
     try {
-      const response = await fetch(`/api/post`, {
+      await fetch(`/api/post`, {
         method: HttpMethod.PUT,
         headers: {
           "Content-Type": "application/json",
@@ -181,7 +182,7 @@ export default function Post() {
         }),
       });
 
-      await response.json();
+      await revalidate(post?.site?.subdomain, post?.slug);
 
       router.push(`https://${post?.site?.subdomain}.vercel.pub/${post?.slug}`);
     } catch (error) {

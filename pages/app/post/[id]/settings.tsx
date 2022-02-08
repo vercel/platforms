@@ -12,6 +12,7 @@ import Modal from "@/components/Modal";
 import saveImage from "@/lib/save-image";
 import { fetcher } from "@/lib/fetcher";
 import { HttpMethod } from "@/types";
+import { revalidate } from "@/lib/revalidate";
 
 import type { ChangeEvent } from "react";
 
@@ -92,7 +93,10 @@ export default function PostSettings() {
         method: HttpMethod.DELETE,
       });
 
-      if (response.ok) router.push(`/site/${settings?.site?.id}`);
+      if (response.ok) {
+        await revalidate(settings?.site?.subdomain, settings?.slug);
+        router.push(`/site/${settings?.site?.id}`);
+      }
     } catch (error) {
       console.error(error);
     } finally {

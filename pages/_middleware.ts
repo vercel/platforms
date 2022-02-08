@@ -31,7 +31,10 @@ export default function middleware(req: NextRequest) {
   if (pathname.startsWith(`/_sites`))
     return new Response(null, { status: 404 });
 
-  if (!pathname.includes(".") && !pathname.startsWith("/api")) {
+  if (
+    !pathname.includes(".") &&
+    (!pathname.startsWith("/api") || pathname.startsWith("/api/revalidate"))
+  ) {
     if (currentHost == "app") {
       if (
         pathname === "/login" &&

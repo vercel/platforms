@@ -1,5 +1,6 @@
-export async function revalidate(subdomain, slug) {
+export async function revalidate(subdomain?: string | null, slug?: string) {
   const siteUrl = `https://${subdomain}.vercel.pub`;
+
   try {
     await fetch(`${siteUrl}/api/revalidate`, {
       method: "POST",
@@ -10,6 +11,7 @@ export async function revalidate(subdomain, slug) {
         urlPath: `/${slug}`,
       }),
     });
+
     await fetch(`${siteUrl}/api/revalidate`, {
       method: "POST",
       headers: {
@@ -19,7 +21,7 @@ export async function revalidate(subdomain, slug) {
         urlPath: `/`,
       }),
     });
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error(err);
   }
 }
