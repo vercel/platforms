@@ -119,6 +119,10 @@ export async function getStaticPaths() {
   const posts = await prisma.post.findMany({
     where: {
       published: true,
+      // you can remove this if you want to generate all sites at build time
+      site: {
+        subdomain: "demo",
+      },
     },
     select: {
       slug: true,
