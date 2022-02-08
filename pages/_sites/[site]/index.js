@@ -171,5 +171,6 @@ export async function getStaticProps({ params: { site } }) {
     props: {
       data: JSON.stringify(data),
     },
+    revalidate: 31536000,
   };
 }

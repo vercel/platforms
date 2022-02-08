@@ -18,6 +18,7 @@
     "array-to-image": "^1.0.0",
     "blurhash": "^1.1.4",
     "clsx": "^1.1.1",
+    "cors": "^2.8.5",
     "cuid": "^2.1.8",
     "date-fns": "^2.28.0",
     "fs": "^0.0.1-security",

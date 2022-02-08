@@ -202,6 +202,7 @@ export async function getStaticProps({ params: { site, slug } }) {
       stringifiedData: JSON.stringify(data),
       stringifiedAdjacentPosts: JSON.stringify(adjacentPosts),
     },
+    revalidate: 31536000,
   };
 }
 
