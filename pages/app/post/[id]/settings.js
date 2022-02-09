@@ -57,6 +57,8 @@ export default function PostSettings() {
       body: JSON.stringify({
         id: postId,
         slug: data.slug,
+        subdomain: settings.site.subdomain,
+        customDomain: settings.site.customDomain,
         image: data.image,
         imageBlurhash: data.imageBlurhash,
       }),
@@ -73,7 +75,6 @@ export default function PostSettings() {
       method: "DELETE",
     });
     if (response.ok) {
-      await revalidate(settings.site.subdomain, settings.slug);
       router.push(`/site/${settings.site.id}`);
     }
   }
