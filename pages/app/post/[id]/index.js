@@ -125,7 +125,7 @@ export default function Post() {
         content: data.content,
         published: true,
         subdomain: post.site.subdomain,
-        subdomain: post.site.customDomain,
+        customDomain: post.site.customDomain,
         slug: post.slug,
       }),
     });
