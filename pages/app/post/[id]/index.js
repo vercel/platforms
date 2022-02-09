@@ -15,7 +15,7 @@ export default function Post() {
   const postId = id;
 
   const { data: post, isValidating } = useSWR(
-    postId && `/api/post?postId=${postId}`,
+    router.isReady && `/api/post?postId=${postId}`,
     fetcher,
     {
       revalidateOnFocus: false,
