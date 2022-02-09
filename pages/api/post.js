@@ -87,9 +87,15 @@ export default async function post(req, res) {
           },
         },
       });
-      await revalidate(`https://${response.site.subdomain}.vercel.pub`, slug); // revalidate for subdomain
+      await revalidate(
+        `https://${response.site.subdomain}.vercel.pub`,
+        response.slug
+      ); // revalidate for subdomain
       if (response.site.customDomain)
-        await revalidate(`https://${response.site.customDomain}`, slug); // revalidate for custom domain
+        await revalidate(
+          `https://${response.site.customDomain}`,
+          response.slug
+        ); // revalidate for custom domain
       res.status(200).end();
       return;
     }
