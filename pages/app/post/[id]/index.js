@@ -1,5 +1,5 @@
 import Layout from "@/components/app/Layout";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 import { useState, useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
@@ -13,6 +13,14 @@ export default function Post() {
   const router = useRouter();
   const { id } = router.query;
   const postId = id;
+
+  useEffect(() => {
+    window.addEventListener("pageshow", (e) => {
+      if (e.persisted || window.performance?.navigation.type === 2) {
+        router.reload();
+      }
+    });
+  });
 
   const { data: post, isValidating } = useSWR(
     router.isReady && `/api/post?postId=${postId}`,

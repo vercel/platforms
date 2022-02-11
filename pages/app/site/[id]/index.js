@@ -71,7 +71,7 @@ export default function SiteIndex() {
           {data ? (
             data.posts.length > 0 ? (
               data.posts.map((post) => (
-                <Link href={`/post/${post.id}`} key={post.id}>
+                <Link as={`/post/${post.id}`} href={`/post/[id]`} key={post.id}>
                   <a>
                     <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
                       <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
