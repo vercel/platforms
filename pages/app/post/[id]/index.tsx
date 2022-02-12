@@ -9,7 +9,6 @@ import Loader from "@/components/app/Loader";
 import LoadingDots from "@/components/app/loading-dots";
 import { fetcher } from "@/lib/fetcher";
 import { HttpMethod } from "@/types";
-import { revalidate } from "@/lib/revalidate";
 
 import type { ChangeEvent } from "react";
 import type { Post } from ".prisma/client";
@@ -60,7 +59,7 @@ export default function Post() {
   const { id: postId } = router.query;
 
   const { data: post, isValidating } = useSWR<WithSitePost>(
-    `/api/post?postId=${postId}`,
+    router.isReady && `/api/post?postId=${postId}`,
     fetcher,
     {
       onError: () => router.push("/"),
@@ -179,10 +178,11 @@ export default function Post() {
           description: data.description,
           content: data.content,
           published: true,
+          subdomain: post?.site?.subdomain,
+          customDomain: post?.site?.customDomain,
+          slug: post?.slug,
         }),
       });
-
-      await revalidate(post?.site?.subdomain, post?.slug);
 
       router.push(`https://${post?.site?.subdomain}.vercel.pub/${post?.slug}`);
     } catch (error) {

@@ -12,7 +12,6 @@ import Modal from "@/components/Modal";
 import saveImage from "@/lib/save-image";
 import { fetcher } from "@/lib/fetcher";
 import { HttpMethod } from "@/types";
-import { revalidate } from "@/lib/revalidate";
 
 import type { ChangeEvent } from "react";
 
@@ -75,6 +74,8 @@ export default function PostSettings() {
           slug: data.slug,
           image: data.image,
           imageBlurhash: data.imageBlurhash,
+          subdomain: settings?.site?.subdomain,
+          customDomain: settings?.site?.customDomain,
         }),
       });
 
@@ -94,7 +95,6 @@ export default function PostSettings() {
       });
 
       if (response.ok) {
-        await revalidate(settings?.site?.subdomain, settings?.slug);
         router.push(`/site/${settings?.site?.id}`);
       }
     } catch (error) {

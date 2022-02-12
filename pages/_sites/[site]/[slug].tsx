@@ -265,7 +265,7 @@ export async function getStaticProps({
       }),
       stringifiedAdjacentPosts: JSON.stringify(adjacentPosts),
     },
-    revalidate: 10,
+    revalidate: 3600,
   };
 }
 
