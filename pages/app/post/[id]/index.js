@@ -1,5 +1,5 @@
 import Layout from "@/components/app/Layout";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 import { useState, useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
@@ -129,8 +129,8 @@ export default function Post() {
         slug: post.slug,
       }),
     });
-    if (response.ok)
-      router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
+    if (response.ok) mutate(`/api/post?postId=${postId}`);
+    router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
   };
 
   if (isValidating)
