@@ -130,8 +130,10 @@ export default function Post() {
         slug: post.slug,
       }),
     });
-    if (response.ok) mutate(`/api/post?postId=${postId}`);
-    router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
+    if (response.ok) {
+      mutate(`/api/post?postId=${postId}`);
+      router.push(`https://${post.site.subdomain}.vercel.pub/${post.slug}`);
+    }
   };
 
   if (isValidating)
