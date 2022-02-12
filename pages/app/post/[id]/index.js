@@ -19,6 +19,7 @@ export default function Post() {
     fetcher,
     {
       revalidateOnFocus: false,
+      dedupingInterval: 1000,
       onError: () => {
         router.push("/");
       },
