@@ -3,6 +3,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export default function middleware(req: NextRequest) {
+
+  // clone the request url
+  const url = req.nextUrl.clone();
+
   // Get pathname of request (e.g. /blog-slug)
   const { pathname } = req.nextUrl;
 
@@ -32,8 +36,7 @@ export default function middleware(req: NextRequest) {
     return new Response(null, { status: 404 });
 
   if (
-    !pathname.includes(".") &&
-    (!pathname.startsWith("/api") || pathname.startsWith("/api/revalidate"))
+    !pathname.includes(".") && !pathname.startsWith("/api")
   ) {
     if (currentHost == "app") {
       if (
@@ -43,12 +46,14 @@ export default function middleware(req: NextRequest) {
       )
         return NextResponse.redirect("/");
 
-      return NextResponse.rewrite(`/app${pathname}`);
+        url.pathname = `/app${pathname}`;
+        return NextResponse.rewrite(url);
+    } else if (hostname === "localhost:3000" || hostname === "platformize.vercel.app"){
+      url.pathname = `/home`;
+      return NextResponse.rewrite(url);
+    } else {
+      url.pathname = `/_sites/${currentHost}${pathname}`;
+      return NextResponse.rewrite(url);
     }
-
-    if (hostname === "localhost:3000" || hostname === "platformize.vercel.app")
-      return NextResponse.rewrite(`/home`);
-
-    return NextResponse.rewrite(`/_sites/${currentHost}${pathname}`);
   }
 }

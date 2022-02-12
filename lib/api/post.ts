@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { Post, Site } from ".prisma/client";
 import type { Session } from "next-auth";
+import { revalidate } from "@/lib/revalidate";
 
 import type { WithSitePost } from "@/types";
 
@@ -157,11 +158,24 @@ export async function deletePost(
       .end("Bad request. postId parameter cannot be an array.");
 
   try {
-    await prisma.post.delete({
+    const response = await prisma.post.delete({
       where: {
         id: postId,
       },
+      include: {
+        site: {
+          select: { subdomain: true, customDomain: true },
+        },
+      },
     });
+    if (response) {
+      await revalidate(
+        `https://${response.site?.subdomain}.vercel.pub`,
+        response.slug
+      ); // revalidate for subdomain
+    }
+    if (response?.site?.customDomain)
+      await revalidate(`https://${response.site.customDomain}`, response.slug); // revalidate for custom domain
 
     return res.status(200).end();
   } catch (error) {
@@ -200,6 +214,8 @@ export async function updatePost(
     image,
     imageBlurhash,
     published,
+    subdomain,
+    customDomain,
   } = req.body;
 
   try {
@@ -217,6 +233,8 @@ export async function updatePost(
         published,
       },
     });
+    if (subdomain) await revalidate(`https://${subdomain}.vercel.pub`, slug); // revalidate for subdomain
+    if (customDomain) await revalidate(`https://${customDomain}`, slug); // revalidate for custom domain
 
     return res.status(200).json(post);
   } catch (error) {

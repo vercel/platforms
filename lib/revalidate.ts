@@ -1,14 +1,12 @@
 import { HttpMethod } from "@/types";
 
-export async function revalidate(subdomain?: string | null, slug?: string) {
-  const siteUrl = `https://${subdomain}.vercel.pub`;
-
+export async function revalidate(domain?: string | null, slug?: string) {
   const urlPaths = [`/${slug}`, `/`];
 
   try {
     await Promise.all(
       urlPaths.map((urlPath) =>
-        fetch(`${siteUrl}/api/revalidate`, {
+        fetch(`${domain}/api/revalidate`, {
           method: HttpMethod.POST,
           headers: {
             "Content-Type": "application/json",
