@@ -1,5 +1,5 @@
 import TextareaAutosize from "react-textarea-autosize";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
@@ -62,6 +62,7 @@ export default function Post() {
     router.isReady && `/api/post?postId=${postId}`,
     fetcher,
     {
+      dedupingInterval: 1000,
       onError: () => router.push("/"),
       revalidateOnFocus: false,
     }
@@ -167,7 +168,7 @@ export default function Post() {
     setPublishing(true);
 
     try {
-      await fetch(`/api/post`, {
+      const response = await fetch(`/api/post`, {
         method: HttpMethod.PUT,
         headers: {
           "Content-Type": "application/json",
@@ -184,7 +185,12 @@ export default function Post() {
         }),
       });
 
-      router.push(`https://${post?.site?.subdomain}.vercel.pub/${post?.slug}`);
+      if (response.ok) {
+        mutate(`/api/post?postId=${postId}`);
+        router.push(
+          `https://${post?.site?.subdomain}.vercel.pub/${post?.slug}`
+        );
+      }
     } catch (error) {
       console.error(error);
     } finally {
