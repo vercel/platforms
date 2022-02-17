@@ -127,8 +127,8 @@ export default async function post(req, res) {
           published,
         },
       });
-      //if (subdomain) await revalidate(`https://${subdomain}.vercel.pub`, slug); // revalidate for subdomain
-      //if (customDomain) await revalidate(`https://${customDomain}`, slug); // revalidate for custom domain
+      if (subdomain) await revalidate(`https://${subdomain}.vercel.pub`, slug); // revalidate for subdomain
+      if (customDomain) await revalidate(`https://${customDomain}`, slug); // revalidate for custom domain
       res.status(200).json(post);
     }
     default:
