@@ -11,7 +11,6 @@ import { fetcher } from "@/lib/fetcher";
 import { HttpMethod } from "@/types";
 
 import type { ChangeEvent } from "react";
-import type { Post } from ".prisma/client";
 
 import type { WithSitePost } from "@/types";
 
