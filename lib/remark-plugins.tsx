@@ -1,11 +1,10 @@
 import Link from "next/link";
 import visit from "unist-util-visit";
 
-import prisma from "@/lib/prisma";
 import { getTweets } from "@/lib/twitter";
 
 import type { Literal, Node } from "unist";
-import type { Example } from "@prisma/client";
+import type { Example, PrismaClient } from "@prisma/client";
 
 import type { WithChildren } from "@/types";
 
@@ -75,7 +74,7 @@ async function getTweet(node: Literal<string>) {
   return node.value;
 }
 
-export function replaceExamples<T extends Node>() {
+export function replaceExamples<T extends Node>(prisma: PrismaClient) {
   return (tree: T) =>
     new Promise<void>(async (resolve, reject) => {
       const nodesToChange = new Array<NodesToChange>();
@@ -90,7 +89,7 @@ export function replaceExamples<T extends Node>() {
       for (const { node } of nodesToChange) {
         try {
           node.type = "html";
-          const mdx = await getExamples(node);
+          const mdx = await getExamples(node, prisma);
           node.value = mdx;
         } catch (e) {
           console.log("ERROR", e);
@@ -102,7 +101,7 @@ export function replaceExamples<T extends Node>() {
     });
 }
 
-async function getExamples(node: any) {
+async function getExamples(node: any, prisma: PrismaClient) {
   const names = node?.attributes[0].value.split(",");
 
   const data = new Array<Example | null>();

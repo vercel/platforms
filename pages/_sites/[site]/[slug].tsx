@@ -277,7 +277,7 @@ async function getMdxSource(postContents: string) {
     // Replaces tweets with static <Tweet /> component
     .use(replaceTweets)
     // Replaces examples with <Example /> component (only for demo.vercel.pub)
-    .use(replaceExamples)
+    .use(() => replaceExamples(prisma))
     .process(postContents);
 
   // Convert converted html to string format
