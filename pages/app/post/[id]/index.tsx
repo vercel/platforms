@@ -1,4 +1,5 @@
 import TextareaAutosize from "react-textarea-autosize";
+import toast from "react-hot-toast";
 import useSWR, { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 import { useRouter } from "next/router";
@@ -156,8 +157,8 @@ export default function Post() {
           }).format(new Date(responseData.updatedAt))}`
         );
       } else {
-        // TODO: Add error toast prompting that the save failed
         setSavedState("Failed to save.");
+        toast.error("Failed to save");
       }
     } catch (error) {
       console.error(error);
