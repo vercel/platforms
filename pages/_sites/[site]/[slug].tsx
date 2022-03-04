@@ -20,7 +20,7 @@ import {
 } from "@/lib/remark-plugins";
 
 import type { AdjacentPost, Meta, _SiteSlugData } from "@/types";
-import type { GetStaticPaths, GetStaticPropsContext } from "next";
+import type { GetStaticPaths, GetStaticProps } from "next";
 import type { MDXRemoteSerializeResult } from "next-mdx-remote";
 import type { ParsedUrlQuery } from "querystring";
 
@@ -206,9 +206,9 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
   };
 };
 
-export async function getStaticProps({
+export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
   params,
-}: GetStaticPropsContext<PathProps>) {
+}) => {
   if (!params) throw new Error("No path parameters found");
 
   const { site, slug } = params;
@@ -267,7 +267,7 @@ export async function getStaticProps({
     },
     revalidate: 3600,
   };
-}
+};
 
 async function getMdxSource(postContents: string) {
   // Use remark plugins to convert markdown into HTML string

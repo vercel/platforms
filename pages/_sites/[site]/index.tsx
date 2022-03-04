@@ -7,7 +7,7 @@ import Loader from "@/components/sites/Loader";
 import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 
-import type { GetStaticPaths, GetStaticPropsContext } from "next";
+import type { GetStaticPaths, GetStaticProps } from "next";
 import type { _SiteData, Meta } from "@/types";
 import type { ParsedUrlQuery } from "querystring";
 
@@ -162,9 +162,9 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
   };
 };
 
-export async function getStaticProps({
+export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
   params,
-}: GetStaticPropsContext<PathProps>) {
+}) => {
   if (!params) throw new Error("No path parameters found");
 
   const { site } = params;
@@ -199,4 +199,4 @@ export async function getStaticProps({
     },
     revalidate: 3600,
   };
-}
+};
