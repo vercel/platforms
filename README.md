@@ -99,6 +99,8 @@ This working demo site was built using the Platforms Starter Kit and:
 - [NextAuth.js](https://next-auth.js.org/) for authentication
 - [Vercel](http://vercel.com/) for deployment
 
+We also have another [example](https://github.com/vercel/examples/tree/main/solutions/platforms-slate-supabase) of the Platforms Starter Kit that uses Supabase for the database and Slate.js for the text editor.
+
 ## Contributing
 
 - [Start a discussion](https://github.com/vercel/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
