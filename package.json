@@ -3,19 +3,19 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "format:write": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
+    "format:write": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "lint": "next lint",
     "prebuild": "prisma generate",
     "predev": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "start": "next start"
+    "start": "next start",
+    "type-check": "tsc"
   },
   "dependencies": {
     "@headlessui/react": "^1.4.3",
     "@next-auth/prisma-adapter": "^1.0.1",
     "@prisma/client": "^3.8.1",
-    "array-to-image": "^1.0.0",
     "blurhash": "^1.1.4",
     "clsx": "^1.1.1",
     "cuid": "^2.1.8",
@@ -45,9 +45,15 @@
     "@tailwindcss/forms": "^0.4.0",
     "@tailwindcss/line-clamp": "^0.3.1",
     "@tailwindcss/typography": "^0.5.0",
+    "@types/js-cookie": "^3.0.1",
+    "@types/node": "^17.0.10",
+    "@types/react": "^17.0.40",
+    "@types/react-dom": "^17.0.11",
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.5",
+    "prettier": "^2.5.1",
     "prisma": "^3.8.1",
-    "tailwindcss": "^3.0.15"
+    "tailwindcss": "^3.0.15",
+    "typescript": "^4.6.2"
   }
 }
