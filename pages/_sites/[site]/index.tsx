@@ -169,10 +169,18 @@ export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
 
   const { site } = params;
 
-  const filter = {
-    customDomain: site.includes(".") ? site : undefined,
+  let filter: {
+    subdomain?: string;
+    customDomain?: string;
+  } = {
     subdomain: site,
   };
+
+  if (site.includes(".")) {
+    filter = {
+      customDomain: site,
+    };
+  }
 
   const data = (await prisma.site.findUnique({
     where: filter,

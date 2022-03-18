@@ -213,16 +213,24 @@ export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
 
   const { site, slug } = params;
 
-  const constraint = {
-    site: {
-      customDomain: site.includes(".") ? site : undefined,
-      subdomain: site,
-    },
+  let filter: {
+    subdomain?: string;
+    customDomain?: string;
+  } = {
+    subdomain: site,
   };
+
+  if (site.includes(".")) {
+    filter = {
+      customDomain: site,
+    };
+  }
 
   const data = (await prisma.post.findFirst({
     where: {
-      ...constraint,
+      site: {
+        ...filter,
+      },
       slug,
     },
     include: {
@@ -240,7 +248,9 @@ export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
     getMdxSource(data.content!),
     prisma.post.findMany({
       where: {
-        ...constraint,
+        site: {
+          ...filter,
+        },
         published: true,
         NOT: {
           id: data.id,
