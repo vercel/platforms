@@ -18,8 +18,10 @@ export default function middleware(req: NextRequest) {
     });
 
   // Only for demo purposes – remove this if you want to use your root domain as the landing page
-  if (hostname === "vercel.pub" || hostname === "platforms.vercel.app")
-    return NextResponse.redirect("https://demo.vercel.pub");
+  if (hostname === "vercel.pub" || hostname === "platforms.vercel.app") {
+    url.pathname = "https://demo.vercel.pub";
+    return NextResponse.redirect(url);
+  }
 
   const currentHost =
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
@@ -42,8 +44,10 @@ export default function middleware(req: NextRequest) {
         pathname === "/login" &&
         (req.cookies["next-auth.session-token"] ||
           req.cookies["__Secure-next-auth.session-token"])
-      )
-        return NextResponse.redirect("/");
+      ) {
+        url.pathname = "/";
+        return NextResponse.redirect(url);
+      }
 
       url.pathname = `/app${pathname}`;
       return NextResponse.rewrite(url);
