@@ -87,9 +87,10 @@ export default function Layout({ siteId, children }: LayoutProps) {
               </button>
             </div>
             <a
-              href="https://github.com/vercel/platforms"
-              target="_blank"
               className="font-cal flex items-center space-x-2 text-gray-700 px-5 py-3 sm:hover:text-black sm:hover:bg-white transition-all ease-in-out duration-150"
+              href="https://github.com/vercel/platforms"
+              rel="noreferrer"
+              target="_blank"
             >
               <p className="hidden sm:block">Build my own</p>
               <svg

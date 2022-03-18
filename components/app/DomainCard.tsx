@@ -35,9 +35,10 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
     <div className="w-full max-w-2xl mt-10 border border-black rounded-lg py-10">
       <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 justify-between px-10">
         <a
-          href={`http://${data.customDomain}`}
-          target="_blank"
           className="text-xl font-semibold flex justify-center sm:justify-start items-center"
+          href={`http://${data.customDomain}`}
+          rel="noreferrer"
+          target="_blank"
         >
           {data.customDomain}
           <span className="inline-block ml-2">
@@ -50,7 +51,7 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
-              shape-rendering="geometricPrecision"
+              shapeRendering="geometricPrecision"
             >
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
               <path d="M15 3h6v6" />

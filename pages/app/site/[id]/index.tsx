@@ -102,10 +102,11 @@ export default function SiteIndex() {
                           {post.description}
                         </p>
                         <a
-                          onClick={(e) => e.stopPropagation()}
-                          href={`https://${data.site?.subdomain}.vercel.pub/${post.slug}`}
-                          target="_blank"
                           className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
+                          href={`https://${data.site?.subdomain}.vercel.pub/${post.slug}`}
+                          onClick={(e) => e.stopPropagation()}
+                          rel="noreferrer"
+                          target="_blank"
                         >
                           {data.site?.subdomain}.vercel.pub/{post.slug} ↗
                         </a>
@@ -127,7 +128,7 @@ export default function SiteIndex() {
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-cal text-gray-600">
-                    No posts yet. Click "New Post" to create one.
+                    No posts yet. Click &quot;New Post&quot; to create one.
                   </p>
                 </div>
               </>
