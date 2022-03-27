@@ -1,6 +1,6 @@
 import { useDebounce } from "use-debounce";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import useSWR, { mutate } from "swr";
 
@@ -60,6 +60,10 @@ export default function SiteSettings() {
     image: null,
     imageBlurhash: null,
   });
+
+  const nameRef = useRef<HTMLInputElement | null>(null)
+  const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
+  const subdomainRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     if (settings)
@@ -176,7 +180,6 @@ export default function SiteSettings() {
         customDomain: customDomain,
       }));
 
-      event.currentTarget.customDomain.value = "";
     } catch (error) {
       setError(error);
     } finally {
@@ -201,12 +204,13 @@ export default function SiteSettings() {
               <input
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                 name="name"
-                onInput={(e) =>
-                  setData((data) => ({ ...data, name: e.currentTarget.value }))
+                onInput={() =>
+                  setData((data) => ({ ...data, name: nameRef.current?.value || null  }))
                 }
                 placeholder="Untitled Site"
+                ref={nameRef}
                 type="text"
-                value={data.name ?? "Unknown Name"}
+                value={data?.name ?? ""}
               />
             </div>
           </div>
@@ -216,15 +220,15 @@ export default function SiteSettings() {
               <textarea
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                 name="description"
-                onInput={(e) =>
+                onInput={() =>
                   setData((data) => ({
                     ...data,
-                    description: e.currentTarget.value,
-                  }))
+                    description: descriptionRef.current?.value || null,
                 }
                 placeholder="Lorem ipsum forem dimsum"
+                ref={descriptionRef}
                 rows={3}
-                value={data?.description ?? "Unknown Description"}
+                value={data?.description ?? ""}
               />
             </div>
           </div>
@@ -234,15 +238,16 @@ export default function SiteSettings() {
               <input
                 className="w-1/2 px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-l-lg placeholder-gray-400"
                 name="subdomain"
-                onInput={(e) =>
+                onInput={() =>
                   setData((data) => ({
                     ...data,
-                    subdomain: e.currentTarget.value,
+                    subdomain: subdomainRef.current?.value || null,
                   }))
                 }
                 placeholder="subdomain"
+                ref={subdomainRef}
                 type="text"
-                value={data.subdomain ?? "Unknown Subdomain"}
+                value={data.subdomain ?? ""}
               />
               <div className="w-1/2 h-12 flex justify-center items-center font-cal rounded-r-lg border-l border-gray-600 bg-gray-100">
                 vercel.pub
@@ -272,9 +277,7 @@ export default function SiteSettings() {
                     name="customDomain"
                     onInput={(e) => {
                       const customDomain = e.currentTarget.value;
-                      setDisabled(
-                        !customDomain || customDomain.length == 0 ? true : false
-                      );
+                      setDisabled(!customDomain || customDomain.length == 0)
                     }}
                     pattern="^(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
                     placeholder="mydomain.com"

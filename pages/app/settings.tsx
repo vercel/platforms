@@ -62,11 +62,8 @@ export default function AppSettings() {
                   name="name"
                   placeholder="Your awesome name"
                   ref={nameRef}
-                  onInput={(e) =>
-                    setData((data) => ({
-                      ...data,
-                      name: nameRef.current?.value,
-                    }))
+                  onInput={() =>
+                    setData({ ...data, name: nameRef.current?.value })
                   }
                 />
               </div>
@@ -80,11 +77,8 @@ export default function AppSettings() {
                   name="email"
                   placeholder="panic@thedis.co"
                   ref={emailRef}
-                  onInput={(e) =>
-                    setData((data) => ({
-                      ...data,
-                      email: emailRef.current?.value,
-                    }))
+                  onInput={() =>
+                    setData({ ...data, email: emailRef.current?.value })
                   }
                 />
               </div>
