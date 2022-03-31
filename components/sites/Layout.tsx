@@ -133,9 +133,10 @@ export default function Layout({ meta, children, subdomain }: LayoutProps) {
               This is a demo site showcasing how to build a multi-tenant
               application with{" "}
               <a
-                href="https://platformize.co"
-                target="_blank"
                 className="text-black font-semibold underline"
+                href="https://platformize.co"
+                rel="noreferrer"
+                target="_blank"
               >
                 custom domain
               </a>{" "}
@@ -148,16 +149,18 @@ export default function Layout({ meta, children, subdomain }: LayoutProps) {
             } flex space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row flex-col lg:w-auto w-full text-center`}
           >
             <a
-              href="https://app.vercel.pub"
-              target="_blank"
               className="flex-auto font-cal text-lg rounded-md py-1 sm:py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
+              href="https://app.vercel.pub"
+              rel="noreferrer"
+              target="_blank"
             >
               Create your publication
             </a>
             <a
-              href="https://vercel.com/guides/nextjs-multi-tenant-application"
-              target="_blank"
               className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-1 sm:py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
+              href="https://vercel.com/guides/nextjs-multi-tenant-application"
+              rel="noreferrer"
+              target="_blank"
             >
               Clone and deploy
             </a>

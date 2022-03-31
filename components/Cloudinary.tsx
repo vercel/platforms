@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import Head from "next/head";
 
 import type { MouseEvent, ReactNode } from "react";
@@ -46,8 +48,8 @@ export default function CloudinaryUploadWidget({
     <>
       <Head>
         // this is Next.js specific, but if you're using something like Create
-        React App, // you could download the script in componentDidMount using
-        this method: https://stackoverflow.com/a/34425083/1424568
+        // React App, you could download the script in componentDidMount using
+        // this method: https://stackoverflow.com/a/34425083/1424568
         <script
           src="https://widget.cloudinary.com/v2.0/global/all.js"
           type="text/javascript"

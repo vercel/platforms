@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import useSWR, { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import Layout from "@/components/app/Layout";
 import Loader from "@/components/app/Loader";
@@ -98,9 +98,50 @@ export default function Post() {
 
   const [debouncedData] = useDebounce(data, 1000);
 
+  const saveChanges = useCallback(
+    async (data: PostData) => {
+      setSavedState("Saving changes...");
+
+      try {
+        const response = await fetch("/api/post", {
+          method: HttpMethod.PUT,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: postId,
+            title: data.title,
+            description: data.description,
+            content: data.content,
+          }),
+        });
+
+        if (response.ok) {
+          const responseData = await response.json();
+          setSavedState(
+            `Last save ${Intl.DateTimeFormat("en", { month: "short" }).format(
+              new Date(responseData.updatedAt)
+            )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
+              new Date(responseData.updatedAt)
+            )} at ${Intl.DateTimeFormat("en", {
+              hour: "numeric",
+              minute: "numeric",
+            }).format(new Date(responseData.updatedAt))}`
+          );
+        } else {
+          setSavedState("Failed to save.");
+          toast.error("Failed to save");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [postId]
+  );
+
   useEffect(() => {
     if (debouncedData.title) saveChanges(debouncedData);
-  }, [debouncedData]);
+  }, [debouncedData, saveChanges]);
 
   const [publishing, setPublishing] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -124,45 +165,7 @@ export default function Post() {
     window.addEventListener("keydown", clickedSave);
 
     return () => window.removeEventListener("keydown", clickedSave);
-  }, [data]);
-
-  async function saveChanges(data: PostData) {
-    setSavedState("Saving changes...");
-
-    try {
-      const response = await fetch("/api/post", {
-        method: HttpMethod.PUT,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: postId,
-          title: data.title,
-          description: data.description,
-          content: data.content,
-        }),
-      });
-
-      if (response.ok) {
-        const responseData = await response.json();
-        setSavedState(
-          `Last save ${Intl.DateTimeFormat("en", { month: "short" }).format(
-            new Date(responseData.updatedAt)
-          )} ${Intl.DateTimeFormat("en", { day: "2-digit" }).format(
-            new Date(responseData.updatedAt)
-          )} at ${Intl.DateTimeFormat("en", {
-            hour: "numeric",
-            minute: "numeric",
-          }).format(new Date(responseData.updatedAt))}`
-        );
-      } else {
-        setSavedState("Failed to save.");
-        toast.error("Failed to save");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  }, [data, saveChanges]);
 
   async function publish() {
     setPublishing(true);

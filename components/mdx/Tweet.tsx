@@ -169,6 +169,7 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
           <a
             className="!no-underline !text-[#1da1f2]"
             href={`https://twitter.com/${repliedTo.author.username}`}
+            rel="noreferrer"
             target="_blank"
           >
             @{repliedTo.author.username}
@@ -187,8 +188,8 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
               : "inline-grid grid-cols-2 gap-x-2 gap-y-2 my-2"
           }
         >
-          {media.map((m) => (
-            <a href={tweetUrl} target="_blank">
+          {media.map((m, i) => (
+            <a href={tweetUrl} key={i} rel="noreferrer" target="_blank">
               {m.type == "video" || m.type == "animated_gif" ? (
                 video ? (
                   <video
@@ -229,6 +230,7 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
         <a
           className="!no-underline"
           href={url_meta.unwound_url}
+          rel="noreferrer"
           target="_blank"
         >
           <div className="rounded-2xl overflow-hidden border border-gray-200 drop-shadow-sm mb-5">
@@ -257,8 +259,14 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
             );
             return poll.voting_status == "open" ? (
               <div>
-                {poll.options.map((option) => (
-                  <a href={tweetUrl} target="_blank" className="!no-underline">
+                {poll.options.map((option, i) => (
+                  <a
+                    className="!no-underline"
+                    href={tweetUrl}
+                    key={i}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
                     <div className="text-center font-bold text-[#1da1f2] border border-[#1da1f2] rounded-3xl my-2 hover:bg-[#1da1f2] hover:bg-opacity-10 transition-all ease-in-out duration-150">
                       {option.label}
                     </div>
