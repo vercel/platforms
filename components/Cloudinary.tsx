@@ -1,8 +1,8 @@
 /* eslint-disable */
 
-import Head from "next/head";
+import Script from "next/script";
+import { useRef, ReactNode, MouseEvent } from "react";
 
-import type { MouseEvent, ReactNode } from "react";
 import type {
   CloudinaryCallbackImage,
   CloudinaryWidget,
@@ -18,12 +18,21 @@ interface CloudinaryUploadWidgetProps {
   children: (props: ChildrenProps) => ReactNode;
 }
 
-export default function CloudinaryUploadWidget({
+const CloudinaryUploadWidget = ({
   callback,
   children,
-}: CloudinaryUploadWidgetProps) {
-  function showWidget() {
-    const widget: CloudinaryWidget = window.cloudinary.createUploadWidget(
+}: CloudinaryUploadWidgetProps) => {
+  const widget = useRef<CloudinaryWidget>();
+
+  function open(e: MouseEvent) {
+    e.preventDefault();
+    if (widget.current) {
+      widget.current.open();
+    }
+  }
+
+  function handleOnLoad() {
+    widget.current = window.cloudinary?.createUploadWidget(
       {
         cloudName: "vercel-platforms",
         uploadPreset: "w0vnflc6",
@@ -35,27 +44,17 @@ export default function CloudinaryUploadWidget({
         }
       }
     );
-
-    widget.open();
   }
-
-  function open(e: MouseEvent) {
-    e.preventDefault();
-    showWidget();
-  }
-
   return (
     <>
-      <Head>
-        // this is Next.js specific, but if you're using something like Create
-        // React App, you could download the script in componentDidMount using
-        // this method: https://stackoverflow.com/a/34425083/1424568
-        <script
-          src="https://widget.cloudinary.com/v2.0/global/all.js"
-          type="text/javascript"
-        />
-      </Head>
       {children({ open })}
+      <Script
+        id="cloudinary"
+        src="https://widget.cloudinary.com/v2.0/global/all.js"
+        onLoad={handleOnLoad}
+      />
     </>
   );
-}
+};
+
+export default CloudinaryUploadWidget;
