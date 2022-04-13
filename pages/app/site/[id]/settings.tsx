@@ -224,7 +224,8 @@ export default function SiteSettings() {
                   setData((data) => ({
                     ...data,
                     description: descriptionRef.current?.value || null,
-                }
+                })
+                )}
                 placeholder="Lorem ipsum forem dimsum"
                 ref={descriptionRef}
                 rows={3}
