@@ -152,7 +152,7 @@ export default function SiteSettings() {
       debouncedSubdomain?.length > 0
     )
       checkSubdomain();
-  }, [debouncedSubdomain]);
+  }, [debouncedSubdomain, settings?.subdomain]);
 
   async function handleCustomDomain(event: FormEvent<HTMLFormElement>) {
     const customDomain = event.currentTarget.customDomain.value;
@@ -342,8 +342,8 @@ export default function SiteSettings() {
                   </p>
                 ) : (
                   <p>
-                    Cannot add <b>{error.domain}</b> since it's already assigned
-                    to another project.
+                    Cannot add <b>{error.domain}</b> since it&quot;s already
+                    assigned to another project.
                   </p>
                 )}
               </div>

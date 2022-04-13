@@ -190,10 +190,11 @@ export default function AppIndex() {
                           {site.description}
                         </p>
                         <a
-                          onClick={(e) => e.stopPropagation()}
-                          href={`https://${site.subdomain}.vercel.pub`}
-                          target="_blank"
                           className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
+                          href={`https://${site.subdomain}.vercel.pub`}
+                          onClick={(e) => e.stopPropagation()}
+                          rel="noreferrer"
+                          target="_blank"
                         >
                           {site.subdomain}.vercel.pub ↗
                         </a>
@@ -215,7 +216,7 @@ export default function AppIndex() {
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-cal text-gray-600">
-                    No sites yet. Click "New Site" to create one.
+                    No sites yet. Click &quot;New Site&quot; to create one.
                   </p>
                 </div>
               </>

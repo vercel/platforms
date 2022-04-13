@@ -1,5 +1,6 @@
 import { signIn } from "next-auth/react";
 import Head from "next/head";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
@@ -51,20 +52,24 @@ export default function Login() {
         <meta name="twitter:image" content={logo} />
       </Head>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
-          className="mx-auto h-12 w-auto"
-          src="/logo.png"
-          alt="Platforms Starter Kit"
-        />
+        <div className="relative mx-auto h-12 w-auto">
+          <Image
+            alt="Platforms Starter Kit"
+            layout="fill"
+            objectFit="contain"
+            src="/logo.png"
+          />
+        </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Platforms Starter Kit
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Build multi-tenant applications with custom domains. <br /> Read the{" "}
           <a
-            href="https://demo.vercel.pub/platforms-starter-kit"
-            target="_blank"
             className="font-medium text-black hover:text-gray-800"
+            href="https://demo.vercel.pub/platforms-starter-kit"
+            rel="noreferrer"
+            target="_blank"
           >
             blog post
           </a>

@@ -106,9 +106,10 @@ export default function SiteDrafts() {
                             "No description provided. Click to edit."}
                         </p>
                         <a
-                          href={`https://${data.site?.subdomain}.vercel.pub/${post.slug}`}
-                          target="_blank"
                           className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
+                          href={`https://${data.site?.subdomain}.vercel.pub/${post.slug}`}
+                          rel="noreferrer"
+                          target="_blank"
                         >
                           {data.site?.subdomain}.vercel.pub/{post.slug} ↗
                         </a>
@@ -130,7 +131,7 @@ export default function SiteDrafts() {
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-cal text-gray-600">
-                    No drafts yet. Click "New Draft" to create one.
+                    No drafts yet. Click &quot;New Draft&quot; to create one.
                   </p>
                 </div>
               </>
