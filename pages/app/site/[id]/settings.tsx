@@ -61,9 +61,9 @@ export default function SiteSettings() {
     imageBlurhash: null,
   });
 
-  const nameRef = useRef<HTMLInputElement | null>(null)
-  const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
-  const subdomainRef = useRef<HTMLInputElement | null>(null)
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
+  const subdomainRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (settings)
@@ -179,7 +179,6 @@ export default function SiteSettings() {
         ...data,
         customDomain: customDomain,
       }));
-
     } catch (error) {
       setError(error);
     } finally {
@@ -205,7 +204,10 @@ export default function SiteSettings() {
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                 name="name"
                 onInput={() =>
-                  setData((data) => ({ ...data, name: nameRef.current?.value || null  }))
+                  setData((data) => ({
+                    ...data,
+                    name: nameRef.current?.value || null,
+                  }))
                 }
                 placeholder="Untitled Site"
                 ref={nameRef}
@@ -224,8 +226,8 @@ export default function SiteSettings() {
                   setData((data) => ({
                     ...data,
                     description: descriptionRef.current?.value || null,
-                })
-                )}
+                  }))
+                }
                 placeholder="Lorem ipsum forem dimsum"
                 ref={descriptionRef}
                 rows={3}
@@ -278,7 +280,7 @@ export default function SiteSettings() {
                     name="customDomain"
                     onInput={(e) => {
                       const customDomain = e.currentTarget.value;
-                      setDisabled(!customDomain || customDomain.length == 0)
+                      setDisabled(!customDomain || customDomain.length == 0);
                     }}
                     pattern="^(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
                     placeholder="mydomain.com"
