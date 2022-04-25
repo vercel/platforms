@@ -110,6 +110,10 @@ We also have another [example](https://github.com/vercel/examples/tree/main/solu
 
 - Steven Tey ([@steventey](https://twitter.com/steventey))
 
+## License
+
+The MIT License.
+
 ---
 
 <a aria-label="Vercel logo" href="https://vercel.com">
