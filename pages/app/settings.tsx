@@ -6,7 +6,7 @@ import LoadingDots from "@/components/app/loading-dots";
 import saveImage from "@/lib/save-image";
 import { HttpMethod } from "@/types";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
 import type { UserSettings } from "@/types";
@@ -16,9 +16,6 @@ export default function AppSettings() {
 
   const [saving, setSaving] = useState<boolean>(false);
   const [data, setData] = useState<UserSettings | null>(null);
-
-  const nameRef = useRef<HTMLInputElement | null>(null);
-  const emailRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (session)
@@ -57,16 +54,16 @@ export default function AppSettings() {
               <h2 className="font-cal text-2xl">Name</h2>
               <div className="border border-gray-700 rounded-lg flex items-center max-w-lg overflow-hidden">
                 <input
-                  className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-lg placeholder-gray-400"
+                  className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-lg placeholder-gray-400"
                   type="text"
                   name="name"
                   placeholder="Your awesome name"
-                  ref={nameRef}
+                  value={data?.name || ""}
                   onInput={(e) =>
-                    setData((data) => ({
+                    setData({
                       ...data,
-                      name: nameRef.current?.value,
-                    }))
+                      name: (e.target as HTMLTextAreaElement).value,
+                    })
                   }
                 />
               </div>
@@ -75,16 +72,16 @@ export default function AppSettings() {
               <h2 className="font-cal text-2xl">Email</h2>
               <div className="border border-gray-700 rounded-lg flex items-center max-w-lg overflow-hidden">
                 <input
-                  className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-lg placeholder-gray-400"
-                  type="text"
+                  className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-lg placeholder-gray-400"
+                  type="email"
                   name="email"
                   placeholder="panic@thedis.co"
-                  ref={emailRef}
+                  value={data?.email || ""}
                   onInput={(e) =>
-                    setData((data) => ({
+                    setData({
                       ...data,
-                      email: emailRef.current?.value,
-                    }))
+                      email: (e.target as HTMLTextAreaElement).value,
+                    })
                   }
                 />
               </div>
