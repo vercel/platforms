@@ -29,7 +29,7 @@ export default function DomainCard({ data }: DomainCardProps) {
   );
   const [recordType, setRecordType] = useState("CNAME");
   const [removing, setRemoving] = useState(false);
-  const subdomain =
+  const subdomain = // if domain is a subdomain
     data.customDomain && data.customDomain.split(".").length > 2
       ? data.customDomain.split(".")[0]
       : "";
@@ -154,6 +154,7 @@ export default function DomainCard({ data }: DomainCardProps) {
               >
                 CNAME Record (subdomains)
               </button>
+              {/* if the custom domain is a subdomain, only show CNAME record */}
               {!subdomain && (
                 <button
                   onClick={() => setRecordType("A")}
@@ -178,6 +179,7 @@ export default function DomainCard({ data }: DomainCardProps) {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Name</p>
+                  {/* if the custom domain is a subdomain, the CNAME record is the subdomain */}
                   <p className="text-sm font-mono mt-2">
                     {recordType === "A"
                       ? "@"
