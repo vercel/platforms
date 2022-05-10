@@ -319,8 +319,8 @@ export default function SiteSettings() {
                   </p>
                 ) : (
                   <p>
-                    Cannot add <b>{error.domain}</b> since it's already assigned
-                    to another project.
+                    Cannot add <b>{error.domain}</b> since it&apos;s already
+                    assigned to another project.
                   </p>
                 )}
               </div>
