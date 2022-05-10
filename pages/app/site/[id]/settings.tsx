@@ -240,7 +240,7 @@ export default function SiteSettings() {
           <div className="flex flex-col space-y-6">
             <h2 className="font-cal text-2xl">Custom Domain</h2>
             {settings?.customDomain ? (
-              <DomainCard data={data} setData={setData} />
+              <DomainCard data={data} />
             ) : (
               <form
                 onSubmit={async (e) => {
