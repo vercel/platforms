@@ -84,7 +84,7 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
               ).then((res) => {
                 setRemoving(false);
                 if (res.ok) {
-                  setData({ ...data, customDomain: null });
+                  mutate(`/api/site?siteId=${data.id}`);
                 } else {
                   alert("Error removing domain");
                 }

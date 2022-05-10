@@ -215,7 +215,10 @@ export default function Post() {
           <TextareaAutosize
             name="title"
             onInput={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setData({ ...data, title: e.currentTarget.value })
+              setData({
+                ...data,
+                title: (e.target as HTMLTextAreaElement).value,
+              })
             }
             className="w-full px-2 py-4 text-gray-800 placeholder-gray-400 mt-6 text-5xl font-cal resize-none border-none focus:outline-none focus:ring-0"
             placeholder="Untitled Post"
@@ -224,7 +227,10 @@ export default function Post() {
           <TextareaAutosize
             name="description"
             onInput={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setData({ ...data, description: e.currentTarget.value })
+              setData({
+                ...data,
+                description: (e.target as HTMLTextAreaElement).value,
+              })
             }
             className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-xl mb-3 resize-none border-none focus:outline-none focus:ring-0"
             placeholder="No description provided. Click to edit."
@@ -242,7 +248,10 @@ export default function Post() {
           <TextareaAutosize
             name="content"
             onInput={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setData({ ...data, content: e.currentTarget.value })
+              setData({
+                ...data,
+                content: (e.target as HTMLTextAreaElement).value,
+              })
             }
             className="w-full px-2 py-3 text-gray-800 placeholder-gray-400 text-lg mb-5 resize-none border-none focus:outline-none focus:ring-0"
             placeholder={CONTENT_PLACEHOLDER}
