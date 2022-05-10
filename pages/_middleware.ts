@@ -56,7 +56,7 @@ export default function middleware(req: NextRequest) {
       hostname === "localhost:3000" ||
       hostname === "platformize.vercel.app"
     ) {
-      url.pathname = `/home`;
+      url.pathname = `/home${pathname}`;
       return NextResponse.rewrite(url);
     }
 
