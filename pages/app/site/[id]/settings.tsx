@@ -1,6 +1,6 @@
 import { useDebounce } from "use-debounce";
 import { useRouter } from "next/router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import useSWR, { mutate } from "swr";
 
@@ -59,10 +59,6 @@ export default function SiteSettings() {
     image: null,
     imageBlurhash: null,
   });
-
-  const nameRef = useRef<HTMLInputElement | null>(null);
-  const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
-  const subdomainRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (settings) setData(settings);
@@ -191,7 +187,6 @@ export default function SiteSettings() {
                   }))
                 }
                 placeholder="Untitled Site"
-                ref={nameRef}
                 type="text"
                 value={data.name || ""}
               />
@@ -210,7 +205,6 @@ export default function SiteSettings() {
                   }))
                 }
                 placeholder="Lorem ipsum forem dimsum"
-                ref={descriptionRef}
                 rows={3}
                 value={data?.description || ""}
               />
@@ -229,7 +223,6 @@ export default function SiteSettings() {
                   }))
                 }
                 placeholder="subdomain"
-                ref={subdomainRef}
                 type="text"
                 value={data.subdomain || ""}
               />
