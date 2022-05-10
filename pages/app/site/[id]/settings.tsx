@@ -181,7 +181,10 @@ export default function SiteSettings() {
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                 name="name"
                 onInput={(e) =>
-                  setData((data) => ({ ...data, name: e.currentTarget.value }))
+                  setData((data) => ({
+                    ...data,
+                    name: (e.target as HTMLTextAreaElement).value,
+                  }))
                 }
                 placeholder="Untitled Site"
                 type="text"
@@ -198,7 +201,7 @@ export default function SiteSettings() {
                 onInput={(e) =>
                   setData((data) => ({
                     ...data,
-                    description: e.currentTarget.value,
+                    description: (e.target as HTMLTextAreaElement).value,
                   }))
                 }
                 placeholder="Lorem ipsum forem dimsum"
@@ -216,7 +219,7 @@ export default function SiteSettings() {
                 onInput={(e) =>
                   setData((data) => ({
                     ...data,
-                    subdomain: e.currentTarget.value,
+                    subdomain: (e.target as HTMLTextAreaElement).value,
                   }))
                 }
                 placeholder="subdomain"
