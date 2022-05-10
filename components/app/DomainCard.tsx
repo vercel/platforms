@@ -19,10 +19,9 @@ type DomainData = Pick<
 
 interface DomainCardProps<T = DomainData> {
   data: T;
-  setData: (data: T) => void;
 }
 
-export default function DomainCard({ data, setData }: DomainCardProps) {
+export default function DomainCard({ data }: DomainCardProps) {
   const { data: valid, isValidating } = useSWR<Site>(
     `/api/domain/check?domain=${data.customDomain}`,
     fetcher,
@@ -30,6 +29,10 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
   );
   const [recordType, setRecordType] = useState("CNAME");
   const [removing, setRemoving] = useState(false);
+  const subdomain = // if domain is a subdomain
+    data.customDomain && data.customDomain.split(".").length > 2
+      ? data.customDomain.split(".")[0]
+      : "";
 
   return (
     <div className="w-full max-w-2xl mt-10 border border-black rounded-lg py-10">
@@ -151,16 +154,19 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
               >
                 CNAME Record (subdomains)
               </button>
-              <button
-                onClick={() => setRecordType("A")}
-                className={`${
-                  recordType == "A"
-                    ? "text-black border-black"
-                    : "text-gray-400 border-white"
-                } text-sm border-b-2 pb-1 transition-all ease duration-150`}
-              >
-                A Record (apex domain)
-              </button>
+              {/* if the custom domain is a subdomain, only show CNAME record */}
+              {!subdomain && (
+                <button
+                  onClick={() => setRecordType("A")}
+                  className={`${
+                    recordType == "A"
+                      ? "text-black border-black"
+                      : "text-gray-400 border-white"
+                  } text-sm border-b-2 pb-1 transition-all ease duration-150`}
+                >
+                  A Record (apex domain)
+                </button>
+              )}
             </div>
             <div className="my-3 text-left">
               <p className="my-5 text-sm">
@@ -173,8 +179,13 @@ export default function DomainCard({ data, setData }: DomainCardProps) {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Name</p>
+                  {/* if the custom domain is a subdomain, the CNAME record is the subdomain */}
                   <p className="text-sm font-mono mt-2">
-                    {recordType == "CNAME" ? "www" : "@"}
+                    {recordType === "A"
+                      ? "@"
+                      : recordType == "CNAME" && subdomain
+                      ? subdomain
+                      : "www"}
                   </p>
                 </div>
                 <div>
