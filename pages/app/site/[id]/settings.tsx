@@ -47,7 +47,6 @@ export default function SiteSettings() {
   const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<any | null>(null);
-  const [disabled, setDisabled] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingSite, setDeletingSite] = useState(false);
 
@@ -66,21 +65,8 @@ export default function SiteSettings() {
   const subdomainRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (settings)
-      setData({
-        id: settings.id,
-        name: settings.name,
-        description: settings.description,
-        subdomain: settings.subdomain,
-        customDomain: settings.customDomain,
-        image: settings.image,
-        imageBlurhash: settings.imageBlurhash,
-      });
+    if (settings) setData(settings);
   }, [settings]);
-
-  useEffect(() => {
-    if (adding) setDisabled(true);
-  }, [adding]);
 
   async function saveSiteSettings(data: SettingsData) {
     setSaving(true);
@@ -154,8 +140,8 @@ export default function SiteSettings() {
       checkSubdomain();
   }, [debouncedSubdomain, settings?.subdomain]);
 
-  async function handleCustomDomain(event: FormEvent<HTMLFormElement>) {
-    const customDomain = event.currentTarget.customDomain.value;
+  async function handleCustomDomain() {
+    const customDomain = data.customDomain;
 
     setAdding(true);
 
@@ -172,13 +158,8 @@ export default function SiteSettings() {
           code: response.status,
           domain: customDomain,
         };
-
       setError(null);
-
-      setData((data) => ({
-        ...data,
-        customDomain: customDomain,
-      }));
+      mutate(`/api/site?siteId=${siteId}`);
     } catch (error) {
       setError(error);
     } finally {
@@ -203,16 +184,16 @@ export default function SiteSettings() {
               <input
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                 name="name"
-                onInput={() =>
+                onInput={(e) =>
                   setData((data) => ({
                     ...data,
-                    name: nameRef.current?.value || null,
+                    name: (e.target as HTMLTextAreaElement).value,
                   }))
                 }
                 placeholder="Untitled Site"
                 ref={nameRef}
                 type="text"
-                value={data?.name ?? ""}
+                value={data.name || ""}
               />
             </div>
           </div>
@@ -222,16 +203,16 @@ export default function SiteSettings() {
               <textarea
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                 name="description"
-                onInput={() =>
+                onInput={(e) =>
                   setData((data) => ({
                     ...data,
-                    description: descriptionRef.current?.value || null,
+                    description: (e.target as HTMLTextAreaElement).value,
                   }))
                 }
                 placeholder="Lorem ipsum forem dimsum"
                 ref={descriptionRef}
                 rows={3}
-                value={data?.description ?? ""}
+                value={data?.description || ""}
               />
             </div>
           </div>
@@ -241,16 +222,16 @@ export default function SiteSettings() {
               <input
                 className="w-1/2 px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-l-lg placeholder-gray-400"
                 name="subdomain"
-                onInput={() =>
+                onInput={(e) =>
                   setData((data) => ({
                     ...data,
-                    subdomain: subdomainRef.current?.value || null,
+                    subdomain: (e.target as HTMLTextAreaElement).value,
                   }))
                 }
                 placeholder="subdomain"
                 ref={subdomainRef}
                 type="text"
-                value={data.subdomain ?? ""}
+                value={data.subdomain || ""}
               />
               <div className="w-1/2 h-12 flex justify-center items-center font-cal rounded-r-lg border-l border-gray-600 bg-gray-100">
                 vercel.pub
@@ -265,11 +246,13 @@ export default function SiteSettings() {
           </div>
           <div className="flex flex-col space-y-6">
             <h2 className="font-cal text-2xl">Custom Domain</h2>
-            {!data.customDomain && (
+            {settings?.customDomain ? (
+              <DomainCard data={data} setData={setData} />
+            ) : (
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  await handleCustomDomain(e.currentTarget.customDomain.value);
+                  await handleCustomDomain();
                 }}
                 className="flex justify-start items-center space-x-3 max-w-lg"
               >
@@ -279,22 +262,20 @@ export default function SiteSettings() {
                     className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                     name="customDomain"
                     onInput={(e) => {
-                      const customDomain = e.currentTarget.value;
-                      setDisabled(!customDomain || customDomain.length == 0);
+                      setData((data) => ({
+                        ...data,
+                        customDomain: (e.target as HTMLTextAreaElement).value,
+                      }));
                     }}
                     pattern="^(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
                     placeholder="mydomain.com"
+                    value={data.customDomain || ""}
                     type="text"
                   />
                 </div>
                 <button
                   type="submit"
-                  disabled={disabled}
-                  className={`${
-                    disabled
-                      ? "cursor-not-allowed bg-gray-100 text-gray-500 border-gray-300"
-                      : "bg-black text-white border-black hover:text-black hover:bg-white"
-                  } px-5 py-3 w-28 font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
+                  className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 w-28 font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
                 >
                   {adding ? <LoadingDots /> : "Add"}
                 </button>
@@ -345,13 +326,12 @@ export default function SiteSettings() {
                   </p>
                 ) : (
                   <p>
-                    Cannot add <b>{error.domain}</b> since it&quot;s already
-                    assigned to another project.
+                    Cannot add <b>{error.domain}</b> since it's already assigned
+                    to another project.
                   </p>
                 )}
               </div>
             )}
-            {data.customDomain && <DomainCard data={data} setData={setData} />}
           </div>
           <div className="flex flex-col space-y-6 relative">
             <h2 className="font-cal text-2xl">Thumbnail Image</h2>
