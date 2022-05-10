@@ -12,6 +12,9 @@
     "start": "next start",
     "type-check": "tsc"
   },
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "dependencies": {
     "@headlessui/react": "^1.4.3",
     "@next-auth/prisma-adapter": "^1.0.1",
