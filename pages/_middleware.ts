@@ -61,7 +61,6 @@ export default function middleware(req: NextRequest) {
       hostname === "hlist.me"
     ) {
       url.pathname = `/home${pathname}`;
-      console.log(url)
       return NextResponse.rewrite(url);
     }
 
