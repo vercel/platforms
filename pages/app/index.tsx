@@ -89,6 +89,7 @@ export default function AppIndex() {
               <input
                 className="w-full px-5 py-3 text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-r-lg placeholder-gray-400"
                 name="name"
+                required
                 placeholder="Site Name"
                 ref={siteNameRef}
                 type="text"
