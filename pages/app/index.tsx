@@ -1,18 +1,19 @@
-import { useState, useEffect, useRef } from "react";
 import Layout from "@/components/app/Layout";
+import LoadingDots from "@/components/app/loading-dots";
 import BlurImage from "@/components/BlurImage";
 import Modal from "@/components/Modal";
-import LoadingDots from "@/components/app/loading-dots";
-import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import useSWR from "swr";
-import { useDebounce } from "use-debounce";
 import { fetcher } from "@/lib/fetcher";
 import { HttpMethod } from "@/types";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
+import useSWR from "swr";
+import { useDebounce } from "use-debounce";
 
-import type { FormEvent } from "react";
+import { getSiteSubDomain } from "@/lib/conditionalLinks";
 import type { Site } from "@prisma/client";
+import type { FormEvent } from "react";
 
 export default function AppIndex() {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -80,8 +81,7 @@ export default function AppIndex() {
             setCreatingSite(true);
             createSite(event);
           }}
-          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg"
-        >
+          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg">
           <h2 className="font-cal text-2xl mb-6">Create a New Site</h2>
           <div className="grid gap-y-5 w-5/6 mx-auto">
             <div className="border border-gray-700 rounded-lg flex flex-start items-center">
@@ -134,8 +134,7 @@ export default function AppIndex() {
               onClick={() => {
                 setError(null);
                 setShowModal(false);
-              }}
-            >
+              }}>
               CANCEL
             </button>
 
@@ -146,8 +145,7 @@ export default function AppIndex() {
                 creatingSite || error
                   ? "cursor-not-allowed text-gray-400 bg-gray-50"
                   : "bg-white text-gray-600 hover:text-black"
-              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
-            >
+              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}>
               {creatingSite ? <LoadingDots /> : "CREATE SITE"}
             </button>
           </div>
@@ -159,8 +157,7 @@ export default function AppIndex() {
           <h1 className="font-cal text-5xl">My Sites</h1>
           <button
             onClick={() => setShowModal(true)}
-            className="font-cal text-lg w-3/4 sm:w-40 tracking-wide text-white bg-black border-black border-2 px-5 py-3 hover:bg-white hover:text-black transition-all ease-in-out duration-150"
-          >
+            className="font-cal text-lg w-3/4 sm:w-40 tracking-wide text-white bg-black border-black border-2 px-5 py-3 hover:bg-white hover:text-black transition-all ease-in-out duration-150">
             New Site <span className="ml-2">＋</span>
           </button>
         </div>
@@ -192,12 +189,11 @@ export default function AppIndex() {
                         </p>
                         <a
                           className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
-                          href={`https://${site.subdomain}.vercel.pub`}
+                          href={getSiteSubDomain(site.subdomain)}
                           onClick={(e) => e.stopPropagation()}
                           rel="noreferrer"
-                          target="_blank"
-                        >
-                          {site.subdomain}.vercel.pub ↗
+                          target="_blank">
+                          {getSiteSubDomain(site.subdomain, false)}
                         </a>
                       </div>
                     </div>
@@ -226,8 +222,7 @@ export default function AppIndex() {
             [0, 1].map((i) => (
               <div
                 key={i}
-                className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200"
-              >
+                className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
                 <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none bg-gray-300 animate-pulse" />
                 <div className="relative p-10 grid gap-5">
                   <div className="w-28 h-10 rounded-md bg-gray-300 animate-pulse" />
