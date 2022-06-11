@@ -1,0 +1,14 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": ["*.tsx", "*.ts"],
+      "options": {
+        "printWidth": 120
+      }
+    }
+  ]
+}

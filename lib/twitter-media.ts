@@ -1,9 +1,9 @@
-import type { MediaTweet } from "@/types";
+import type { MediaTweet } from '@/types'
 
 interface Video {
-  bitrate: number;
-  content_type: string;
-  url: string;
+  bitrate: number
+  content_type: string
+  url: string
 }
 
 export async function getTwitterMedia(id: string): Promise<Video | undefined> {
@@ -15,23 +15,23 @@ export async function getTwitterMedia(id: string): Promise<Video | undefined> {
           Authorization: `Bearer ${process.env.TWITTER_AUTH_TOKEN}`,
         },
       }
-    );
+    )
 
-    if (!response.ok) throw new Error("Failed to fetch Twitter media");
+    if (!response.ok) throw new Error('Failed to fetch Twitter media')
 
-    const data = (await response.json()) as MediaTweet;
+    const data = (await response.json()) as MediaTweet
 
     return (
       data.extended_entities.media[0].video_info.variants
         // Filter to only include MP4 videos
-        .filter((variant) => variant.content_type === "video/mp4")
+        .filter((variant) => variant.content_type === 'video/mp4')
 
         // Get the video with the best bitrate
         .reduce((prev, current) =>
           prev.bitrate > current.bitrate ? prev : current
         )
-    );
+    )
   } catch (error) {
-    console.error(id, error);
+    console.error(id, error)
   }
 }

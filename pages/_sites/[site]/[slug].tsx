@@ -1,67 +1,67 @@
-import Link from "next/link";
-import remarkMdx from "remark-mdx";
-import { MDXRemote } from "next-mdx-remote";
-import { remark } from "remark";
-import { serialize } from "next-mdx-remote/serialize";
-import { useRouter } from "next/router";
+import Link from 'next/link'
+import remarkMdx from 'remark-mdx'
+import { MDXRemote } from 'next-mdx-remote'
+import { remark } from 'remark'
+import { serialize } from 'next-mdx-remote/serialize'
+import { useRouter } from 'next/router'
 
-import BlogCard from "@/components/BlogCard";
-import BlurImage from "@/components/BlurImage";
-import Date from "@/components/Date";
-import Examples from "@/components/mdx/Examples";
-import Layout from "@/components/sites/Layout";
-import Loader from "@/components/sites/Loader";
-import prisma from "@/lib/prisma";
-import Tweet from "@/components/mdx/Tweet";
+import BlogCard from '@/components/BlogCard'
+import BlurImage from '@/components/BlurImage'
+import Date from '@/components/Date'
+import Examples from '@/components/mdx/Examples'
+import Layout from '@/components/sites/Layout'
+import Loader from '@/components/sites/Loader'
+import prisma from '@/lib/prisma'
+import Tweet from '@/components/mdx/Tweet'
 import {
   replaceExamples,
   replaceLinks,
   replaceTweets,
-} from "@/lib/remark-plugins";
+} from '@/lib/remark-plugins'
 
-import type { AdjacentPost, Meta, _SiteSlugData } from "@/types";
-import type { GetStaticPaths, GetStaticProps } from "next";
-import type { MDXRemoteSerializeResult } from "next-mdx-remote";
-import type { ParsedUrlQuery } from "querystring";
+import type { AdjacentPost, Meta, _SiteSlugData } from '@/types'
+import type { GetStaticPaths, GetStaticProps } from 'next'
+import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
+import type { ParsedUrlQuery } from 'querystring'
 
 const components = {
   a: replaceLinks,
   BlurImage,
   Examples,
   Tweet,
-};
+}
 
 interface PathProps extends ParsedUrlQuery {
-  site: string;
-  slug: string;
+  site: string
+  slug: string
 }
 
 interface PostProps {
-  stringifiedData: string;
-  stringifiedAdjacentPosts: string;
+  stringifiedData: string
+  stringifiedAdjacentPosts: string
 }
 
 export default function Post({
   stringifiedAdjacentPosts,
   stringifiedData,
 }: PostProps) {
-  const router = useRouter();
-  if (router.isFallback) return <Loader />;
+  const router = useRouter()
+  if (router.isFallback) return <Loader />
 
   const data = JSON.parse(stringifiedData) as _SiteSlugData & {
-    mdxSource: MDXRemoteSerializeResult<Record<string, unknown>>;
-  };
+    mdxSource: MDXRemoteSerializeResult<Record<string, unknown>>
+  }
   const adjacentPosts = JSON.parse(
     stringifiedAdjacentPosts
-  ) as Array<AdjacentPost>;
+  ) as Array<AdjacentPost>
 
   const meta = {
     description: data.description,
-    logo: "/logo.png",
+    logo: '/logo.png',
     ogImage: data.image,
     ogUrl: `https://${data.site?.subdomain}.vercel.pub/${data.slug}`,
     title: data.title,
-  } as Meta;
+  } as Meta
 
   return (
     <Layout meta={meta} subdomain={data.site?.subdomain ?? undefined}>
@@ -91,7 +91,7 @@ export default function Post({
             <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden inline-block align-middle">
               {data.site?.user?.image ? (
                 <BlurImage
-                  alt={data.site?.user?.name ?? "User Avatar"}
+                  alt={data.site?.user?.name ?? 'User Avatar'}
                   height={80}
                   src={data.site.user.image}
                   width={80}
@@ -111,7 +111,7 @@ export default function Post({
       <div className="relative h-80 md:h-150 w-full max-w-screen-lg lg:2/3 md:w-5/6 m-auto mb-10 md:mb-20 md:rounded-2xl overflow-hidden">
         {data.image ? (
           <BlurImage
-            alt={data.title ?? "Post image"}
+            alt={data.title ?? 'Post image'}
             layout="fill"
             objectFit="cover"
             placeholder="blur"
@@ -152,7 +152,7 @@ export default function Post({
         </div>
       )}
     </Layout>
-  );
+  )
 }
 
 export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
@@ -161,7 +161,7 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
       published: true,
       // you can remove this if you want to generate all sites at build time
       site: {
-        subdomain: "demo",
+        subdomain: 'demo',
       },
     },
     select: {
@@ -173,11 +173,11 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
         },
       },
     },
-  });
+  })
 
   return {
     paths: posts.flatMap((post) => {
-      if (post.site === null || post.site.subdomain === null) return [];
+      if (post.site === null || post.site.subdomain === null) return []
 
       if (post.site.customDomain) {
         return [
@@ -193,38 +193,38 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
               slug: post.slug,
             },
           },
-        ];
+        ]
       } else {
         return {
           params: {
             site: post.site.subdomain,
             slug: post.slug,
           },
-        };
+        }
       }
     }),
     fallback: true,
-  };
-};
+  }
+}
 
 export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
   params,
 }) => {
-  if (!params) throw new Error("No path parameters found");
+  if (!params) throw new Error('No path parameters found')
 
-  const { site, slug } = params;
+  const { site, slug } = params
 
   let filter: {
-    subdomain?: string;
-    customDomain?: string;
+    subdomain?: string
+    customDomain?: string
   } = {
     subdomain: site,
-  };
+  }
 
-  if (site.includes(".")) {
+  if (site.includes('.')) {
     filter = {
       customDomain: site,
-    };
+    }
   }
 
   const data = (await prisma.post.findFirst({
@@ -241,9 +241,9 @@ export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
         },
       },
     },
-  })) as _SiteSlugData | null;
+  })) as _SiteSlugData | null
 
-  if (!data) return { notFound: true, revalidate: 10 };
+  if (!data) return { notFound: true, revalidate: 10 }
 
   const [mdxSource, adjacentPosts] = await Promise.all([
     getMdxSource(data.content!),
@@ -266,7 +266,7 @@ export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
         imageBlurhash: true,
       },
     }),
-  ]);
+  ])
 
   return {
     props: {
@@ -277,8 +277,8 @@ export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
       stringifiedAdjacentPosts: JSON.stringify(adjacentPosts),
     },
     revalidate: 3600,
-  };
-};
+  }
+}
 
 async function getMdxSource(postContents: string) {
   // Use remark plugins to convert markdown into HTML string
@@ -289,13 +289,13 @@ async function getMdxSource(postContents: string) {
     .use(replaceTweets)
     // Replaces examples with <Example /> component (only for demo.vercel.pub)
     .use(() => replaceExamples(prisma))
-    .process(postContents);
+    .process(postContents)
 
   // Convert converted html to string format
-  const contentHtml = String(processedContent);
+  const contentHtml = String(processedContent)
 
   // Serialize the content string into MDX
-  const mdxSource = await serialize(contentHtml);
+  const mdxSource = await serialize(contentHtml)
 
-  return mdxSource;
+  return mdxSource
 }

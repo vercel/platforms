@@ -1,4 +1,4 @@
-import type { BaseIconProps } from "@/types";
+import type { BaseIconProps } from '@/types'
 
 interface SearchIconProps extends BaseIconProps {}
 
@@ -20,7 +20,7 @@ const SearchIcon = ({ className, color, height, width }: SearchIconProps) => {
         className="st0"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
-export default SearchIcon;
+export default SearchIcon

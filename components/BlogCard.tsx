@@ -1,14 +1,14 @@
-import Link from "next/link";
-import BlurImage from "./BlurImage";
-import Date from "./Date";
+import Link from 'next/link'
+import BlurImage from './BlurImage'
+import Date from './Date'
 
-import type { Post } from "@prisma/client";
+import type { Post } from '@prisma/client'
 
 interface BlogCardProps {
   data: Pick<
     Post,
-    "slug" | "image" | "imageBlurhash" | "title" | "description" | "createdAt"
-  >;
+    'slug' | 'image' | 'imageBlurhash' | 'title' | 'description' | 'createdAt'
+  >
 }
 
 export default function BlogCard({ data }: BlogCardProps) {
@@ -19,7 +19,7 @@ export default function BlogCard({ data }: BlogCardProps) {
           {data.image ? (
             <BlurImage
               src={data.image}
-              alt={data.title ?? "Blog "}
+              alt={data.title ?? 'Blog '}
               width={500}
               height={400}
               layout="responsive"
@@ -44,5 +44,5 @@ export default function BlogCard({ data }: BlogCardProps) {
         </div>
       </a>
     </Link>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-import NextAuth from "next-auth";
-import GitHubProvider from "next-auth/providers/github";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "@/lib/prisma";
+import NextAuth from 'next-auth'
+import GitHubProvider from 'next-auth/providers/github'
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import prisma from '@/lib/prisma'
 
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions } from 'next-auth'
 
 if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET)
-  throw new Error("Failed to initialize Github authentication");
+  throw new Error('Failed to initialize Github authentication')
 
 export const authOptions = {
   providers: [
@@ -20,7 +20,7 @@ export const authOptions = {
           gh_username: profile.login,
           email: profile.email,
           image: profile.avatar_url,
-        };
+        }
       },
     }),
   ],
@@ -28,7 +28,7 @@ export const authOptions = {
   pages: {
     signIn: `/login`,
     verifyRequest: `/login`,
-    error: "/login", // Error code passed in query string as ?error=
+    error: '/login', // Error code passed in query string as ?error=
   },
   adapter: PrismaAdapter(prisma),
   callbacks: {
@@ -41,6 +41,6 @@ export const authOptions = {
       },
     }),
   },
-} as NextAuthOptions;
+} as NextAuthOptions
 
-export default NextAuth(authOptions);
+export default NextAuth(authOptions)

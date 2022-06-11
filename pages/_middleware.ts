@@ -1,22 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
-import type { NextRequest } from "next/server";
+import type { NextRequest } from 'next/server'
 
 export default function middleware(req: NextRequest) {
   // Clone the request url
-  const url = req.nextUrl.clone();
+  const url = req.nextUrl.clone()
 
   // Get pathname of request (e.g. /blog-slug)
-  const { pathname } = req.nextUrl;
+  const { pathname } = req.nextUrl
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
-  const hostname = req.headers.get("host");
+  const hostname = req.headers.get('host')
 
   if (!hostname)
     return new Response(null, {
       status: 400,
-      statusText: "No hostname found in request headers",
-    });
+      statusText: 'No hostname found in request headers',
+    })
 
   // Only for demo purposes – remove this if you want to use your root domain as the landing page
   // if (hostname === "vercel.pub" || hostname === "platforms.vercel.app") {
@@ -29,42 +29,42 @@ export default function middleware(req: NextRequest) {
       still need to add "*.platformize.vercel.app" as a wildcard domain on your Vercel dashboard. */
 
   const currentHost =
-    process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
+    process.env.NODE_ENV === 'production' && process.env.VERCEL === '1'
       ? hostname
-          .replace(`.hlist.me`, "") // orginal verce.pub
-          .replace(`.platformize.vercel.app`, "")
-      : hostname.replace(`.localhost:3000`, "");
+          .replace(`.hlist.me`, '') // orginal verce.pub
+          .replace(`.platformize.vercel.app`, '')
+      : hostname.replace(`.localhost:3000`, '')
 
   if (pathname.startsWith(`/_sites`))
     return new Response(null, {
       status: 404,
-    });
+    })
 
-  if (!pathname.includes(".") && !pathname.startsWith("/api")) {
-    if (currentHost == "app") {
+  if (!pathname.includes('.') && !pathname.startsWith('/api')) {
+    if (currentHost == 'app') {
       if (
-        pathname === "/login" &&
-        (req.cookies["next-auth.session-token"] ||
-          req.cookies["__Secure-next-auth.session-token"])
+        pathname === '/login' &&
+        (req.cookies['next-auth.session-token'] ||
+          req.cookies['__Secure-next-auth.session-token'])
       ) {
-        url.pathname = "/";
-        return NextResponse.redirect(url);
+        url.pathname = '/'
+        return NextResponse.redirect(url)
       }
 
-      url.pathname = `/app${pathname}`;
-      return NextResponse.rewrite(url);
+      url.pathname = `/app${pathname}`
+      return NextResponse.rewrite(url)
     }
 
     if (
-      hostname === "localhost:3000" ||
-      hostname === "platformize.vercel.app" ||
-      hostname === "hlist.me"
+      hostname === 'localhost:3000' ||
+      hostname === 'platformize.vercel.app' ||
+      hostname === 'hlist.me'
     ) {
-      url.pathname = `/home${pathname}`;
-      return NextResponse.rewrite(url);
+      url.pathname = `/home${pathname}`
+      return NextResponse.rewrite(url)
     }
 
-    url.pathname = `/_sites/${currentHost}${pathname}`;
-    return NextResponse.rewrite(url);
+    url.pathname = `/_sites/${currentHost}${pathname}`
+    return NextResponse.rewrite(url)
   }
 }

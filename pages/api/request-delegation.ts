@@ -1,12 +1,12 @@
-import { HttpMethod } from "@/types";
+import { HttpMethod } from '@/types'
 
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function requestDelegation(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { domain } = req.query;
+  const { domain } = req.query
 
   try {
     const response = await fetch(
@@ -14,15 +14,15 @@ export default async function requestDelegation(
       {
         headers: {
           Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         method: HttpMethod.POST,
       }
-    );
+    )
 
-    res.status(response.ok ? 200 : 403).end();
+    res.status(response.ok ? 200 : 403).end()
   } catch (error) {
-    console.error(error);
-    res.status(500).end(error);
+    console.error(error)
+    res.status(500).end(error)
   }
 }

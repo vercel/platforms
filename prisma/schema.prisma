@@ -100,6 +100,7 @@ model Site {
   user          User? @relation(fields: [userId], references: [id])
   userId        String?
   posts         Post[]
+  lists         List[]
 }
 
 model Example {
@@ -109,5 +110,35 @@ model Example {
   domainCount   Int?
   url           String?
   image         String? @db.Text
-  imageBlurhash String? @db.LongText
+  imageBlurhash String? @db.LongText 
+}
+
+model List {
+  id            String       @id @default(cuid())
+  title         String?      @db.Text
+  description   String?     @db.Text
+  handle        String      @default(cuid())
+  image         String?   @db.Text
+  imageBlurhash String?   @db.LongText
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  published     Boolean      @default(true)
+  site          Site? @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  siteId        String?
+  items         ListItem[]
+  @@unique([id, siteId], name: "list_site_constraint")
+}
+
+model ListItem {
+  id            String       @id @default(cuid())
+  title         String?      @db.Text
+  image         String?   @db.Text
+  imageBlurhash String?   @db.LongText
+  url           String?    @db.Text
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  data          Json?      @db.Json
+  list          List? @relation(fields: [listId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  listId        String?
+  @@unique([id, listId], name: "list_item_list_constraint")
 }

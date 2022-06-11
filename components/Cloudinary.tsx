@@ -1,21 +1,21 @@
 /* eslint-disable */
 
-import Head from "next/head";
+import Head from 'next/head'
 
-import type { MouseEvent, ReactNode } from "react";
+import type { MouseEvent, ReactNode } from 'react'
 import type {
   CloudinaryCallbackImage,
   CloudinaryWidget,
   CloudinaryWidgetResult,
-} from "@/types";
+} from '@/types'
 
 interface ChildrenProps {
-  open: (e: MouseEvent) => void;
+  open: (e: MouseEvent) => void
 }
 
 interface CloudinaryUploadWidgetProps {
-  callback: (image: CloudinaryCallbackImage) => void;
-  children: (props: ChildrenProps) => ReactNode;
+  callback: (image: CloudinaryCallbackImage) => void
+  children: (props: ChildrenProps) => ReactNode
 }
 
 export default function CloudinaryUploadWidget({
@@ -25,23 +25,23 @@ export default function CloudinaryUploadWidget({
   function showWidget() {
     const widget: CloudinaryWidget = window.cloudinary.createUploadWidget(
       {
-        cloudName: "vercel-platforms",
-        uploadPreset: "w0vnflc6",
+        cloudName: 'vercel-platforms',
+        uploadPreset: 'w0vnflc6',
         cropping: true,
       },
       (error: unknown | undefined, result: CloudinaryWidgetResult) => {
-        if (!error && result && result.event === "success") {
-          callback(result.info);
+        if (!error && result && result.event === 'success') {
+          callback(result.info)
         }
       }
-    );
+    )
 
-    widget.open();
+    widget.open()
   }
 
   function open(e: MouseEvent) {
-    e.preventDefault();
-    showWidget();
+    e.preventDefault()
+    showWidget()
   }
 
   return (
@@ -57,5 +57,5 @@ export default function CloudinaryUploadWidget({
       </Head>
       {children({ open })}
     </>
-  );
+  )
 }
