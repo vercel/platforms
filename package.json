@@ -10,7 +10,8 @@
     "predev": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "start": "next start",
-    "type-check": "tsc"
+    "type-check": "tsc",
+    "prettier-fix": "prettier --write ."
   },
   "engines": {
     "node": ">=14.0.0"

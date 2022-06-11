@@ -9,7 +9,7 @@ export default function Home() {
         <title>Listed</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Link href={appLink()} passHref>
+      <Link href={appLink} passHref>
         <a className="absolute right-0 pr-10 pt-5">Dashboard</a>
       </Link>
       <h1 className="text-4xl text-center my-10">App Landing Page</h1>

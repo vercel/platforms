@@ -1,16 +1,18 @@
 const isProduction = process.env.NODE_ENV === "production";
 
-const appLink = () => {
-  return isProduction ? "https://app.hlist.me" : "http://app.localhost:3000";
-};
+const appLink = isProduction
+  ? "https://app.hlist.me"
+  : "http://app.localhost:3000";
 
-export const homeLink = () => {
-  return isProduction ? "https://hlist.me" : "http://localhost:3000";
-};
+export const homeLink = isProduction
+  ? "https://hlist.me"
+  : "http://localhost:3000";
+
+export const mainDomain = isProduction ? "hlist.me" : "localhost:3000";
 
 export const getSiteSubDomain = (subDomain?: string | null, url = true) => {
   if (!subDomain) {
-    return url ? appLink() : "Site not found";
+    return url ? appLink : "Site not found";
   }
 
   if (!url) {

@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
 
-import { getSiteSubDomain } from "@/lib/conditionalLinks";
+import { getSiteSubDomain, mainDomain } from "@/lib/conditionalLinks";
 import type { Site } from "@prisma/client";
 import type { FormEvent } from "react";
 
@@ -106,7 +106,7 @@ export default function AppIndex() {
                 type="text"
               />
               <span className="px-5 bg-gray-100 h-full flex items-center rounded-r-lg border-l border-gray-600">
-                .vercel.pub
+                {`.${mainDomain}`}
               </span>
             </div>
             {error && (
