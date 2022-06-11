@@ -1,8 +1,8 @@
-import type { WithClassName } from "@/types";
+import type { WithClassName } from '@/types'
 
 interface LogoSmallProps extends WithClassName {
-  height?: number;
-  width: number;
+  height?: number
+  width: number
 }
 
 const LogoSmall = (props: LogoSmallProps) => {
@@ -20,7 +20,7 @@ const LogoSmall = (props: LogoSmallProps) => {
         <path d="M0 24V1h8.21C16.158 1 20 5.929 20 12.533 20 19.104 16.158 24 8.21 24H0zm4.598-4.14h3.054c5.451 0 7.586-3.154 7.586-7.327S13.103 5.14 7.652 5.14H4.598v14.72z"></path>
       </g>
     </svg>
-  );
-};
+  )
+}
 
-export default LogoSmall;
+export default LogoSmall

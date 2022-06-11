@@ -1,4 +1,4 @@
-import type { BaseIconProps } from "@/types";
+import type { BaseIconProps } from '@/types'
 
 interface XIconProps extends BaseIconProps {}
 
@@ -22,7 +22,7 @@ const XIcon = ({ className, color, height, width }: XIconProps) => {
 		c18.7,19.36,49.52,19.89,68.89,1.19c19.36-18.65,19.89-49.52,1.19-68.89l-1.19-1.19L324.91,255.96V256z"
       />
     </svg>
-  );
-};
+  )
+}
 
-export default XIcon;
+export default XIcon

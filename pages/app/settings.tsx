@@ -1,40 +1,40 @@
-import Layout from "@/components/app/Layout";
-import toast, { Toaster } from "react-hot-toast";
-import BlurImage from "@/components/BlurImage";
-import CloudinaryUploadWidget from "@/components/Cloudinary";
-import LoadingDots from "@/components/app/loading-dots";
-import saveImage from "@/lib/save-image";
-import { HttpMethod } from "@/types";
+import Layout from '@/components/app/Layout'
+import toast, { Toaster } from 'react-hot-toast'
+import BlurImage from '@/components/BlurImage'
+import CloudinaryUploadWidget from '@/components/Cloudinary'
+import LoadingDots from '@/components/app/loading-dots'
+import saveImage from '@/lib/save-image'
+import { HttpMethod } from '@/types'
 
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 
-import type { UserSettings } from "@/types";
+import type { UserSettings } from '@/types'
 
 export default function AppSettings() {
-  const { data: session } = useSession();
+  const { data: session } = useSession()
 
-  const [saving, setSaving] = useState<boolean>(false);
-  const [data, setData] = useState<UserSettings | null>(null);
+  const [saving, setSaving] = useState<boolean>(false)
+  const [data, setData] = useState<UserSettings | null>(null)
 
   useEffect(() => {
     if (session)
       setData({
         ...session.user,
-      });
-  }, [session]);
+      })
+  }, [session])
 
   async function saveSettings(data: UserSettings | null) {
-    setSaving(true);
-    const response = await fetch("/api/save-settings", {
+    setSaving(true)
+    const response = await fetch('/api/save-settings', {
       method: HttpMethod.POST,
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
     if (response.ok) {
-      setSaving(false);
-      toast.success(`Changes Saved`);
+      setSaving(false)
+      toast.success(`Changes Saved`)
     }
   }
 
@@ -58,7 +58,7 @@ export default function AppSettings() {
                   type="text"
                   name="name"
                   placeholder="Your awesome name"
-                  value={data?.name || ""}
+                  value={data?.name || ''}
                   onInput={(e) =>
                     setData({
                       ...data,
@@ -76,7 +76,7 @@ export default function AppSettings() {
                   type="email"
                   name="email"
                   placeholder="panic@thedis.co"
-                  value={data?.email || ""}
+                  value={data?.email || ''}
                   onInput={(e) =>
                     setData({
                       ...data,
@@ -90,7 +90,7 @@ export default function AppSettings() {
               <h2 className="font-cal text-2xl">Display Picture</h2>
               <div
                 className={`${
-                  data?.image ? "" : "animate-pulse bg-gray-300 h-150"
+                  data?.image ? '' : 'animate-pulse bg-gray-300 h-150'
                 } relative mt-5 w-48 border-2 border-gray-800 border-dashed rounded-md`}
               >
                 <CloudinaryUploadWidget
@@ -133,20 +133,20 @@ export default function AppSettings() {
           <div className="max-w-screen-xl mx-auto px-10 sm:px-20 h-full flex justify-end items-center">
             <button
               onClick={() => {
-                saveSettings(data);
+                saveSettings(data)
               }}
               disabled={saving}
               className={`${
                 saving
-                  ? "cursor-not-allowed bg-gray-300 border-gray-300"
-                  : "bg-black hover:bg-white hover:text-black border-black"
+                  ? 'cursor-not-allowed bg-gray-300 border-gray-300'
+                  : 'bg-black hover:bg-white hover:text-black border-black'
               } mx-2 w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
             >
-              {saving ? <LoadingDots /> : "Save Changes"}
+              {saving ? <LoadingDots /> : 'Save Changes'}
             </button>
           </div>
         </footer>
       </Layout>
     </>
-  );
+  )
 }

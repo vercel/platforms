@@ -1,63 +1,60 @@
-import Layout from "@/components/app/Layout";
-import LoadingDots from "@/components/app/loading-dots";
-import BlurImage from "@/components/BlurImage";
-import Modal from "@/components/Modal";
-import { fetcher } from "@/lib/fetcher";
-import { HttpMethod } from "@/types";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
-import useSWR from "swr";
-import { useDebounce } from "use-debounce";
+import Layout from '@/components/app/Layout'
+import LoadingDots from '@/components/app/loading-dots'
+import BlurImage from '@/components/BlurImage'
+import Modal from '@/components/Modal'
+import { fetcher } from '@/lib/fetcher'
+import { HttpMethod } from '@/types'
+import { useSession } from 'next-auth/react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useEffect, useRef, useState } from 'react'
+import useSWR from 'swr'
+import { useDebounce } from 'use-debounce'
 
-import { getSiteSubDomain, mainDomain } from "@/lib/conditionalLinks";
-import type { Site } from "@prisma/client";
-import type { FormEvent } from "react";
+import { getSiteSubDomain, mainDomain } from '@/lib/conditionalLinks'
+import type { Site } from '@prisma/client'
+import type { FormEvent } from 'react'
 
 export default function AppIndex() {
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [creatingSite, setCreatingSite] = useState<boolean>(false);
-  const [subdomain, setSubdomain] = useState<string>("");
-  const [debouncedSubdomain] = useDebounce(subdomain, 1500);
-  const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const [creatingSite, setCreatingSite] = useState<boolean>(false)
+  const [subdomain, setSubdomain] = useState<string>('')
+  const [debouncedSubdomain] = useDebounce(subdomain, 1500)
+  const [error, setError] = useState<string | null>(null)
 
-  const siteNameRef = useRef<HTMLInputElement | null>(null);
-  const siteSubdomainRef = useRef<HTMLInputElement | null>(null);
-  const siteDescriptionRef = useRef<HTMLTextAreaElement | null>(null);
+  const siteNameRef = useRef<HTMLInputElement | null>(null)
+  const siteSubdomainRef = useRef<HTMLInputElement | null>(null)
+  const siteDescriptionRef = useRef<HTMLTextAreaElement | null>(null)
 
   useEffect(() => {
     async function checkSubDomain() {
       if (debouncedSubdomain.length > 0) {
         const response = await fetch(
           `/api/domain/check?domain=${debouncedSubdomain}&subdomain=1`
-        );
-        const available = await response.json();
+        )
+        const available = await response.json()
         if (available) {
-          setError(null);
+          setError(null)
         } else {
-          setError(`${debouncedSubdomain}.vercel.pub`);
+          setError(`${debouncedSubdomain}.vercel.pub`)
         }
       }
     }
-    checkSubDomain();
-  }, [debouncedSubdomain]);
+    checkSubDomain()
+  }, [debouncedSubdomain])
 
-  const router = useRouter();
+  const router = useRouter()
 
-  const { data: session } = useSession();
-  const sessionId = session?.user?.id;
+  const { data: session } = useSession()
+  const sessionId = session?.user?.id
 
-  const { data: sites } = useSWR<Array<Site>>(
-    sessionId && `/api/site`,
-    fetcher
-  );
+  const { data: sites } = useSWR<Array<Site>>(sessionId && `/api/site`, fetcher)
 
   async function createSite(e: FormEvent<HTMLFormElement>) {
-    const res = await fetch("/api/site", {
+    const res = await fetch('/api/site', {
       method: HttpMethod.POST,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         userId: sessionId,
@@ -65,10 +62,10 @@ export default function AppIndex() {
         subdomain: siteSubdomainRef.current?.value,
         description: siteDescriptionRef.current?.value,
       }),
-    });
+    })
     if (res.ok) {
-      const data = await res.json();
-      router.push(`/site/${data.siteId}`);
+      const data = await res.json()
+      router.push(`/site/${data.siteId}`)
     }
   }
 
@@ -77,11 +74,12 @@ export default function AppIndex() {
       <Modal showModal={showModal} setShowModal={setShowModal}>
         <form
           onSubmit={(event) => {
-            event.preventDefault();
-            setCreatingSite(true);
-            createSite(event);
+            event.preventDefault()
+            setCreatingSite(true)
+            createSite(event)
           }}
-          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg">
+          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg"
+        >
           <h2 className="font-cal text-2xl mb-6">Create a New Site</h2>
           <div className="grid gap-y-5 w-5/6 mx-auto">
             <div className="border border-gray-700 rounded-lg flex flex-start items-center">
@@ -132,9 +130,10 @@ export default function AppIndex() {
               type="button"
               className="w-full px-5 py-5 text-sm text-gray-600 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
               onClick={() => {
-                setError(null);
-                setShowModal(false);
-              }}>
+                setError(null)
+                setShowModal(false)
+              }}
+            >
               CANCEL
             </button>
 
@@ -143,10 +142,11 @@ export default function AppIndex() {
               disabled={creatingSite || error !== null}
               className={`${
                 creatingSite || error
-                  ? "cursor-not-allowed text-gray-400 bg-gray-50"
-                  : "bg-white text-gray-600 hover:text-black"
-              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}>
-              {creatingSite ? <LoadingDots /> : "CREATE SITE"}
+                  ? 'cursor-not-allowed text-gray-400 bg-gray-50'
+                  : 'bg-white text-gray-600 hover:text-black'
+              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+            >
+              {creatingSite ? <LoadingDots /> : 'CREATE SITE'}
             </button>
           </div>
         </form>
@@ -157,7 +157,8 @@ export default function AppIndex() {
           <h1 className="font-cal text-5xl">My Sites</h1>
           <button
             onClick={() => setShowModal(true)}
-            className="font-cal text-lg w-3/4 sm:w-40 tracking-wide text-white bg-black border-black border-2 px-5 py-3 hover:bg-white hover:text-black transition-all ease-in-out duration-150">
+            className="font-cal text-lg w-3/4 sm:w-40 tracking-wide text-white bg-black border-black border-2 px-5 py-3 hover:bg-white hover:text-black transition-all ease-in-out duration-150"
+          >
             New Site <span className="ml-2">＋</span>
           </button>
         </div>
@@ -174,7 +175,7 @@ export default function AppIndex() {
                             src={site.image}
                             layout="fill"
                             objectFit="cover"
-                            alt={site.name ?? "Site thumbnail"}
+                            alt={site.name ?? 'Site thumbnail'}
                           />
                         ) : (
                           <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
@@ -192,7 +193,8 @@ export default function AppIndex() {
                           href={getSiteSubDomain(site.subdomain)}
                           onClick={(e) => e.stopPropagation()}
                           rel="noreferrer"
-                          target="_blank">
+                          target="_blank"
+                        >
                           {getSiteSubDomain(site.subdomain, false)}
                         </a>
                       </div>
@@ -222,7 +224,8 @@ export default function AppIndex() {
             [0, 1].map((i) => (
               <div
                 key={i}
-                className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
+                className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200"
+              >
                 <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none bg-gray-300 animate-pulse" />
                 <div className="relative p-10 grid gap-5">
                   <div className="w-28 h-10 rounded-md bg-gray-300 animate-pulse" />
@@ -236,5 +239,5 @@ export default function AppIndex() {
         </div>
       </div>
     </Layout>
-  );
+  )
 }

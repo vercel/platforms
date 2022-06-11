@@ -1,40 +1,40 @@
-import Cookies from "js-cookie";
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import Cookies from 'js-cookie'
+import Head from 'next/head'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useCallback, useEffect, useState } from 'react'
 
-import type { Meta, WithChildren } from "@/types";
+import type { Meta, WithChildren } from '@/types'
 
 interface LayoutProps extends WithChildren {
-  meta?: Meta;
-  siteId?: string;
-  subdomain?: string;
+  meta?: Meta
+  siteId?: string
+  subdomain?: string
 }
 
 export default function Layout({ meta, children, subdomain }: LayoutProps) {
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false)
 
   const onScroll = useCallback(() => {
-    setScrolled(window.pageYOffset > 20);
-  }, []);
+    setScrolled(window.pageYOffset > 20)
+  }, [])
 
   useEffect(() => {
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [onScroll]);
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [onScroll])
 
   const [closeModal, setCloseModal] = useState<boolean>(
-    !!Cookies.get("closeModal")
-  );
+    !!Cookies.get('closeModal')
+  )
 
   useEffect(() => {
     if (closeModal) {
-      Cookies.set("closeModal", "true");
+      Cookies.set('closeModal', 'true')
     } else {
-      Cookies.remove("closeModal");
+      Cookies.remove('closeModal')
     }
-  }, [closeModal]);
+  }, [closeModal])
 
   return (
     <div>
@@ -64,12 +64,13 @@ export default function Layout({ meta, children, subdomain }: LayoutProps) {
         <meta name="twitter:title" content={meta?.title} />
         <meta name="twitter:description" content={meta?.description} />
         <meta name="twitter:image" content={meta?.ogImage} />
-        {subdomain != "demo" && <meta name="robots" content="noindex" />}
+        {subdomain != 'demo' && <meta name="robots" content="noindex" />}
       </Head>
       <div
         className={`fixed w-full ${
-          scrolled ? "drop-shadow-md" : ""
-        }  top-0 left-0 right-0 h-16 bg-white z-30 transition-all ease duration-150 flex`}>
+          scrolled ? 'drop-shadow-md' : ''
+        }  top-0 left-0 right-0 h-16 bg-white z-30 transition-all ease duration-150 flex`}
+      >
         <div className="flex justify-center items-center space-x-5 h-full max-w-screen-xl mx-auto px-10 sm:px-20">
           <Link href="/" passHref>
             <a className="flex justify-center items-center">
@@ -93,5 +94,5 @@ export default function Layout({ meta, children, subdomain }: LayoutProps) {
 
       <div className="mt-20">{children}</div>
     </div>
-  );
+  )
 }

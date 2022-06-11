@@ -1,17 +1,17 @@
-import styles from "./loading-dots.module.css";
+import styles from './loading-dots.module.css'
 
 interface LoadingDotsProps {
-  color?: string;
+  color?: string
 }
 
-const LoadingDots = ({ color = "#000" }: LoadingDotsProps) => {
+const LoadingDots = ({ color = '#000' }: LoadingDotsProps) => {
   return (
     <span className={styles.loading}>
       <span style={{ backgroundColor: color }} />
       <span style={{ backgroundColor: color }} />
       <span style={{ backgroundColor: color }} />
     </span>
-  );
-};
+  )
+}
 
-export default LoadingDots;
+export default LoadingDots

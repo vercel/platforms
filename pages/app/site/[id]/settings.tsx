@@ -1,159 +1,165 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
-import useSWR, { mutate } from "swr";
-import { useDebounce } from "use-debounce";
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
+import useSWR, { mutate } from 'swr'
+import { useDebounce } from 'use-debounce'
 
-import Layout from "@/components/app/Layout";
-import LoadingDots from "@/components/app/loading-dots";
-import BlurImage from "@/components/BlurImage";
-import CloudinaryUploadWidget from "@/components/Cloudinary";
-import Modal from "@/components/Modal";
-import saveImage from "@/lib/save-image";
+import Layout from '@/components/app/Layout'
+import LoadingDots from '@/components/app/loading-dots'
+import BlurImage from '@/components/BlurImage'
+import CloudinaryUploadWidget from '@/components/Cloudinary'
+import Modal from '@/components/Modal'
+import saveImage from '@/lib/save-image'
 
-import { fetcher } from "@/lib/fetcher";
-import { HttpMethod } from "@/types";
+import { fetcher } from '@/lib/fetcher'
+import { HttpMethod } from '@/types'
 
-import type { Site } from "@prisma/client";
+import SmallLinkIcon from '@/components/icons/smallLink'
+import { mainDomain } from '@/lib/conditionalLinks'
+import type { Site } from '@prisma/client'
 
-interface SettingsData
-  extends Pick<
-    Site,
-    "id" | "name" | "description" | "subdomain" | "image" | "imageBlurhash"
-  > {}
+interface SettingsData extends Pick<Site, 'id' | 'name' | 'description' | 'subdomain' | 'image' | 'imageBlurhash'> {}
 
 export default function SiteSettings() {
-  const router = useRouter();
-  const { id } = router.query;
-  const siteId = id;
+  const router = useRouter()
+  const { id } = router.query
+  const siteId = id
 
-  const { data: settings } = useSWR<Site | null>(
-    siteId && `/api/site?siteId=${siteId}`,
-    fetcher,
-    {
-      onError: () => router.push("/"),
-      revalidateOnFocus: false,
-    }
-  );
+  const { data: settings } = useSWR<Site | null>(siteId && `/api/site?siteId=${siteId}`, fetcher, {
+    onError: () => router.push('/'),
+    revalidateOnFocus: false,
+  })
 
-  const [saving, setSaving] = useState(false);
-  const [adding, setAdding] = useState(false);
-  const [error, setError] = useState<any | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletingSite, setDeletingSite] = useState(false);
+  const [saving, setSaving] = useState(false)
+  // const [adding, setAdding] = useState(false)
+  // const [error, setError] = useState<any | null>(null)
+  const [token, setToken] = useState<string | null>(null)
+  const [generatingToken, setGeneratingToken] = useState(false)
+  const [tokenError, setTokenError] = useState<any | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletingSite, setDeletingSite] = useState(false)
 
   const [data, setData] = useState<SettingsData>({
-    id: "",
+    id: '',
     name: null,
     description: null,
     subdomain: null,
     // customDomain: null,
     image: null,
     imageBlurhash: null,
-  });
+  })
 
   useEffect(() => {
-    if (settings) setData(settings);
-  }, [settings]);
+    if (settings) setData(settings)
+  }, [settings])
 
   async function saveSiteSettings(data: SettingsData) {
-    setSaving(true);
+    setSaving(true)
 
     try {
-      const response = await fetch("/api/site", {
+      const response = await fetch('/api/site', {
         method: HttpMethod.PUT,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           currentSubdomain: settings?.subdomain ?? undefined,
           ...data,
           id: siteId,
         }),
-      });
+      })
 
       if (response.ok) {
-        setSaving(false);
-        mutate(`/api/site?siteId=${siteId}`);
-        toast.success(`Changes Saved`);
+        setSaving(false)
+        mutate(`/api/site?siteId=${siteId}`)
+        toast.success(`Changes Saved`)
       }
     } catch (error) {
-      toast.error("Failed to save settings");
-      console.error(error);
+      toast.error('Failed to save settings')
+      console.error(error)
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
   }
 
   async function deleteSite(siteId: string) {
-    setDeletingSite(true);
+    setDeletingSite(true)
 
     try {
       const response = await fetch(`/api/site?siteId=${siteId}`, {
         method: HttpMethod.DELETE,
-      });
+      })
 
-      if (response.ok) router.push("/");
+      if (response.ok) router.push('/')
     } catch (error) {
-      console.error(error);
+      console.error(error)
     } finally {
-      setDeletingSite(false);
+      setDeletingSite(false)
     }
   }
-  const [debouncedSubdomain] = useDebounce(data?.subdomain, 1500);
-  const [subdomainError, setSubdomainError] = useState<string | null>(null);
+  const [debouncedSubdomain] = useDebounce(data?.subdomain, 1500)
+  const [subdomainError, setSubdomainError] = useState<string | null>(null)
 
   useEffect(() => {
     async function checkSubdomain() {
       try {
-        const response = await fetch(
-          `/api/domain/check?domain=${debouncedSubdomain}&subdomain=1`
-        );
+        const response = await fetch(`/api/domain/check?domain=${debouncedSubdomain}&subdomain=1`)
 
-        const available = await response.json();
+        const available = await response.json()
 
-        setSubdomainError(
-          available ? null : `${debouncedSubdomain}.vercel.pub`
-        );
+        setSubdomainError(available ? null : `${debouncedSubdomain}.vercel.pub`)
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     }
 
-    if (
-      debouncedSubdomain !== settings?.subdomain &&
-      debouncedSubdomain &&
-      debouncedSubdomain?.length > 0
-    )
-      checkSubdomain();
-  }, [debouncedSubdomain, settings?.subdomain]);
+    if (debouncedSubdomain !== settings?.subdomain && debouncedSubdomain && debouncedSubdomain?.length > 0)
+      checkSubdomain()
+  }, [debouncedSubdomain, settings?.subdomain])
 
-  async function handleCustomDomain() {
-    const customDomain = data.customDomain;
-
-    setAdding(true);
-
+  const generateToken = async () => {
+    setGeneratingToken(true)
+    setTokenError(null)
     try {
-      const response = await fetch(
-        `/api/domain?domain=${customDomain}&siteId=${siteId}`,
-        {
-          method: HttpMethod.POST,
-        }
-      );
-
-      if (!response.ok)
-        throw {
-          code: response.status,
-          domain: customDomain,
-        };
-      setError(null);
-      mutate(`/api/site?siteId=${siteId}`);
+      const response = await fetch(`/api/token?siteId=${siteId}`, {
+        method: HttpMethod.GET,
+      })
+      const result = await response.json()
+      result?.token ? setToken(result.token) : setTokenError('Token generation failed.')
     } catch (error) {
-      setError(error);
+      setTokenError(error)
     } finally {
-      setAdding(false);
+      setGeneratingToken(false)
     }
   }
+
+  // async function handleCustomDomain() {
+  //   const customDomain = data.customDomain
+
+  //   setAdding(true)
+
+  //   try {
+  //     const response = await fetch(
+  //       `/api/domain?domain=${customDomain}&siteId=${siteId}`,
+  //       {
+  //         method: HttpMethod.POST,
+  //       }
+  //     )
+
+  //     if (!response.ok)
+  //       throw {
+  //         code: response.status,
+  //         domain: customDomain,
+  //       }
+  //     setError(null)
+  //     mutate(`/api/site?siteId=${siteId}`)
+  //   } catch (error) {
+  //     setError(error)
+  //   } finally {
+  //     setAdding(false)
+  //   }
+  // }
 
   return (
     <Layout>
@@ -180,7 +186,7 @@ export default function SiteSettings() {
                 }
                 placeholder="Untitled Site"
                 type="text"
-                value={data.name || ""}
+                value={data.name || ''}
               />
             </div>
           </div>
@@ -198,7 +204,7 @@ export default function SiteSettings() {
                 }
                 placeholder="Lorem ipsum forem dimsum"
                 rows={3}
-                value={data?.description || ""}
+                value={data?.description || ''}
               />
             </div>
           </div>
@@ -216,17 +222,70 @@ export default function SiteSettings() {
                 }
                 placeholder="subdomain"
                 type="text"
-                value={data.subdomain || ""}
+                value={data.subdomain || ''}
               />
               <div className="w-1/2 h-12 flex justify-center items-center font-cal rounded-r-lg border-l border-gray-600 bg-gray-100">
-                vercel.pub
+                {`.${mainDomain}`}
               </div>
             </div>
             {subdomainError && (
               <p className="px-5 text-left text-red-500">
-                <b>{subdomainError}</b> is not available. Please choose another
-                subdomain.
+                <b>{subdomainError}</b> is not available. Please choose another subdomain.
               </p>
+            )}
+          </div>
+          <div className="flex flex-col space-y-6">
+            <h2 className="font-cal text-2xl">Access Token</h2>
+            <p className="rounded-md bg-gray-200 flex flex-col justify-center items-center p-10 break-all">
+              {token ||
+                'Once generated, token will be displayed here. Please copy and save securely as you will not able to see this again. If lost, token needs to be generated again.'}
+            </p>
+            <div className="flex  gap-10">
+              <button
+                type="button"
+                className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 w-28 font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
+                onClick={generateToken}
+              >
+                {generatingToken ? <LoadingDots /> : 'Generate'}
+              </button>
+              {token && (
+                <button
+                  className="flex items-center mr-4 !text-gray-500 group transition !no-underline space-x-1"
+                  onClick={() => {
+                    navigator.clipboard.writeText(token)
+                    setCopied(true)
+                    setTimeout(() => setCopied(false), 5000)
+                  }}
+                >
+                  <div className="group-hover:!text-green-600 rounded-full w-10 h-10 group-hover:bg-green-100 flex items-center justify-center">
+                    <SmallLinkIcon copied={copied} />
+                  </div>
+                  <span className="group-hover:!text-green-600 group-hover:!underline sm:block hidden">
+                    {copied ? 'Copied!' : 'Copy link to Tweet'}
+                  </span>
+                </button>
+              )}
+            </div>
+            {tokenError && (
+              <div className="text-red-500 text-left w-full max-w-2xl mt-5 text-sm flex items-center space-x-2">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                  shapeRendering="geometricPrecision"
+                  style={{ color: '#f44336' }}
+                >
+                  <circle cx="12" cy="12" r="10" fill="white" />
+                  <path d="M12 8v4" stroke="#f44336" />
+                  <path d="M12 16h.01" stroke="#f44336" />
+                </svg>
+                <p>{tokenError}</p>
+              </div>
             )}
           </div>
           {/* 
@@ -324,19 +383,16 @@ export default function SiteSettings() {
             <h2 className="font-cal text-2xl">Thumbnail Image</h2>
             <div
               className={`${
-                data.image ? "" : "animate-pulse bg-gray-300 h-150"
-              } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}>
-              <CloudinaryUploadWidget
-                callback={(e) => saveImage(e, data, setData)}>
+                data.image ? '' : 'animate-pulse bg-gray-300 h-150'
+              } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
+            >
+              <CloudinaryUploadWidget callback={(e) => saveImage(e, data, setData)}>
                 {({ open }) => (
                   <button
                     onClick={open}
-                    className="absolute w-full h-full rounded-md bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="100"
-                      height="100"
-                      viewBox="0 0 24 24">
+                    className="absolute w-full h-full rounded-md bg-gray-200 z-10 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-all ease-linear duration-200"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24">
                       <path d="M16 16h-3v5h-2v-5h-3l4-4 4 4zm3.479-5.908c-.212-3.951-3.473-7.092-7.479-7.092s-7.267 3.141-7.479 7.092c-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h3.5v-2h-3.5c-1.93 0-3.5-1.57-3.5-3.5 0-2.797 2.479-3.833 4.433-3.72-.167-4.218 2.208-6.78 5.567-6.78 3.453 0 5.891 2.797 5.567 6.78 1.745-.046 4.433.751 4.433 3.72 0 1.93-1.57 3.5-3.5 3.5h-3.5v2h3.5c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408z" />
                     </svg>
                     <p>Upload another image</p>
@@ -362,15 +418,15 @@ export default function SiteSettings() {
             <div className="flex flex-col space-y-6 max-w-lg">
               <h2 className="font-cal text-2xl">Delete Site</h2>
               <p>
-                Permanently delete your site and all of its contents from our
-                platform. This action is not reversible – please continue with
-                caution.
+                Permanently delete your site and all of its contents from our platform. This action is not reversible –
+                please continue with caution.
               </p>
               <button
                 onClick={() => {
-                  setShowDeleteModal(true);
+                  setShowDeleteModal(true)
                 }}
-                className="bg-red-500 text-white border-red-500 hover:text-red-500 hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150">
+                className="bg-red-500 text-white border-red-500 hover:text-red-500 hover:bg-white px-5 py-3 max-w-max font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
+              >
                 Delete Site
               </button>
             </div>
@@ -380,24 +436,24 @@ export default function SiteSettings() {
       <Modal showModal={showDeleteModal} setShowModal={setShowDeleteModal}>
         <form
           onSubmit={async (event) => {
-            event.preventDefault();
-            await deleteSite(siteId as string);
+            event.preventDefault()
+            await deleteSite(siteId as string)
           }}
-          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg">
+          className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg"
+        >
           <h2 className="font-cal text-2xl mb-6">Delete Site</h2>
           <div className="grid gap-y-5 w-5/6 mx-auto">
             <p className="text-gray-600 mb-3">
-              Are you sure you want to delete your site? This action is not
-              reversible. Type in the full name of your site (<b>{data.name}</b>
-              ) to confirm.
+              Are you sure you want to delete your site? This action is not reversible. Type in the full name of your
+              site (<b>{data.name}</b>) to confirm.
             </p>
             <div className="border border-gray-700 rounded-lg flex flex-start items-center overflow-hidden">
               <input
                 className="w-full px-5 py-3 text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-r-lg placeholder-gray-400"
                 type="text"
                 name="name"
-                placeholder={data.name ?? ""}
-                pattern={data.name ?? "Site Name"}
+                placeholder={data.name ?? ''}
+                pattern={data.name ?? 'Site Name'}
               />
             </div>
           </div>
@@ -405,7 +461,8 @@ export default function SiteSettings() {
             <button
               type="button"
               className="w-full px-5 py-5 text-sm text-gray-400 hover:text-black border-t border-gray-300 rounded-bl focus:outline-none focus:ring-0 transition-all ease-in-out duration-150"
-              onClick={() => setShowDeleteModal(false)}>
+              onClick={() => setShowDeleteModal(false)}
+            >
               CANCEL
             </button>
 
@@ -413,11 +470,10 @@ export default function SiteSettings() {
               type="submit"
               disabled={deletingSite}
               className={`${
-                deletingSite
-                  ? "cursor-not-allowed text-gray-400 bg-gray-50"
-                  : "bg-white text-gray-600 hover:text-black"
-              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}>
-              {deletingSite ? <LoadingDots /> : "DELETE SITE"}
+                deletingSite ? 'cursor-not-allowed text-gray-400 bg-gray-50' : 'bg-white text-gray-600 hover:text-black'
+              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+            >
+              {deletingSite ? <LoadingDots /> : 'DELETE SITE'}
             </button>
           </div>
         </form>
@@ -427,18 +483,19 @@ export default function SiteSettings() {
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 h-full flex justify-end items-center">
           <button
             onClick={() => {
-              saveSiteSettings(data);
+              saveSiteSettings(data)
             }}
             disabled={saving || subdomainError !== null}
             className={`${
               saving || subdomainError
-                ? "cursor-not-allowed bg-gray-300 border-gray-300"
-                : "bg-black hover:bg-white hover:text-black border-black"
-            } mx-2 rounded-md w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}>
-            {saving ? <LoadingDots /> : "Save Changes"}
+                ? 'cursor-not-allowed bg-gray-300 border-gray-300'
+                : 'bg-black hover:bg-white hover:text-black border-black'
+            } mx-2 rounded-md w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
+          >
+            {saving ? <LoadingDots /> : 'Save Changes'}
           </button>
         </div>
       </footer>
     </Layout>
-  );
+  )
 }

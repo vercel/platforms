@@ -1,24 +1,24 @@
-import useSWR, { mutate } from "swr";
-import { useState } from "react";
-import LoadingDots from "@/components/app/loading-dots";
-import { fetcher } from "@/lib/fetcher";
-import { HttpMethod } from "@/types";
+import useSWR, { mutate } from 'swr'
+import { useState } from 'react'
+import LoadingDots from '@/components/app/loading-dots'
+import { fetcher } from '@/lib/fetcher'
+import { HttpMethod } from '@/types'
 
-import type { Site } from "@prisma/client";
+import type { Site } from '@prisma/client'
 
 type DomainData = Pick<
   Site,
-  | "customDomain"
-  | "description"
-  | "id"
-  | "image"
-  | "imageBlurhash"
-  | "name"
-  | "subdomain"
->;
+  | 'customDomain'
+  | 'description'
+  | 'id'
+  | 'image'
+  | 'imageBlurhash'
+  | 'name'
+  | 'subdomain'
+>
 
 interface DomainCardProps<T = DomainData> {
-  data: T;
+  data: T
 }
 
 export default function DomainCard({ data }: DomainCardProps) {
@@ -26,13 +26,13 @@ export default function DomainCard({ data }: DomainCardProps) {
     `/api/domain/check?domain=${data.customDomain}`,
     fetcher,
     { revalidateOnMount: true, refreshInterval: 5000 }
-  );
-  const [recordType, setRecordType] = useState("CNAME");
-  const [removing, setRemoving] = useState(false);
+  )
+  const [recordType, setRecordType] = useState('CNAME')
+  const [removing, setRemoving] = useState(false)
   const subdomain = // if domain is a subdomain
-    data.customDomain && data.customDomain.split(".").length > 2
-      ? data.customDomain.split(".")[0]
-      : "";
+    data.customDomain && data.customDomain.split('.').length > 2
+      ? data.customDomain.split('.')[0]
+      : ''
 
   return (
     <div className="w-full max-w-2xl mt-10 border border-black rounded-lg py-10">
@@ -65,40 +65,40 @@ export default function DomainCard({ data }: DomainCardProps) {
         <div className="flex space-x-3">
           <button
             onClick={() => {
-              mutate(`/api/domain/check?domain=${data.customDomain}`);
+              mutate(`/api/domain/check?domain=${data.customDomain}`)
             }}
             disabled={isValidating}
             className={`${
               isValidating
-                ? "cursor-not-allowed bg-gray-100"
-                : "bg-white hover:text-black hover:border-black"
+                ? 'cursor-not-allowed bg-gray-100'
+                : 'bg-white hover:text-black hover:border-black'
             } text-gray-500 border-gray-200 py-1.5 w-24 text-sm border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
           >
-            {isValidating ? <LoadingDots /> : "Refresh"}
+            {isValidating ? <LoadingDots /> : 'Refresh'}
           </button>
           <button
             onClick={async () => {
-              setRemoving(true);
+              setRemoving(true)
               await fetch(
                 `/api/domain?domain=${data.customDomain}&siteId=${data.id}`,
                 {
                   method: HttpMethod.DELETE,
                 }
               ).then((res) => {
-                setRemoving(false);
+                setRemoving(false)
                 if (res.ok) {
-                  mutate(`/api/site?siteId=${data.id}`);
+                  mutate(`/api/site?siteId=${data.id}`)
                 } else {
-                  alert("Error removing domain");
+                  alert('Error removing domain')
                 }
-              });
+              })
             }}
             disabled={removing}
             className={`${
-              removing ? "cursor-not-allowed bg-gray-100" : ""
+              removing ? 'cursor-not-allowed bg-gray-100' : ''
             }bg-red-500 text-white border-red-500 hover:text-red-500 hover:bg-white py-1.5 w-24 text-sm border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
           >
-            {removing ? <LoadingDots /> : "Remove"}
+            {removing ? <LoadingDots /> : 'Remove'}
           </button>
         </div>
       </div>
@@ -113,7 +113,7 @@ export default function DomainCard({ data }: DomainCardProps) {
           strokeLinejoin="round"
           shapeRendering="geometricPrecision"
         >
-          <circle cx="12" cy="12" r="10" fill={valid ? "#1976d2" : "#d32f2f"} />
+          <circle cx="12" cy="12" r="10" fill={valid ? '#1976d2' : '#d32f2f'} />
           {valid ? (
             <>
               <path
@@ -131,10 +131,10 @@ export default function DomainCard({ data }: DomainCardProps) {
         </svg>
         <p
           className={`${
-            valid ? "text-black font-normal" : "text-red-700 font-medium"
+            valid ? 'text-black font-normal' : 'text-red-700 font-medium'
           } text-sm`}
         >
-          {valid ? "Valid" : "Invalid"} Configuration
+          {valid ? 'Valid' : 'Invalid'} Configuration
         </p>
       </div>
 
@@ -145,11 +145,11 @@ export default function DomainCard({ data }: DomainCardProps) {
           <div className="px-10">
             <div className="flex justify-start space-x-4">
               <button
-                onClick={() => setRecordType("CNAME")}
+                onClick={() => setRecordType('CNAME')}
                 className={`${
-                  recordType == "CNAME"
-                    ? "text-black border-black"
-                    : "text-gray-400 border-white"
+                  recordType == 'CNAME'
+                    ? 'text-black border-black'
+                    : 'text-gray-400 border-white'
                 } text-sm border-b-2 pb-1 transition-all ease duration-150`}
               >
                 CNAME Record (subdomains)
@@ -157,11 +157,11 @@ export default function DomainCard({ data }: DomainCardProps) {
               {/* if the custom domain is a subdomain, only show CNAME record */}
               {!subdomain && (
                 <button
-                  onClick={() => setRecordType("A")}
+                  onClick={() => setRecordType('A')}
                   className={`${
-                    recordType == "A"
-                      ? "text-black border-black"
-                      : "text-gray-400 border-white"
+                    recordType == 'A'
+                      ? 'text-black border-black'
+                      : 'text-gray-400 border-white'
                   } text-sm border-b-2 pb-1 transition-all ease duration-150`}
                 >
                   A Record (apex domain)
@@ -181,17 +181,17 @@ export default function DomainCard({ data }: DomainCardProps) {
                   <p className="text-sm font-bold">Name</p>
                   {/* if the custom domain is a subdomain, the CNAME record is the subdomain */}
                   <p className="text-sm font-mono mt-2">
-                    {recordType === "A"
-                      ? "@"
-                      : recordType == "CNAME" && subdomain
+                    {recordType === 'A'
+                      ? '@'
+                      : recordType == 'CNAME' && subdomain
                       ? subdomain
-                      : "www"}
+                      : 'www'}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-bold">Value</p>
                   <p className="text-sm font-mono mt-2">
-                    {recordType == "CNAME" ? `cname.vercel.pub` : `76.76.21.21`}
+                    {recordType == 'CNAME' ? `cname.vercel.pub` : `76.76.21.21`}
                   </p>
                 </div>
               </div>
@@ -200,5 +200,5 @@ export default function DomainCard({ data }: DomainCardProps) {
         </>
       )}
     </div>
-  );
+  )
 }
