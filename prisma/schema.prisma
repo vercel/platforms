@@ -103,6 +103,16 @@ model Site {
   lists         List[]
 }
 
+model Example {
+  id            Int     @id @default(autoincrement())
+  name          String?
+  description   String? @db.Text
+  domainCount   Int?
+  url           String?
+  image         String? @db.Text
+  imageBlurhash String? @db.LongText 
+}
+
 model List {
   id            String       @id @default(cuid())
   title         String?      @db.Text
