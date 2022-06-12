@@ -30,10 +30,22 @@ export default function middleware(req: NextRequest) {
     root: hostname,
   };
 
-  if (hostname.split(".").length > 1) {
+  const updateDomain = () => {
     const [subdomain, ...rest] = hostname.split(".");
     domain.sub = subdomain;
     domain.root = rest.join(".");
+  };
+
+  const numDomains = hostname.split(".").length;
+
+  if (process.env.NODE_ENV === "development") {
+    numDomains > 1 && updateDomain();
+  } else {
+    if (hostname.endsWith(".vercel.app")) {
+      numDomains > 3 && updateDomain();
+    } else {
+      numDomains > 2 && updateDomain();
+    }
   }
 
   // Only for demo purposes – remove this if you want to use your root domain as the landing page
