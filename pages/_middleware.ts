@@ -32,7 +32,10 @@ export default function middleware(req: NextRequest) {
   /*  Note: You can also use wildcard subdomains on .vercel.app links that are associated with your Vercel team slug
       in this case, our team slug is "platformize", thus *.platformize.vercel.app works. Do note that you'll
       still need to add "*.platformize.vercel.app" as a wildcard domain on your Vercel dashboard. */
-  const currentHost = hostname.replace(`.${process.env.VERCEL_URL}`, "");
+  const currentHost = hostname.replace(
+    `.${process.env.NEXT_PUBLIC_VERCEL_URL}`,
+    ""
+  );
 
   // Hide sites directory from client
   if (pathname.startsWith(`/_sites`)) {
@@ -63,7 +66,7 @@ export default function middleware(req: NextRequest) {
   }
 
   // Map the root domain to the home directory
-  if (hostname === process.env.VERCEL_URL) {
+  if (hostname === process.env.NEXT_PUBLIC_VERCEL_URL) {
     url.pathname = `/home${pathname}`;
     return NextResponse.rewrite(url);
   }
