@@ -24,8 +24,17 @@ export default function middleware(req: NextRequest) {
     });
   }
 
-  const [subdomain, ...rest] = hostname.split(".");
-  const rootDomain = rest.join(".");
+  // Parse request to get subdomain and root domain
+  const domain = {
+    sub: "",
+    root: hostname,
+  };
+
+  if (hostname.split(".").length > 1) {
+    const [subdomain, ...rest] = hostname.split(".");
+    domain.sub = subdomain;
+    domain.root = rest.join(".");
+  }
 
   // Only for demo purposes – remove this if you want to use your root domain as the landing page
   if (hostname === "vercel.pub" || hostname === "platforms.vercel.app") {
@@ -39,12 +48,12 @@ export default function middleware(req: NextRequest) {
     });
   }
 
-  // Skip files and api directory
+  // Ignore files and api directory
   if (pathname.includes(".") || pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  if (subdomain === "app") {
+  if (domain.sub === "app") {
     const redirectToHome = () => {
       url.pathname = "/";
       return NextResponse.redirect(url);
@@ -61,11 +70,11 @@ export default function middleware(req: NextRequest) {
   }
 
   // Map the root domain to the home directory
-  if (hostname === rootDomain) {
+  if (hostname === domain.root) {
     url.pathname = `/home${pathname}`;
     return NextResponse.rewrite(url);
   }
 
-  url.pathname = `/_sites/${subdomain}${pathname}`;
+  url.pathname = `/_sites/${domain.sub}${pathname}`;
   return NextResponse.rewrite(url);
 }
