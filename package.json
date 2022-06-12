@@ -3,6 +3,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:db": "concurrently 'pscale connect platforms --port 3309' 'npx prisma studio'",
     "format:write": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "lint": "next lint",
@@ -53,6 +54,7 @@
     "@types/react": "^17.0.40",
     "@types/react-dom": "^17.0.11",
     "autoprefixer": "^10.4.2",
+    "concurrently": "^7.2.1",
     "eslint": "8.11.0",
     "eslint-config-next": "12.1.0",
     "postcss": "^8.4.5",
