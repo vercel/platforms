@@ -41,6 +41,7 @@ export default function middleware(req: NextRequest) {
   if (process.env.NODE_ENV === "development") {
     numDomains > 1 && updateDomain();
   } else {
+    // For Vercel team wildcard subdomains. Make sure to still add team wildcard domain to your Vercel dashboard!
     if (hostname.endsWith(".vercel.app")) {
       numDomains > 3 && updateDomain();
     } else {
