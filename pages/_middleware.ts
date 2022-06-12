@@ -24,18 +24,13 @@ export default function middleware(req: NextRequest) {
     });
   }
 
+  const [subdomain, ...rest] = hostname.split(".");
+  const rootDomain = rest.join(".");
+
   // Only for demo purposes – remove this if you want to use your root domain as the landing page
   if (hostname === "vercel.pub" || hostname === "platforms.vercel.app") {
     return NextResponse.redirect("https://demo.vercel.pub");
   }
-
-  /*  Note: You can also use wildcard subdomains on .vercel.app links that are associated with your Vercel team slug
-      in this case, our team slug is "platformize", thus *.platformize.vercel.app works. Do note that you'll
-      still need to add "*.platformize.vercel.app" as a wildcard domain on your Vercel dashboard. */
-  const currentHost = hostname.replace(
-    `.${process.env.NEXT_PUBLIC_VERCEL_URL}`,
-    ""
-  );
 
   // Hide sites directory from client
   if (pathname.startsWith(`/_sites`)) {
@@ -49,7 +44,7 @@ export default function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (currentHost === "app") {
+  if (subdomain === "app") {
     const redirectToHome = () => {
       url.pathname = "/";
       return NextResponse.redirect(url);
@@ -66,11 +61,11 @@ export default function middleware(req: NextRequest) {
   }
 
   // Map the root domain to the home directory
-  if (hostname === process.env.NEXT_PUBLIC_VERCEL_URL) {
+  if (hostname === rootDomain) {
     url.pathname = `/home${pathname}`;
     return NextResponse.rewrite(url);
   }
 
-  url.pathname = `/_sites/${currentHost}${pathname}`;
+  url.pathname = `/_sites/${subdomain}${pathname}`;
   return NextResponse.rewrite(url);
 }
