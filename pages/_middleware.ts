@@ -23,17 +23,11 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect("https://demo.vercel.pub");
   }
 
-  /*  You have to replace ".vercel.pub" with your own domain if you deploy this example under your domain.
-      You can also use wildcard subdomains on .vercel.app links that are associated with your Vercel team slug
+  /*  You can also use wildcard subdomains on .vercel.app links that are associated with your Vercel team slug
       in this case, our team slug is "platformize", thus *.platformize.vercel.app works. Do note that you'll
       still need to add "*.platformize.vercel.app" as a wildcard domain on your Vercel dashboard. */
 
-  const currentHost =
-    process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
-      ? hostname
-          .replace(`.vercel.pub`, "")
-          .replace(`.platformize.vercel.app`, "")
-      : hostname.replace(`.localhost:3000`, "");
+  const currentHost = hostname.replace(`.${process.env.VERCEL_URL}`, "");
 
   if (pathname.startsWith(`/_sites`))
     return new Response(null, {
@@ -55,10 +49,7 @@ export default function middleware(req: NextRequest) {
       return NextResponse.rewrite(url);
     }
 
-    if (
-      hostname === "localhost:3000" ||
-      hostname === "platformize.vercel.app"
-    ) {
+    if (hostname === process.env.VERCEL_URL) {
       url.pathname = `/home${pathname}`;
       return NextResponse.rewrite(url);
     }
