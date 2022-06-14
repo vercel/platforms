@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { useDebounce } from 'use-debounce'
 
-import { getSiteSubDomain, mainDomain } from '@/lib/conditionalLinks'
+import { getSiteSubDomain, mainDomain } from '@/lib/domainsManagement'
 import type { Site } from '@prisma/client'
 import type { FormEvent } from 'react'
 

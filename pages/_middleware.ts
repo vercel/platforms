@@ -32,7 +32,7 @@ export default function middleware(req: NextRequest) {
     process.env.NODE_ENV === 'production' && process.env.VERCEL === '1'
       ? hostname
           .replace(`.hlist.me`, '') // orginal verce.pub
-          .replace(`.platformize.vercel.app`, '')
+          //.replace(`.platformize.vercel.app`, '') we are not using platformize domain
       : hostname.replace(`.localhost:3000`, '')
 
   if (pathname.startsWith(`/_sites`))
@@ -57,7 +57,7 @@ export default function middleware(req: NextRequest) {
 
     if (
       hostname === 'localhost:3000' ||
-      hostname === 'platformize.vercel.app' ||
+      // hostname === 'platformize.vercel.app' ||
       hostname === 'hlist.me'
     ) {
       url.pathname = `/home${pathname}`
