@@ -15,7 +15,7 @@ import { fetcher } from '@/lib/fetcher'
 import { HttpMethod } from '@/types'
 
 import SmallLinkIcon from '@/components/icons/smallLink'
-import { mainDomain } from '@/lib/conditionalLinks'
+import { mainDomain } from '@/lib/domainsManagement'
 import type { Site } from '@prisma/client'
 
 interface SettingsData extends Pick<Site, 'id' | 'name' | 'description' | 'subdomain' | 'image' | 'imageBlurhash'> {}

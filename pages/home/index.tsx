@@ -1,4 +1,4 @@
-import appLink from '@/lib/conditionalLinks'
+import appLink from '@/lib/domainsManagement'
 import Head from 'next/head'
 import Link from 'next/link'
 

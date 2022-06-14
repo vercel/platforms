@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import useRequireAuth from '../../lib/useRequireAuth'
 import Loader from './Loader'
 
-import { homeLink } from '@/lib/conditionalLinks'
+import { homeLink } from '@/lib/domainsManagement'
 import type { WithChildren } from '@/types'
 
 interface LayoutProps extends WithChildren {
