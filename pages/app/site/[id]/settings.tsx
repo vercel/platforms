@@ -45,7 +45,6 @@ export default function SiteSettings() {
     name: null,
     description: null,
     subdomain: null,
-    // customDomain: null,
     image: null,
     imageBlurhash: null,
   })
@@ -133,33 +132,6 @@ export default function SiteSettings() {
       setGeneratingToken(false)
     }
   }
-
-  // async function handleCustomDomain() {
-  //   const customDomain = data.customDomain
-
-  //   setAdding(true)
-
-  //   try {
-  //     const response = await fetch(
-  //       `/api/domain?domain=${customDomain}&siteId=${siteId}`,
-  //       {
-  //         method: HttpMethod.POST,
-  //       }
-  //     )
-
-  //     if (!response.ok)
-  //       throw {
-  //         code: response.status,
-  //         domain: customDomain,
-  //       }
-  //     setError(null)
-  //     mutate(`/api/site?siteId=${siteId}`)
-  //   } catch (error) {
-  //     setError(error)
-  //   } finally {
-  //     setAdding(false)
-  //   }
-  // }
 
   return (
     <Layout>
@@ -288,97 +260,7 @@ export default function SiteSettings() {
               </div>
             )}
           </div>
-          {/* 
-           Note: we do not need custom domain 
-           <div className="flex flex-col space-y-6">
-            <h2 className="font-cal text-2xl">Custom Domain</h2>
-            {settings?.customDomain ? (
-              <DomainCard data={data} />
-            ) : (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  await handleCustomDomain();
-                }}
-                className="flex justify-start items-center space-x-3 max-w-lg"
-              >
-                <div className="border border-gray-700 flex-auto rounded-lg overflow-hidden">
-                  <input
-                    autoComplete="off"
-                    className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
-                    name="customDomain"
-                    onInput={(e) => {
-                      setData((data) => ({
-                        ...data,
-                        customDomain: (e.target as HTMLTextAreaElement).value,
-                      }));
-                    }}
-                    pattern="^(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
-                    placeholder="mydomain.com"
-                    value={data.customDomain || ""}
-                    type="text"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 w-28 font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
-                >
-                  {adding ? <LoadingDots /> : "Add"}
-                </button>
-              </form>
-            )}
-            {error && (
-              <div className="text-red-500 text-left w-full max-w-2xl mt-5 text-sm flex items-center space-x-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  width="20"
-                  height="20"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                  shapeRendering="geometricPrecision"
-                  style={{ color: "#f44336" }}
-                >
-                  <circle cx="12" cy="12" r="10" fill="white" />
-                  <path d="M12 8v4" stroke="#f44336" />
-                  <path d="M12 16h.01" stroke="#f44336" />
-                </svg>
-                {error.code == 403 ? (
-                  <p>
-                    <b>{error.domain}</b> is already owned by another team.
-                    <button
-                      className="ml-1"
-                      onClick={async (e) => {
-                        e.preventDefault();
-                        await fetch(
-                          `/api/request-delegation?domain=${error.domain}`
-                        ).then((res) => {
-                          if (res.ok) {
-                            toast.success(
-                              `Requested delegation for ${error.domain}. Try adding the domain again in a few minutes.`
-                            );
-                          } else {
-                            alert(
-                              "There was an error requesting delegation. Please try again later."
-                            );
-                          }
-                        });
-                      }}
-                    >
-                      <u>Click here to request access.</u>
-                    </button>
-                  </p>
-                ) : (
-                  <p>
-                    Cannot add <b>{error.domain}</b> since it&apos;s already
-                    assigned to another project.
-                  </p>
-                )}
-              </div>
-            )}
-          </div> */}
+
           <div className="flex flex-col space-y-6 relative">
             <h2 className="font-cal text-2xl">Thumbnail Image</h2>
             <div

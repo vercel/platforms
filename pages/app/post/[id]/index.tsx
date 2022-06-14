@@ -183,7 +183,6 @@ export default function Post() {
           content: data.content,
           published: true,
           subdomain: post?.site?.subdomain,
-          customDomain: post?.site?.customDomain,
           slug: post?.slug,
         }),
       })
