@@ -1,14 +1,15 @@
+import BlogCard from '@/components/BlogCard'
+import BlurImage from '@/components/BlurImage'
+import Date from '@/components/Date'
 import Layout from '@/components/sites/Layout'
+import Loader from '@/components/sites/Loader'
+import prisma from '@/lib/prisma'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import BlurImage from '@/components/BlurImage'
-import BlogCard from '@/components/BlogCard'
-import Loader from '@/components/sites/Loader'
-import Date from '@/components/Date'
-import prisma from '@/lib/prisma'
 
+import { getSiteSubDomain } from '@/lib/domainsManagement'
+import type { Meta, _SiteData } from '@/types'
 import type { GetStaticPaths, GetStaticProps } from 'next'
-import type { _SiteData, Meta } from '@/types'
 import type { ParsedUrlQuery } from 'querystring'
 
 interface PathProps extends ParsedUrlQuery {
@@ -30,9 +31,7 @@ export default function Index({ stringifiedData }: IndexProps) {
     description: data.description,
     logo: '/logo.png',
     ogImage: data.image,
-    ogUrl: data.customDomain
-      ? data.customDomain
-      : `https://${data.subdomain}.vercel.pub`,
+    ogUrl: getSiteSubDomain(data.subdomain),
   } as Meta
 
   return (
@@ -60,12 +59,8 @@ export default function Index({ stringifiedData }: IndexProps) {
                   )}
                 </div>
                 <div className="mt-10 w-5/6 mx-auto lg:w-full">
-                  <h2 className="font-cal text-4xl md:text-6xl my-10">
-                    {data.posts[0].title}
-                  </h2>
-                  <p className="text-base md:text-lg w-full lg:w-2/3">
-                    {data.posts[0].description}
-                  </p>
+                  <h2 className="font-cal text-4xl md:text-6xl my-10">{data.posts[0].title}</h2>
+                  <p className="text-base md:text-lg w-full lg:w-2/3">{data.posts[0].description}</p>
                   <div className="flex justify-start items-center space-x-4 w-full">
                     <div className="relative w-8 h-8 flex-none rounded-full overflow-hidden">
                       {data.user?.image ? (
@@ -123,7 +118,7 @@ export default function Index({ stringifiedData }: IndexProps) {
 }
 
 export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
-  const [subdomains, customDomains] = await Promise.all([
+  const [subdomains] = await Promise.all([
     prisma.site.findMany({
       // you can remove this if you want to generate all sites at build time
       where: {
@@ -133,24 +128,9 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
         subdomain: true,
       },
     }),
-    prisma.site.findMany({
-      where: {
-        NOT: {
-          customDomain: null,
-        },
-        // you can remove this if you want to generate all sites at build time
-        customDomain: 'platformize.co',
-      },
-      select: {
-        customDomain: true,
-      },
-    }),
   ])
 
-  const allPaths = [
-    ...subdomains.map(({ subdomain }) => subdomain),
-    ...customDomains.map(({ customDomain }) => customDomain),
-  ].filter((path) => path) as Array<string>
+  const allPaths = [...subdomains.map(({ subdomain }) => subdomain)].filter((path) => path) as Array<string>
 
   return {
     paths: allPaths.map((path) => ({
@@ -162,25 +142,17 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
   }
 }
 
-export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
-  params,
-}) => {
+export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({ params }) => {
   if (!params) throw new Error('No path parameters found')
 
   const { site } = params
 
   let filter: {
     subdomain?: string
-    customDomain?: string
   } = {
     subdomain: site,
   }
 
-  if (site.includes('.')) {
-    filter = {
-      customDomain: site,
-    }
-  }
 
   const data = (await prisma.site.findUnique({
     where: filter,

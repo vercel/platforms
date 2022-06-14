@@ -1,9 +1,9 @@
 import prisma from '@/lib/prisma'
 
-import type { NextApiRequest, NextApiResponse } from 'next'
 import type { Post, Site } from '.prisma/client'
-import type { Session } from 'next-auth'
 import { revalidate } from '@/lib/revalidate'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import type { Session } from 'next-auth'
 
 import type { WithSitePost } from '@/types'
 
@@ -29,15 +29,10 @@ export async function getPost(
 ): Promise<void | NextApiResponse<AllPosts | (WithSitePost | null)>> {
   const { postId, siteId, published } = req.query
 
-  if (
-    Array.isArray(postId) ||
-    Array.isArray(siteId) ||
-    Array.isArray(published)
-  )
+  if (Array.isArray(postId) || Array.isArray(siteId) || Array.isArray(published))
     return res.status(400).end('Bad request. Query parameters are not valid.')
 
-  if (!session.user.id)
-    return res.status(500).end('Server failed to get session user ID')
+  if (!session.user.id) return res.status(500).end('Server failed to get session user ID')
 
   try {
     if (postId) {
@@ -109,10 +104,7 @@ export async function createPost(
 }>> {
   const { siteId } = req.query
 
-  if (Array.isArray(siteId))
-    return res
-      .status(400)
-      .end('Bad request. siteId parameter cannot be an array.')
+  if (Array.isArray(siteId)) return res.status(400).end('Bad request. siteId parameter cannot be an array.')
 
   try {
     const response = await prisma.post.create({
@@ -146,16 +138,10 @@ export async function createPost(
  * @param req - Next.js API Request
  * @param res - Next.js API Response
  */
-export async function deletePost(
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<void | NextApiResponse> {
+export async function deletePost(req: NextApiRequest, res: NextApiResponse): Promise<void | NextApiResponse> {
   const { postId } = req.query
 
-  if (Array.isArray(postId))
-    return res
-      .status(400)
-      .end('Bad request. postId parameter cannot be an array.')
+  if (Array.isArray(postId)) return res.status(400).end('Bad request. postId parameter cannot be an array.')
 
   try {
     const response = await prisma.post.delete({
@@ -164,18 +150,13 @@ export async function deletePost(
       },
       include: {
         site: {
-          select: { subdomain: true, customDomain: true },
+          select: { subdomain: true },
         },
       },
     })
     if (response) {
-      await revalidate(
-        `https://${response.site?.subdomain}.vercel.pub`,
-        response.slug
-      ) // revalidate for subdomain
+      await revalidate(`https://${response.site?.subdomain}.vercel.pub`, response.slug) // revalidate for subdomain
     }
-    if (response?.site?.customDomain)
-      await revalidate(`https://${response.site.customDomain}`, response.slug) // revalidate for custom domain
 
     return res.status(200).end()
   } catch (error) {
@@ -201,22 +182,8 @@ export async function deletePost(
  * @param req - Next.js API Request
  * @param res - Next.js API Response
  */
-export async function updatePost(
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<void | NextApiResponse<Post>> {
-  const {
-    id,
-    title,
-    description,
-    content,
-    slug,
-    image,
-    imageBlurhash,
-    published,
-    subdomain,
-    customDomain,
-  } = req.body
+export async function updatePost(req: NextApiRequest, res: NextApiResponse): Promise<void | NextApiResponse<Post>> {
+  const { id, title, description, content, slug, image, imageBlurhash, published, subdomain } = req.body
 
   try {
     const post = await prisma.post.update({
@@ -233,8 +200,7 @@ export async function updatePost(
         published,
       },
     })
-    if (subdomain) await revalidate(`https://${subdomain}.vercel.pub`, slug) // revalidate for subdomain
-    if (customDomain) await revalidate(`https://${customDomain}`, slug) // revalidate for custom domain
+    await revalidate(`https://${subdomain}.vercel.pub`, slug) // revalidate for subdomain
 
     return res.status(200).json(post)
   } catch (error) {

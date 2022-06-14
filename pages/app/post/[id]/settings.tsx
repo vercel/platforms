@@ -75,7 +75,6 @@ export default function PostSettings() {
           image: data.image,
           imageBlurhash: data.imageBlurhash,
           subdomain: settings?.site?.subdomain,
-          customDomain: settings?.site?.customDomain,
         }),
       })
 
