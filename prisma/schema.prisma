@@ -124,8 +124,18 @@ model List {
   published     Boolean      @default(true)
   site          Site? @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   siteId        String?
+  listOwner     ListOwner? @relation(fields: [listOwnerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  listOwnerId   String?
   items         ListItem[]
   @@unique([id, siteId], name: "list_site_constraint")
+  @@unique([id, listOwnerId], name: "list_listOwner_constraint")
+}
+
+model ListOwner {
+  id            String       @id @default(cuid())
+  name          String?      @db.Text
+  email         String     @unique
+  lists         List[]
 }
 
 model ListItem {

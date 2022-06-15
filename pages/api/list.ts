@@ -1,6 +1,7 @@
+import { getList } from '@/lib/api/list'
+import tokenValidation from '@/lib/api/tokenValidation'
 import { reservedSubDomains, subDomain } from '@/lib/domainsManagement'
-import prisma from '@/lib/prisma'
-import { verify } from 'jsonwebtoken'
+import { HttpMethod } from '@/types/http'
 import { NextApiRequest, NextApiResponse } from 'next'
 const List = async (req: NextApiRequest, res: NextApiResponse) => {
   const hostname = req.headers.host
@@ -11,40 +12,27 @@ const List = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(401).end()
   }
 
-  const token = req.headers.authorization?.replace('Bearer ', '') || ''
-  // Note: api call coming from client SDK. lets validate using JWT
-  const verifiedToken = verify(token, process.env.SECRET!)
-
-  if (
-    !verifiedToken ||
-    typeof verifiedToken === 'string' ||
-    !verifiedToken?.subdomain ||
-    verifiedToken.subdomain !== currentSubDomain ||
-    !verifiedToken?.siteId
-  ) {
-    return res.status(401).end()
-  }
-
-  const site = await prisma.site.findUnique({
-    where: {
-      id: verifiedToken.siteId,
-    },
-    select: {
-      subdomain: true,
-    },
-  })
-
-  if (!site || site?.subdomain !== verifiedToken.subdomain) {
-    return res.status(401).end()
-  }
-
+  const result: any = await tokenValidation(req, res, currentSubDomain)
   // TODO : implement GET, POST, DELETE, PUT
 
-  return res.status(200).json({
-    currentSubDomain,
-    verifiedToken,
-    site,
-  })
+  if (result?.verifiedToken) {
+    const { verifiedToken, site } = result
+
+    switch (req.method) {
+      case HttpMethod.GET:
+        //  return res.status(200).json({ verifiedToken, site })
+        return getList(req, res, verifiedToken.siteId)
+
+      default:
+        res.setHeader('Allow', [
+          HttpMethod.GET,
+          HttpMethod.POST,
+          // HttpMethod.DELETE,
+          HttpMethod.PUT,
+        ])
+        return res.status(405).end(`Method ${req.method} Not Allowed`)
+    }
+  }
 }
 
 export default List
