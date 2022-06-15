@@ -9,3 +9,4 @@ export const truncate = (str: string, num: number) => {
   }
   return str.slice(0, num) + '...'
 }
+
