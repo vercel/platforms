@@ -1,4 +1,4 @@
-import { getList } from '@/lib/api/list'
+import { createList, getList, updateList } from '@/lib/api/list'
 import tokenValidation from '@/lib/api/tokenValidation'
 import { reservedSubDomains, subDomain } from '@/lib/domainsManagement'
 import { HttpMethod } from '@/types/http'
@@ -22,7 +22,10 @@ const List = async (req: NextApiRequest, res: NextApiResponse) => {
       case HttpMethod.GET:
         //  return res.status(200).json({ verifiedToken, site })
         return getList(req, res, verifiedToken.siteId)
-
+      case HttpMethod.POST:
+        return createList(req, res, verifiedToken.siteId)
+      case HttpMethod.PUT:
+        return updateList(req, res, verifiedToken.siteId)
       default:
         res.setHeader('Allow', [
           HttpMethod.GET,
