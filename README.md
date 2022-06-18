@@ -1,121 +1,77 @@
-<p align="center">
-  <a href="https://demo.vercel.pub">
-    <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
-    <h3 align="center">Platforms Starter Kit</h3>
-  </a>
-</p>
+# Turborepo starter with npm
 
-<p align="center">
-  The <em>all-in-one</em> starter kit <br/>
-  for building platforms on Vercel.
-</p>
+This is an official starter turborepo.
 
-<p align="center">
-  <a href="#introduction"><strong>Introduction</strong></a> ·
-  <a href="https://vercel.com/guides/nextjs-multi-tenant-application"><strong>Guide</strong></a> ·
-  <a href="https://demo.vercel.pub/"><strong>Demo</strong></a> ·
-  <a href="https://steven.vercel.pub/kitchen-sink"><strong>Kitchen Sink</strong></a> ·
-  <a href="#contributing"><strong>Contributing</strong></a>
-</p>
-<br/>
+## What's inside?
 
-## Deploy Your Own
+This turborepo uses [npm](https://www.npmjs.com/) as a package manager. It includes the following packages/apps:
 
-[Read the guide](https://vercel.com/guides/nextjs-multi-tenant-application) to learn how to deploy your own version of this template.
+### Apps and Packages
 
-## Introduction
+- `docs`: a [Next.js](https://nextjs.org) app
+- `web`: another [Next.js](https://nextjs.org) app
+- `ui`: a stub React component library shared by both `web` and `docs` applications
+- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `tsconfig`: `tsconfig.json`s used throughout the monorepo
 
-Multi-tenant applications serve multiple customers across different subdomains/custom domains with a single unified codebase.
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
-For example, our demo is a multi-tenant application:
+### Utilities
 
-- Subdomain: [demo.vercel.pub](http://demo.vercel.pub)
-- Custom domain: [platformize.co](http://platformize.co) (maps to [demo.vercel.pub](http://demo.vercel.pub))
-- Build your own: [app.vercel.pub](http://app.vercel.pub)
+This turborepo has some additional tools already setup for you:
 
-Another example is [Hashnode](https://vercel.com/customers/hashnode), a popular blogging platform. Each writer has their own unique `.hashnode.dev` subdomain for their blog:
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
 
-- [eda.hashnode.dev](https://eda.hashnode.dev/)
-- [katycodesstuff.hashnode.dev](https://katycodesstuff.hashnode.dev/)
-- [pit.hashnode.dev](https://pit.hashnode.dev/)
+## Setup
 
-Users can also map custom domains to their `.hashnode.dev` subdomain:
+This repository is used in the `npx create-turbo@latest` command, and selected when choosing which package manager you wish to use with your monorepo (npm).
 
-- [catalins.tech](https://catalins.tech/) → [pit.hashnode.dev](https://pit.hashnode.dev/)
+### Build
 
-This repository makes it easier than ever for creators to build their own platform.
+To build all apps and packages, run the following command:
 
-## Template features
+```
+cd my-turborepo
+npm run build
+```
 
-Forget manually setting up CNAME records, wrestling with DNS, or making custom server rewrite rules with NGINX. With Vercel and the Platforms Starter Kit, you can focus on building the next big thing.
+### Develop
 
-- **Custom domains**: Subdomain and custom domains support with [Edge Functions](https://vercel.com/features/edge-functions) and the [Vercel Domains API](https://domains-api.vercel.app/).
-- **Static generation with ISR**: Performance without sacrificing personalization, by combining [Incremental Static Regeneration](https://vercel.com/docs/concepts/next.js/incremental-static-regeneration) (ISR) and [Middleware](https://vercel.com/docs/concepts/functions/edge-functions#middleware). ISR allows you to create new content (with custom domains) on demand without needing to redeploy your application.
-- **Uploading custom images**: Allow your customers to upload custom thumbnail images with our Cloudinary integration.
-- **Static tweets**: Avoid [Cumulative Layout Shift](https://vercel.com/blog/core-web-vitals) (CLS) from the native Twitter embed by using our [static tweets implementation](https://static-tweets-tailwind.vercel.app/) (supports image, video, gif, poll, retweets, quote retweets, and more).
+To develop all apps and packages, run the following command:
 
-## Examples of platforms
+```
+cd my-turborepo
+npm run dev
+```
 
-Vercel customers like [Hashnode](https://vercel.com/customers/hashnode), [Super](https://super.so), and [Cal.com](https://cal.com) are building scalable platforms on top of Vercel and Next.js. There are multiple types of platforms you can build with this starter kit:
+### Remote Caching
 
-### 1. Content creation platforms
+Turborepo can use a technique known as [Remote Caching (Beta)](https://turborepo.org/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
 
-These are content-heavy platforms (blogs) with simple, standardized page layouts and route structure.
+By default, Turborepo will cache locally. To enable Remote Caching (Beta) you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
 
-> “With Vercel, we spend less time managing our infrastructure and more time delivering value to our users.” — Sandeep Panda, Co-founder, Hashnode
+```
+cd my-turborepo
+npx turbo login
+```
 
-1. [Hashnode](https://hashnode.com)
-2. [Mirror.xyz](https://mirror.xyz/)
-3. [Papyrus.so](https://papyrus.so/)
+This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
 
-### 2. Website & e-commerce store builders
+Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your turborepo:
 
-No-code site builders with customizable pages.
+```
+npx turbo link
+```
 
-By using Next.js and Vercel, [Super](https://super.so/) has fast, globally distributed websites with a no-code editor (Notion). Their customers get all the benefits of Next.js (like [Image Optimization](https://nextjs.org/docs/basic-features/image-optimization)) without touching any code.
+## Useful Links
 
-1. [Super.so](https://super.so)
-2. [Typedream](https://typedream.com)
-3. [Makeswift](https://www.makeswift.com/)
+Learn more about the power of Turborepo:
 
-### 3. B2B2C platforms
-
-Multi-tenant authentication, login, and access controls.
-
-With Vercel and Next.js, platforms like [Instatus](https://instatus.com) are able to create status pages that are _10x faster_ than competitors.
-
-1. [Instatus](https://instatus.com/)
-2. [Cal.com](https://cal.com/)
-3. [DAO Central](https://daocentral.com/)
-
-## Built on open source
-
-This working demo site was built using the Platforms Starter Kit and:
-
-- [Next.js](https://nextjs.org/) as the React framework
-- [Tailwind](https://tailwindcss.com/) for CSS styling
-- [Prisma](https://prisma.io/) as the ORM for database access
-- [PlanetScale](https://planetscale.com/) as the database (MySQL)
-- [NextAuth.js](https://next-auth.js.org/) for authentication
-- [Vercel](http://vercel.com/) for deployment
-
-We also have another [example](https://github.com/vercel/examples/tree/main/solutions/platforms-slate-supabase) of the Platforms Starter Kit that uses Supabase for the database and Slate.js for the text editor.
-
-## Contributing
-
-- [Start a discussion](https://github.com/vercel/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
-- [Open an issue](https://github.com/vercel/platforms/issues) if you believe you've encountered a bug with the starter kit.
-
-## Author
-
-- Steven Tey ([@steventey](https://twitter.com/steventey))
-
-## License
-
-The MIT License.
-
----
-
-<a aria-label="Vercel logo" href="https://vercel.com">
-  <img src="https://badgen.net/badge/icon/Made%20by%20Vercel?icon=zeit&label&color=black&labelColor=black">
-</a>
+- [Pipelines](https://turborepo.org/docs/core-concepts/pipelines)
+- [Caching](https://turborepo.org/docs/core-concepts/caching)
+- [Remote Caching (Beta)](https://turborepo.org/docs/core-concepts/remote-caching)
+- [Scoped Tasks](https://turborepo.org/docs/core-concepts/scopes)
+- [Configuration Options](https://turborepo.org/docs/reference/configuration)
+- [CLI Usage](https://turborepo.org/docs/reference/command-line-reference)

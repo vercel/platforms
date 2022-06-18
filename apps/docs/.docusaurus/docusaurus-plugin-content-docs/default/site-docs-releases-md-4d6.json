@@ -1,0 +1,27 @@
+{
+  "unversionedId": "releases",
+  "id": "releases",
+  "title": "Releases",
+  "description": "",
+  "source": "@site/docs/releases.md",
+  "sourceDirName": ".",
+  "slug": "/releases",
+  "permalink": "/docs/releases",
+  "draft": false,
+  "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/releases.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Quick Start Guide",
+    "permalink": "/docs/intro"
+  },
+  "next": {
+    "title": "Tutorial - Basics",
+    "permalink": "/docs/category/tutorial---basics"
+  }
+}
