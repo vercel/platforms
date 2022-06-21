@@ -1,4 +1,3 @@
-import Link from "next/link";
 import remarkMdx from "remark-mdx";
 import { MDXRemote } from "next-mdx-remote";
 import { remark } from "remark";
