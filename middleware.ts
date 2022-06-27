@@ -60,7 +60,4 @@ export default function middleware(req: NextRequest) {
     url.pathname = `/_sites/${currentHost}${url.pathname}`;
     return NextResponse.rewrite(url);
   }
-
-  url.pathname = `/_sites/${domain.sub}${pathname}`;
-  return NextResponse.rewrite(url);
 }
