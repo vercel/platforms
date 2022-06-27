@@ -18,7 +18,7 @@ export default async function post(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     if (subdomain) {
-      const sub = domain.replace(/[^a-zA-Z0-9/-]+/g, "");
+      const sub = (domain as string).replace(/[^a-zA-Z0-9/-]+/g, "");
 
       const data = await prisma.site.findUnique({
         where: {

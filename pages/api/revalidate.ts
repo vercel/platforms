@@ -7,7 +7,7 @@ export default async function handler(
   const { urlPath } = req.body;
 
   try {
-    await res.unstable_revalidate(urlPath);
+    await res.revalidate(urlPath);
 
     res.status(200).json({
       message: "OK",
