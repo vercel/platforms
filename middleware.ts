@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
-  matcher: [
-    "/",
-    "/:path",
-    "/site/:id",
-    "/site/:id/:path",
-    "/post/:id",
-    "/post/:id/:path",
-  ],
+  matcher: ["/", "/:path", "/site/:path*", "/post/:path*"],
 };
 
 export default function middleware(req: NextRequest) {
