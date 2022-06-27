@@ -74,7 +74,7 @@ export async function getPost(
             site: {
               id: siteId,
             },
-            published: JSON.parse(published),
+            published: JSON.parse(published || "true"),
           },
           orderBy: {
             createdAt: "desc",
