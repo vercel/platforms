@@ -1,22 +1,21 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-import type { NextRequest } from "next/server";
+export const config = {
+  matcher: [
+    "/",
+    "/:path",
+    "/site/:id",
+    "/site/:id/:path",
+    "/post/:id",
+    "/post/:id/:path",
+  ],
+};
 
 export default function middleware(req: NextRequest) {
-  // Clone the request url
-  const url = req.nextUrl.clone();
-
-  // Get pathname of request (e.g. /blog-slug)
-  const { pathname } = req.nextUrl;
+  const url = req.nextUrl;
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
-  const hostname = req.headers.get("host");
-
-  if (!hostname)
-    return new Response(null, {
-      status: 400,
-      statusText: "No hostname found in request headers",
-    });
+  const hostname = req.headers.get("host") || "demo.vercel.pub";
 
   // Only for demo purposes – remove this if you want to use your root domain as the landing page
   if (hostname === "vercel.pub" || hostname === "platforms.vercel.app") {
@@ -35,23 +34,18 @@ export default function middleware(req: NextRequest) {
           .replace(`.platformize.vercel.app`, "")
       : hostname.replace(`.localhost:3000`, "");
 
-  if (pathname.startsWith(`/_sites`))
-    return new Response(null, {
-      status: 404,
-    });
-
-  if (!pathname.includes(".") && !pathname.startsWith("/api")) {
+  if (!url.pathname.includes(".") && !url.pathname.startsWith("/api")) {
     if (currentHost == "app") {
       if (
-        pathname === "/login" &&
-        (req.cookies["next-auth.session-token"] ||
-          req.cookies["__Secure-next-auth.session-token"])
+        url.pathname === "/login" &&
+        (req.cookies.get("next-auth.session-token") ||
+          req.cookies.get("__Secure-next-auth.session-token"))
       ) {
         url.pathname = "/";
         return NextResponse.redirect(url);
       }
 
-      url.pathname = `/app${pathname}`;
+      url.pathname = `/app${url.pathname}`;
       return NextResponse.rewrite(url);
     }
 
@@ -59,11 +53,11 @@ export default function middleware(req: NextRequest) {
       hostname === "localhost:3000" ||
       hostname === "platformize.vercel.app"
     ) {
-      url.pathname = `/home${pathname}`;
+      url.pathname = `/home${url.pathname}`;
       return NextResponse.rewrite(url);
     }
 
-    url.pathname = `/_sites/${currentHost}${pathname}`;
+    url.pathname = `/_sites/${currentHost}${url.pathname}`;
     return NextResponse.rewrite(url);
   }
 }
