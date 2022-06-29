@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
-  matcher: ["/", "/:path", "/site/:path*", "/post/:path*"],
+  matcher: [
+    "/",
+    "/([^/.]*)", // exclude `/public` files by matching all paths except for paths containing `.` (e.g. /logo.png)
+    "/site/:path*",
+    "/post/:path*",
+    "/_sites/:path*",
+  ],
 };
 
 export default function middleware(req: NextRequest) {
@@ -19,7 +25,6 @@ export default function middleware(req: NextRequest) {
       You can also use wildcard subdomains on .vercel.app links that are associated with your Vercel team slug
       in this case, our team slug is "platformize", thus *.platformize.vercel.app works. Do note that you'll
       still need to add "*.platformize.vercel.app" as a wildcard domain on your Vercel dashboard. */
-
   const currentHost =
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
       ? hostname
@@ -27,30 +32,28 @@ export default function middleware(req: NextRequest) {
           .replace(`.platformize.vercel.app`, "")
       : hostname.replace(`.localhost:3000`, "");
 
-  if (!url.pathname.includes(".") && !url.pathname.startsWith("/api")) {
-    if (currentHost == "app") {
-      if (
-        url.pathname === "/login" &&
-        (req.cookies.get("next-auth.session-token") ||
-          req.cookies.get("__Secure-next-auth.session-token"))
-      ) {
-        url.pathname = "/";
-        return NextResponse.redirect(url);
-      }
-
-      url.pathname = `/app${url.pathname}`;
-      return NextResponse.rewrite(url);
-    }
-
+  // rewrites for app pages
+  if (currentHost == "app") {
     if (
-      hostname === "localhost:3000" ||
-      hostname === "platformize.vercel.app"
+      url.pathname === "/login" &&
+      (req.cookies.get("next-auth.session-token") ||
+        req.cookies.get("__Secure-next-auth.session-token"))
     ) {
-      url.pathname = `/home${url.pathname}`;
-      return NextResponse.rewrite(url);
+      url.pathname = "/";
+      return NextResponse.redirect(url);
     }
 
-    url.pathname = `/_sites/${currentHost}${url.pathname}`;
+    url.pathname = `/app${url.pathname}`;
     return NextResponse.rewrite(url);
   }
+
+  // rewrite root application to `/home` folder
+  if (hostname === "localhost:3000" || hostname === "platformize.vercel.app") {
+    url.pathname = `/home${url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
+  // rewrite everything else to `/_sites/[site] dynamic route
+  url.pathname = `/_sites/${currentHost}${url.pathname}`;
+  return NextResponse.rewrite(url);
 }
