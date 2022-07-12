@@ -168,14 +168,11 @@ export async function deletePost(
         },
       },
     });
-    if (response) {
-      await revalidate(
-        `https://${response.site?.subdomain}.vercel.pub`,
-        response.slug
-      ); // revalidate for subdomain
+    if (response?.site?.subdomain) {
+      await revalidate(response.site.subdomain, response.slug); // revalidate for subdomain
     }
     if (response?.site?.customDomain)
-      await revalidate(`https://${response.site.customDomain}`, response.slug); // revalidate for custom domain
+      await revalidate(response.site.customDomain, response.slug); // revalidate for custom domain
 
     return res.status(200).end();
   } catch (error) {
