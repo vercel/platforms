@@ -169,10 +169,20 @@ export async function deletePost(
       },
     });
     if (response?.site?.subdomain) {
-      await revalidate(response.site.subdomain, response.slug); // revalidate for subdomain
+      // revalidate for subdomain
+      await revalidate(
+        `https://${response.site?.subdomain}.vercel.pub`, // hostname to be revalidated
+        response.site.subdomain, // siteId
+        response.slug // slugname for the post
+      );
     }
     if (response?.site?.customDomain)
-      await revalidate(response.site.customDomain, response.slug); // revalidate for custom domain
+      // revalidate for custom domain
+      await revalidate(
+        `https://${response.site.customDomain}`, // hostname to be revalidated
+        response.site.customDomain, // siteId
+        response.slug // slugname for the post
+      );
 
     return res.status(200).end();
   } catch (error) {
@@ -230,8 +240,21 @@ export async function updatePost(
         published,
       },
     });
-    if (subdomain) await revalidate(`https://${subdomain}.vercel.pub`, slug); // revalidate for subdomain
-    if (customDomain) await revalidate(`https://${customDomain}`, slug); // revalidate for custom domain
+    if (subdomain) {
+      // revalidate for subdomain
+      await revalidate(
+        `https://${subdomain}.vercel.pub`, // hostname to be revalidated
+        subdomain, // siteId
+        slug // slugname for the post
+      );
+    }
+    if (customDomain)
+      // revalidate for custom domain
+      await revalidate(
+        `https://${customDomain}`, // hostname to be revalidated
+        customDomain, // siteId
+        slug // slugname for the post
+      );
 
     return res.status(200).json(post);
   } catch (error) {
