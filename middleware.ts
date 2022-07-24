@@ -4,9 +4,9 @@ export const config = {
   matcher: [
     "/",
     "/([^/.]*)", // exclude `/public` files by matching all paths except for paths containing `.` (e.g. /logo.png)
-    "/site/:path*",
-    "/post/:path*",
-    "/_sites/:path*",
+    "/site/:path*", // for app.vercel.pub/site/[siteId]
+    "/post/:path*", // for app.vercel.pub/post/[postId]
+    "/_sites/:path*", // for all custom hostnames under the `/_sites/[site]*` dynamic route (demo.vercel.pub, platformize.co)
   ],
 };
 
