@@ -107,7 +107,7 @@ export default function Post({
           </div>
         </a>
       </div>
-      <div className="relative h-80 md:h-150 w-full max-w-screen-lg lg:2/3 md:w-5/6 m-auto mb-10 md:mb-20 md:rounded-2xl overflow-hidden">
+      <div className="relative h-80 md:h-150 w-full max-w-screen-lg lg:w-2/3 md:w-5/6 m-auto mb-10 md:mb-20 md:rounded-2xl overflow-hidden">
         {data.image ? (
           <BlurImage
             alt={data.title ?? "Post image"}
