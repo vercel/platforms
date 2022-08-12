@@ -38,7 +38,7 @@
     "react-textarea-autosize": "^8.3.3",
     "remark": "^14.0.2",
     "remark-mdx": "^2.0.0-rc.2",
-    "sharp": "^0.29.3",
+    "sharp": "^0.30.5",
     "sitemap": "^7.1.0",
     "swr": "^1.1.2",
     "use-debounce": "^7.0.1",
