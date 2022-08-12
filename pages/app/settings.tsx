@@ -3,7 +3,6 @@ import toast, { Toaster } from "react-hot-toast";
 import BlurImage from "@/components/BlurImage";
 import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
-import saveImage from "@/lib/save-image";
 import { HttpMethod } from "@/types";
 
 import { useState, useEffect } from "react";
@@ -94,7 +93,12 @@ export default function AppSettings() {
                 } relative mt-5 w-48 border-2 border-gray-800 border-dashed rounded-md`}
               >
                 <CloudinaryUploadWidget
-                  callback={(e) => saveImage(e, data, setData)}
+                  callback={(e) =>
+                    setData({
+                      ...data,
+                      image: e.secure_url,
+                    })
+                  }
                 >
                   {({ open }) => (
                     <button

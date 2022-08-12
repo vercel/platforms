@@ -10,12 +10,10 @@ import DomainCard from "@/components/app/DomainCard";
 import Layout from "@/components/app/Layout";
 import LoadingDots from "@/components/app/loading-dots";
 import Modal from "@/components/Modal";
-import saveImage from "@/lib/save-image";
 
 import { fetcher } from "@/lib/fetcher";
 import { HttpMethod } from "@/types";
 
-import type { FormEvent } from "react";
 import type { Site } from "@prisma/client";
 
 interface SettingsData
@@ -334,7 +332,12 @@ export default function SiteSettings() {
               } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
             >
               <CloudinaryUploadWidget
-                callback={(e) => saveImage(e, data, setData)}
+                callback={(e) =>
+                  setData({
+                    ...data,
+                    image: e.secure_url,
+                  })
+                }
               >
                 {({ open }) => (
                   <button

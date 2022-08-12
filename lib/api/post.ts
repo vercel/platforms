@@ -4,6 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import type { Post, Site } from ".prisma/client";
 import type { Session } from "next-auth";
 import { revalidate } from "@/lib/revalidate";
+import { getBlurDataURL } from "@/lib/util";
 
 import type { WithSitePost } from "@/types";
 
@@ -219,7 +220,6 @@ export async function updatePost(
     content,
     slug,
     image,
-    imageBlurhash,
     published,
     subdomain,
     customDomain,
@@ -236,7 +236,7 @@ export async function updatePost(
         content,
         slug,
         image,
-        imageBlurhash,
+        imageBlurhash: await getBlurDataURL(image),
         published,
       },
     });
