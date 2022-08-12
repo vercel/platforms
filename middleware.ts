@@ -1,12 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
+  /*
+   * The way you configure your matcher items depend on your route structure.
+   * E.g. if you decide to put all your posts under `/posts/[postSlug]`,
+   * you'll need to add an extra matcher item "/posts/:path*".
+   * The reason we do this is to prevent the middleware from matching absolute paths
+   * like "demo.vercel.pub/_sites/steven" and have the content from `steven` be served.
+   *
+   * Here's a breakdown of each matcher item:
+   * 1. "/"               - Matches the root path of the site.
+   * 2. "/([^/.]*)"       - Matches all first-level paths (e.g. demo.vercel.pub/platforms-starter-kit)
+   *                        but exclude `/public` files by excluding paths containing `.` (e.g. /logo.png)
+   * 3. "/site/:path*"    – for app.vercel.pub/site/[siteId]
+   * 4. "/post/:path*"    – for app.vercel.pub/post/[postId]
+   * 5. "/_sites/:path*"  – for all custom hostnames under the `/_sites/[site]*` dynamic route (demo.vercel.pub, platformize.co)
+   *                        we do this to make sure "demo.vercel.pub/_sites/steven" is not matched and throws a 404.
+   */
   matcher: [
+    // Comment to force multi-line for better diffs
     "/",
-    "/([^/.]*)", // exclude `/public` files by matching all paths except for paths containing `.` (e.g. /logo.png)
-    "/site/:path*", // for app.vercel.pub/site/[siteId]
-    "/post/:path*", // for app.vercel.pub/post/[postId]
-    "/_sites/:path*", // for all custom hostnames under the `/_sites/[site]*` dynamic route (demo.vercel.pub, platformize.co)
+    "/([^/.]*)",
+    "/site/:path*",
+    "/post/:path*",
+    "/_sites/:path*",
   ],
 };
 
@@ -31,7 +48,6 @@ export default function middleware(req: NextRequest) {
           .replace(`.vercel.pub`, "")
           .replace(`.platformize.vercel.app`, "")
       : hostname.replace(`.localhost:3000`, "");
-
   // rewrites for app pages
   if (currentHost == "app") {
     if (
