@@ -1,5 +1,5 @@
 import Link from "next/link";
-import visit from "unist-util-visit";
+import { visit } from "unist-util-visit";
 
 import { getTweets } from "@/lib/twitter";
 
