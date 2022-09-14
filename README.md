@@ -101,6 +101,17 @@ This working demo site was built using the Platforms Starter Kit and:
 
 We also have another [example](https://github.com/vercel/examples/tree/main/solutions/platforms-slate-supabase) of the Platforms Starter Kit that uses Supabase for the database and Slate.js for the text editor.
 
+## Frequently Asked Questions
+
+- **Should we be generating static webpages with `getStaticProps` and `getStaticPaths` at build time? It doesn't seem to be very scalable.**
+
+  For scale, we recommend using [Incremental Static Regeneration](https://nextjs.org/docs/basic-features/data-fetching/incremental-static-regeneration) instead. This basically means that instead of generating all pages at build time, you only specify a subset of pages and then generate the rest on the fly. Then when someone requests that page, all subsequent requests will be cached on the Vercel edge. You can also use [on-demand ISR](https://nextjs.org/docs/basic-features/data-fetching/incremental-static-regeneration#on-demand-revalidation) to programmatically invalidate caches per page every time someone makes a change to it, which is what we do [here](https://github.com/vercel/platforms/blob/1b2bd00055bbbdde8f2dcc89e0bdb2c3f8488f97/lib/api/post.ts#L243-L257).
+
+- **Is it wise to be using the `/_sites/[site]` path to serve all static pages/website? Wouldn't that lead to a significant amount of load on a single Next.js server?**
+
+  The beauty about a serverless setup is you won’t have to worry about load since each request invokes a separate serverless function, and once it’s cached, you don’t invoke the server anymore (the page is served directly from the Vercel edge). Read more about the [Vercel Edge Network](https://vercel.com/docs/concepts/edge-network/overview) and [how caching works](https://vercel.com/docs/concepts/edge-network/caching).
+
+
 ## Contributing
 
 - [Start a discussion](https://github.com/vercel/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
