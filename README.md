@@ -86,7 +86,7 @@ With Vercel and Next.js, platforms like [Instatus](https://instatus.com) are abl
 
 1. [Instatus](https://instatus.com/)
 2. [Cal.com](https://cal.com/)
-3. [DAO Central](https://daocentral.com/)
+3. [Dub](https://dub.sh/)
 
 ## Built on open source
 
