@@ -22,6 +22,7 @@ import type { AdjacentPost, Meta, _SiteSlugData } from "@/types";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import type { MDXRemoteSerializeResult } from "next-mdx-remote";
 import type { ParsedUrlQuery } from "querystring";
+import { placeholderBlurhash } from "@/lib/util";
 
 const components = {
   a: replaceLinks,
@@ -113,8 +114,9 @@ export default function Post({
             alt={data.title ?? "Post image"}
             width={1200}
             height={630}
+            className="w-full h-full object-cover"
             placeholder="blur"
-            blurDataURL={data.imageBlurhash ?? undefined}
+            blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
             src={data.image}
           />
         ) : (
