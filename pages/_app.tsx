@@ -1,4 +1,4 @@
-import PlausibleProvider from "next-plausible";
+import { Analytics } from "@vercel/analytics/react";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 
@@ -11,10 +11,9 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps<{ session: Session }>) {
   return (
-    <PlausibleProvider domain="demo.vercel.pub">
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-      </SessionProvider>
-    </PlausibleProvider>
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
+      <Analytics />
+    </SessionProvider>
   );
 }

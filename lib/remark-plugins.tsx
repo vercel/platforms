@@ -17,8 +17,8 @@ export function replaceLinks(options: { href: string } & WithChildren) {
   // replaces internal links with <Link /> component
   // and external links with <a target="_blank" />
   return options.href.startsWith("/") || options.href === "" ? (
-    <Link href={options.href}>
-      <a className="cursor-pointer">{options.children}</a>
+    <Link href={options.href} className="cursor-pointer">
+      {options.children}
     </Link>
   ) : (
     <a href={options.href} target="_blank" rel="noopener noreferrer">

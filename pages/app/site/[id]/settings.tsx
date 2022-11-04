@@ -361,10 +361,8 @@ export default function SiteSettings() {
                 <BlurImage
                   alt="Cover Photo"
                   blurDataURL={data.imageBlurhash ?? undefined}
-                  className="rounded-md"
+                  className="rounded-md w-full object-cover"
                   height={500}
-                  layout="responsive"
-                  objectFit="cover"
                   placeholder="blur"
                   src={data.image}
                   width={800}
