@@ -124,9 +124,7 @@ export default function AppSettings() {
                     alt="Cover Photo"
                     width={100}
                     height={100}
-                    layout="responsive"
-                    className="rounded-md"
-                    objectFit="cover"
+                    className="rounded-md w-full"
                   />
                 )}
               </div>

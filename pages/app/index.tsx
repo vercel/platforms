@@ -169,39 +169,38 @@ export default function AppIndex() {
             sites.length > 0 ? (
               sites.map((site) => (
                 <Link href={`/site/${site.id}`} key={site.id}>
-                  <a>
-                    <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
-                      <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
-                        {site.image ? (
-                          <BlurImage
-                            src={site.image}
-                            layout="fill"
-                            objectFit="cover"
-                            alt={site.name ?? "Site thumbnail"}
-                          />
-                        ) : (
-                          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
-                            ?
-                          </div>
-                        )}
-                      </div>
-                      <div className="relative p-10">
-                        <h2 className="font-cal text-3xl">{site.name}</h2>
-                        <p className="text-base my-5 line-clamp-3">
-                          {site.description}
-                        </p>
-                        <a
-                          className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
-                          href={`https://${site.subdomain}.vercel.pub`}
-                          onClick={(e) => e.stopPropagation()}
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          {site.subdomain}.vercel.pub ↗
-                        </a>
-                      </div>
+                  <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
+                    <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
+                      {site.image ? (
+                        <BlurImage
+                          src={site.image}
+                          width={500}
+                          height={400}
+                          className="h-full object-cover"
+                          alt={site.name ?? "Site thumbnail"}
+                        />
+                      ) : (
+                        <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
+                          ?
+                        </div>
+                      )}
                     </div>
-                  </a>
+                    <div className="relative p-10">
+                      <h2 className="font-cal text-3xl">{site.name}</h2>
+                      <p className="text-base my-5 line-clamp-3">
+                        {site.description}
+                      </p>
+                      <a
+                        className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
+                        href={`https://${site.subdomain}.vercel.pub`}
+                        onClick={(e) => e.stopPropagation()}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        {site.subdomain}.vercel.pub ↗
+                      </a>
+                    </div>
+                  </div>
                 </Link>
               ))
             ) : (

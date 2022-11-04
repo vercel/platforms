@@ -111,8 +111,8 @@ export default function Post({
         {data.image ? (
           <BlurImage
             alt={data.title ?? "Post image"}
-            layout="fill"
-            objectFit="cover"
+            width={1200}
+            height={630}
             placeholder="blur"
             blurDataURL={data.imageBlurhash ?? undefined}
             src={data.image}

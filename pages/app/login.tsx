@@ -52,14 +52,13 @@ export default function Login() {
         <meta name="twitter:image" content={logo} />
       </Head>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="relative mx-auto h-12 w-auto">
-          <Image
-            alt="Platforms Starter Kit"
-            layout="fill"
-            objectFit="contain"
-            src="/logo.png"
-          />
-        </div>
+        <Image
+          alt="Platforms Starter Kit"
+          width={100}
+          height={100}
+          className="relative mx-auto h-12 w-auto"
+          src="/logo.png"
+        />
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Platforms Starter Kit
         </h2>

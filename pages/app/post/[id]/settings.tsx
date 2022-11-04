@@ -179,10 +179,8 @@ export default function PostSettings() {
                     alt="Cover Photo"
                     width={800}
                     height={500}
-                    layout="responsive"
-                    objectFit="cover"
                     placeholder="blur"
-                    className="rounded-md"
+                    className="rounded-md w-full h-full object-cover"
                     blurDataURL={data.imageBlurhash}
                   />
                 )}
