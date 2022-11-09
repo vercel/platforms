@@ -8,17 +8,10 @@ import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 
 import { notFound } from "next/navigation";
-import type { _SiteData, Meta } from "@/types";
+import type { _SiteData } from "@/types";
 import type { ParsedUrlQuery } from "querystring";
 import { placeholderBlurhash } from "@/lib/util";
-
-interface PathProps extends ParsedUrlQuery {
-  site: string;
-}
-
-interface IndexProps {
-  stringifiedData: string;
-}
+import { getSiteData } from "@/lib/fetchers";
 
 export async function generateStaticParams() {
   const [subdomains, customDomains] = await Promise.all([
@@ -54,53 +47,14 @@ export async function generateStaticParams() {
     site: path,
   }));
 }
-
-export async function getSiteData(site: string): Promise<_SiteData> {
-  let filter: {
-    subdomain?: string;
-    customDomain?: string;
-  } = {
-    subdomain: site,
-  };
-
-  if (site.includes(".")) {
-    filter = {
-      customDomain: site,
-    };
-  }
-
-  const data = (await prisma.site.findUnique({
-    where: filter,
-    include: {
-      user: true,
-      posts: {
-        where: {
-          published: true,
-        },
-        orderBy: [
-          {
-            createdAt: "desc",
-          },
-        ],
-      },
-    },
-  })) as _SiteData;
-
-  return data;
+interface PathProps extends ParsedUrlQuery {
+  site: string;
 }
 
-export default async function Index({ params }) {
+export default async function Index({ params }: { params: PathProps }) {
   const { site } = params;
   const data = await getSiteData(site);
-  // const meta = {
-  //   title: data.name,
-  //   description: data.description,
-  //   logo: "/logo.png",
-  //   ogImage: data.image,
-  //   ogUrl: data.customDomain
-  //     ? data.customDomain
-  //     : `https://${data.subdomain}.vercel.pub`,
-  // } as Meta;
+
   return (
     <div className="w-full max-w-screen-xl lg:w-5/6 mx-auto md:mb-28">
       {data.posts.length > 0 ? (
@@ -176,7 +130,7 @@ export default async function Index({ params }) {
       {data.posts.length > 1 && (
         <div className="my-20">
           <h2 className="font-cal text-4xl md:text-5xl mb-10">More stories</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 w-full">
+          <div className="grid grid-cols-3 gap-x-4 gap-y-8 w-full">
             {data.posts.slice(1).map((metadata, index) => (
               <BlogCard key={index} data={metadata} />
             ))}

@@ -2,9 +2,11 @@ import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 // import { useState, useEffect, useCallback } from "react";
+import { getSiteData } from "@/lib/fetchers";
 
 import type { Meta, WithChildren } from "@/types";
 import Banner from "./banner";
+import { ReactNode } from "react";
 
 interface LayoutProps extends WithChildren {
   meta?: Meta;
@@ -12,7 +14,27 @@ interface LayoutProps extends WithChildren {
   subdomain?: string;
 }
 
-export default function Layout({ meta, children, subdomain }: LayoutProps) {
+export default async function Layout({
+  params,
+  children,
+}: {
+  params: {
+    site: string;
+  };
+  children: ReactNode;
+}) {
+  const { site } = params;
+  const data = await getSiteData(site);
+  const meta = {
+    title: data.name,
+    description: data.description,
+    logo: "/logo.png",
+    ogImage: data.image,
+    ogUrl: data.customDomain
+      ? data.customDomain
+      : `https://${data.subdomain}.vercel.pub`,
+  } as Meta;
+
   //   const [scrolled, setScrolled] = useState(false);
 
   //   const onScroll = useCallback(() => {
