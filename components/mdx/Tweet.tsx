@@ -235,19 +235,20 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
           rel="noreferrer"
           target="_blank"
         >
-          <div className="rounded-2xl overflow-hidden border border-gray-200 drop-shadow-sm mb-5">
+          <div className="rounded-2xl overflow-hidden border border-gray-200 drop-shadow-sm my-5">
             <BlurImage
               key={url_meta.unwound_url}
               alt={url_meta.title}
               width={2048}
               height={1000}
-              objectFit="cover"
               src={url_meta.images[0].url}
-              className="hover:brightness-90 transition-all ease-in-out duration-150"
+              className="w-full h-[300px] object-cover !my-0 hover:brightness-90 transition-all ease-in-out duration-150"
             />
-            <div className="w-full bg-white px-8 py-2">
-              <p className="!m-0">{url_meta.title}</p>
-              <p className="text-sm">{url_meta.description}</p>
+            <div className="w-full bg-white px-8 py-6">
+              <p className="!m-0 font-semibold">{url_meta.title}</p>
+              <p className="!m-0 text-sm font-normal text-gray-600">
+                {url_meta.description}
+              </p>
             </div>
           </div>
         </a>
