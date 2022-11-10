@@ -1,3 +1,5 @@
+"use client";
+
 import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
