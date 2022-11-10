@@ -1,12 +1,19 @@
-export default function Head() {
+import { getSiteData } from "@/lib/fetchers";
+import type { Meta } from "@/types";
+
+export default async function Head({ params }: { params: { site: string } }) {
+  const { site } = params;
+  const data = await getSiteData(site);
   const meta = {
-    title: "title",
-    description: "description",
+    title: data.name,
+    description: data.description,
     logo: "/logo.png",
-    ogImage: "image",
-    ogUrl: "url",
-  };
-  const subdomain = "demo";
+    ogImage: data.image,
+    ogUrl: data.customDomain
+      ? data.customDomain
+      : `https://${data.subdomain}.vercel.pub`,
+  } as Meta;
+
   return (
     <>
       <title>{meta?.title}</title>
@@ -34,7 +41,7 @@ export default function Head() {
       <meta name="twitter:title" content={meta?.title} />
       <meta name="twitter:description" content={meta?.description} />
       <meta name="twitter:image" content={meta?.ogImage} />
-      {subdomain != "demo" && <meta name="robots" content="noindex" />}
+      {data.subdomain !== "demo" && <meta name="robots" content="noindex" />}
     </>
   );
 }

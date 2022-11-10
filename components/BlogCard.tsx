@@ -37,7 +37,12 @@ export default function BlogCard({ data }: BlogCardProps) {
             {data.description}
           </p>
           <p className="text-sm text-gray-600 my-2">
-            Published <Date dateString={data.createdAt.toString()} />
+            Published{" "}
+            {data.createdAt.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
           </p>
         </div>
       </div>

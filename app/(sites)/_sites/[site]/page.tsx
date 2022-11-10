@@ -107,7 +107,11 @@ export default async function Index({ params }: { params: PathProps }) {
                 </p>
                 <div className="border-l border-gray-600 h-6" />
                 <p className="text-sm md:text-base font-light text-gray-500 w-10/12 m-auto my-5">
-                  <Date dateString={data.posts[0].createdAt.toString()} />
+                  {data.createdAt.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
                 </p>
               </div>
             </div>
