@@ -85,7 +85,7 @@ export default async function Post({
               year: "numeric",
             })}
           </p>
-          <h1 className="font-bold text-3xl font-cal md:text-6xl mb-10 text-gray-800">
+          <h1 className="font-bold text-3xl font-title md:text-6xl mb-10 text-gray-800">
             {data.title}
           </h1>
           <p className="text-md md:text-lg text-gray-600 w-10/12 m-auto">

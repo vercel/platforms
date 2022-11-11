@@ -1,15 +1,9 @@
-import Layout from "@/components/sites/Layout";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import BlurImage from "@/components/BlurImage";
 import BlogCard from "@/components/BlogCard";
-import Loader from "@/components/sites/Loader";
-import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 
-import { notFound } from "next/navigation";
 import type { _SiteData } from "@/types";
-import type { ParsedUrlQuery } from "querystring";
 import { placeholderBlurhash } from "@/lib/util";
 import { getSiteData } from "@/lib/fetchers";
 
@@ -47,20 +41,16 @@ export async function generateStaticParams() {
     site: path,
   }));
 }
-interface PathProps extends ParsedUrlQuery {
-  site: string;
-}
-
-export default async function Index({ params }: { params: PathProps }) {
+export default async function Page({ params }: { params: { site: string } }) {
   const { site } = params;
   const data = await getSiteData(site);
 
   return (
-    <div className="w-full max-w-screen-xl lg:w-5/6 mx-auto md:mb-28">
+    <div className="md:mb-28">
       {data.posts.length > 0 ? (
         <div>
           <Link href={`/${data.posts[0].slug}`}>
-            <div className="relative group h-80 sm:h-150 w-full mx-auto overflow-hidden lg:rounded-xl">
+            <div className="max-w-screen-xl relative group h-80 sm:h-150 w-full mx-auto overflow-hidden lg:rounded-xl">
               {data.posts[0].image ? (
                 <BlurImage
                   alt={data.posts[0].title ?? ""}
@@ -79,8 +69,8 @@ export default async function Index({ params }: { params: PathProps }) {
                 </div>
               )}
             </div>
-            <div className="mt-10">
-              <h2 className="font-cal text-4xl md:text-6xl my-10">
+            <div className="max-w-screen-xl mx-5 xl:mx-auto mt-10">
+              <h2 className="font-title text-4xl md:text-6xl my-10">
                 {data.posts[0].title}
               </h2>
               <p className="text-base md:text-lg w-full lg:w-2/3">
@@ -102,7 +92,7 @@ export default async function Index({ params }: { params: PathProps }) {
                     </div>
                   )}
                 </div>
-                <p className="inline-block font-semibold text-sm md:text-base align-middle ml-3 whitespace-nowrap">
+                <p className="font-title inline-block font-semibold text-sm md:text-base align-middle ml-3 whitespace-nowrap">
                   {data.user?.name}
                 </p>
                 <div className="border-l border-gray-600 h-6" />
@@ -132,9 +122,11 @@ export default async function Index({ params }: { params: PathProps }) {
       )}
 
       {data.posts.length > 1 && (
-        <div className="my-20">
-          <h2 className="font-cal text-4xl md:text-5xl mb-10">More stories</h2>
-          <div className="grid grid-cols-3 gap-x-4 gap-y-8 w-full">
+        <div className="max-w-screen-xl mx-5 xl:mx-auto my-20">
+          <h2 className="font-title text-4xl md:text-5xl mb-10">
+            More stories
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-4 gap-y-8">
             {data.posts.slice(1).map((metadata, index) => (
               <BlogCard key={index} data={metadata} />
             ))}

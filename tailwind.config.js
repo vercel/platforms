@@ -23,8 +23,9 @@ module.exports = {
         30: "7.5rem",
       },
       fontFamily: {
-        cal: ["var(--font-cal)", ...defaultTheme.fontFamily.sans],
         default: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
+        cal: ["var(--font-cal)", ...defaultTheme.fontFamily.sans],
+        title: ["var(--font-title)", ...defaultTheme.fontFamily.sans],
         mono: ["Consolas", ...defaultTheme.fontFamily.mono],
       },
       typography: {

@@ -1,19 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
+import { useState } from "react";
 
 export default function Banner({ subdomain }: { subdomain: string }) {
-  const [closeModal, setCloseModal] = useState<boolean>(
-    !!Cookies.get("closeModal")
-  );
-
-  useEffect(() => {
-    if (closeModal) {
-      Cookies.set("closeModal", "true");
-    } else {
-      Cookies.remove("closeModal");
-    }
-  }, [closeModal]);
+  const [closeModal, setCloseModal] = useState<boolean>(false);
 
   if (subdomain !== "demo") {
     return null;
@@ -46,7 +35,7 @@ export default function Banner({ subdomain }: { subdomain: string }) {
         </svg>
       </button>
       <div className="text-center lg:text-left">
-        <p className="font-cal text-lg sm:text-2xl text-black">
+        <p className="font-title text-lg sm:text-2xl text-black">
           Platforms Starter Kit Demo
         </p>
         <p
@@ -73,7 +62,7 @@ export default function Banner({ subdomain }: { subdomain: string }) {
         } flex space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row flex-col lg:w-auto w-full text-center`}
       >
         <a
-          className="flex-auto font-cal text-lg rounded-md py-1 sm:py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
+          className="flex-auto font-title text-lg rounded-md py-1 sm:py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
           href="https://app.vercel.pub"
           rel="noreferrer"
           target="_blank"
@@ -81,7 +70,7 @@ export default function Banner({ subdomain }: { subdomain: string }) {
           Create your publication
         </a>
         <a
-          className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-1 sm:py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
+          className="flex-auto font-title text-lg bg-black text-white border border-black rounded-md py-1 sm:py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
           href="https://vercel.com/guides/nextjs-multi-tenant-application"
           rel="noreferrer"
           target="_blank"
