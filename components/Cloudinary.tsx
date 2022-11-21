@@ -1,13 +1,13 @@
 /* eslint-disable */
 
-import Head from "next/head";
+import Head from 'next/head';
 
-import type { MouseEvent, ReactNode } from "react";
+import type { MouseEvent, ReactNode } from 'react';
 import type {
   CloudinaryCallbackImage,
   CloudinaryWidget,
   CloudinaryWidgetResult,
-} from "@/types";
+} from '@/types';
 
 interface ChildrenProps {
   open: (e: MouseEvent) => void;
@@ -25,12 +25,12 @@ export default function CloudinaryUploadWidget({
   function showWidget() {
     const widget: CloudinaryWidget = window.cloudinary.createUploadWidget(
       {
-        cloudName: "vercel-platforms",
-        uploadPreset: "w0vnflc6",
+        cloudName: 'vercel-platforms',
+        uploadPreset: 'w0vnflc6',
         cropping: true,
       },
       (error: unknown | undefined, result: CloudinaryWidgetResult) => {
-        if (!error && result && result.event === "success") {
+        if (!error && result && result.event === 'success') {
           callback(result.info);
         }
       }

@@ -1,7 +1,7 @@
-import prisma from "@/lib/prisma";
-import { HttpMethod } from "@/types";
+import prisma from '@/lib/prisma';
+import { HttpMethod } from '@/types';
 
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 /*
  * Note: This endpoint is to check if a domain still has its nameservers/record configured correctly.
@@ -12,7 +12,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function post(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== HttpMethod.GET) {
-    res.setHeader("Allow", [HttpMethod.GET]);
+    res.setHeader('Allow', [HttpMethod.GET]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
@@ -21,11 +21,11 @@ export default async function post(req: NextApiRequest, res: NextApiResponse) {
   if (Array.isArray(domain))
     return res
       .status(400)
-      .end("Bad request. domain parameter cannot be an array.");
+      .end('Bad request. domain parameter cannot be an array.');
 
   try {
     if (subdomain) {
-      const sub = (domain as string).replace(/[^a-zA-Z0-9/-]+/g, "");
+      const sub = (domain as string).replace(/[^a-zA-Z0-9/-]+/g, '');
 
       const data = await prisma.site.findUnique({
         where: {
@@ -44,7 +44,7 @@ export default async function post(req: NextApiRequest, res: NextApiResponse) {
         method: HttpMethod.GET,
         headers: {
           Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );

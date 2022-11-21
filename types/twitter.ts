@@ -68,7 +68,7 @@ export interface Tweet {
       width: number;
     }>;
     polls?: Array<unknown>;
-    tweets?: Array<Tweet["data"]>;
+    tweets?: Array<Tweet['data']>;
     users: Array<TwitterUser>;
   };
 }

@@ -1,31 +1,31 @@
-import { useDebounce } from "use-debounce";
-import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
-import useSWR, { mutate } from "swr";
+import { useDebounce } from 'use-debounce';
+import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import useSWR, { mutate } from 'swr';
 
-import BlurImage from "@/components/BlurImage";
-import CloudinaryUploadWidget from "@/components/Cloudinary";
-import DomainCard from "@/components/app/DomainCard";
-import Layout from "@/components/app/Layout";
-import LoadingDots from "@/components/app/loading-dots";
-import Modal from "@/components/Modal";
+import BlurImage from '@/components/BlurImage';
+import CloudinaryUploadWidget from '@/components/Cloudinary';
+import DomainCard from '@/components/app/DomainCard';
+import Layout from '@/components/app/Layout';
+import LoadingDots from '@/components/app/loading-dots';
+import Modal from '@/components/Modal';
 
-import { fetcher } from "@/lib/fetcher";
-import { HttpMethod } from "@/types";
+import { fetcher } from '@/lib/fetcher';
+import { HttpMethod } from '@/types';
 
-import type { Site } from "@prisma/client";
+import type { Site } from '@prisma/client';
 
 interface SettingsData
   extends Pick<
     Site,
-    | "id"
-    | "name"
-    | "description"
-    | "subdomain"
-    | "customDomain"
-    | "image"
-    | "imageBlurhash"
+    | 'id'
+    | 'name'
+    | 'description'
+    | 'subdomain'
+    | 'customDomain'
+    | 'image'
+    | 'imageBlurhash'
   > {}
 
 export default function SiteSettings() {
@@ -37,7 +37,7 @@ export default function SiteSettings() {
     siteId && `/api/site?siteId=${siteId}`,
     fetcher,
     {
-      onError: () => router.push("/"),
+      onError: () => router.push('/'),
       revalidateOnFocus: false,
     }
   );
@@ -49,7 +49,7 @@ export default function SiteSettings() {
   const [deletingSite, setDeletingSite] = useState(false);
 
   const [data, setData] = useState<SettingsData>({
-    id: "",
+    id: '',
     name: null,
     description: null,
     subdomain: null,
@@ -66,10 +66,10 @@ export default function SiteSettings() {
     setSaving(true);
 
     try {
-      const response = await fetch("/api/site", {
+      const response = await fetch('/api/site', {
         method: HttpMethod.PUT,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           currentSubdomain: settings?.subdomain ?? undefined,
@@ -84,7 +84,7 @@ export default function SiteSettings() {
         toast.success(`Changes Saved`);
       }
     } catch (error) {
-      toast.error("Failed to save settings");
+      toast.error('Failed to save settings');
       console.error(error);
     } finally {
       setSaving(false);
@@ -99,7 +99,7 @@ export default function SiteSettings() {
         method: HttpMethod.DELETE,
       });
 
-      if (response.ok) router.push("/");
+      if (response.ok) router.push('/');
     } catch (error) {
       console.error(error);
     } finally {
@@ -178,15 +178,15 @@ export default function SiteSettings() {
               <input
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                 name="name"
-                onInput={(e) =>
-                  setData((data) => ({
+                onInput={e =>
+                  setData(data => ({
                     ...data,
                     name: (e.target as HTMLTextAreaElement).value,
                   }))
                 }
                 placeholder="Untitled Site"
                 type="text"
-                value={data.name || ""}
+                value={data.name || ''}
               />
             </div>
           </div>
@@ -196,15 +196,15 @@ export default function SiteSettings() {
               <textarea
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                 name="description"
-                onInput={(e) =>
-                  setData((data) => ({
+                onInput={e =>
+                  setData(data => ({
                     ...data,
                     description: (e.target as HTMLTextAreaElement).value,
                   }))
                 }
                 placeholder="Lorem ipsum forem dimsum"
                 rows={3}
-                value={data?.description || ""}
+                value={data?.description || ''}
               />
             </div>
           </div>
@@ -214,15 +214,15 @@ export default function SiteSettings() {
               <input
                 className="w-1/2 px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-l-lg placeholder-gray-400"
                 name="subdomain"
-                onInput={(e) =>
-                  setData((data) => ({
+                onInput={e =>
+                  setData(data => ({
                     ...data,
                     subdomain: (e.target as HTMLTextAreaElement).value,
                   }))
                 }
                 placeholder="subdomain"
                 type="text"
-                value={data.subdomain || ""}
+                value={data.subdomain || ''}
               />
               <div className="w-1/2 h-12 flex justify-center items-center font-cal rounded-r-lg border-l border-gray-600 bg-gray-100">
                 vercel.pub
@@ -241,7 +241,7 @@ export default function SiteSettings() {
               <DomainCard data={data} />
             ) : (
               <form
-                onSubmit={async (e) => {
+                onSubmit={async e => {
                   e.preventDefault();
                   await handleCustomDomain();
                 }}
@@ -252,15 +252,15 @@ export default function SiteSettings() {
                     autoComplete="off"
                     className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
                     name="customDomain"
-                    onInput={(e) => {
-                      setData((data) => ({
+                    onInput={e => {
+                      setData(data => ({
                         ...data,
                         customDomain: (e.target as HTMLTextAreaElement).value,
                       }));
                     }}
                     pattern="^(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
                     placeholder="mydomain.com"
-                    value={data.customDomain || ""}
+                    value={data.customDomain || ''}
                     type="text"
                   />
                 </div>
@@ -268,7 +268,7 @@ export default function SiteSettings() {
                   type="submit"
                   className="bg-black text-white border-black hover:text-black hover:bg-white px-5 py-3 w-28 font-cal border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150"
                 >
-                  {adding ? <LoadingDots /> : "Add"}
+                  {adding ? <LoadingDots /> : 'Add'}
                 </button>
               </form>
             )}
@@ -284,7 +284,7 @@ export default function SiteSettings() {
                   strokeLinejoin="round"
                   fill="none"
                   shapeRendering="geometricPrecision"
-                  style={{ color: "#f44336" }}
+                  style={{ color: '#f44336' }}
                 >
                   <circle cx="12" cy="12" r="10" fill="white" />
                   <path d="M12 8v4" stroke="#f44336" />
@@ -295,18 +295,18 @@ export default function SiteSettings() {
                     <b>{error.domain}</b> is already owned by another team.
                     <button
                       className="ml-1"
-                      onClick={async (e) => {
+                      onClick={async e => {
                         e.preventDefault();
                         await fetch(
                           `/api/request-delegation?domain=${error.domain}`
-                        ).then((res) => {
+                        ).then(res => {
                           if (res.ok) {
                             toast.success(
                               `Requested delegation for ${error.domain}. Try adding the domain again in a few minutes.`
                             );
                           } else {
                             alert(
-                              "There was an error requesting delegation. Please try again later."
+                              'There was an error requesting delegation. Please try again later.'
                             );
                           }
                         });
@@ -328,11 +328,11 @@ export default function SiteSettings() {
             <h2 className="font-cal text-2xl">Thumbnail Image</h2>
             <div
               className={`${
-                data.image ? "" : "animate-pulse bg-gray-300 h-150"
+                data.image ? '' : 'animate-pulse bg-gray-300 h-150'
               } relative mt-5 w-full border-2 border-gray-800 border-dashed rounded-md`}
             >
               <CloudinaryUploadWidget
-                callback={(e) =>
+                callback={e =>
                   setData({
                     ...data,
                     image: e.secure_url,
@@ -391,7 +391,7 @@ export default function SiteSettings() {
       </div>
       <Modal showModal={showDeleteModal} setShowModal={setShowDeleteModal}>
         <form
-          onSubmit={async (event) => {
+          onSubmit={async event => {
             event.preventDefault();
             await deleteSite(siteId as string);
           }}
@@ -409,8 +409,8 @@ export default function SiteSettings() {
                 className="w-full px-5 py-3 text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none rounded-r-lg placeholder-gray-400"
                 type="text"
                 name="name"
-                placeholder={data.name ?? ""}
-                pattern={data.name ?? "Site Name"}
+                placeholder={data.name ?? ''}
+                pattern={data.name ?? 'Site Name'}
               />
             </div>
           </div>
@@ -428,11 +428,11 @@ export default function SiteSettings() {
               disabled={deletingSite}
               className={`${
                 deletingSite
-                  ? "cursor-not-allowed text-gray-400 bg-gray-50"
-                  : "bg-white text-gray-600 hover:text-black"
+                  ? 'cursor-not-allowed text-gray-400 bg-gray-50'
+                  : 'bg-white text-gray-600 hover:text-black'
               } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
             >
-              {deletingSite ? <LoadingDots /> : "DELETE SITE"}
+              {deletingSite ? <LoadingDots /> : 'DELETE SITE'}
             </button>
           </div>
         </form>
@@ -447,11 +447,11 @@ export default function SiteSettings() {
             disabled={saving || subdomainError !== null}
             className={`${
               saving || subdomainError
-                ? "cursor-not-allowed bg-gray-300 border-gray-300"
-                : "bg-black hover:bg-white hover:text-black border-black"
+                ? 'cursor-not-allowed bg-gray-300 border-gray-300'
+                : 'bg-black hover:bg-white hover:text-black border-black'
             } mx-2 rounded-md w-36 h-12 text-lg text-white border-2 focus:outline-none transition-all ease-in-out duration-150`}
           >
-            {saving ? <LoadingDots /> : "Save Changes"}
+            {saving ? <LoadingDots /> : 'Save Changes'}
           </button>
         </div>
       </footer>

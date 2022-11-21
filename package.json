@@ -7,7 +7,7 @@
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "lint": "next lint",
     "prebuild": "prisma generate",
-    "predev": "prisma generate",
+    "db:push": "prisma db push",
     "prisma:migrate": "prisma migrate deploy",
     "start": "next start",
     "type-check": "tsc"

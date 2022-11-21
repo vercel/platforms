@@ -1,10 +1,10 @@
-import { Analytics } from "@vercel/analytics/react";
-import { SessionProvider } from "next-auth/react";
-import type { Session } from "next-auth";
+import { Analytics } from '@vercel/analytics/react';
+import { SessionProvider } from 'next-auth/react';
+import type { Session } from 'next-auth';
 
-import "@/styles/globals.css";
+import '@/styles/globals.css';
 
-import type { AppProps } from "next/app";
+import type { AppProps } from 'next/app';
 
 export default function App({
   Component,

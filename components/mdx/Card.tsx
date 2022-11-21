@@ -1,6 +1,6 @@
-import BlurImage from "../BlurImage";
+import BlurImage from '../BlurImage';
 
-import type { MdxCardData } from "@/types";
+import type { MdxCardData } from '@/types';
 
 interface CardProps {
   data: MdxCardData;
@@ -12,7 +12,7 @@ export default function Card({ data }: CardProps) {
       <div className="hidden lg:block rounded-2xl border-2 border-gray-100 shadow-md bg-white hover:shadow-xl hover:-translate-y-1 transition-all ease duration-200">
         <div className="rounded-t-2xl overflow-hidden">
           <BlurImage
-            alt={data.name ?? "Card Thumbnail"}
+            alt={data.name ?? 'Card Thumbnail'}
             width={500}
             height={400}
             className="w-full h-64 object-cover"
@@ -33,7 +33,7 @@ export default function Card({ data }: CardProps) {
       <div className="lg:hidden overflow-hidden rounded-xl flex items-center md:h-48 h-36 border-2 border-gray-100 focus:border-black active:border-black bg-white transition-all ease duration-200">
         <div className="w-2/5 relative h-full">
           <BlurImage
-            alt={data.name ?? "Card thumbnail"}
+            alt={data.name ?? 'Card thumbnail'}
             width={500}
             height={400}
             className="h-full object-cover"

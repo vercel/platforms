@@ -1,5 +1,5 @@
-import type { Post, Site } from "@prisma/client";
-import type { PropsWithChildren } from "react";
+import type { Post, Site } from '@prisma/client';
+import type { PropsWithChildren } from 'react';
 
 export type WithChildren<T = {}> = T & PropsWithChildren<{}>;
 

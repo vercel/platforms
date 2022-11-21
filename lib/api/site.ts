@@ -1,10 +1,10 @@
-import cuid from "cuid";
-import prisma from "@/lib/prisma";
+import cuid from 'cuid';
+import prisma from '@/lib/prisma';
 
-import type { NextApiRequest, NextApiResponse } from "next";
-import type { Site } from ".prisma/client";
-import type { Session } from "next-auth";
-import { placeholderBlurhash } from "../util";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Site } from '.prisma/client';
+import type { Session } from 'next-auth';
+import { placeholderBlurhash } from '../util';
 
 /**
  * Get Site
@@ -27,10 +27,10 @@ export async function getSite(
   if (Array.isArray(siteId))
     return res
       .status(400)
-      .end("Bad request. siteId parameter cannot be an array.");
+      .end('Bad request. siteId parameter cannot be an array.');
 
   if (!session.user.id)
-    return res.status(500).end("Server failed to get session user ID");
+    return res.status(500).end('Server failed to get session user ID');
 
   try {
     if (siteId) {
@@ -84,7 +84,7 @@ export async function createSite(
 }>> {
   const { name, subdomain, description, userId } = req.body;
 
-  const sub = subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
+  const sub = subdomain.replace(/[^a-zA-Z0-9/-]+/g, '');
 
   try {
     const response = await prisma.site.create({
@@ -92,7 +92,7 @@ export async function createSite(
         name: name,
         description: description,
         subdomain: sub.length > 0 ? sub : cuid(),
-        logo: "/logo.png",
+        logo: '/logo.png',
         image: `/placeholder.png`,
         imageBlurhash: placeholderBlurhash,
         user: {
@@ -130,7 +130,7 @@ export async function deleteSite(
   if (Array.isArray(siteId))
     return res
       .status(400)
-      .end("Bad request. siteId parameter cannot be an array.");
+      .end('Bad request. siteId parameter cannot be an array.');
 
   try {
     await prisma.$transaction([
@@ -177,7 +177,7 @@ export async function updateSite(
   const { id, currentSubdomain, name, description, image, imageBlurhash } =
     req.body;
 
-  const sub = req.body.subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
+  const sub = req.body.subdomain.replace(/[^a-zA-Z0-9/-]+/g, '');
   const subdomain = sub.length > 0 ? sub : currentSubdomain;
 
   try {

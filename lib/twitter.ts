@@ -1,18 +1,18 @@
-import { stringify as queryStringify } from "querystring";
+import { stringify as queryStringify } from 'querystring';
 
-import { getTwitterMedia } from "./twitter-media";
+import { getTwitterMedia } from './twitter-media';
 
-import type { Tweet, TweetData } from "@/types";
+import type { Tweet, TweetData } from '@/types';
 
 const queryParams = queryStringify({
   expansions:
-    "author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id,attachments.poll_ids",
-  "tweet.fields":
-    "attachments,author_id,public_metrics,created_at,id,in_reply_to_user_id,referenced_tweets,text,entities",
-  "user.fields": "id,name,profile_image_url,protected,url,username,verified",
-  "media.fields":
-    "duration_ms,height,media_key,preview_image_url,type,url,width,public_metrics",
-  "poll.fields": "duration_minutes,end_datetime,id,options,voting_status",
+    'author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id,attachments.poll_ids',
+  'tweet.fields':
+    'attachments,author_id,public_metrics,created_at,id,in_reply_to_user_id,referenced_tweets,text,entities',
+  'user.fields': 'id,name,profile_image_url,protected,url,username,verified',
+  'media.fields':
+    'duration_ms,height,media_key,preview_image_url,type,url,width,public_metrics',
+  'poll.fields': 'duration_minutes,end_datetime,id,options,voting_status',
 });
 
 export const getTweets = async (id: string) => {
@@ -28,12 +28,12 @@ export const getTweets = async (id: string) => {
     const tweet = (await response.json()) as Tweet;
 
     const getAuthorInfo = (author_id: string) =>
-      tweet.includes.users.find((user) => user.id === author_id);
+      tweet.includes.users.find(user => user.id === author_id);
 
     const getReferencedTweets = (mainTweet: TweetData) =>
-      mainTweet?.referenced_tweets?.map((referencedTweet) => {
+      mainTweet?.referenced_tweets?.map(referencedTweet => {
         const fullReferencedTweet = tweet.includes.tweets?.find(
-          (tweet) => tweet.id === referencedTweet.id
+          tweet => tweet.id === referencedTweet.id
         );
         if (!fullReferencedTweet)
           throw new Error(
@@ -56,12 +56,12 @@ export const getTweets = async (id: string) => {
       } = {};
 
       if (externalURLs)
-        externalURLs.map((url) => {
+        externalURLs.map(url => {
           mappings[url.url] =
-            !url.display_url.startsWith("pic.twitter.com") &&
-            !url.display_url.startsWith("twitter.com")
+            !url.display_url.startsWith('pic.twitter.com') &&
+            !url.display_url.startsWith('twitter.com')
               ? url.expanded_url
-              : "";
+              : '';
         });
 
       let processedText = tweet?.text;
@@ -73,13 +73,13 @@ export const getTweets = async (id: string) => {
     }
 
     if (tweet.data) tweet.data.text = getExternalUrls(tweet?.data); // removing/replacing t.co links for main tweet
-    tweet?.includes?.tweets?.map((twt) => {
+    tweet?.includes?.tweets?.map(twt => {
       // removing/replacing t.co links for referenced tweets
       twt.text = getExternalUrls(twt);
     });
 
-    const media = tweet.data?.attachments?.media_keys?.map((key) =>
-      tweet.includes.media?.find((media) => media.media_key === key)
+    const media = tweet.data?.attachments?.media_keys?.map(key =>
+      tweet.includes.media?.find(media => media.media_key === key)
     );
 
     const referenced_tweets = getReferencedTweets(tweet.data);
@@ -97,7 +97,7 @@ export const getTweets = async (id: string) => {
       video:
         media &&
         media[0] &&
-        (media[0].type === "video" || media[0].type === "animated_gif")
+        (media[0].type === 'video' || media[0].type === 'animated_gif')
           ? await getTwitterMedia(id)
           : null,
     };

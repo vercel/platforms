@@ -1,23 +1,23 @@
-import { useState, useEffect, useRef } from "react";
-import Layout from "@/components/app/Layout";
-import BlurImage from "@/components/BlurImage";
-import Modal from "@/components/Modal";
-import LoadingDots from "@/components/app/loading-dots";
-import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import useSWR from "swr";
-import { useDebounce } from "use-debounce";
-import { fetcher } from "@/lib/fetcher";
-import { HttpMethod } from "@/types";
+import { useState, useEffect, useRef } from 'react';
+import Layout from '@/components/app/Layout';
+import BlurImage from '@/components/BlurImage';
+import Modal from '@/components/Modal';
+import LoadingDots from '@/components/app/loading-dots';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
+import { useDebounce } from 'use-debounce';
+import { fetcher } from '@/lib/fetcher';
+import { HttpMethod } from '@/types';
 
-import type { FormEvent } from "react";
-import type { Site } from "@prisma/client";
+import type { FormEvent } from 'react';
+import type { Site } from '@prisma/client';
 
 export default function AppIndex() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [creatingSite, setCreatingSite] = useState<boolean>(false);
-  const [subdomain, setSubdomain] = useState<string>("");
+  const [subdomain, setSubdomain] = useState<string>('');
   const [debouncedSubdomain] = useDebounce(subdomain, 1500);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,10 +53,10 @@ export default function AppIndex() {
   );
 
   async function createSite(e: FormEvent<HTMLFormElement>) {
-    const res = await fetch("/api/site", {
+    const res = await fetch('/api/site', {
       method: HttpMethod.POST,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         userId: sessionId,
@@ -75,7 +75,7 @@ export default function AppIndex() {
     <Layout>
       <Modal showModal={showModal} setShowModal={setShowModal}>
         <form
-          onSubmit={(event) => {
+          onSubmit={event => {
             event.preventDefault();
             setCreatingSite(true);
             createSite(event);
@@ -144,11 +144,11 @@ export default function AppIndex() {
               disabled={creatingSite || error !== null}
               className={`${
                 creatingSite || error
-                  ? "cursor-not-allowed text-gray-400 bg-gray-50"
-                  : "bg-white text-gray-600 hover:text-black"
+                  ? 'cursor-not-allowed text-gray-400 bg-gray-50'
+                  : 'bg-white text-gray-600 hover:text-black'
               } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
             >
-              {creatingSite ? <LoadingDots /> : "CREATE SITE"}
+              {creatingSite ? <LoadingDots /> : 'CREATE SITE'}
             </button>
           </div>
         </form>
@@ -157,16 +157,23 @@ export default function AppIndex() {
       <div className="py-20 max-w-screen-xl mx-auto px-10 sm:px-20">
         <div className="flex flex-col sm:flex-row space-y-5 sm:space-y-0 justify-between items-center">
           <h1 className="font-cal text-5xl">My Sites</h1>
-          {sites && sites.length > 0 ? (<div className="visually-hidden"></div>) : (<button onClick={() => setShowModal(true)} className="font-cal text-lg w-3/4 sm:w-40 tracking-wide text-white bg-black border-black border-2 px-5 py-3 hover:bg-white hover:text-black transition-all ease-in-out duration-150 rounded-md">
+          {sites && sites.length > 0 ? (
+            <div className="visually-hidden"></div>
+          ) : (
+            <button
+              onClick={() => setShowModal(true)}
+              className="font-cal text-lg w-3/4 sm:w-40 tracking-wide text-white bg-black border-black border-2 px-5 py-3 hover:bg-white hover:text-black transition-all ease-in-out duration-150 rounded-md"
+            >
               New Site
               <span className="ml-2">＋</span>
-          </button>)}
+            </button>
+          )}
         </div>
         <div className="my-10 grid gap-y-10">
           {sites ? (
             sites.length > 0 ? (
-              sites.map((site) => (
-                <Link href={`/site/${site.id}`} key={site.id}>
+              sites.map(site => (
+                <Link href={`/site/${site.id}/settings`} key={site.id}>
                   <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
                     <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
                       {site.image ? (
@@ -175,7 +182,7 @@ export default function AppIndex() {
                           width={500}
                           height={400}
                           className="h-full object-cover"
-                          alt={site.name ?? "Site thumbnail"}
+                          alt={site.name ?? 'Site thumbnail'}
                         />
                       ) : (
                         <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
@@ -191,7 +198,7 @@ export default function AppIndex() {
                       <a
                         className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
                         href={`https://${site.subdomain}.vercel.pub`}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={e => e.stopPropagation()}
                         rel="noreferrer"
                         target="_blank"
                       >
@@ -220,7 +227,7 @@ export default function AppIndex() {
               </>
             )
           ) : (
-            [0, 1].map((i) => (
+            [0, 1].map(i => (
               <div
                 key={i}
                 className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200"

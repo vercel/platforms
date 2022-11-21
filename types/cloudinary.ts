@@ -21,18 +21,18 @@ declare global {
 }
 
 enum CloudinaryWidgetSource {
-  CAMERA = "camera",
-  DROPBOX = "dropbox",
-  FACEBOOK = "facebook",
-  GETTY = "getty",
-  GOOGLE_DRIVE = "google_drive",
-  IMAGE_SEARCH = "image_search",
-  INSTAGRAM = "instagram",
-  ISTOCK = "istock",
-  LOCAL = "local",
-  SHUTTERSTOCK = "shutterstock",
-  UNSPLASH = "unsplash",
-  URL = "url",
+  CAMERA = 'camera',
+  DROPBOX = 'dropbox',
+  FACEBOOK = 'facebook',
+  GETTY = 'getty',
+  GOOGLE_DRIVE = 'google_drive',
+  IMAGE_SEARCH = 'image_search',
+  INSTAGRAM = 'instagram',
+  ISTOCK = 'istock',
+  LOCAL = 'local',
+  SHUTTERSTOCK = 'shutterstock',
+  UNSPLASH = 'unsplash',
+  URL = 'url',
 }
 
 export interface CloudinaryWidget {

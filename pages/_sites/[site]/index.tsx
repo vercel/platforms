@@ -1,16 +1,16 @@
-import Layout from "@/components/sites/Layout";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import BlurImage from "@/components/BlurImage";
-import BlogCard from "@/components/BlogCard";
-import Loader from "@/components/sites/Loader";
-import Date from "@/components/Date";
-import prisma from "@/lib/prisma";
+import Layout from '@/components/sites/Layout';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import BlurImage from '@/components/BlurImage';
+import BlogCard from '@/components/BlogCard';
+import Loader from '@/components/sites/Loader';
+import Date from '@/components/Date';
+import prisma from '@/lib/prisma';
 
-import type { GetStaticPaths, GetStaticProps } from "next";
-import type { _SiteData, Meta } from "@/types";
-import type { ParsedUrlQuery } from "querystring";
-import { placeholderBlurhash } from "@/lib/util";
+import type { GetStaticPaths, GetStaticProps } from 'next';
+import type { _SiteData, Meta } from '@/types';
+import type { ParsedUrlQuery } from 'querystring';
+import { placeholderBlurhash } from '@/lib/util';
 
 interface PathProps extends ParsedUrlQuery {
   site: string;
@@ -29,7 +29,7 @@ export default function Index({ stringifiedData }: IndexProps) {
   const meta = {
     title: data.name,
     description: data.description,
-    logo: "/logo.png",
+    logo: '/logo.png',
     ogImage: data.image,
     ogUrl: data.customDomain
       ? data.customDomain
@@ -45,7 +45,7 @@ export default function Index({ stringifiedData }: IndexProps) {
               <div className="relative group h-80 sm:h-150 w-full mx-auto overflow-hidden lg:rounded-xl">
                 {data.posts[0].image ? (
                   <BlurImage
-                    alt={data.posts[0].title ?? ""}
+                    alt={data.posts[0].title ?? ''}
                     blurDataURL={
                       data.posts[0].imageBlurhash ?? placeholderBlurhash
                     }
@@ -72,7 +72,7 @@ export default function Index({ stringifiedData }: IndexProps) {
                   <div className="relative w-8 h-8 flex-none rounded-full overflow-hidden">
                     {data.user?.image ? (
                       <BlurImage
-                        alt={data.user?.name ?? "User Avatar"}
+                        alt={data.user?.name ?? 'User Avatar'}
                         width={100}
                         height={100}
                         className="w-full h-full object-cover"
@@ -129,7 +129,7 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
     prisma.site.findMany({
       // you can remove this if you want to generate all sites at build time
       where: {
-        subdomain: "demo",
+        subdomain: 'demo',
       },
       select: {
         subdomain: true,
@@ -141,7 +141,7 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
           customDomain: null,
         },
         // you can remove this if you want to generate all sites at build time
-        customDomain: "platformize.co",
+        customDomain: 'platformize.co',
       },
       select: {
         customDomain: true,
@@ -152,10 +152,10 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
   const allPaths = [
     ...subdomains.map(({ subdomain }) => subdomain),
     ...customDomains.map(({ customDomain }) => customDomain),
-  ].filter((path) => path) as Array<string>;
+  ].filter(path => path) as Array<string>;
 
   return {
-    paths: allPaths.map((path) => ({
+    paths: allPaths.map(path => ({
       params: {
         site: path,
       },
@@ -167,7 +167,7 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
 export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
   params,
 }) => {
-  if (!params) throw new Error("No path parameters found");
+  if (!params) throw new Error('No path parameters found');
 
   const { site } = params;
 
@@ -178,7 +178,7 @@ export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
     subdomain: site,
   };
 
-  if (site.includes(".")) {
+  if (site.includes('.')) {
     filter = {
       customDomain: site,
     };
@@ -194,7 +194,7 @@ export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
         },
         orderBy: [
           {
-            createdAt: "desc",
+            createdAt: 'desc',
           },
         ],
       },

@@ -1,9 +1,9 @@
-import type { Post, Site, User } from "@prisma/client";
+import type { Post, Site, User } from '@prisma/client';
 
 export interface AdjacentPost
   extends Pick<
     Post,
-    "createdAt" | "description" | "image" | "imageBlurhash" | "slug" | "title"
+    'createdAt' | 'description' | 'image' | 'imageBlurhash' | 'slug' | 'title'
   > {}
 
 export interface _SiteData extends Site {

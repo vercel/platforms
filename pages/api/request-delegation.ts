@@ -1,6 +1,6 @@
-import { HttpMethod } from "@/types";
+import { HttpMethod } from '@/types';
 
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function requestDelegation(
   req: NextApiRequest,
@@ -14,7 +14,7 @@ export default async function requestDelegation(
       {
         headers: {
           Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         method: HttpMethod.POST,
       }
