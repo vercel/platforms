@@ -37,11 +37,11 @@ Another example is [Hashnode](https://vercel.com/customers/hashnode), a popular 
 
 - [eda.hashnode.dev](https://eda.hashnode.dev/)
 - [katycodesstuff.hashnode.dev](https://katycodesstuff.hashnode.dev/)
-- [pit.hashnode.dev](https://pit.hashnode.dev/)
+- [akoskm.hashnode.dev](https://akoskm.hashnode.dev/)
 
 Users can also map custom domains to their `.hashnode.dev` subdomain:
 
-- [catalins.tech](https://catalins.tech/) → [pit.hashnode.dev](https://pit.hashnode.dev/)
+- [akoskm.com](https://akoskm.com/) → [akoskm.hashnode.dev](https://akoskm.hashnode.dev/)
 
 This repository makes it easier than ever for creators to build their own platform.
 
@@ -66,7 +66,7 @@ These are content-heavy platforms (blogs) with simple, standardized page layouts
 
 1. [Hashnode](https://hashnode.com)
 2. [Mirror.xyz](https://mirror.xyz/)
-3. [Papyrus.so](https://papyrus.so/)
+3. [Read.cv](https://read.cv/)
 
 ### 2. Website & e-commerce store builders
 
