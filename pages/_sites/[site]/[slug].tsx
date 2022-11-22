@@ -127,6 +127,7 @@ export default function Post({
       </div>
 
       <article className="w-11/12 sm:w-3/4 m-auto prose prose-md sm:prose-lg">
+        {/* @ts-ignore */}
         <MDXRemote {...data.mdxSource} components={components} />
       </article>
 
