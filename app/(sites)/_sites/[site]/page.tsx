@@ -122,7 +122,7 @@ export default async function Page({ params }: { params: { site: string } }) {
       )}
 
       {data.posts.length > 1 && (
-        <div className="max-w-screen-xl mx-5 xl:mx-auto my-20">
+        <div className="max-w-screen-xl mx-5 xl:mx-auto my-40">
           <h2 className="font-title text-4xl md:text-5xl mb-10">
             More stories
           </h2>

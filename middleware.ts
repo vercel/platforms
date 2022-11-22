@@ -1,3 +1,4 @@
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
@@ -14,11 +15,14 @@ export const config = {
   ],
 };
 
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
   const hostname = req.headers.get("host") || "demo.vercel.pub";
+
+  // Get the pathname of the request (e.g. /, /about, /blog/first-post)
+  const path = url.pathname;
 
   // Only for demo purposes - remove this if you want to use your root domain as the landing page
   if (hostname === "vercel.pub" || hostname === "platforms.vercel.app") {
@@ -36,27 +40,27 @@ export default function middleware(req: NextRequest) {
           .replace(`.platformize.vercel.app`, "")
       : hostname.replace(`.localhost:3000`, "");
   // rewrites for app pages
-  if (currentHost == "app") {
-    if (
-      url.pathname === "/login" &&
-      (req.cookies.get("next-auth.session-token") ||
-        req.cookies.get("__Secure-next-auth.session-token"))
-    ) {
-      url.pathname = "/";
-      return NextResponse.redirect(url);
-    }
-
-    url.pathname = `/app${url.pathname}`;
-    return NextResponse.rewrite(url);
+  if (currentHost === "app") {
+    // const session = await getToken({
+    //   req,
+    //   secret: process.env.NEXTAUTH_SECRET,
+    // });
+    // if (!session?.email && path !== "/login" && path !== "/register") {
+    //   return NextResponse.redirect(new URL("/login", req.url));
+    // } else if (session?.email && (path === "/login" || path === "/register")) {
+    //   return NextResponse.redirect(new URL("/", req.url));
+    // }
+    console.log("app", path, currentHost);
+    return NextResponse.rewrite(new URL(`/_app${path}`, req.url));
   }
 
   // rewrite root application to `/home` folder
   if (hostname === "localhost:3000" || hostname === "platformize.vercel.app") {
-    url.pathname = `/home${url.pathname}`;
-    return NextResponse.rewrite(url);
+    return NextResponse.rewrite(new URL(`/home/${path}`, req.url));
   }
 
   // rewrite everything else to `/_sites/[site] dynamic route
-  url.pathname = `/_sites/${currentHost}${url.pathname}`;
-  return NextResponse.rewrite(url);
+  return NextResponse.rewrite(
+    new URL(`/_sites/${currentHost}${path}`, req.url)
+  );
 }
