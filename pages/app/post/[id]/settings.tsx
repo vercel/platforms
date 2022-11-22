@@ -15,6 +15,7 @@ import { HttpMethod } from "@/types";
 import type { ChangeEvent } from "react";
 
 import type { WithSitePost } from "@/types";
+import { placeholderBlurhash } from "@/lib/util";
 
 interface SettingsData {
   slug: string;
@@ -181,7 +182,7 @@ export default function PostSettings() {
                     height={500}
                     placeholder="blur"
                     className="rounded-md w-full h-full object-cover"
-                    blurDataURL={data.imageBlurhash}
+                    blurDataURL={data.imageBlurhash || placeholderBlurhash}
                   />
                 )}
               </div>

@@ -1,7 +1,9 @@
 import cuid from "cuid";
+import { NextApiRequest, NextApiResponse } from "next";
+import { unstable_getServerSession } from "next-auth/next";
+import { authOptions } from "pages/api/auth/[...nextauth]";
 import prisma from "@/lib/prisma";
 
-import type { NextApiRequest, NextApiResponse } from "next";
 import type { Site } from ".prisma/client";
 import type { Session } from "next-auth";
 import { placeholderBlurhash } from "../util";
@@ -125,7 +127,23 @@ export async function deleteSite(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void | NextApiResponse> {
+  const session = await unstable_getServerSession(req, res, authOptions);
+  if (!session?.user.id) return res.status(401).end("Unauthorized");
   const { siteId } = req.query;
+
+  if (!siteId || typeof siteId !== "string") {
+    return res.status(400).json({ error: "Missing or misconfigured site ID" });
+  }
+
+  const site = await prisma.site.findFirst({
+    where: {
+      id: siteId,
+      user: {
+        id: session.user.id,
+      },
+    },
+  });
+  if (!site) return res.status(404).end("Site not found");
 
   if (Array.isArray(siteId))
     return res
@@ -174,8 +192,25 @@ export async function updateSite(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void | NextApiResponse<Site>> {
+  const session = await unstable_getServerSession(req, res, authOptions);
+  if (!session?.user.id) return res.status(401).end("Unauthorized");
+
   const { id, currentSubdomain, name, description, image, imageBlurhash } =
     req.body;
+
+  if (!id || typeof id !== "string") {
+    return res.status(400).json({ error: "Missing or misconfigured site ID" });
+  }
+
+  const site = await prisma.site.findFirst({
+    where: {
+      id,
+      user: {
+        id: session.user.id,
+      },
+    },
+  });
+  if (!site) return res.status(404).end("Site not found");
 
   const sub = req.body.subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
   const subdomain = sub.length > 0 ? sub : currentSubdomain;

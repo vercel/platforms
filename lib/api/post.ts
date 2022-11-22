@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
+import { unstable_getServerSession } from "next-auth/next";
+import { authOptions } from "pages/api/auth/[...nextauth]";
 import type { Post, Site } from ".prisma/client";
 import type { Session } from "next-auth";
 import { revalidate } from "@/lib/revalidate";
@@ -33,12 +35,10 @@ export async function getPost(
   if (
     Array.isArray(postId) ||
     Array.isArray(siteId) ||
-    Array.isArray(published)
+    Array.isArray(published) ||
+    !session.user.id
   )
     return res.status(400).end("Bad request. Query parameters are not valid.");
-
-  if (!session.user.id)
-    return res.status(500).end("Server failed to get session user ID");
 
   try {
     if (postId) {
@@ -104,16 +104,28 @@ export async function getPost(
  */
 export async function createPost(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  session: Session
 ): Promise<void | NextApiResponse<{
   postId: string;
 }>> {
   const { siteId } = req.query;
 
-  if (Array.isArray(siteId))
+  if (!siteId || typeof siteId !== "string" || !session?.user?.id) {
     return res
       .status(400)
-      .end("Bad request. siteId parameter cannot be an array.");
+      .json({ error: "Missing or misconfigured site ID or session ID" });
+  }
+
+  const site = await prisma.site.findFirst({
+    where: {
+      id: siteId,
+      user: {
+        id: session.user.id,
+      },
+    },
+  });
+  if (!site) return res.status(404).end("Site not found");
 
   try {
     const response = await prisma.post.create({
@@ -148,14 +160,30 @@ export async function createPost(
  */
 export async function deletePost(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  session: Session
 ): Promise<void | NextApiResponse> {
   const { postId } = req.query;
 
-  if (Array.isArray(postId))
+  if (!postId || typeof postId !== "string" || !session?.user?.id) {
     return res
       .status(400)
-      .end("Bad request. postId parameter cannot be an array.");
+      .json({ error: "Missing or misconfigured site ID or session ID" });
+  }
+
+  const site = await prisma.site.findFirst({
+    where: {
+      posts: {
+        some: {
+          id: postId,
+        },
+      },
+      user: {
+        id: session.user.id,
+      },
+    },
+  });
+  if (!site) return res.status(404).end("Site not found");
 
   try {
     const response = await prisma.post.delete({
@@ -210,7 +238,8 @@ export async function deletePost(
  */
 export async function updatePost(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  session: Session
 ): Promise<void | NextApiResponse<Post>> {
   const {
     id,
@@ -223,6 +252,26 @@ export async function updatePost(
     subdomain,
     customDomain,
   } = req.body;
+
+  if (!id || typeof id !== "string" || !session?.user?.id) {
+    return res
+      .status(400)
+      .json({ error: "Missing or misconfigured site ID or session ID" });
+  }
+
+  const site = await prisma.site.findFirst({
+    where: {
+      posts: {
+        some: {
+          id,
+        },
+      },
+      user: {
+        id: session.user.id,
+      },
+    },
+  });
+  if (!site) return res.status(404).end("Site not found");
 
   try {
     const post = await prisma.post.update({
