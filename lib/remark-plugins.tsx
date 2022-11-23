@@ -12,11 +12,11 @@ interface NodesToChange {
   node: Literal<string>;
 }
 
-export function replaceLinks(options: { href: string } & WithChildren) {
+export function replaceLinks(options: { href?: string } & WithChildren) {
   // this is technically not a remark plugin but it
   // replaces internal links with <Link /> component
   // and external links with <a target="_blank" />
-  return options.href.startsWith("/") || options.href === "" ? (
+  return options.href?.startsWith("/") || options.href === "" ? (
     <Link href={options.href} className="cursor-pointer">
       {options.children}
     </Link>
