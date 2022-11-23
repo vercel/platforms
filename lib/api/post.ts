@@ -284,7 +284,7 @@ export async function updatePost(
         content,
         slug,
         image,
-        imageBlurhash: await getBlurDataURL(image),
+        imageBlurhash: (await getBlurDataURL(image)) ?? undefined,
         published,
       },
     });
