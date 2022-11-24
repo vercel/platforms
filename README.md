@@ -112,6 +112,11 @@ We also have another [example](https://github.com/vercel/examples/tree/main/solu
   The beauty about a serverless setup is you won’t have to worry about load since each request invokes a separate serverless function, and once it’s cached, you don’t invoke the server anymore (the page is served directly from the Vercel edge). Read more about the [Vercel Edge Network](https://vercel.com/docs/concepts/edge-network/overview) and [how caching works](https://vercel.com/docs/concepts/edge-network/caching).
 
 
+## Caveats
+
+- This template does not work with i18n, which is an [advanced feature in Next.js](https://nextjs.org/docs/advanced-features/i18n-routing).
+
+
 ## Contributing
 
 - [Start a discussion](https://github.com/vercel/platforms/discussions) with a question, piece of feedback, or idea you want to share with the team.
