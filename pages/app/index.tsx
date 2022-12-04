@@ -75,7 +75,7 @@ export default function AppIndex() {
       router.push(`/site/${data.siteId}`);
     } catch (err) {
       console.error(err);
-      alert('Failed to create site. Please try again.');
+      console.log('Failed to create site. Please try again.');
     }
   }  
 
