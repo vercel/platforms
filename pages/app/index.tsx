@@ -53,23 +53,31 @@ export default function AppIndex() {
   );
 
   async function createSite(e: FormEvent<HTMLFormElement>) {
-    const res = await fetch("/api/site", {
-      method: HttpMethod.POST,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: sessionId,
-        name: siteNameRef.current?.value,
-        subdomain: siteSubdomainRef.current?.value,
-        description: siteDescriptionRef.current?.value,
-      }),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch("/api/site", {
+        method: HttpMethod.POST,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: sessionId,
+          name: siteNameRef.current?.value,
+          subdomain: siteSubdomainRef.current?.value,
+          description: siteDescriptionRef.current?.value,
+        }),
+      });
+  
+      if (!res.ok) {
+        throw new Error('Failed to create site');
+      }
+  
       const data = await res.json();
       router.push(`/site/${data.siteId}`);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to create site. Please try again.');
     }
-  }
+  }  
 
   return (
     <Layout>
