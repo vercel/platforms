@@ -66,11 +66,14 @@ async function getTweet(node: Literal<string>) {
 
   const id = matches[1];
 
-  const tweetData = await getTweets(id);
+  try {
+    const tweetData = await getTweets(id);
 
-  node.value =
-    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>";
-
+    node.value =
+      "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>";
+  } catch (e) {
+    node.value = `<Tweet error />`;
+  }
   return node.value;
 }
 
@@ -92,7 +95,6 @@ export function replaceExamples<T extends Node>(prisma: PrismaClient) {
           const mdx = await getExamples(node, prisma);
           node.value = mdx;
         } catch (e) {
-          console.log("ERROR", e);
           return reject(e);
         }
       }

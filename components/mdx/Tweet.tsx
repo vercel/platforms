@@ -32,9 +32,22 @@ function getRemainingTime(ISOString: string) {
 interface TweetProps extends WithClassName {
   id: string;
   metadata: string;
+  error?: boolean;
 }
 
-export default function Tweet({ id, metadata, className }: TweetProps) {
+export default function Tweet({ id, metadata, error, className }: TweetProps) {
+  const [copied, setCopied] = useState(false);
+
+  if (error) {
+    return (
+      <div
+        className={`${className} tweet rounded-lg flex justify-center items-center my-4 w-full h-[36rem] text-sm text-gray-500 border border-gray-300 bg-gray-100 hover:bg-gray-200 transition-all`}
+      >
+        There was an error loading this tweet.
+      </div>
+    );
+  }
+
   const parsedMetadata = JSON.parse(
     metadata.replace(/\n/g, "\\n")
   ) as TweetData;
@@ -96,23 +109,17 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
   const repliedTo =
     referenced_tweets && referenced_tweets.find((t) => t.type === "replied_to");
 
-  const [copied, setCopied] = useState(false);
-
   return (
     <div
       className={`${className} tweet rounded-lg border border-gray-300 bg-white px-8 pt-6 pb-2 my-4 w-full`}
     >
       <div className="flex items-center">
-        <a
-          className="flex h-12 w-12 rounded-full overflow-hidden"
-          href={authorUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={authorUrl} target="_blank" rel="noopener noreferrer">
           <BlurImage
             alt={author.username}
             height={48}
             width={48}
+            className="flex rounded-full overflow-hidden !my-2"
             src={author.profile_image_url}
           />
         </a>
