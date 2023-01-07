@@ -105,21 +105,12 @@ export const getPostData = cache(async (site: string, slug: string) => {
 });
 
 async function getMdxSource(postContents: string) {
-  // Use remark plugins to convert markdown into HTML string
-  const processedContent = await remark()
-    // Native remark plugin that parses markdown into MDX
-    .use(remarkMdx)
-    // Replaces tweets with static <Tweet /> component
-    .use(replaceTweets)
-    // Replaces examples with <Example /> component (only for demo.vercel.pub)
-    .use(() => replaceExamples(prisma))
-    .process(postContents);
-
-  // Convert converted html to string format
-  const contentHtml = String(processedContent);
-
   // Serialize the content string into MDX
-  const mdxSource = await serialize(contentHtml);
+  const mdxSource = await serialize(postContents, {
+    mdxOptions: {
+      remarkPlugins: [replaceTweets, () => replaceExamples(prisma)],
+    },
+  });
 
   return mdxSource;
 }

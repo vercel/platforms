@@ -32,25 +32,24 @@ function getRemainingTime(ISOString: string) {
 interface TweetProps extends WithClassName {
   id: string;
   metadata: string;
-  error?: boolean;
 }
 
-export default function Tweet({ id, metadata, error, className }: TweetProps) {
+export default function Tweet({ id, metadata, className }: TweetProps) {
   const [copied, setCopied] = useState(false);
 
-  if (error) {
+  const parsedMetadata = JSON.parse(
+    metadata.replace(/\n/g, "\\n")
+  ) as TweetData;
+
+  if (!parsedMetadata) {
     return (
       <div
-        className={`${className} tweet rounded-lg flex justify-center items-center my-4 w-full h-[36rem] text-sm text-gray-500 border border-gray-300 bg-gray-100 hover:bg-gray-200 transition-all`}
+        className={`${className} tweet rounded-lg flex justify-center items-center my-4 w-full h-[36rem] text-sm text-gray-500 border border-gray-300 bg-gray-50 hover:bg-gray-100 transition-all`}
       >
         There was an error loading this tweet.
       </div>
     );
   }
-
-  const parsedMetadata = JSON.parse(
-    metadata.replace(/\n/g, "\\n")
-  ) as TweetData;
 
   const {
     author,

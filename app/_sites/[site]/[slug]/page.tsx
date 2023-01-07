@@ -1,9 +1,6 @@
 import BlogCard from "@/components/BlogCard";
 import BlurImage from "@/components/BlurImage";
-import Examples from "@/components/mdx/Examples";
 import prisma from "@/lib/prisma";
-import Tweet from "@/components/mdx/Tweet";
-import { replaceLinks } from "@/lib/remark-plugins";
 
 import type { AdjacentPost, Meta, _SiteSlugData } from "@/types";
 import { placeholderBlurhash } from "@/lib/util";
