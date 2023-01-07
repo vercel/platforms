@@ -20,11 +20,13 @@ export const calTitle = localFont({
 });
 export const lora = Lora({
   variable: "--font-title",
+  subsets: ["latin"],
   weight: "600",
   display: "swap",
 });
 export const work = Work_Sans({
   variable: "--font-title",
+  subsets: ["latin"],
   weight: "600",
   display: "swap",
 });
