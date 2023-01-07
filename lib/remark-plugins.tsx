@@ -9,14 +9,14 @@ import type { Example, PrismaClient } from "@prisma/client";
 import type { WithChildren } from "@/types";
 
 interface NodesToChange {
-  node: Literal<string>;
+  node: Node;
 }
 
-export function replaceLinks(options: { href: string } & WithChildren) {
+export function replaceLinks(options: { href?: string } & WithChildren) {
   // this is technically not a remark plugin but it
   // replaces internal links with <Link /> component
   // and external links with <a target="_blank" />
-  return options.href.startsWith("/") || options.href === "" ? (
+  return options.href?.startsWith("/") || options.href === "" ? (
     <Link href={options.href} className="cursor-pointer">
       {options.children}
     </Link>
@@ -45,9 +45,21 @@ export function replaceTweets<T extends Node>() {
       });
       for (const { node } of nodesToChange) {
         try {
-          node.type = "html";
-          const mdx = await getTweet(node);
-          node.value = mdx;
+          const data = await getTweet(node as Literal<string>);
+
+          node.type = "mdxJsxFlowElement";
+          // @ts-expect-error - Node is a generic type, but we are creating a JSX node here
+          node.name = 'Tweet'
+          // @ts-expect-error - Node is a generic type, but we are creating a JSX node here
+          node.attributes = [{
+            type: 'mdxJsxAttribute',
+            name: 'id',
+            value: data.id
+          }, {
+            type: 'mdxJsxAttribute',
+            name: 'metadata',
+            value: data.metadata
+          }];
         } catch (e) {
           console.log("ERROR", e);
           return reject(e);
@@ -68,10 +80,10 @@ async function getTweet(node: Literal<string>) {
 
   const tweetData = await getTweets(id);
 
-  node.value =
-    "<Tweet id='" + id + "' metadata={`" + JSON.stringify(tweetData) + "`}/>";
-
-  return node.value;
+  return {
+    id,
+    metadata: JSON.stringify(tweetData)
+  }
 }
 
 export function replaceExamples<T extends Node>(prisma: PrismaClient) {
@@ -88,9 +100,13 @@ export function replaceExamples<T extends Node>(prisma: PrismaClient) {
       });
       for (const { node } of nodesToChange) {
         try {
-          node.type = "html";
-          const mdx = await getExamples(node, prisma);
-          node.value = mdx;
+          const data = await getExamples(node, prisma);
+          // @ts-expect-error - Node is a generic type, but we are creating a JSX node here
+          node.attributes = [{
+            type: 'mdxJsxAttribute',
+            name: 'data',
+            value: data
+          }]
         } catch (e) {
           console.log("ERROR", e);
           return reject(e);
@@ -115,5 +131,5 @@ async function getExamples(node: any, prisma: PrismaClient) {
     data.push(results);
   }
 
-  return `<Examples data={${JSON.stringify(data)}} />`;
+  return JSON.stringify(data);
 }

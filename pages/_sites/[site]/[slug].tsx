@@ -1,6 +1,4 @@
-import remarkMdx from "remark-mdx";
 import { MDXRemote } from "next-mdx-remote";
-import { remark } from "remark";
 import { serialize } from "next-mdx-remote/serialize";
 import { useRouter } from "next/router";
 
@@ -127,7 +125,6 @@ export default function Post({
       </div>
 
       <article className="w-11/12 sm:w-3/4 m-auto prose prose-md sm:prose-lg">
-        {/* @ts-ignore */}
         <MDXRemote {...data.mdxSource} components={components} />
       </article>
 
@@ -283,21 +280,10 @@ export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
 };
 
 async function getMdxSource(postContents: string) {
-  // Use remark plugins to convert markdown into HTML string
-  const processedContent = await remark()
-    // Native remark plugin that parses markdown into MDX
-    .use(remarkMdx)
-    // Replaces tweets with static <Tweet /> component
-    .use(replaceTweets)
-    // Replaces examples with <Example /> component (only for demo.vercel.pub)
-    .use(() => replaceExamples(prisma))
-    .process(postContents);
-
-  // Convert converted html to string format
-  const contentHtml = String(processedContent);
-
   // Serialize the content string into MDX
-  const mdxSource = await serialize(contentHtml);
+  const mdxSource = await serialize(postContents, { mdxOptions: {
+    remarkPlugins: [replaceTweets, () => replaceExamples(prisma)]
+  }});
 
   return mdxSource;
 }
