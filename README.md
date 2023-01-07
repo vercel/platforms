@@ -37,11 +37,11 @@ Another example is [Hashnode](https://vercel.com/customers/hashnode), a popular 
 
 - [eda.hashnode.dev](https://eda.hashnode.dev/)
 - [katycodesstuff.hashnode.dev](https://katycodesstuff.hashnode.dev/)
-- [pit.hashnode.dev](https://pit.hashnode.dev/)
+- [akoskm.hashnode.dev](https://akoskm.hashnode.dev/)
 
 Users can also map custom domains to their `.hashnode.dev` subdomain:
 
-- [catalins.tech](https://catalins.tech/) → [pit.hashnode.dev](https://pit.hashnode.dev/)
+- [akoskm.com](https://akoskm.com/) → [akoskm.hashnode.dev](https://akoskm.hashnode.dev/)
 
 This repository makes it easier than ever for creators to build their own platform.
 
@@ -66,7 +66,7 @@ These are content-heavy platforms (blogs) with simple, standardized page layouts
 
 1. [Hashnode](https://hashnode.com)
 2. [Mirror.xyz](https://mirror.xyz/)
-3. [Papyrus.so](https://papyrus.so/)
+3. [Read.cv](https://read.cv/)
 
 ### 2. Website & e-commerce store builders
 
@@ -110,6 +110,11 @@ We also have another [example](https://github.com/vercel/examples/tree/main/solu
 - **Is it wise to be using the `/_sites/[site]` path to serve all static pages/website? Wouldn't that lead to a significant amount of load on a single Next.js server?**
 
   The beauty about a serverless setup is you won’t have to worry about load since each request invokes a separate serverless function, and once it’s cached, you don’t invoke the server anymore (the page is served directly from the Vercel edge). Read more about the [Vercel Edge Network](https://vercel.com/docs/concepts/edge-network/overview) and [how caching works](https://vercel.com/docs/concepts/edge-network/caching).
+
+
+## Caveats
+
+- This template does not work with i18n, which is an [advanced feature in Next.js](https://nextjs.org/docs/advanced-features/i18n-routing).
 
 
 ## Contributing

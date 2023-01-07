@@ -14,11 +14,11 @@ export default async function post(req: NextApiRequest, res: NextApiResponse) {
     case HttpMethod.GET:
       return getPost(req, res, session);
     case HttpMethod.POST:
-      return createPost(req, res);
+      return createPost(req, res, session);
     case HttpMethod.DELETE:
-      return deletePost(req, res);
+      return deletePost(req, res, session);
     case HttpMethod.PUT:
-      return updatePost(req, res);
+      return updatePost(req, res, session);
     default:
       res.setHeader("Allow", [
         HttpMethod.GET,
