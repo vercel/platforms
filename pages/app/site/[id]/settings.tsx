@@ -22,6 +22,7 @@ interface SettingsData
     | "id"
     | "name"
     | "description"
+    | "font"
     | "subdomain"
     | "customDomain"
     | "image"
@@ -52,6 +53,7 @@ export default function SiteSettings() {
     id: "",
     name: null,
     description: null,
+    font: "font-cal",
     subdomain: null,
     customDomain: null,
     image: null,
@@ -173,7 +175,7 @@ export default function SiteSettings() {
         <h1 className="font-cal text-5xl mb-12">Site Settings</h1>
         <div className="mb-28 flex flex-col space-y-12">
           <div className="flex flex-col space-y-6">
-            <h2 className="font-cal text-2xl">Site Name</h2>
+            <h2 className="font-cal text-2xl">Name</h2>
             <div className="border border-gray-700 rounded-lg overflow-hidden flex items-center max-w-lg">
               <input
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
@@ -191,7 +193,7 @@ export default function SiteSettings() {
             </div>
           </div>
           <div className="flex flex-col space-y-6">
-            <h2 className="font-cal text-2xl">Site Description</h2>
+            <h2 className="font-cal text-2xl">Description</h2>
             <div className="border border-gray-700 rounded-lg overflow-hidden flex items-center max-w-lg">
               <textarea
                 className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
@@ -206,6 +208,25 @@ export default function SiteSettings() {
                 rows={3}
                 value={data?.description || ""}
               />
+            </div>
+          </div>
+          <div className="flex flex-col space-y-6">
+            <h2 className="font-cal text-2xl">Font</h2>
+            <div className="border border-gray-700 rounded-lg overflow-hidden flex items-center max-w-lg">
+              <select
+                onChange={(e) =>
+                  setData((data) => ({
+                    ...data,
+                    font: (e.target as HTMLSelectElement).value,
+                  }))
+                }
+                value={data?.font || "font-cal"}
+                className="w-full px-5 py-3 font-cal text-gray-700 bg-white border-none focus:outline-none focus:ring-0 rounded-none placeholder-gray-400"
+              >
+                <option value="font-cal">Cal Sans</option>
+                <option value="font-lora">Lora</option>
+                <option value="font-work">Work Sans</option>
+              </select>
             </div>
           </div>
           <div className="flex flex-col space-y-6">

@@ -77,9 +77,12 @@ async function getTweet(node: Literal<string>) {
   if (!matches) throw new Error(`Failed to get tweet: ${node}`);
 
   const id = matches[1];
-
-  const tweetData = await getTweets(id);
-
+  let tweetData = null
+  try {
+    tweetData = await getTweets(id);
+  } catch (e) {
+    console.log("ERROR", e);
+  }
   return {
     id,
     metadata: JSON.stringify(tweetData)
@@ -108,7 +111,6 @@ export function replaceExamples<T extends Node>(prisma: PrismaClient) {
             value: data
           }]
         } catch (e) {
-          console.log("ERROR", e);
           return reject(e);
         }
       }

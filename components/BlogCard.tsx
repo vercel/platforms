@@ -1,6 +1,5 @@
 import Link from "next/link";
 import BlurImage from "./BlurImage";
-import Date from "./Date";
 
 import type { Post } from "@prisma/client";
 import { placeholderBlurhash } from "@/lib/util";
@@ -32,12 +31,17 @@ export default function BlogCard({ data }: BlogCardProps) {
           </div>
         )}
         <div className="py-8 px-5 h-36 border-t border-gray-200">
-          <h3 className="font-cal text-xl tracking-wide">{data.title}</h3>
+          <h3 className="font-title text-xl tracking-wide">{data.title}</h3>
           <p className="text-md italic text-gray-600 my-2 truncate">
             {data.description}
           </p>
           <p className="text-sm text-gray-600 my-2">
-            Published <Date dateString={data.createdAt.toString()} />
+            Published{" "}
+            {data.createdAt.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
           </p>
         </div>
       </div>

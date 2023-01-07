@@ -2,15 +2,13 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
     "./lib/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: "media",
   theme: {
-    fontFamily: {
-      cal: ["Cal Sans", "Inter var", "sans-serif"],
-    },
     extend: {
       colors: {
         current: "currentColor",
@@ -25,7 +23,9 @@ module.exports = {
         30: "7.5rem",
       },
       fontFamily: {
-        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        default: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
+        cal: ["var(--font-cal)", ...defaultTheme.fontFamily.sans],
+        title: ["var(--font-title)", ...defaultTheme.fontFamily.sans],
         mono: ["Consolas", ...defaultTheme.fontFamily.mono],
       },
       typography: {

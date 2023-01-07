@@ -1,6 +1,8 @@
 import { Analytics } from "@vercel/analytics/react";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
+import { cal, inter } from "@/styles/fonts";
+import cx from "classnames";
 
 import "@/styles/globals.css";
 
@@ -12,7 +14,9 @@ export default function App({
 }: AppProps<{ session: Session }>) {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <main className={cx(cal.variable, inter.variable)}>
+        <Component {...pageProps} />
+      </main>
       <Analytics />
     </SessionProvider>
   );

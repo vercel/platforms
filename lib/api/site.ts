@@ -195,7 +195,7 @@ export async function updateSite(
   const session = await unstable_getServerSession(req, res, authOptions);
   if (!session?.user.id) return res.status(401).end("Unauthorized");
 
-  const { id, currentSubdomain, name, description, image, imageBlurhash } =
+  const { id, currentSubdomain, name, description, font, image, imageBlurhash } =
     req.body;
 
   if (!id || typeof id !== "string") {
@@ -223,6 +223,7 @@ export async function updateSite(
       data: {
         name,
         description,
+        font,
         subdomain,
         image,
         imageBlurhash,

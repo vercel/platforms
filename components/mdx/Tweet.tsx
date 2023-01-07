@@ -1,3 +1,5 @@
+"use client";
+
 import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -33,9 +35,21 @@ interface TweetProps extends WithClassName {
 }
 
 export default function Tweet({ id, metadata, className }: TweetProps) {
+  const [copied, setCopied] = useState(false);
+
   const parsedMetadata = JSON.parse(
     metadata.replace(/\n/g, "\\n")
   ) as TweetData;
+
+  if (!parsedMetadata) {
+    return (
+      <div
+        className={`${className} tweet rounded-lg flex justify-center items-center my-4 w-full h-[36rem] text-sm text-gray-500 border border-gray-300 bg-gray-50 hover:bg-gray-100 transition-all`}
+      >
+        There was an error loading this tweet.
+      </div>
+    );
+  }
 
   const {
     author,
@@ -94,23 +108,17 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
   const repliedTo =
     referenced_tweets && referenced_tweets.find((t) => t.type === "replied_to");
 
-  const [copied, setCopied] = useState(false);
-
   return (
     <div
       className={`${className} tweet rounded-lg border border-gray-300 bg-white px-8 pt-6 pb-2 my-4 w-full`}
     >
       <div className="flex items-center">
-        <a
-          className="flex h-12 w-12 rounded-full overflow-hidden"
-          href={authorUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={authorUrl} target="_blank" rel="noopener noreferrer">
           <BlurImage
             alt={author.username}
             height={48}
             width={48}
+            className="flex rounded-full overflow-hidden !my-2"
             src={author.profile_image_url}
           />
         </a>
@@ -233,19 +241,20 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
           rel="noreferrer"
           target="_blank"
         >
-          <div className="rounded-2xl overflow-hidden border border-gray-200 drop-shadow-sm mb-5">
+          <div className="rounded-2xl overflow-hidden border border-gray-200 drop-shadow-sm my-5">
             <BlurImage
               key={url_meta.unwound_url}
               alt={url_meta.title}
               width={2048}
               height={1000}
-              objectFit="cover"
               src={url_meta.images[0].url}
-              className="hover:brightness-90 transition-all ease-in-out duration-150"
+              className="w-full h-[300px] object-cover !my-0 hover:brightness-90 transition-all ease-in-out duration-150"
             />
-            <div className="w-full bg-white px-8 py-2">
-              <p className="!m-0">{url_meta.title}</p>
-              <p className="text-sm">{url_meta.description}</p>
+            <div className="w-full bg-white px-8 py-6">
+              <p className="!m-0 font-semibold">{url_meta.title}</p>
+              <p className="!m-0 text-sm font-normal text-gray-600">
+                {url_meta.description}
+              </p>
             </div>
           </div>
         </a>
