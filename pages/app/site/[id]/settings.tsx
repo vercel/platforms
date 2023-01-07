@@ -15,7 +15,6 @@ import { fetcher } from "@/lib/fetcher";
 import { HttpMethod } from "@/types";
 
 import type { Site } from "@prisma/client";
-import { setDate } from "date-fns";
 
 interface SettingsData
   extends Pick<
@@ -54,7 +53,7 @@ export default function SiteSettings() {
     id: "",
     name: null,
     description: null,
-    font: null,
+    font: "font-cal",
     subdomain: null,
     customDomain: null,
     image: null,
