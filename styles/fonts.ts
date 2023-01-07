@@ -3,6 +3,7 @@ import { Inter, Lora, Work_Sans } from "@next/font/google";
 
 export const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
 });
 export const cal = localFont({
   src: "./CalSans-SemiBold.woff2",

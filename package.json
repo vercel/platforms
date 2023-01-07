@@ -21,6 +21,7 @@
     "@next/font": "^13.1.1",
     "@prisma/client": "^4.8.1",
     "@vercel/analytics": "^0.1.6",
+    "classnames": "^2.3.2",
     "clsx": "^1.2.1",
     "cuid": "^2.1.8",
     "date-fns": "^2.29.3",
