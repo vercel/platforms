@@ -174,8 +174,15 @@ export async function updateSite(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void | NextApiResponse<Site>> {
-  const { id, currentSubdomain, name, description, image, imageBlurhash } =
-    req.body;
+  const {
+    id,
+    currentSubdomain,
+    name,
+    description,
+    font,
+    image,
+    imageBlurhash,
+  } = req.body;
 
   const sub = req.body.subdomain.replace(/[^a-zA-Z0-9/-]+/g, "");
   const subdomain = sub.length > 0 ? sub : currentSubdomain;
@@ -188,6 +195,7 @@ export async function updateSite(
       data: {
         name,
         description,
+        font,
         subdomain,
         image,
         imageBlurhash,
