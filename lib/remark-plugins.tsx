@@ -49,17 +49,20 @@ export function replaceTweets<T extends Node>() {
 
           node.type = "mdxJsxFlowElement";
           // @ts-expect-error - Node is a generic type, but we are creating a JSX node here
-          node.name = 'Tweet'
+          node.name = "Tweet";
           // @ts-expect-error - Node is a generic type, but we are creating a JSX node here
-          node.attributes = [{
-            type: 'mdxJsxAttribute',
-            name: 'id',
-            value: data.id
-          }, {
-            type: 'mdxJsxAttribute',
-            name: 'metadata',
-            value: data.metadata
-          }];
+          node.attributes = [
+            {
+              type: "mdxJsxAttribute",
+              name: "id",
+              value: data.id,
+            },
+            {
+              type: "mdxJsxAttribute",
+              name: "metadata",
+              value: data.metadata,
+            },
+          ];
         } catch (e) {
           console.log("ERROR", e);
           return reject(e);
@@ -77,7 +80,7 @@ async function getTweet(node: Literal<string>) {
   if (!matches) throw new Error(`Failed to get tweet: ${node}`);
 
   const id = matches[1];
-  let tweetData = null
+  let tweetData = null;
   try {
     tweetData = await getTweets(id);
   } catch (e) {
@@ -85,8 +88,8 @@ async function getTweet(node: Literal<string>) {
   }
   return {
     id,
-    metadata: JSON.stringify(tweetData)
-  }
+    metadata: JSON.stringify(tweetData),
+  };
 }
 
 export function replaceExamples<T extends Node>(prisma: PrismaClient) {
@@ -105,11 +108,13 @@ export function replaceExamples<T extends Node>(prisma: PrismaClient) {
         try {
           const data = await getExamples(node, prisma);
           // @ts-expect-error - Node is a generic type, but we are creating a JSX node here
-          node.attributes = [{
-            type: 'mdxJsxAttribute',
-            name: 'data',
-            value: data
-          }]
+          node.attributes = [
+            {
+              type: "mdxJsxAttribute",
+              name: "data",
+              value: data,
+            },
+          ];
         } catch (e) {
           return reject(e);
         }
