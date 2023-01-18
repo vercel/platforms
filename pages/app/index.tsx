@@ -52,7 +52,7 @@ export default function AppIndex() {
     fetcher
   );
 
-  async function createSite(e: FormEvent<HTMLFormElement>) {
+  async function createSite() {
     const res = await fetch("/api/site", {
       method: HttpMethod.POST,
       headers: {
@@ -65,10 +65,13 @@ export default function AppIndex() {
         description: siteDescriptionRef.current?.value,
       }),
     });
-    if (res.ok) {
-      const data = await res.json();
-      router.push(`/site/${data.siteId}`);
+
+    if (!res.ok) {
+      alert("Failed to create site");
     }
+
+    const data = await res.json();
+    router.push(`/site/${data.siteId}`);
   }
 
   return (
@@ -78,7 +81,7 @@ export default function AppIndex() {
           onSubmit={(event) => {
             event.preventDefault();
             setCreatingSite(true);
-            createSite(event);
+            createSite();
           }}
           className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg"
         >
