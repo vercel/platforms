@@ -4,13 +4,12 @@ import { useRouter } from "next/router";
 import BlurImage from "@/components/BlurImage";
 import BlogCard from "@/components/BlogCard";
 import Loader from "@/components/sites/Loader";
-import Date from "@/components/Date";
 import prisma from "@/lib/prisma";
 
 import type { GetStaticPaths, GetStaticProps } from "next";
 import type { _SiteData, Meta } from "@/types";
 import type { ParsedUrlQuery } from "querystring";
-import { placeholderBlurhash } from "@/lib/util";
+import { placeholderBlurhash, toDateString } from "@/lib/utils";
 
 interface PathProps extends ParsedUrlQuery {
   site: string;
@@ -89,7 +88,7 @@ export default function Index({ stringifiedData }: IndexProps) {
                   </p>
                   <div className="border-l border-gray-600 h-6" />
                   <p className="text-sm md:text-base font-light text-gray-500 w-10/12 m-auto my-5">
-                    <Date dateString={data.posts[0].createdAt.toString()} />
+                    {toDateString(data.posts[0].createdAt)}
                   </p>
                 </div>
               </div>

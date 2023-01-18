@@ -91,6 +91,7 @@ model Site {
   name          String?
   description   String? @db.Text
   logo          String?
+  font          String @default("font-cal")
   image         String? @db.Text
   imageBlurhash String? @db.LongText
   subdomain     String? @unique

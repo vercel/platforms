@@ -1,9 +1,8 @@
 import Link from "next/link";
 import BlurImage from "./BlurImage";
-import Date from "./Date";
 
 import type { Post } from "@prisma/client";
-import { placeholderBlurhash } from "@/lib/util";
+import { placeholderBlurhash, toDateString } from "@/lib/utils";
 
 interface BlogCardProps {
   data: Pick<
@@ -37,7 +36,7 @@ export default function BlogCard({ data }: BlogCardProps) {
             {data.description}
           </p>
           <p className="text-sm text-gray-600 my-2">
-            Published <Date dateString={data.createdAt.toString()} />
+            Published {toDateString(data.createdAt)}
           </p>
         </div>
       </div>
