@@ -25,7 +25,10 @@ export const getTweets = async (id: string) => {
         },
       }
     );
-    const tweet = (await response.json()) as Tweet;
+    const tweet: Tweet = await response.json();
+
+    if (!tweet.data)
+      throw new Error(`Failed to get tweet data for tweet ID: ${id}`);
 
     const getAuthorInfo = (author_id: string) =>
       tweet.includes.users.find((user) => user.id === author_id);
@@ -102,6 +105,8 @@ export const getTweets = async (id: string) => {
           : null,
     };
   } catch (error) {
-    throw new Error(`Failed to get tweet data for tweet ID: ${id}`);
+    throw new Error(
+      `Failed to get tweet data for tweet ID: ${id}. Reason: ${error}`
+    );
   }
 };

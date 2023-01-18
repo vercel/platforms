@@ -15,7 +15,7 @@ import { HttpMethod } from "@/types";
 import type { ChangeEvent } from "react";
 
 import type { WithSitePost } from "@/types";
-import { placeholderBlurhash } from "@/lib/util";
+import { placeholderBlurhash } from "@/lib/utils";
 
 interface SettingsData {
   slug: string;

@@ -8,6 +8,7 @@ export interface AdjacentPost
 
 export interface _SiteData extends Site {
   user: User | null;
+  font: "font-cal" | "font-lora" | "font-work";
   posts: Array<Post>;
 }
 

@@ -1,12 +1,9 @@
-import remarkMdx from "remark-mdx";
 import { MDXRemote } from "next-mdx-remote";
-import { remark } from "remark";
 import { serialize } from "next-mdx-remote/serialize";
 import { useRouter } from "next/router";
 
 import BlogCard from "@/components/BlogCard";
 import BlurImage from "@/components/BlurImage";
-import Date from "@/components/Date";
 import Examples from "@/components/mdx/Examples";
 import Layout from "@/components/sites/Layout";
 import Loader from "@/components/sites/Loader";
@@ -22,7 +19,7 @@ import type { AdjacentPost, Meta, _SiteSlugData } from "@/types";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import type { MDXRemoteSerializeResult } from "next-mdx-remote";
 import type { ParsedUrlQuery } from "querystring";
-import { placeholderBlurhash } from "@/lib/util";
+import { placeholderBlurhash, toDateString } from "@/lib/utils";
 
 const components = {
   a: replaceLinks,
@@ -68,7 +65,7 @@ export default function Post({
       <div className="flex flex-col justify-center items-center">
         <div className="text-center w-full md:w-7/12 m-auto">
           <p className="text-sm md:text-base font-light text-gray-500 w-10/12 m-auto my-5">
-            <Date dateString={data.createdAt.toString()} />
+            {toDateString(data.createdAt)}
           </p>
           <h1 className="font-bold text-3xl font-cal md:text-6xl mb-10 text-gray-800">
             {data.title}
@@ -126,8 +123,10 @@ export default function Post({
         )}
       </div>
 
-      <article className="w-11/12 sm:w-3/4 m-auto prose prose-md sm:prose-lg">
-        {/* @ts-ignore */}
+      <article
+        className="w-11/12 sm:w-3/4 m-auto prose prose-md sm:prose-lg"
+        suppressHydrationWarning={true}
+      >
         <MDXRemote {...data.mdxSource} components={components} />
       </article>
 
@@ -245,10 +244,12 @@ export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
     },
   })) as _SiteSlugData | null;
 
+  console.log(data);
+
   if (!data) return { notFound: true, revalidate: 10 };
 
   const [mdxSource, adjacentPosts] = await Promise.all([
-    getMdxSource(data.content!),
+    getMdxSource(data.content ?? ""),
     prisma.post.findMany({
       where: {
         site: {
@@ -283,21 +284,12 @@ export const getStaticProps: GetStaticProps<PostProps, PathProps> = async ({
 };
 
 async function getMdxSource(postContents: string) {
-  // Use remark plugins to convert markdown into HTML string
-  const processedContent = await remark()
-    // Native remark plugin that parses markdown into MDX
-    .use(remarkMdx)
-    // Replaces tweets with static <Tweet /> component
-    .use(replaceTweets)
-    // Replaces examples with <Example /> component (only for demo.vercel.pub)
-    .use(() => replaceExamples(prisma))
-    .process(postContents);
-
-  // Convert converted html to string format
-  const contentHtml = String(processedContent);
-
   // Serialize the content string into MDX
-  const mdxSource = await serialize(contentHtml);
+  const mdxSource = await serialize(postContents, {
+    mdxOptions: {
+      remarkPlugins: [replaceTweets, () => replaceExamples(prisma)],
+    },
+  });
 
   return mdxSource;
 }
