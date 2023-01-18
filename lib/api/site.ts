@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 
 import type { Site } from ".prisma/client";
 import type { Session } from "next-auth";
-import { placeholderBlurhash } from "../util";
+import { placeholderBlurhash } from "../utils";
 
 /**
  * Get Site
@@ -195,8 +195,15 @@ export async function updateSite(
   const session = await unstable_getServerSession(req, res, authOptions);
   if (!session?.user.id) return res.status(401).end("Unauthorized");
 
-  const { id, currentSubdomain, name, description, font, image, imageBlurhash } =
-    req.body;
+  const {
+    id,
+    currentSubdomain,
+    name,
+    description,
+    font,
+    image,
+    imageBlurhash,
+  } = req.body;
 
   if (!id || typeof id !== "string") {
     return res.status(400).json({ error: "Missing or misconfigured site ID" });

@@ -1,5 +1,3 @@
-"use client";
-
 import BlurImage from "../BlurImage";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -110,7 +108,9 @@ export default function Tweet({ id, metadata, className }: TweetProps) {
 
   return (
     <div
-      className={`${className} tweet rounded-lg border border-gray-300 bg-white px-8 pt-6 pb-2 my-4 w-full`}
+      className={`${
+        className || ""
+      } rounded-lg border border-gray-300 bg-white px-8 pt-6 pb-2 my-4 w-full`}
     >
       <div className="flex items-center">
         <a href={authorUrl} target="_blank" rel="noopener noreferrer">
