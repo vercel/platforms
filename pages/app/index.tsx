@@ -52,32 +52,27 @@ export default function AppIndex() {
     fetcher
   );
 
-  async function createSite(e: FormEvent<HTMLFormElement>) {
-    try {
-      const res = await fetch("/api/site", {
-        method: HttpMethod.POST,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: sessionId,
-          name: siteNameRef.current?.value,
-          subdomain: siteSubdomainRef.current?.value,
-          description: siteDescriptionRef.current?.value,
-        }),
-      });
-  
-      if (!res.ok) {
-        throw new Error('Failed to create site');
-      }
-  
-      const data = await res.json();
-      router.push(`/site/${data.siteId}`);
-    } catch (err) {
-      console.error(err);
-      console.log('Failed to create site. Please try again.');
+  async function createSite() {
+    const res = await fetch("/api/site", {
+      method: HttpMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: sessionId,
+        name: siteNameRef.current?.value,
+        subdomain: siteSubdomainRef.current?.value,
+        description: siteDescriptionRef.current?.value,
+      }),
+    });
+
+    if (!res.ok) {
+      alert("Failed to create site");
     }
-  }  
+
+    const data = await res.json();
+    router.push(`/site/${data.siteId}`);
+  }
 
   return (
     <Layout>
@@ -86,7 +81,7 @@ export default function AppIndex() {
           onSubmit={(event) => {
             event.preventDefault();
             setCreatingSite(true);
-            createSite(event);
+            createSite();
           }}
           className="inline-block w-full max-w-md pt-8 overflow-hidden text-center align-middle transition-all bg-white shadow-xl rounded-lg"
         >
