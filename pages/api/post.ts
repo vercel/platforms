@@ -1,5 +1,5 @@
 import { createPost, deletePost, getPost, updatePost } from "@/lib/api";
-import { unstable_getServerSession } from "next-auth/next";
+import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "./auth/[...nextauth]";
 import { HttpMethod } from "@/types";
@@ -7,7 +7,7 @@ import { HttpMethod } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function post(req: NextApiRequest, res: NextApiResponse) {
-  const session = await unstable_getServerSession(req, res, authOptions);
+  const session = await getServerSession(req, res, authOptions);
   if (!session) return res.status(401).end();
 
   switch (req.method) {
