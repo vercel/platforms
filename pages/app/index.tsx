@@ -4,6 +4,7 @@ import BlurImage from "@/components/BlurImage";
 import Modal from "@/components/Modal";
 import LoadingDots from "@/components/app/loading-dots";
 import Link from "next/link";
+import { isProd } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -35,7 +36,7 @@ export default function AppIndex() {
         if (available) {
           setError(null);
         } else {
-          setError(`${debouncedSubdomain}.vercel.pub`);
+          setError(isProd ? `https://${debouncedSubdomain}.vercel.pub` : `http://${debouncedSubdomain}.localhost:3000`);
         }
       }
     }
@@ -145,11 +146,10 @@ export default function AppIndex() {
             <button
               type="submit"
               disabled={creatingSite || error !== null}
-              className={`${
-                creatingSite || error
-                  ? "cursor-not-allowed text-gray-400 bg-gray-50"
-                  : "bg-white text-gray-600 hover:text-black"
-              } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
+              className={`${creatingSite || error
+                ? "cursor-not-allowed text-gray-400 bg-gray-50"
+                : "bg-white text-gray-600 hover:text-black"
+                } w-full px-5 py-5 text-sm border-t border-l border-gray-300 rounded-br focus:outline-none focus:ring-0 transition-all ease-in-out duration-150`}
             >
               {creatingSite ? <LoadingDots /> : "CREATE SITE"}
             </button>
@@ -170,42 +170,48 @@ export default function AppIndex() {
         <div className="my-10 grid gap-y-10">
           {sites ? (
             sites.length > 0 ? (
-              sites.map((site) => (
-                <Link href={`/site/${site.id}`} key={site.id}>
-                  <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
-                    <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
-                      {site.image ? (
-                        <BlurImage
-                          src={site.image}
-                          width={500}
-                          height={400}
-                          className="h-full object-cover"
-                          alt={site.name ?? "Site thumbnail"}
-                        />
-                      ) : (
-                        <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
-                          ?
-                        </div>
-                      )}
+              sites.map((site) => {
+                const siteHref =
+                  process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
+                    ? `https://${site.subdomain}.vercel.pub`
+                    : `http://${site.subdomain}.localhost:3000`;
+                return (
+                  <Link href={`/site/${site.id}`} key={site.id}>
+                    <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
+                      <div className="relative w-full h-60 md:h-auto md:w-1/3 md:flex-none">
+                        {site.image ? (
+                          <BlurImage
+                            src={site.image}
+                            width={500}
+                            height={400}
+                            className="h-full object-cover"
+                            alt={site.name ?? "Site thumbnail"}
+                          />
+                        ) : (
+                          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
+                            ?
+                          </div>
+                        )}
+                      </div>
+                      <div className="relative p-10">
+                        <h2 className="font-cal text-3xl">{site.name}</h2>
+                        <p className="text-base my-5 line-clamp-3">
+                          {site.description}
+                        </p>
+                        <a
+                          className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
+                          href={siteHref}
+                          onClick={(e) => e.stopPropagation()}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {siteHref} ↗
+                        </a>
+                      </div>
                     </div>
-                    <div className="relative p-10">
-                      <h2 className="font-cal text-3xl">{site.name}</h2>
-                      <p className="text-base my-5 line-clamp-3">
-                        {site.description}
-                      </p>
-                      <a
-                        className="font-cal px-3 py-1 tracking-wide rounded bg-gray-200 text-gray-600 absolute bottom-5 left-10 whitespace-nowrap"
-                        href={`https://${site.subdomain}.vercel.pub`}
-                        onClick={(e) => e.stopPropagation()}
-                        rel="noreferrer"
-                        target="_blank"
-                      >
-                        {site.subdomain}.vercel.pub ↗
-                      </a>
-                    </div>
-                  </div>
-                </Link>
-              ))
+                  </Link>
+                )
+              })
             ) : (
               <>
                 <div className="flex flex-col md:flex-row md:h-60 rounded-lg overflow-hidden border border-gray-200">
