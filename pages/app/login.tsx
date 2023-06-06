@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import LoadingDots from "@/components/app/loading-dots";
-import toast, { Toaster } from "react-hot-toast";
+import { toast, Toaster } from "sonner";
 
 const pageTitle = "Login";
 const logo = "/favicon.ico";

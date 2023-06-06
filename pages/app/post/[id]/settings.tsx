@@ -1,4 +1,4 @@
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import useSWR from "swr";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
@@ -9,7 +9,7 @@ import Layout from "@/components/app/Layout";
 import Loader from "@/components/app/Loader";
 import LoadingDots from "@/components/app/loading-dots";
 import Modal from "@/components/Modal";
-import { fetcher } from "@/lib/fetcher";
+import { fetcher } from "@/lib/utils";
 import { HttpMethod } from "@/types";
 
 import type { ChangeEvent } from "react";
@@ -114,12 +114,6 @@ export default function PostSettings() {
   return (
     <>
       <Layout siteId={settings?.site?.id}>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 10000,
-          }}
-        />
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-20 mb-16">
           <h1 className="font-cal text-5xl mb-12">Post Settings</h1>
           <div className="mb-28 flex flex-col space-y-12">

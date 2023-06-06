@@ -35,4 +35,4 @@ export const fontMapper = {
   "font-cal": calTitle.variable,
   "font-lora": lora.variable,
   "font-work": work.variable,
-};
+} as Record<string, string>;

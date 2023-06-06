@@ -6,6 +6,7 @@ import React from "react";
 import { signOut } from "next-auth/react";
 import Loader from "./Loader";
 import useRequireAuth from "../../lib/useRequireAuth";
+import { Toaster } from "sonner";
 
 import type { WithChildren } from "@/types";
 
@@ -58,6 +59,7 @@ export default function Layout({ siteId, children }: LayoutProps) {
           <meta name="twitter:description" content={description} />
           <meta name="twitter:image" content={logo} />
         </Head>
+        <Toaster />
         <div className="absolute left-0 right-0 h-16 border-b bg-white border-gray-200">
           <div className="flex justify-between items-center h-full max-w-screen-xl mx-auto px-10 sm:px-20">
             <div className="flex space-x-4">

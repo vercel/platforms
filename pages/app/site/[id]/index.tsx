@@ -6,7 +6,7 @@ import useSWR from "swr";
 import BlurImage from "@/components/BlurImage";
 import Layout from "@/components/app/Layout";
 import LoadingDots from "@/components/app/loading-dots";
-import { fetcher } from "@/lib/fetcher";
+import { fetcher } from "@/lib/utils";
 import { HttpMethod } from "@/types";
 
 import type { Post, Site } from "@prisma/client";

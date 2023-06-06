@@ -1,5 +1,5 @@
 import TextareaAutosize from "react-textarea-autosize";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 import { useRouter } from "next/router";
@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import Layout from "@/components/app/Layout";
 import Loader from "@/components/app/Loader";
 import LoadingDots from "@/components/app/loading-dots";
-import { fetcher } from "@/lib/fetcher";
+import { fetcher } from "@/lib/utils";
 import { HttpMethod } from "@/types";
 
 import type { ChangeEvent } from "react";

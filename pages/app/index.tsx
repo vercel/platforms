@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
-import { fetcher } from "@/lib/fetcher";
+import { fetcher } from "@/lib/utils";
 import { HttpMethod } from "@/types";
 
 import type { FormEvent } from "react";

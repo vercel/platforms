@@ -1,5 +1,5 @@
 import Layout from "@/components/app/Layout";
-import toast, { Toaster } from "react-hot-toast";
+import { toast, Toaster } from "sonner";
 import BlurImage from "@/components/BlurImage";
 import CloudinaryUploadWidget from "@/components/Cloudinary";
 import LoadingDots from "@/components/app/loading-dots";
@@ -40,12 +40,6 @@ export default function AppSettings() {
   return (
     <>
       <Layout>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 10000,
-          }}
-        />
         <div className="max-w-screen-xl mx-auto px-10 sm:px-20 mt-10 mb-16">
           <h1 className="font-cal text-5xl mb-12">Settings</h1>
           <div className="mb-28 flex flex-col space-y-12">
