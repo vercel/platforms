@@ -1,5 +1,5 @@
-import localFont from "@next/font/local";
-import { Inter, Lora, Work_Sans } from "@next/font/google";
+import localFont from "next/font/local";
+import { Inter, Lora, Work_Sans } from "next/font/google";
 
 export const inter = Inter({
   variable: "--font-inter",
