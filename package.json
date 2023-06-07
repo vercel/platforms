@@ -20,6 +20,7 @@
     "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma/client": "^4.15.0",
     "@vercel/analytics": "^1.0.1",
+    "@vercel/postgres": "^0.3.0",
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
     "cuid": "^2.1.8",

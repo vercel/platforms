@@ -2,6 +2,7 @@
 
 import { truncate } from "@/lib/utils";
 import { ImageResponse } from "next/server";
+import { sql } from "@vercel/postgres";
 
 export const runtime = "edge";
 
@@ -12,20 +13,32 @@ export default async function PostOG({
 }) {
   const { domain, slug } = params;
 
-  const data = {
-    title: "Platforms Starter Kit",
-    description:
-      "Learn more about this template for site builders, multi-tenant platforms, and low-code tools.",
-    image:
-      "https://res.cloudinary.com/vercel-platforms/image/upload/v1663197120/yrbx7hvoyx9mytwqvkwh.png",
-    author: {
-      name: "Steven Tey",
-      image: "https://avatars.githubusercontent.com/u/28986134?v=4",
-    },
-  };
+  const subdomain = domain.endsWith(`.${process.env.ROOT_DOMAIN}`)
+    ? domain.replace(`.${process.env.ROOT_DOMAIN}`, "")
+    : null;
+
+  const response = await sql`
+  SELECT post.title, post.description, post.image, "user".name as "authorName", "user".image as "authorImage"
+  FROM "Post" AS post 
+  INNER JOIN "Site" AS site ON post."siteId" = site.id 
+  INNER JOIN "User" AS "user" ON site."userId" = "user".id 
+  WHERE 
+    (
+        site.subdomain = ${subdomain}
+        OR site."customDomain" = ${domain}
+    )
+    AND post.slug = ${slug}
+  LIMIT 1;
+`;
+
+  const data = response.rows[0];
+
+  if (!data) {
+    return new Response("Not found", { status: 404 });
+  }
 
   const clashData = await fetch(
-    new URL("@/styles/CalSans-Semibold.otf", import.meta.url)
+    new URL("@/styles/CalSans-SemiBold.otf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
@@ -41,12 +54,20 @@ export default async function PostOG({
           <div tw="flex items-center justify-center">
             <img
               tw="w-12 h-12 rounded-full mr-4"
-              src={data.author.image}
-              alt={data.author.name}
+              src={data.authorImage}
+              alt={data.authorName}
             />
-            <p tw="text-xl font-medium text-gray-900">by {data.author.name}</p>
+            <p tw="text-xl font-medium text-gray-900">by {data.authorName}</p>
           </div>
-          <img tw="mt-4 w-5/6 rounded-2xl" src={data.image} alt={data.title} />
+          <img
+            tw="mt-4 w-5/6 rounded-2xl border border-gray-200 shadow-md"
+            src={
+              data.image === "/placeholder.png"
+                ? `https://${process.env.ROOT_DOMAIN}/placeholder.png`
+                : data.image
+            }
+            alt={data.title}
+          />
         </div>
       </div>
     ),

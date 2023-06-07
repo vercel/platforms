@@ -13,6 +13,7 @@ export const capitalize = (s: string) => {
 };
 
 export const truncate = (str: string, num: number) => {
+  if (!str) return "";
   if (str.length <= num) {
     return str;
   }
