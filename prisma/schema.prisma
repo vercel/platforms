@@ -2,13 +2,15 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
 }
 
 model User {
@@ -72,10 +74,10 @@ model Post {
   id            String   @id @default(cuid())
   title         String?  @db.Text
   description   String?  @db.Text
-  content       String?  @db.LongText
+  content       String?  @db.Text
   slug          String   @default(cuid())
   image         String?  @db.Text
-  imageBlurhash String?  @db.LongText
+  imageBlurhash String?  @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   published     Boolean  @default(false)
@@ -93,7 +95,7 @@ model Site {
   logo          String?
   font          String   @default("font-cal")
   image         String?  @db.Text
-  imageBlurhash String?  @db.LongText
+  imageBlurhash String?  @db.Text
   subdomain     String?  @unique
   customDomain  String?  @unique
   createdAt     DateTime @default(now())
@@ -112,5 +114,5 @@ model Example {
   domainCount   Int?
   url           String?
   image         String? @db.Text
-  imageBlurhash String? @db.LongText
+  imageBlurhash String? @db.Text
 }

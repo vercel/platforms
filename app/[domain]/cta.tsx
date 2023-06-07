@@ -32,7 +32,7 @@ export default function CTA() {
         </svg>
       </button>
       <div className="text-center lg:text-left">
-        <p className="font-cal text-lg sm:text-2xl text-black">
+        <p className="font-title text-lg sm:text-2xl text-black">
           Platforms Starter Kit Demo
         </p>
         <p
@@ -59,7 +59,7 @@ export default function CTA() {
         } flex space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row flex-col lg:w-auto w-full text-center`}
       >
         <a
-          className="flex-auto font-cal text-lg rounded-md py-1 sm:py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
+          className="flex-auto font-title text-lg rounded-md py-1 sm:py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
           href="https://app.vercel.pub"
           rel="noreferrer"
           target="_blank"
@@ -67,7 +67,7 @@ export default function CTA() {
           Create your publication
         </a>
         <a
-          className="flex-auto font-cal text-lg bg-black text-white border border-black rounded-md py-1 sm:py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
+          className="flex-auto font-title text-lg bg-black text-white border border-black rounded-md py-1 sm:py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
           href="https://vercel.com/guides/nextjs-multi-tenant-application"
           rel="noreferrer"
           target="_blank"

@@ -24,7 +24,7 @@ export default async function SiteHomePage({
       <div className="w-full mb-20">
         {posts.length > 0 ? (
           <div className="w-full max-w-screen-xl lg:w-5/6 mx-auto md:mb-28">
-            <Link href={`/p/${posts[0].slug}`}>
+            <Link href={`/${posts[0].slug}`}>
               <div className="relative group h-80 sm:h-150 w-full mx-auto overflow-hidden lg:rounded-xl">
                 {posts[0].image ? (
                   <BlurImage
