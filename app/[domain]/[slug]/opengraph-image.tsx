@@ -13,8 +13,8 @@ export default async function PostOG({
 }) {
   const { domain, slug } = params;
 
-  const subdomain = domain.endsWith(`.${process.env.ROOT_DOMAIN}`)
-    ? domain.replace(`.${process.env.ROOT_DOMAIN}`, "")
+  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+    ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
     : null;
 
   const response = await sql`
@@ -63,7 +63,7 @@ export default async function PostOG({
             tw="mt-4 w-5/6 rounded-2xl border border-gray-200 shadow-md"
             src={
               data.image === "/placeholder.png"
-                ? `https://${process.env.ROOT_DOMAIN}/placeholder.png`
+                ? `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/placeholder.png`
                 : data.image
             }
             alt={data.title}

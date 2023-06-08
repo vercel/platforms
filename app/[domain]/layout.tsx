@@ -92,7 +92,7 @@ export default async function SiteLayout({
 
   // Optional: Redirect to custom domain if it exists
   if (
-    domain.endsWith(`.${process.env.ROOT_DOMAIN}`) &&
+    domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) &&
     data.customDomain &&
     process.env.REDIRECT_TO_CUSTOM_DOMAIN_IF_EXISTS === "true"
   ) {
@@ -121,7 +121,9 @@ export default async function SiteLayout({
 
       <div className="mt-20">{children}</div>
 
-      {params.domain == "demo.vercel.pub" && <CTA />}
+      {params.domain == `demo.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` && (
+        <CTA />
+      )}
     </div>
   );
 }

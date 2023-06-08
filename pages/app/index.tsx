@@ -109,7 +109,7 @@ export default function AppIndex() {
                 type="text"
               />
               <span className="px-5 bg-gray-100 h-full flex items-center rounded-r-lg border-l border-gray-600">
-                .vercel.pub
+                .{process.env.NEXT_PUBLIC_ROOT_DOMAIN}
               </span>
             </div>
             {error && (

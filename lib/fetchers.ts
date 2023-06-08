@@ -6,8 +6,8 @@ import { replaceExamples, replaceTweets } from "@/lib/remark-plugins";
 import { _SiteData } from "@/types";
 
 export async function getSiteData(domain: string) {
-  const subdomain = domain.endsWith(`.${process.env.ROOT_DOMAIN}`)
-    ? domain.replace(`.${process.env.ROOT_DOMAIN}`, "")
+  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+    ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
     : null;
 
   return await unstable_cache(
@@ -25,8 +25,8 @@ export async function getSiteData(domain: string) {
 }
 
 export async function getPostsForSite(domain: string) {
-  const subdomain = domain.endsWith(`.${process.env.ROOT_DOMAIN}`)
-    ? domain.replace(`.${process.env.ROOT_DOMAIN}`, "")
+  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+    ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
     : null;
 
   return await unstable_cache(
@@ -59,8 +59,8 @@ export async function getPostsForSite(domain: string) {
 }
 
 export async function getPostData(domain: string, slug: string) {
-  const subdomain = domain.endsWith(`.${process.env.ROOT_DOMAIN}`)
-    ? domain.replace(`.${process.env.ROOT_DOMAIN}`, "")
+  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+    ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
     : null;
 
   return await unstable_cache(
