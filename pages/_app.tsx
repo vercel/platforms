@@ -15,6 +15,7 @@ export default function App({
   return (
     <SessionProvider session={session}>
       <main className={cx(cal.variable, inter.variable)}>
+        {/* @ts-ignore */}
         <Component {...pageProps} />
       </main>
       <Analytics />
