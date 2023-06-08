@@ -1,5 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { NextResponse } from "next/server";
+import authConfig from "auth.config";
+import NextAuth from "next-auth";
+import { NextAuthRequest } from "next-auth/lib";
+import { getHostname } from "./lib/utils";
 
 export const config = {
   matcher: [
@@ -14,30 +17,17 @@ export const config = {
   ],
 };
 
-export default async function middleware(req: NextRequest) {
+const auth = NextAuth(authConfig).auth;
+
+export default auth(async function middleware(req: NextAuthRequest) {
   const url = req.nextUrl;
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
-  const hostname = req.headers
-    .get("host")!
-    .replace(".localhost:3000", `.${process.env.ROOT_DOMAIN}`);
+  const hostname = getHostname(req);
 
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = url.pathname;
 
-  // rewrites for app pages
-  if (hostname == "app.localhost:3000") {
-    const session = await getToken({
-      req,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-    if (!session && path !== "/login") {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    return NextResponse.rewrite(new URL(`/app${path}`, req.url));
-  }
-
   // rewrite everything else to `/[domain]/[path] dynamic route
   return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url));
-}
+});

@@ -1,3 +1,5 @@
+import { NextRequest } from "next/server";
+
 export async function fetcher<JSON = any>(
   input: RequestInfo,
   init?: RequestInit
@@ -43,4 +45,10 @@ export const toDateString = (date: Date) => {
     day: "numeric",
     year: "numeric",
   });
+};
+
+export const getHostname = (req: NextRequest) => {
+  return req.headers
+    .get("host")!
+    .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
 };

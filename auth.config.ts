@@ -1,18 +1,26 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import { getHostname } from "./lib/utils";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
-if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET)
-  throw new Error("Failed to initialize Github authentication");
+declare module "next-auth/types" {
+  interface Session {
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      createdAt: Date;
+    };
+  }
+}
 
-export const authOptions: NextAuthOptions = {
+export default {
   providers: [
     GitHubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_SECRET as string,
       profile(profile) {
         return {
           id: profile.id.toString(),
@@ -29,7 +37,7 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: `/login`,
     error: "/login", // Error code passed in query string as ?error=
   },
-  adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
   cookies: {
     sessionToken: {
       name: `${VERCEL_DEPLOYMENT ? "__Secure-" : ""}next-auth.session-token`,
@@ -38,7 +46,9 @@ export const authOptions: NextAuthOptions = {
         sameSite: "lax",
         path: "/",
         // When working on localhost, the cookie domain must be omitted entirely (https://stackoverflow.com/a/1188145)
-        domain: VERCEL_DEPLOYMENT ? ".vercel.pub" : undefined,
+        domain: VERCEL_DEPLOYMENT
+          ? `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
+          : undefined,
         secure: VERCEL_DEPLOYMENT,
       },
     },
@@ -52,7 +62,18 @@ export const authOptions: NextAuthOptions = {
         username: user.username,
       },
     }),
-  },
-};
+    authorized({ request: req, auth }) {
+      const path = req.nextUrl.pathname;
+      const hostname = getHostname(req);
+      if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
+        const session = auth.user;
+        if (!session && path !== "/login") {
+          return NextResponse.redirect(new URL("/login", req.url));
+        }
 
-export default NextAuth(authOptions);
+        return NextResponse.rewrite(new URL(`/app${path}`, req.url));
+      }
+      return;
+    },
+  },
+} satisfies NextAuthConfig;
