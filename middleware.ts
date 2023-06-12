@@ -30,13 +30,12 @@ export default async function middleware(req: NextRequest) {
   const path = url.pathname;
 
   // rewrites for app pages
-  if (hostname == "app.localhost:3000") {
-    const session = await getToken({
-      req,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+  if (hostname == `app.${process.env.ROOT_DOMAIN}`) {
+    const session = await getToken({ req });
     if (!session && path !== "/login") {
       return NextResponse.redirect(new URL("/login", req.url));
+    } else if (session && path == "/login") {
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
     return NextResponse.rewrite(new URL(`/app${path}`, req.url));

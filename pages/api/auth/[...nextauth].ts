@@ -30,6 +30,7 @@ export const authOptions: NextAuthOptions = {
     error: "/login", // Error code passed in query string as ?error=
   },
   adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
   cookies: {
     sessionToken: {
       name: `${VERCEL_DEPLOYMENT ? "__Secure-" : ""}next-auth.session-token`,
@@ -44,14 +45,21 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.user = user;
+      }
+      return token;
+    },
+    session: async ({ session, token }) => {
+      session.user = {
         ...session.user,
-        id: user.id,
-        username: user.username,
-      },
-    }),
+        id: token.sub,
+        // @ts-expect-error
+        username: token?.user?.username || token?.user?.gh_username,
+      };
+      return session;
+    },
   },
 };
 
