@@ -4,7 +4,7 @@ import BlurImage from "@/components/BlurImage";
 import Modal from "@/components/Modal";
 import LoadingDots from "@/components/app/loading-dots";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession } from "@auth/nextjs/client";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";

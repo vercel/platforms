@@ -46,9 +46,3 @@ export const toDateString = (date: Date) => {
     year: "numeric",
   });
 };
-
-export const getHostname = (req: NextRequest) => {
-  return req.headers
-    .get("host")!
-    .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
-};

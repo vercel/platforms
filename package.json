@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/nextjs": "0.0.0-manual.030e8328",
+    "@auth/prisma-adapter": "^1.0.0",
     "@headlessui/react": "^1.7.7",
     "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma/client": "^4.15.0",

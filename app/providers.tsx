@@ -1,6 +1,6 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider } from "@auth/nextjs/client";
 import { Toaster } from "sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {

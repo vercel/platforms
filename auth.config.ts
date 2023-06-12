@@ -1,16 +1,16 @@
-import type { NextAuthConfig } from "next-auth";
-import GitHubProvider from "next-auth/providers/github";
-import { NextResponse } from "next/server";
-import { getHostname } from "./lib/utils";
+import type { NextAuthConfig } from "@auth/nextjs";
+import GitHubProvider from "@auth/nextjs/providers/github";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
-declare module "next-auth/types" {
+// @ts-ignore
+declare module "@auth/nextjs/types" {
   interface Session {
     user: {
       id: string;
       email: string;
       name: string;
+      username: string;
       createdAt: Date;
     };
   }
@@ -18,10 +18,12 @@ declare module "next-auth/types" {
 
 export default {
   providers: [
+    // @ts-ignore
     GitHubProvider({
       clientId: process.env.GITHUB_ID as string,
       clientSecret: process.env.GITHUB_SECRET as string,
       profile(profile) {
+        console.log(profile);
         return {
           id: profile.id.toString(),
           name: profile.name || profile.login,
@@ -54,26 +56,13 @@ export default {
     },
   },
   callbacks: {
-    session: ({ session, user }) => ({
+    session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
-        username: user.username,
+        id: token.id,
+        username: token.username,
       },
     }),
-    authorized({ request: req, auth }) {
-      const path = req.nextUrl.pathname;
-      const hostname = getHostname(req);
-      if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
-        const session = auth.user;
-        if (!session && path !== "/login") {
-          return NextResponse.redirect(new URL("/login", req.url));
-        }
-
-        return NextResponse.rewrite(new URL(`/app${path}`, req.url));
-      }
-      return;
-    },
   },
 } satisfies NextAuthConfig;

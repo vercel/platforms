@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
-import { signOut } from "next-auth/react";
+import { signOut } from "@auth/nextjs/client";
 import Loader from "./Loader";
 import useRequireAuth from "../../lib/useRequireAuth";
 import { Toaster } from "sonner";

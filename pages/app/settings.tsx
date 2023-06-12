@@ -6,7 +6,7 @@ import LoadingDots from "@/components/app/loading-dots";
 import { HttpMethod } from "@/types";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@auth/nextjs/client";
 
 import type { UserSettings } from "@/types";
 
