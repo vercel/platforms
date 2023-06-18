@@ -10,5 +10,5 @@ module.exports = {
       "avatars.githubusercontent.com",
     ],
   },
-  reactStrictMode: true,
+  reactStrictMode: false,
 };

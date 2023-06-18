@@ -54,6 +54,9 @@ export async function getSite(
           id: session.user.id,
         },
       },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
     return res.status(200).json(sites);

@@ -11,7 +11,6 @@ import { useDebounce } from "use-debounce";
 import { fetcher } from "@/lib/utils";
 import { HttpMethod } from "@/types";
 
-import type { FormEvent } from "react";
 import type { Site } from "@prisma/client";
 
 export default function AppIndex() {
