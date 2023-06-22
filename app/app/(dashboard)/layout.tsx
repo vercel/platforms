@@ -4,6 +4,7 @@ import Profile from "./components/profile";
 import Nav from "./components/nav";
 import { FileCode, Github } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const externalLinks = [
   {
@@ -55,14 +56,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </svg>
             </a>
             <div className="border-l border-stone-400 h-6 rotate-[30deg]" />
-            <a
-              href="https://vercel.pub"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg p-2 hover:bg-stone-200"
-            >
+            <Link href="/" className="rounded-lg p-2 hover:bg-stone-200">
               <Image src="/logo.png" width={24} height={24} alt="Logo" />
-            </a>
+            </Link>
           </div>
           <Nav />
         </div>

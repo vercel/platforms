@@ -39,7 +39,7 @@ export default async function AllPosts({ params }: { params: { id: string } }) {
               {url} ↗
             </a>
           </div>
-          <button className="font-medium px-3 py-2 border border-stone-500 hover:border-black text-stone-500 hover:text-black transition-all">
+          <button className="font-medium text-sm px-3 py-1.5 rounded-lg border border-stone-300 hover:border-black text-stone-500 hover:text-black transition-all">
             Create New Post
           </button>
         </div>

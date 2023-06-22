@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Sites from "../components/sites";
+import PlacholderCard from "../components/placeholder-card";
 
 export default function AllSites({ params }: { params: { id: string } }) {
   return (
@@ -11,7 +12,15 @@ export default function AllSites({ params }: { params: { id: string } }) {
             Create New Site
           </button>
         </div>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <PlacholderCard key={i} />
+              ))}
+            </div>
+          }
+        >
           {/* @ts-expect-error Server Component */}
           <Sites siteId={params.id} />
         </Suspense>
