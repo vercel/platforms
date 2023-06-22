@@ -12,9 +12,9 @@ export default function LoginPage() {
           className="relative mx-auto h-12 w-auto"
           src="/logo.png"
         />
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h1 className="mt-6 text-center text-3xl font-cal text-gray-900">
           Platforms Starter Kit
-        </h2>
+        </h1>
         <p className="mt-2 text-center text-sm text-gray-600">
           Build multi-tenant applications with custom domains. <br /> Read the{" "}
           <a
@@ -28,10 +28,8 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="mt-8 mx-auto sm:w-full w-11/12 sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-md sm:rounded-lg sm:px-10">
-          <LoginButton />
-        </div>
+      <div className="mt-4 mx-auto sm:w-full w-11/12 max-w-xs">
+        <LoginButton />
       </div>
     </>
   );

@@ -1,19 +1,23 @@
 import BlurImage from "@/components/BlurImage";
 import { placeholderBlurhash, random } from "@/lib/utils";
-import { Site } from "@prisma/client";
+import { Post, Site } from "@prisma/client";
 import { BarChart, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
-export default function SiteCard({ data }: { data: Site }) {
-  const url = `${data.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+export default function PostCard({
+  data,
+}: {
+  data: Post & { site: Site | null };
+}) {
+  const url = `${data.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`;
   return (
     <div className="relative rounded-lg shadow-md hover:shadow-xl border border-stone-200 transition-all pb-10">
       <Link
-        href={`/site/${data.id}`}
+        href={`/post/${data.id}`}
         className="flex flex-col rounded-lg overflow-hidden"
       >
         <BlurImage
-          alt={data.name ?? "Card thumbnail"}
+          alt={data.title ?? "Card thumbnail"}
           width={500}
           height={400}
           className="h-44 object-cover"
@@ -23,14 +27,14 @@ export default function SiteCard({ data }: { data: Site }) {
         />
         <div className="p-4">
           <h3 className="font-cal my-0 text-xl font-bold tracking-wide truncate">
-            {data.name}
+            {data.title}
           </h3>
           <p className="mt-2 text-stone-500 text-sm leading-snug line-clamp-1 font-normal">
             {data.description}
           </p>
         </div>
       </Link>
-      <div className="absolute bottom-4 w-full flex justify-between px-4 space-x-4">
+      <div className="absolute bottom-4 w-full flex px-4">
         <a
           href={`https://${url}`}
           target="_blank"
@@ -39,13 +43,6 @@ export default function SiteCard({ data }: { data: Site }) {
         >
           {url} ↗
         </a>
-        <Link
-          href={`/site/${data.id}/analytics`}
-          className="text-sm flex items-center font-medium px-2 py-1 rounded-md bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
-        >
-          <BarChart height={16} />
-          <p>{random(10, 40)}%</p>
-        </Link>
       </div>
     </div>
   );

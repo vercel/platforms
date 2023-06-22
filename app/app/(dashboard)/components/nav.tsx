@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  ArrowLeft,
   BarChart3,
   Edit3,
   Globe,
@@ -49,12 +50,13 @@ export default function Nav() {
     if (segments[0] === "site" && id) {
       return [
         {
-          name: "All Sites",
+          name: "Back to All Sites",
           href: "/sites",
+          icon: <ArrowLeft width={18} />,
         },
         {
           name: "Posts",
-          href: `/site/${id}/posts`,
+          href: `/site/${id}`,
           icon: <Newspaper width={18} />,
         },
         {

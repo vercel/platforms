@@ -1,8 +1,9 @@
 import "./globals.css";
-import { inter } from "@/styles/fonts";
+import { cal, inter } from "@/styles/fonts";
 import { Analytics } from "@vercel/analytics/react";
 import { Providers } from "./providers";
 import { Metadata } from "next";
+import clsx from "clsx";
 
 export const metadata: Metadata = {
   title: "Platforms Starter Kit",
@@ -17,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.variable}>
+      <body className={clsx(cal.variable, inter.variable)}>
         <Providers>
           {children}
           <Analytics />

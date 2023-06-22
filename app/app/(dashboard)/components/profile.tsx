@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next";
-import Image from "next/image";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 export default async function Profile() {
