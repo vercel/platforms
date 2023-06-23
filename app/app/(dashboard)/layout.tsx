@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <div className="grid gap-2">
           <div className="rounded-lg px-2 py-1.5 flex items-center space-x-2">
             <a
-              href="https://vercel.com"
+              href="https://vercel.com/templates/next.js/platforms-starter-kit"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg p-1.5 hover:bg-stone-200"

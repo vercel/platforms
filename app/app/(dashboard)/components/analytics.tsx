@@ -14,27 +14,27 @@ import Image from "next/image";
 
 const chartdata = [
   {
-    date: "Jan 22",
+    date: "Jan 23",
     Visitors: 2890,
   },
   {
-    date: "Feb 22",
+    date: "Feb 23",
     Visitors: 2756,
   },
   {
-    date: "Mar 22",
+    date: "Mar 23",
     Visitors: 3322,
   },
   {
-    date: "Apr 22",
+    date: "Apr 23",
     Visitors: 3470,
   },
   {
-    date: "May 22",
+    date: "May 23",
     Visitors: 3475,
   },
   {
-    date: "Jun 22",
+    date: "Jun 23",
     Visitors: 3129,
   },
 ];
