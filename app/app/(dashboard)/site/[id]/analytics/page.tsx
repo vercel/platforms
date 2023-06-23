@@ -2,9 +2,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
-import Posts from "../../components/posts";
+import AnalyticsMockup from "../../../components/analytics";
 
-export default async function SitePosts({
+export default async function SiteAnalytics({
   params,
 }: {
   params: { id: string };
@@ -30,7 +30,7 @@ export default async function SitePosts({
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
           <h1 className="font-cal text-3xl font-bold">
-            All Posts for {data.name}
+            Analytics for {data.name}
           </h1>
           <a
             href={`https://${url}`}
@@ -41,12 +41,8 @@ export default async function SitePosts({
             {url} ↗
           </a>
         </div>
-        <button className="font-medium text-sm px-3 py-1.5 rounded-lg border border-stone-300 hover:border-black text-stone-500 hover:text-black transition-all">
-          Create New Post
-        </button>
       </div>
-      {/* @ts-expect-error Server Component */}
-      <Posts />
+      <AnalyticsMockup />
     </>
   );
 }
