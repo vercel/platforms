@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import Form from "../../../components/form";
 import { editSite } from "../../../components/form/actions";
+import DeleteSiteForm from "../../../components/form/delete-site-form";
 
 export default async function SiteSettingsIndex({
   params,
@@ -41,6 +42,8 @@ export default async function SiteSettingsIndex({
         }}
         handleSubmit={editSite}
       />
+
+      <DeleteSiteForm siteName={data?.name!} />
     </div>
   );
 }

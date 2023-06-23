@@ -1,14 +1,9 @@
 "use client";
 
 import LoadingDots from "@/components/app/loading-dots";
-import { Site } from "@prisma/client";
 import clsx from "clsx";
 import { useSession } from "next-auth/react";
-import {
-  useParams,
-  useRouter,
-  useSelectedLayoutSegment,
-} from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
@@ -38,12 +33,12 @@ export default function Form({
     <form
       action={async (data: FormData) =>
         handleSubmit(data, id, inputAttrs.name)
-          .then(() => {
+          .then(async () => {
             toast.success(`Successfully updated ${inputAttrs.name}!`);
             if (id) {
               router.refresh();
             } else {
-              update();
+              await update();
               router.refresh();
             }
           })

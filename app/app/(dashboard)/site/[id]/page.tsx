@@ -45,8 +45,7 @@ export default async function SitePosts({
           Create New Post
         </button>
       </div>
-      {/* @ts-expect-error Server Component */}
-      <Posts />
+      <Posts siteId={params.id} />
     </>
   );
 }
