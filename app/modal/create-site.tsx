@@ -7,7 +7,6 @@ import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import clsx from "clsx";
 import LoadingDots from "@/components/app/loading-dots";
 import { useModal } from "./provider";
-import { useRef } from "react";
 
 export default function CreateSiteModal() {
   const router = useRouter();
@@ -24,9 +23,9 @@ export default function CreateSiteModal() {
           })
           .catch((err: Error) => toast.error(err.message))
       }
-      className="bg-white rounded-md border border-stone-200 shadow w-full max-w-md"
+      className="bg-white rounded-md md:border md:border-stone-200 md:shadow w-full md:max-w-md"
     >
-      <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
+      <div className="relative flex flex-col space-y-4 p-5 md:p-10">
         <h2 className="text-2xl font-cal">Create a new site</h2>
 
         <div className="flex flex-col space-y-2">
@@ -82,7 +81,7 @@ export default function CreateSiteModal() {
           />
         </div>
       </div>
-      <div className="flex items-center justify-end rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 sm:px-10">
+      <div className="flex items-center justify-end rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 md:px-10">
         <CreateSiteFormButton />
       </div>
     </form>

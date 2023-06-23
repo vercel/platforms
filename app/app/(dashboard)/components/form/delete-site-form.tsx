@@ -35,6 +35,7 @@ export default function DeleteSiteForm({ siteName }: { siteName: string }) {
           type="text"
           required
           pattern={siteName}
+          placeholder={siteName}
           className="w-full max-w-md rounded-md border border-stone-300 text-sm text-stone-900 placeholder-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500"
         />
       </div>
