@@ -21,6 +21,7 @@ export default async function SiteSettingsIndex({
         helpText="Please use 32 characters maximum."
         inputAttrs={{
           name: "name",
+          type: "text",
           defaultValue: data?.name!,
           placeholder: "name",
           maxLength: 32,
@@ -34,9 +35,9 @@ export default async function SiteSettingsIndex({
         helpText="Include SEO-optimized keywords that you want to rank for."
         inputAttrs={{
           name: "description",
+          type: "text",
           defaultValue: data?.description!,
           placeholder: "description",
-          maxLength: 140,
         }}
         handleSubmit={editSite}
       />

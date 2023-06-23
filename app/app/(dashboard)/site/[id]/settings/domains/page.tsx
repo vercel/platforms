@@ -21,6 +21,7 @@ export default async function SiteSettingsDomains({
         helpText="Please use 32 characters maximum."
         inputAttrs={{
           name: "subdomain",
+          type: "text",
           defaultValue: data?.subdomain!,
           placeholder: "subdomain",
           maxLength: 32,
