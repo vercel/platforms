@@ -26,6 +26,17 @@ export default async function SiteSettingsAppearance({
         }}
         handleSubmit={editSite}
       />
+      <Form
+        title="Font"
+        description="The font for the heading text your site."
+        helpText="Please select a font."
+        inputAttrs={{
+          name: "font",
+          type: "select",
+          defaultValue: data?.font!,
+        }}
+        handleSubmit={editSite}
+      />
     </div>
   );
 }

@@ -156,9 +156,13 @@ export const editSite = withSiteAuth(
           },
         });
       }
-
+      console.log(
+        "Updated site data! Revalidating tags: ",
+        `${site.subdomain}-metadata`,
+        `${site.customDomain}-metadata`
+      );
       revalidateTag(`${site.subdomain}-metadata`);
-      revalidateTag(`${site.customDomain}-metadata`);
+      site.customDomain && revalidateTag(`${site.customDomain}-metadata`);
 
       return response;
     } catch (error: any) {

@@ -63,6 +63,18 @@ export default function Form({
         <p className="text-sm text-stone-500">{description}</p>
         {inputAttrs.name === "image" ? (
           <Uploader defaultValue={inputAttrs.defaultValue} />
+        ) : inputAttrs.name === "font" ? (
+          <div className="border border-stone-600 rounded-lg overflow-hidden flex items-center max-w-sm">
+            <select
+              name="font"
+              defaultValue={inputAttrs.defaultValue}
+              className="w-full px-4 py-2 text-stone-700 text-sm font-medium bg-white border-none focus:outline-none focus:ring-black rounded-none"
+            >
+              <option value="font-cal">Cal Sans</option>
+              <option value="font-lora">Lora</option>
+              <option value="font-work">Work Sans</option>
+            </select>
+          </div>
         ) : inputAttrs.name === "subdomain" ? (
           <div className="w-full max-w-md flex">
             <input
