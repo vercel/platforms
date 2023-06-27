@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
 import Form from "../../../../components/form";
 import { editSite } from "../../../../components/form/actions";
-import DomainCard from "../../../../components/form/domain-card";
 
 export default async function SiteSettingsDomains({
   params,

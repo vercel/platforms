@@ -8,11 +8,19 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   addDomainToVercel,
-  getApexDomain,
+  // getApexDomain,
   removeDomainFromVercelProject,
-  removeDomainFromVercelTeam,
+  // removeDomainFromVercelTeam,
   validDomainRegex,
 } from "@/lib/domains";
+import { put } from "@vercel/blob";
+import { customAlphabet } from "nanoid";
+import { getBlurDataURL } from "@/lib/utils";
+
+const nanoid = customAlphabet(
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  7
+); // 7-character random string
 
 export const createSite = async (formData: FormData) => {
   const session = await getServerSession(authOptions);
@@ -83,10 +91,7 @@ export const editSite = withSiteAuth(
 
         // if the site had a different customDomain before, we need to remove it from Vercel
         if (site.customDomain && site.customDomain !== value) {
-          const response = await removeDomainFromVercelProject(
-            site.customDomain
-          );
-          console.log({ response });
+          response = await removeDomainFromVercelProject(site.customDomain);
 
           /* Optional: remove domain from Vercel team 
 
@@ -121,6 +126,26 @@ export const editSite = withSiteAuth(
           
           */
         }
+      } else if (key === "image") {
+        const file = formData.get("image") as File;
+        const filename = `${nanoid()}.${file.type.split("/")[1]}`;
+
+        const { url } = await put(filename, file, {
+          access: "public",
+        });
+
+        const blurhash = await getBlurDataURL(url);
+
+        response = await prisma.site.update({
+          where: {
+            id: site.id,
+          },
+          data: {
+            image: url,
+            imageBlurhash: blurhash,
+          },
+        });
+        return url;
       } else {
         response = await prisma.site.update({
           where: {

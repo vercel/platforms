@@ -22,16 +22,19 @@ export const truncate = (str: string, num: number) => {
 
 export const getBlurDataURL = async (url: string | null) => {
   if (!url) {
-    return null;
+    return "data:image/webp;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   }
-  const prefix = "https://res.cloudinary.com/vercel-platforms/image/upload/";
-  const suffix = url.split(prefix)[1];
-  const response = await fetch(
-    `${prefix}w_210,e_blur:5000,q_auto,f_auto/${suffix}`
-  );
-  const buffer = await response.arrayBuffer();
-  const base64 = Buffer.from(buffer).toString("base64");
-  return `data:image/png;base64,${base64}`;
+  try {
+    const response = await fetch(
+      `https://wsrv.nl/?url=${url}&w=50&h=50&blur=5`
+    );
+    const buffer = await response.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString("base64");
+
+    return `data:image/png;base64,${base64}`;
+  } catch (error) {
+    return "data:image/webp;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  }
 };
 
 export const placeholderBlurhash =

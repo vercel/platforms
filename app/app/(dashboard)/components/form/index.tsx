@@ -6,10 +6,9 @@ import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
-import DomainCard from "./domain-card";
-import { CheckCircle, CheckCircle2 } from "lucide-react";
 import DomainStatus from "./domain-status";
 import DomainConfiguration from "./domain-configuration";
+import Uploader from "./uploader";
 
 export default function Form({
   title,
@@ -25,7 +24,7 @@ export default function Form({
     name: string;
     type: string;
     defaultValue: string;
-    placeholder: string;
+    placeholder?: string;
     maxLength?: number;
     pattern?: string;
   };
@@ -62,7 +61,9 @@ export default function Form({
       <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
         <h2 className="text-xl font-cal">{title}</h2>
         <p className="text-sm text-stone-500">{description}</p>
-        {inputAttrs.name === "subdomain" ? (
+        {inputAttrs.name === "image" ? (
+          <Uploader defaultValue={inputAttrs.defaultValue} />
+        ) : inputAttrs.name === "subdomain" ? (
           <div className="w-full max-w-md flex">
             <input
               {...inputAttrs}
