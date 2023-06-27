@@ -2,38 +2,20 @@
 
 import useSWR, { mutate } from "swr";
 import { useState } from "react";
-import LoadingDots from "@/components/app/loading-dots";
 import { fetcher } from "@/lib/utils";
-import { HttpMethod } from "@/types";
 
 import type { Site } from "@prisma/client";
 
-type DomainData = Pick<
-  Site,
-  | "customDomain"
-  | "description"
-  | "id"
-  | "image"
-  | "imageBlurhash"
-  | "name"
-  | "subdomain"
->;
-
-interface DomainCardProps<T = DomainData> {
-  data: T;
-}
-
-export default function DomainCard({ data }: DomainCardProps) {
+export default function DomainCard({ customDomain }: { customDomain: string }) {
   const { data: valid, isValidating } = useSWR<Site>(
-    `/api/domain/check?domain=${data.customDomain}`,
+    `/api/domain/check?domain=${customDomain}`,
     fetcher,
     { revalidateOnMount: true, refreshInterval: 5000 }
   );
   const [recordType, setRecordType] = useState("CNAME");
-  const [removing, setRemoving] = useState(false);
   const subdomain = // if domain is a subdomain
-    data.customDomain && data.customDomain.split(".").length > 2
-      ? data.customDomain.split(".")[0]
+    customDomain && customDomain.split(".").length > 2
+      ? customDomain.split(".")[0]
       : "";
 
   return (
@@ -41,11 +23,11 @@ export default function DomainCard({ data }: DomainCardProps) {
       <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 justify-between px-10">
         <a
           className="text-xl font-semibold flex justify-center sm:justify-start items-center"
-          href={`http://${data.customDomain}`}
+          href={`http://${customDomain}`}
           rel="noreferrer"
           target="_blank"
         >
-          {data.customDomain}
+          {customDomain}
           <span className="inline-block ml-2">
             <svg
               viewBox="0 0 24 24"
@@ -64,45 +46,6 @@ export default function DomainCard({ data }: DomainCardProps) {
             </svg>
           </span>
         </a>
-        <div className="flex space-x-3">
-          <button
-            onClick={() => {
-              mutate(`/api/domain/check?domain=${data.customDomain}`);
-            }}
-            disabled={isValidating}
-            className={`${
-              isValidating
-                ? "cursor-not-allowed bg-gray-100"
-                : "bg-white hover:text-black hover:border-black"
-            } text-gray-500 border-gray-200 py-1.5 w-24 text-sm border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
-          >
-            {isValidating ? <LoadingDots /> : "Refresh"}
-          </button>
-          <button
-            onClick={async () => {
-              setRemoving(true);
-              await fetch(
-                `/api/domain?domain=${data.customDomain}&siteId=${data.id}`,
-                {
-                  method: HttpMethod.DELETE,
-                }
-              ).then((res) => {
-                setRemoving(false);
-                if (res.ok) {
-                  mutate(`/api/site?siteId=${data.id}`);
-                } else {
-                  alert("Error removing domain");
-                }
-              });
-            }}
-            disabled={removing}
-            className={`${
-              removing ? "cursor-not-allowed bg-gray-100" : ""
-            }bg-red-500 text-white border-red-500 hover:text-red-500 hover:bg-white py-1.5 w-24 text-sm border-solid border rounded-md focus:outline-none transition-all ease-in-out duration-150`}
-          >
-            {removing ? <LoadingDots /> : "Remove"}
-          </button>
-        </div>
       </div>
 
       <div className="flex items-center space-x-3 my-3 px-10">

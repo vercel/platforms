@@ -6,6 +6,10 @@ import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
+import DomainCard from "./domain-card";
+import { CheckCircle, CheckCircle2 } from "lucide-react";
+import DomainStatus from "./domain-status";
+import DomainConfiguration from "./domain-configuration";
 
 export default function Form({
   title,
@@ -23,6 +27,7 @@ export default function Form({
     defaultValue: string;
     placeholder: string;
     maxLength?: number;
+    pattern?: string;
   };
   handleSubmit: any;
 }) {
@@ -60,6 +65,16 @@ export default function Form({
               {process.env.NEXT_PUBLIC_ROOT_DOMAIN}
             </div>
           </div>
+        ) : inputAttrs.name === "customDomain" ? (
+          <div className="relative w-full max-w-md flex">
+            <input
+              {...inputAttrs}
+              className="border border-stone-300 text-stone-900 placeholder-stone-300 z-10 focus:border-stone-500 focus:outline-none focus:ring-stone-500 rounded-md text-sm flex-1"
+            />
+            {inputAttrs.defaultValue && (
+              <DomainStatus domain={inputAttrs.defaultValue} />
+            )}
+          </div>
         ) : inputAttrs.name === "description" ? (
           <textarea
             {...inputAttrs}
@@ -75,12 +90,12 @@ export default function Form({
           />
         )}
       </div>
-
+      {inputAttrs.name === "customDomain" && inputAttrs.defaultValue && (
+        <DomainConfiguration domain={inputAttrs.defaultValue} />
+      )}
       <div className="flex items-center justify-between rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 sm:px-10">
         <p className="text-sm text-stone-500">{helpText}</p>
-        <div className="w-32">
-          <FormButton />
-        </div>
+        <FormButton />
       </div>
     </form>
   );
@@ -91,7 +106,7 @@ function FormButton() {
   return (
     <button
       className={clsx(
-        "flex h-10 w-full items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
+        "flex h-10 w-32 items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
         pending
           ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400"
           : "border-black bg-black text-white hover:bg-white hover:text-black"

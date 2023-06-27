@@ -6,6 +6,13 @@ import { revalidateTag } from "next/cache";
 import { withSiteAuth } from "./auth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import {
+  addDomainToVercel,
+  getApexDomain,
+  removeDomainFromVercelProject,
+  removeDomainFromVercelTeam,
+  validDomainRegex,
+} from "@/lib/domains";
 
 export const createSite = async (formData: FormData) => {
   const session = await getServerSession(authOptions);
@@ -44,14 +51,75 @@ export const editSite = withSiteAuth(
     const value = formData.get(key) as string;
 
     try {
-      const response = await prisma.site.update({
-        where: {
-          id: site.id,
-        },
-        data: {
-          [key]: value,
-        },
-      });
+      let response;
+
+      if (key === "customDomain") {
+        if (value.includes("vercel.pub")) {
+          throw Error("Cannot use vercel.pub subdomain as your custom domain");
+
+          // if the custom domain is valid, we need to add it to Vercel
+        } else if (validDomainRegex.test(value)) {
+          response = await prisma.site.update({
+            where: {
+              id: site.id,
+            },
+            data: {
+              customDomain: value,
+            },
+          });
+          await addDomainToVercel(value);
+
+          // empty value means the user wants to remove the custom domain
+        } else if (value === "") {
+          response = await prisma.site.update({
+            where: {
+              id: site.id,
+            },
+            data: {
+              customDomain: null,
+            },
+          });
+        }
+
+        // if the site had a customDomain before, we need to remove it from Vercel
+        if (site.customDomain) {
+          // first, we need to check if the apex domain is being used by other sites
+          const apexDomain = getApexDomain(`https://${site.customDomain}`);
+          const domainCount = await prisma.site.count({
+            where: {
+              OR: [
+                {
+                  customDomain: apexDomain,
+                },
+                {
+                  customDomain: {
+                    endsWith: `.${apexDomain}`,
+                  },
+                },
+              ],
+            },
+          });
+
+          // if the apex domain is being used by other sites
+          // we should only remove it from our Vercel project
+          if (domainCount >= 1) {
+            await removeDomainFromVercelProject(site.customDomain);
+          } else {
+            // this is the only site using this apex domain
+            // so we can remove it entirely from our Vercel team
+            await removeDomainFromVercelTeam(site.customDomain);
+          }
+        }
+      } else {
+        response = await prisma.site.update({
+          where: {
+            id: site.id,
+          },
+          data: {
+            [key]: value,
+          },
+        });
+      }
 
       revalidateTag(`${site.subdomain}-metadata`);
       revalidateTag(`${site.customDomain}-metadata`);
