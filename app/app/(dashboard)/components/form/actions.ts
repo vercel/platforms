@@ -81,8 +81,15 @@ export const editSite = withSiteAuth(
           });
         }
 
-        // if the site had a customDomain before, we need to remove it from Vercel
-        if (site.customDomain) {
+        // if the site had a different customDomain before, we need to remove it from Vercel
+        if (site.customDomain && site.customDomain !== value) {
+          const response = await removeDomainFromVercelProject(
+            site.customDomain
+          );
+          console.log({ response });
+
+          /* Optional: remove domain from Vercel team 
+
           // first, we need to check if the apex domain is being used by other sites
           const apexDomain = getApexDomain(`https://${site.customDomain}`);
           const domainCount = await prisma.site.count({
@@ -107,8 +114,12 @@ export const editSite = withSiteAuth(
           } else {
             // this is the only site using this apex domain
             // so we can remove it entirely from our Vercel team
-            await removeDomainFromVercelTeam(site.customDomain);
+            await removeDomainFromVercelTeam(
+              site.customDomain
+            );
           }
+          
+          */
         }
       } else {
         response = await prisma.site.update({

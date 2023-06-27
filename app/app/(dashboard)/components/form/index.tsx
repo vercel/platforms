@@ -36,7 +36,15 @@ export default function Form({
   const { update } = useSession();
   return (
     <form
-      action={async (data: FormData) =>
+      action={async (data: FormData) => {
+        if (
+          inputAttrs.name === "customDomain" &&
+          inputAttrs.defaultValue &&
+          data.get("customDomain") !== inputAttrs.defaultValue &&
+          !confirm("Are you sure you want to change your custom domain?")
+        ) {
+          return;
+        }
         handleSubmit(data, id, inputAttrs.name)
           .then(async () => {
             toast.success(`Successfully updated ${inputAttrs.name}!`);
@@ -47,8 +55,8 @@ export default function Form({
               router.refresh();
             }
           })
-          .catch((err: Error) => toast.error(err.message))
-      }
+          .catch((err: Error) => toast.error(err.message));
+      }}
       className="rounded-lg border border-stone-200 bg-white"
     >
       <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
