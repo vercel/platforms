@@ -5,7 +5,7 @@ import { createSite } from "../app/(dashboard)/components/form/actions";
 import { useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import clsx from "clsx";
-import LoadingDots from "@/components/app/loading-dots";
+import LoadingDots from "@/components/icons/loading-dots";
 import { useModal } from "./provider";
 
 export default function CreateSiteModal() {

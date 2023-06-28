@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, ChangeEvent } from "react";
 import { toast } from "sonner";
-import LoadingDots from "@/components/app/loading-dots";
+import LoadingDots from "@/components/icons/loading-dots";
 import { BlobResult } from "@vercel/blob";
 
 export default function Uploader() {

@@ -32,7 +32,6 @@ export default function Overview() {
             </div>
           }
         >
-          {/* @ts-expect-error Server Component */}
           <Sites limit={4} />
         </Suspense>
       </div>
@@ -48,7 +47,6 @@ export default function Overview() {
             </div>
           }
         >
-          {/* @ts-expect-error Server Component */}
           <Posts limit={8} />
         </Suspense>
       </div>

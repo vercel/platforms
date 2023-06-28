@@ -82,7 +82,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
           <div className="border-t border-stone-200 my-2" />
           <Suspense fallback={<div>Loading...</div>}>
-            {/* @ts-expect-error Server Component */}
             <Profile />
           </Suspense>
         </div>

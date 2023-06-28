@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import Form from "../../../../components/form";
-import { editSite } from "../../../../components/form/actions";
+import { updateSite } from "../../../../components/form/actions";
 
 export default async function SiteSettingsDomains({
   params,
@@ -26,7 +26,7 @@ export default async function SiteSettingsDomains({
           placeholder: "subdomain",
           maxLength: 32,
         }}
-        handleSubmit={editSite}
+        handleSubmit={updateSite}
       />
       <Form
         title="Custom Domain"
@@ -40,7 +40,7 @@ export default async function SiteSettingsDomains({
           maxLength: 64,
           pattern: "^[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}$",
         }}
-        handleSubmit={editSite}
+        handleSubmit={updateSite}
       />
     </div>
   );

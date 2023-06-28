@@ -16,14 +16,13 @@ export default async function SiteAnalyticsLayout({
   if (!session) {
     redirect("/login");
   }
-  const data = await prisma.site.findFirst({
+  const data = await prisma.site.findUnique({
     where: {
       id: params.id,
-      userId: session.user.id as string,
     },
   });
 
-  if (!data) {
+  if (!data || data.userId !== session.user.id) {
     notFound();
   }
 

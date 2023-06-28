@@ -11,11 +11,22 @@ import {
   Settings,
 } from "lucide-react";
 import { useParams, useSelectedLayoutSegments } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getSiteFromPostId } from "./form/actions";
 
 export default function Nav() {
   const segments = useSelectedLayoutSegments();
   const { id } = useParams() as { id?: string };
+
+  const [siteId, setSiteId] = useState<string | null>();
+
+  useEffect(() => {
+    if (segments[0] === "post" && id) {
+      getSiteFromPostId(id).then((id) => {
+        setSiteId(id);
+      });
+    }
+  }, [segments, id]);
 
   const tabs = useMemo(() => {
     if (segments[0] === "site" && id) {
@@ -47,18 +58,20 @@ export default function Nav() {
     } else if (segments[0] === "post" && id) {
       return [
         {
-          name: "All Posts",
-          href: "/sites",
+          name: "Back to All Posts",
+          href: siteId ? `/site/${siteId}` : "/sites",
           icon: <ArrowLeft width={18} />,
         },
         {
           name: "Editor",
           href: `/post/${id}`,
+          isActive: segments.length === 2,
           icon: <Edit3 width={18} />,
         },
         {
           name: "Settings",
           href: `/post/${id}/settings`,
+          isActive: segments.includes("settings"),
           icon: <Settings width={18} />,
         },
       ];
@@ -83,7 +96,7 @@ export default function Nav() {
         icon: <Settings width={18} />,
       },
     ];
-  }, [segments, id]);
+  }, [segments, id, siteId]);
 
   return (
     <div className="grid gap-1">

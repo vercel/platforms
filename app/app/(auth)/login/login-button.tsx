@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingDots from "@/components/app/loading-dots";
+import LoadingDots from "@/components/icons/loading-dots";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";

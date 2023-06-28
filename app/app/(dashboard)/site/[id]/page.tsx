@@ -3,6 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Posts from "../../components/posts";
+import CreatePostButton from "../../components/create-post-button";
 
 export default async function SitePosts({
   params,
@@ -13,13 +14,13 @@ export default async function SitePosts({
   if (!session) {
     redirect("/login");
   }
-  const data = await prisma.site.findFirst({
+  const data = await prisma.site.findUnique({
     where: {
       id: params.id,
-      userId: session.user.id as string,
     },
   });
-  if (!data) {
+
+  if (!data || data.userId !== session.user.id) {
     notFound();
   }
 
@@ -41,9 +42,7 @@ export default async function SitePosts({
             {url} ↗
           </a>
         </div>
-        <button className="font-medium text-sm px-3 py-1.5 rounded-lg border border-stone-300 hover:border-black text-stone-500 hover:text-black transition-all">
-          Create New Post
-        </button>
+        <CreatePostButton />
       </div>
       <Posts siteId={params.id} />
     </>

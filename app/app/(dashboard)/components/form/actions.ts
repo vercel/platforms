@@ -1,9 +1,9 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { Site } from "@prisma/client";
+import { Post, Site } from "@prisma/client";
 import { revalidateTag } from "next/cache";
-import { withSiteAuth } from "./auth";
+import { withPostAuth, withSiteAuth } from "./auth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
@@ -54,7 +54,7 @@ export const createSite = async (formData: FormData) => {
   }
 };
 
-export const editSite = withSiteAuth(
+export const updateSite = withSiteAuth(
   async (formData: FormData, site: Site, key: string) => {
     const value = formData.get(key) as string;
 
@@ -180,6 +180,124 @@ export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
     const response = await prisma.site.delete({
       where: {
         id: site.id,
+      },
+    });
+    return response;
+  } catch (error: any) {
+    throw Error(error);
+  }
+});
+
+export const getSiteFromPostId = async (postId: string) => {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      siteId: true,
+    },
+  });
+  return post?.siteId;
+};
+
+export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user.id) {
+    throw new Error("Not authenticated");
+  }
+  return await prisma.post.create({
+    data: {
+      siteId: site.id,
+      userId: session.user.id,
+    },
+  });
+});
+
+export const updatePost = async (data: Post) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user.id) {
+    throw new Error("Not authenticated");
+  }
+  const post = await prisma.post.findUnique({
+    where: {
+      id: data.id,
+    },
+  });
+  if (!post || post.userId !== session.user.id) {
+    throw new Error("Post not found");
+  }
+  try {
+    const response = await prisma.post.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        title: data.title,
+        description: data.description,
+        content: data.content,
+      },
+    });
+    return response;
+  } catch (error: any) {
+    throw Error(error);
+  }
+};
+
+export const updatePostMetadata = withPostAuth(
+  async (formData: FormData, post: Post, key: string) => {
+    const value = formData.get(key) as string;
+
+    try {
+      let response;
+      if (key === "image") {
+        const file = formData.get("image") as File;
+        const filename = `${nanoid()}.${file.type.split("/")[1]}`;
+
+        const { url } = await put(filename, file, {
+          access: "public",
+        });
+
+        const blurhash = await getBlurDataURL(url);
+
+        response = await prisma.post.update({
+          where: {
+            id: post.id,
+          },
+          data: {
+            image: url,
+            imageBlurhash: blurhash,
+          },
+        });
+        return url;
+      } else {
+        response = await prisma.post.update({
+          where: {
+            id: post.id,
+          },
+          data: {
+            [key]: value,
+          },
+        });
+      }
+      return response;
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        throw new Error(`This slug is already in use`);
+      } else {
+        throw Error(error);
+      }
+    }
+  }
+);
+
+export const deletePost = withPostAuth(async (_: FormData, post: Post) => {
+  try {
+    const response = await prisma.post.delete({
+      where: {
+        id: post.id,
+      },
+      select: {
+        siteId: true,
       },
     });
     return response;

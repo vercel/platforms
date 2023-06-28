@@ -7,7 +7,7 @@ import BlurImage from "@/components/BlurImage";
 import CloudinaryUploadWidget from "@/components/Cloudinary";
 import Layout from "@/components/app/Layout";
 import Loader from "@/components/app/Loader";
-import LoadingDots from "@/components/app/loading-dots";
+import LoadingDots from "@/components/icons/loading-dots";
 import Modal from "@/components/Modal";
 import { fetcher } from "@/lib/utils";
 import { HttpMethod } from "@/types";

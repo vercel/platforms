@@ -1,4 +1,4 @@
-import LoadingDots from "@/components/app/loading-dots";
+import LoadingDots from "@/components/icons/loading-dots";
 
 export default function Loading() {
   return (

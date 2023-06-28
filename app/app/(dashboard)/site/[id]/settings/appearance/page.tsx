@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import Form from "../../../../components/form";
-import { editSite } from "../../../../components/form/actions";
+import { updateSite } from "../../../../components/form/actions";
 
 export default async function SiteSettingsAppearance({
   params,
@@ -24,7 +24,7 @@ export default async function SiteSettingsAppearance({
           type: "file",
           defaultValue: data?.image!,
         }}
-        handleSubmit={editSite}
+        handleSubmit={updateSite}
       />
       <Form
         title="Font"
@@ -35,7 +35,7 @@ export default async function SiteSettingsAppearance({
           type: "select",
           defaultValue: data?.font!,
         }}
-        handleSubmit={editSite}
+        handleSubmit={updateSite}
       />
     </div>
   );

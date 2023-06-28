@@ -2,7 +2,7 @@
 
 import { MDXRemote, MDXRemoteProps } from "next-mdx-remote";
 import Examples from "@/components/mdx/Examples";
-import Tweet from "@/components/mdx/Tweet";
+import { Tweet } from "react-tweet";
 import BlurImage from "@/components/BlurImage";
 import { replaceLinks } from "@/lib/remark-plugins";
 
