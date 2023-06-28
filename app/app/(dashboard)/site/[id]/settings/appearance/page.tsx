@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
-import Form from "../../../../components/form";
-import { updateSite } from "../../../../components/form/actions";
+import Form from "@/components/form";
+import { updateSite } from "@/components/form/actions";
 
 export default async function SiteSettingsAppearance({
   params,

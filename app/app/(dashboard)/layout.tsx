@@ -1,7 +1,7 @@
 import { ReactNode, Suspense } from "react";
 import { cal } from "@/styles/fonts";
-import Profile from "./components/profile";
-import Nav from "./components/nav";
+import Profile from "@/components/profile";
+import Nav from "@/components/nav";
 import { FileCode, Github } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

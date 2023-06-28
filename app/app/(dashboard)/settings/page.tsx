@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
-import Form from "../components/form";
+import Form from "@/components/form";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { editUser } from "../components/form/actions";
+import { editUser } from "@/components/form/actions";
 
 export default async function SettingsPage() {
   const session = await getServerSession(authOptions);

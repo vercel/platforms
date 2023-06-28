@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import Sites from "../components/sites";
-import PlacholderCard from "../components/placeholder-card";
-import ModalButton from "@/app/modal/button";
-import CreateSiteModal from "@/app/modal/create-site";
+import Sites from "@/components/sites";
+import PlacholderCard from "@/components/placeholder-card";
+import CreateSiteButton from "./create-site-button";
+import CreateSiteModal from "@/components/modal/create-site";
 
 export default function AllSites({ params }: { params: { id: string } }) {
   return (
@@ -10,9 +10,9 @@ export default function AllSites({ params }: { params: { id: string } }) {
       <div className="flex flex-col space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="font-cal text-3xl font-bold">All Sites</h1>
-          <ModalButton text="Create New Site">
+          <CreateSiteButton>
             <CreateSiteModal />
-          </ModalButton>
+          </CreateSiteButton>
         </div>
         <Suspense
           fallback={

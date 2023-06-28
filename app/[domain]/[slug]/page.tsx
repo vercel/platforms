@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { getPostData } from "@/lib/fetchers";
 import { unstable_cache } from "next/cache";
 
-import BlogCard from "@/components/BlogCard";
-import BlurImage from "@/components/BlurImage";
+import BlogCard from "@/components/blog-card";
+import BlurImage from "@/components/blur-image";
 
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
 import MDX from "@/components/mdx";

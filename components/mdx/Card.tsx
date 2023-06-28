@@ -1,4 +1,4 @@
-import BlurImage from "../BlurImage";
+import BlurImage from "../blur-image";
 
 import type { MdxCardData } from "@/types";
 

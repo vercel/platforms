@@ -3,7 +3,7 @@
 import { MDXRemote, MDXRemoteProps } from "next-mdx-remote";
 import Examples from "@/components/mdx/Examples";
 import { Tweet } from "react-tweet";
-import BlurImage from "@/components/BlurImage";
+import BlurImage from "@/components/blur-image";
 import { replaceLinks } from "@/lib/remark-plugins";
 
 export default function MDX({ source }: { source: MDXRemoteProps }) {

@@ -33,8 +33,12 @@ export default async function middleware(req: NextRequest) {
     } else if (session && path == "/login") {
       return NextResponse.redirect(new URL("/", req.url));
     }
-
     return NextResponse.rewrite(new URL(`/app${path}`, req.url));
+  }
+
+  // rewrite root application to `/home` folder
+  if (hostname === "localhost:3000" || hostname === "vercel.pub") {
+    return NextResponse.rewrite(new URL(`/home${path}`, req.url));
   }
 
   // rewrite everything else to `/[domain]/[path] dynamic route
