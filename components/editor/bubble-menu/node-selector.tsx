@@ -12,8 +12,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { Dispatch, FC, SetStateAction } from "react";
-
-import { BubbleMenuItem } from "./EditorBubbleMenu";
+import { BubbleMenuItem } from ".";
 
 interface NodeSelectorProps {
   editor: Editor;
