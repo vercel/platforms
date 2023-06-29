@@ -247,8 +247,12 @@ export const updatePost = async (data: Post) => {
     });
 
     revalidateTag(`${post.site?.subdomain}-posts`);
+    revalidateTag(`${post.site?.subdomain}-${post.slug}`);
+
+    // if the site has a custom domain, we need to revalidate those tags too
     post.site?.customDomain &&
-      revalidateTag(`${post.site?.customDomain}-posts`);
+      (revalidateTag(`${post.site?.customDomain}-posts`),
+      revalidateTag(`${post.site?.customDomain}-${post.slug}`));
 
     return response;
   } catch (error: any) {
@@ -300,9 +304,12 @@ export const updatePostMetadata = withPostAuth(
       }
 
       revalidateTag(`${post.site?.subdomain}-posts`);
+      revalidateTag(`${post.site?.subdomain}-${post.slug}`);
 
+      // if the site has a custom domain, we need to revalidate those tags too
       post.site?.customDomain &&
-        revalidateTag(`${post.site?.customDomain}-posts`);
+        (revalidateTag(`${post.site?.customDomain}-posts`),
+        revalidateTag(`${post.site?.customDomain}-${post.slug}`));
 
       return response;
     } catch (error: any) {
