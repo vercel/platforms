@@ -68,6 +68,7 @@ export async function getPostData(domain: string, slug: string) {
         where: {
           site: subdomain ? { subdomain } : { customDomain: domain },
           slug,
+          published: true,
         },
         include: {
           site: {

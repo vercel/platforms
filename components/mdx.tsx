@@ -1,13 +1,37 @@
-import { Post } from "@prisma/client";
-import BlurImage from "../blur-image";
+"use client";
 
-export interface ExampleCardProps
+import { Post } from "@prisma/client";
+import { MDXRemote, MDXRemoteProps } from "next-mdx-remote";
+import { replaceLinks } from "@/lib/remark-plugins";
+import { Tweet } from "react-tweet";
+import BlurImage from "@/components/blur-image";
+
+export default function MDX({ source }: { source: MDXRemoteProps }) {
+  const components = {
+    a: replaceLinks,
+    BlurImage,
+    Examples,
+    Tweet,
+  };
+
+  return (
+    <article
+      className="w-11/12 sm:w-3/4 m-auto prose prose-md sm:prose-lg"
+      suppressHydrationWarning={true}
+    >
+      {/* @ts-ignore */}
+      <MDXRemote {...source} components={components} />
+    </article>
+  );
+}
+
+interface ExampleCardProps
   extends Pick<Post, "description" | "image" | "imageBlurhash"> {
   name: string | null;
   url: string | null;
 }
 
-export default function Examples({ data }: { data: string }) {
+function Examples({ data }: { data: string }) {
   const parsedData = JSON.parse(data) as Array<ExampleCardProps>;
   return (
     <div className="not-prose grid grid-cols-1 gap-x-4 gap-y-4 lg:gap-y-8 lg:-mx-36 my-10 lg:mb-20 lg:grid-cols-3">
