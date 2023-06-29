@@ -60,7 +60,7 @@ export default function CreateSiteModal() {
               className="w-full rounded-l-lg border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black  focus:outline-none focus:ring-black"
             />
             <div className="flex items-center rounded-r-lg border border-l-0 border-stone-200 bg-stone-100 px-3 text-sm">
-              {process.env.NEXT_PUBLIC_ROOT_DOMAIN}
+              .{process.env.NEXT_PUBLIC_ROOT_DOMAIN}
             </div>
           </div>
         </div>
