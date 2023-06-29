@@ -40,8 +40,8 @@ export default function DeletePostForm({ postName }: { postName: string }) {
         />
       </div>
 
-      <div className="flex items-center justify-between rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 sm:px-10">
-        <p className="text-sm text-stone-500">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 items-center justify-center sm:justify-between rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 sm:px-10">
+        <p className="text-sm text-center text-stone-500">
           This action is irreversible. Please proceed with caution.
         </p>
         <div className="w-32">
@@ -57,7 +57,7 @@ function FormButton() {
   return (
     <button
       className={clsx(
-        "flex h-10 w-full items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
+        "flex h-8 sm:h-10 w-32 items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
         pending
           ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400"
           : "border-red-600 bg-red-600 text-white hover:bg-white hover:text-red-600"

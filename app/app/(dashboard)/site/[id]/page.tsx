@@ -27,9 +27,9 @@ export default async function SitePosts({
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <h1 className="font-cal text-3xl font-bold">
+      <div className="flex justify-between items-center flex-col sm:flex-row space-y-4 sm:space-y-0">
+        <div className="flex items-center flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+          <h1 className="font-cal text-xl sm:text-3xl font-bold w-60 truncate sm:w-auto">
             All Posts for {data.name}
           </h1>
           <a

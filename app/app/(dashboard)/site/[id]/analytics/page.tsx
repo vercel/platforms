@@ -25,9 +25,9 @@ export default async function SiteAnalytics({
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <h1 className="font-cal text-3xl font-bold">
+      <div className="flex justify-center sm:justify-start items-center">
+        <div className="flex items-center space-x-0 sm:space-x-4 flex-col sm:flex-row space-y-2 sm:space-y-0">
+          <h1 className="font-cal text-xl sm:text-3xl font-bold">
             Analytics for {data.name}
           </h1>
           <a

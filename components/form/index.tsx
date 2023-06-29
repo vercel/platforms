@@ -114,7 +114,7 @@ export default function Form({
       {inputAttrs.name === "customDomain" && inputAttrs.defaultValue && (
         <DomainConfiguration domain={inputAttrs.defaultValue} />
       )}
-      <div className="flex items-center justify-between rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 sm:px-10">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 items-center justify-center sm:justify-between rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 sm:px-10">
         <p className="text-sm text-stone-500">{helpText}</p>
         <FormButton />
       </div>
@@ -127,7 +127,7 @@ function FormButton() {
   return (
     <button
       className={clsx(
-        "flex h-10 w-32 items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
+        "flex h-8 sm:h-10 w-32 items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
         pending
           ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400"
           : "border-black bg-black text-white hover:bg-white hover:text-black"

@@ -29,8 +29,8 @@ export default async function SiteAnalyticsLayout({
 
   return (
     <>
-      <div className="flex items-center space-x-4">
-        <h1 className="font-cal text-3xl font-bold">
+      <div className="flex items-center space-x-4 flex-col sm:flex-row space-y-2 sm:space-y-0">
+        <h1 className="font-cal text-xl sm:text-3xl font-bold">
           Settings for {data.name}
         </h1>
         <a
