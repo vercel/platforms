@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 export default function NotFound() {
-  console.log("404 on app/[domain]/not-found.tsx");
   return (
     <div className="flex flex-col items-center justify-center">
       <h1 className="font-cal text-4xl">404</h1>

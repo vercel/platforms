@@ -12,10 +12,10 @@ export async function generateMetadata({
   params,
 }: {
   params: { domain: string };
-}): Promise<Metadata> {
+}): Promise<Metadata | null> {
   const data = await getSiteData(params.domain);
   if (!data) {
-    notFound();
+    return null;
   }
   const {
     name: title,
