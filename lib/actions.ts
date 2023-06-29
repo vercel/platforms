@@ -245,7 +245,6 @@ export const updatePost = async (data: Post) => {
 export const updatePostMetadata = withPostAuth(
   async (formData: FormData, post: Post, key: string) => {
     const value = formData.get(key) as string;
-    console.log({ key, value, post });
 
     try {
       let response;
