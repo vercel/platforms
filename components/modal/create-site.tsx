@@ -18,6 +18,7 @@ export default function CreateSiteModal() {
           .then((site) => {
             toast.success(`Successfully created site!`);
             const { id } = site;
+            router.refresh();
             router.push(`/site/${id}`);
             modal?.hide();
           })

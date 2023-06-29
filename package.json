@@ -25,7 +25,7 @@
     "@tiptap/react": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/suggestion": "^2.0.3",
-    "@tremor/react": "^3.0.1",
+    "@tremor/react": "^3.2.6",
     "@vercel/analytics": "^1.0.1",
     "@vercel/blob": "^0.9.2",
     "@vercel/postgres": "^0.3.0",
