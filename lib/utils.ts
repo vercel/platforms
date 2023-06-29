@@ -1,6 +1,6 @@
 export async function fetcher<JSON = any>(
   input: RequestInfo,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<JSON> {
   const response = await fetch(input, init);
 
@@ -26,7 +26,7 @@ export const getBlurDataURL = async (url: string | null) => {
   }
   try {
     const response = await fetch(
-      `https://wsrv.nl/?url=${url}&w=50&h=50&blur=5`
+      `https://wsrv.nl/?url=${url}&w=50&h=50&blur=5`,
     );
     const buffer = await response.arrayBuffer();
     const base64 = Buffer.from(buffer).toString("base64");

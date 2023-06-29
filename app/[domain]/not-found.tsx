@@ -3,8 +3,8 @@ import Image from "next/image";
 export default function NotFound() {
   console.log("404 on app/[domain]/not-found.tsx");
   return (
-    <div className="flex flex-col justify-center items-center">
-      <h1 className="text-4xl font-cal">404</h1>
+    <div className="flex flex-col items-center justify-center">
+      <h1 className="font-cal text-4xl">404</h1>
       <Image
         alt="missing site"
         src="https://illustrations.popsy.co/gray/timed-out-error.svg"

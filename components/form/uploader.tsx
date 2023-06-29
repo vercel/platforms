@@ -52,7 +52,7 @@ export default function Uploader({
           {
             "max-w-screen-md": aspectRatio === "aspect-video",
             "max-w-xs": aspectRatio === "aspect-square",
-          }
+          },
         )}
       >
         <div

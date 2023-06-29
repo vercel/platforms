@@ -14,28 +14,28 @@ interface BlogCardProps {
 export default function BlogCard({ data }: BlogCardProps) {
   return (
     <Link href={`/${data.slug}`}>
-      <div className="rounded-2xl border-2 border-gray-100 overflow-hidden shadow-md bg-white hover:shadow-xl hover:-translate-y-1 transition-all ease duration-200">
+      <div className="ease overflow-hidden rounded-2xl border-2 border-gray-100 bg-white shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
         {data.image ? (
           <BlurImage
             src={data.image}
             alt={data.title ?? "Blog Post"}
             width={500}
             height={400}
-            className="w-full h-64 object-cover"
+            className="h-64 w-full object-cover"
             placeholder="blur"
             blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
           />
         ) : (
-          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
+          <div className="absolute flex h-full w-full select-none items-center justify-center bg-gray-100 text-4xl text-gray-500">
             ?
           </div>
         )}
-        <div className="py-8 px-5 h-36 border-t border-gray-200">
+        <div className="h-36 border-t border-gray-200 px-5 py-8">
           <h3 className="font-title text-xl tracking-wide">{data.title}</h3>
-          <p className="text-md italic text-gray-600 my-2 truncate">
+          <p className="text-md my-2 truncate italic text-gray-600">
             {data.description}
           </p>
-          <p className="text-sm text-gray-600 my-2">
+          <p className="my-2 text-sm text-gray-600">
             Published {toDateString(data.createdAt)}
           </p>
         </div>

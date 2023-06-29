@@ -55,7 +55,7 @@ export const ColorSelector: FC<ColorSelectorProps> = ({
   ];
 
   const activeItem = items.find(({ color }) =>
-    editor.isActive("textStyle", { color })
+    editor.isActive("textStyle", { color }),
   );
 
   return (
@@ -82,7 +82,7 @@ export const ColorSelector: FC<ColorSelectorProps> = ({
                 "flex items-center justify-between rounded-sm px-2 py-1 text-sm text-stone-600 hover:bg-stone-100",
                 {
                   "text-blue-600": editor.isActive("textStyle", { color }),
-                }
+                },
               )}
             >
               <div className="flex items-center space-x-2">

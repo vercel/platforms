@@ -38,7 +38,7 @@ export default async function PostOG({
   }
 
   const clashData = await fetch(
-    new URL("@/styles/CalSans-SemiBold.otf", import.meta.url)
+    new URL("@/styles/CalSans-SemiBold.otf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
@@ -77,6 +77,6 @@ export default async function PostOG({
         },
       ],
       emoji: "blobmoji",
-    }
+    },
   );
 }

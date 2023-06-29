@@ -10,7 +10,7 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
   const { data: valid, isValidating } = useSWR<Site>(
     `/api/domain/check?domain=${customDomain}`,
     fetcher,
-    { revalidateOnMount: true, refreshInterval: 5000 }
+    { revalidateOnMount: true, refreshInterval: 5000 },
   );
   const [recordType, setRecordType] = useState("CNAME");
   const subdomain = // if domain is a subdomain
@@ -19,16 +19,16 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
       : "";
 
   return (
-    <div className="w-full max-w-2xl mt-10 border border-black rounded-lg py-10">
-      <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 justify-between px-10">
+    <div className="mt-10 w-full max-w-2xl rounded-lg border border-black py-10">
+      <div className="flex flex-col justify-between space-y-4 px-10 sm:flex-row sm:space-x-4">
         <a
-          className="text-xl font-semibold flex justify-center sm:justify-start items-center"
+          className="flex items-center justify-center text-xl font-semibold sm:justify-start"
           href={`http://${customDomain}`}
           rel="noreferrer"
           target="_blank"
         >
           {customDomain}
-          <span className="inline-block ml-2">
+          <span className="ml-2 inline-block">
             <svg
               viewBox="0 0 24 24"
               width="20"
@@ -48,7 +48,7 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
         </a>
       </div>
 
-      <div className="flex items-center space-x-3 my-3 px-10">
+      <div className="my-3 flex items-center space-x-3 px-10">
         <svg
           viewBox="0 0 24 24"
           width="24"
@@ -76,7 +76,7 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
         </svg>
         <p
           className={`${
-            valid ? "text-black font-normal" : "text-red-700 font-medium"
+            valid ? "font-normal text-black" : "font-medium text-red-700"
           } text-sm`}
         >
           {valid ? "Valid" : "Invalid"} Configuration
@@ -85,7 +85,7 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
 
       {!valid && (
         <>
-          <div className="w-full border-t border-gray-100 mt-5 mb-8" />
+          <div className="mb-8 mt-5 w-full border-t border-gray-100" />
 
           <div className="px-10">
             <div className="flex justify-start space-x-4">
@@ -93,9 +93,9 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
                 onClick={() => setRecordType("CNAME")}
                 className={`${
                   recordType == "CNAME"
-                    ? "text-black border-black"
-                    : "text-gray-400 border-white"
-                } text-sm border-b-2 pb-1 transition-all ease duration-150`}
+                    ? "border-black text-black"
+                    : "border-white text-gray-400"
+                } ease border-b-2 pb-1 text-sm transition-all duration-150`}
               >
                 CNAME Record (subdomains)
               </button>
@@ -105,9 +105,9 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
                   onClick={() => setRecordType("A")}
                   className={`${
                     recordType == "A"
-                      ? "text-black border-black"
-                      : "text-gray-400 border-white"
-                  } text-sm border-b-2 pb-1 transition-all ease duration-150`}
+                      ? "border-black text-black"
+                      : "border-white text-gray-400"
+                  } ease border-b-2 pb-1 text-sm transition-all duration-150`}
                 >
                   A Record (apex domain)
                 </button>
@@ -117,15 +117,15 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
               <p className="my-5 text-sm">
                 Set the following record on your DNS provider to continue:
               </p>
-              <div className="flex justify-start items-center space-x-10 bg-gray-50 p-2 rounded-md">
+              <div className="flex items-center justify-start space-x-10 rounded-md bg-gray-50 p-2">
                 <div>
                   <p className="text-sm font-bold">Type</p>
-                  <p className="text-sm font-mono mt-2">{recordType}</p>
+                  <p className="mt-2 font-mono text-sm">{recordType}</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold">Name</p>
                   {/* if the custom domain is a subdomain, the CNAME record is the subdomain */}
-                  <p className="text-sm font-mono mt-2">
+                  <p className="mt-2 font-mono text-sm">
                     {recordType === "A"
                       ? "@"
                       : recordType == "CNAME" && subdomain
@@ -135,7 +135,7 @@ export default function DomainCard({ customDomain }: { customDomain: string }) {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Value</p>
-                  <p className="text-sm font-mono mt-2">
+                  <p className="mt-2 font-mono text-sm">
                     {recordType == "CNAME"
                       ? `cname.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
                       : `76.76.21.21`}

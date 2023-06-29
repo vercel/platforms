@@ -79,7 +79,7 @@ export function withSiteAuth(action: any) {
   return async (
     formData: FormData | null,
     siteId: string,
-    key: string | null
+    key: string | null,
   ) => {
     const session = await getSession();
     if (!session) {
@@ -102,7 +102,7 @@ export function withPostAuth(action: any) {
   return async (
     formData: FormData | null,
     postId: string,
-    key: string | null
+    key: string | null,
   ) => {
     const session = await getSession();
     if (!session?.user.id) {

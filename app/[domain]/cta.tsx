@@ -7,15 +7,15 @@ export default function CTA() {
   return (
     <div
       className={`${
-        closeCTA ? "h-14 lg:h-auto" : "lg:h-auto sm:h-40 h-60"
-      } max-w-screen-xl xl:mx-auto mx-5 rounded-lg px-5 lg:pt-3 pt-0 pb-3 flex flex-col lg:flex-row space-y-3 lg:space-y-0 justify-between items-center sticky bottom-5 bg-white border-t-4 border-black
-          drop-shadow-lg transition-all ease-in-out duration-150`}
+        closeCTA ? "h-14 lg:h-auto" : "h-60 sm:h-40 lg:h-auto"
+      } fixed inset-x-0 bottom-5 mx-5 flex max-w-screen-xl flex-col items-center justify-between space-y-3 rounded-lg border-t-4 border-black bg-white px-5 pb-3 pt-0 drop-shadow-lg transition-all duration-150 ease-in-out
+          lg:flex-row lg:space-y-0 lg:pt-3 xl:mx-auto`}
     >
       <button
         onClick={() => setCloseCTA(!closeCTA)}
         className={`${
           closeCTA ? "rotate-180" : "rotate-0"
-        } lg:hidden absolute top-2 right-3 text-black transition-all ease-in-out duration-150`}
+        } absolute right-3 top-2 text-black transition-all duration-150 ease-in-out lg:hidden`}
       >
         <svg
           viewBox="0 0 24 24"
@@ -32,18 +32,18 @@ export default function CTA() {
         </svg>
       </button>
       <div className="text-center lg:text-left">
-        <p className="font-title text-lg sm:text-2xl text-black">
+        <p className="font-title text-lg text-black sm:text-2xl">
           Platforms Starter Kit Demo
         </p>
         <p
           className={`${
-            closeCTA ? "lg:block hidden" : ""
-          } text-sm text-gray-700 mt-2 lg:mt-0`}
+            closeCTA ? "hidden lg:block" : ""
+          } mt-2 text-sm text-gray-700 lg:mt-0`}
         >
           This is a demo site showcasing how to build a multi-tenant application
           with{" "}
           <a
-            className="text-black font-semibold underline"
+            className="font-semibold text-black underline"
             href="https://platformize.co"
             rel="noreferrer"
             target="_blank"
@@ -55,11 +55,11 @@ export default function CTA() {
       </div>
       <div
         className={`${
-          closeCTA ? "lg:flex hidden" : ""
-        } flex space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row flex-col lg:w-auto w-full text-center`}
+          closeCTA ? "hidden lg:flex" : ""
+        } flex w-full flex-col space-y-3 text-center sm:flex-row sm:space-x-3 sm:space-y-0 lg:w-auto`}
       >
         <a
-          className="flex-auto font-title text-lg rounded-md py-1 sm:py-3 px-5 text-black border border-gray-200 hover:border-black transition-all ease-in-out duration-150 whitespace-no-wrap"
+          className="whitespace-no-wrap flex-auto rounded-md border border-gray-200 px-5 py-1 font-title text-lg text-black transition-all duration-150 ease-in-out hover:border-black sm:py-3"
           href="https://app.vercel.pub"
           rel="noreferrer"
           target="_blank"
@@ -67,7 +67,7 @@ export default function CTA() {
           Create your publication
         </a>
         <a
-          className="flex-auto font-title text-lg bg-black text-white border border-black rounded-md py-1 sm:py-3 px-5 hover:text-black hover:bg-white transition-all ease-in-out duration-150 whitespace-no-wrap"
+          className="whitespace-no-wrap flex-auto rounded-md border border-black bg-black px-5 py-1 font-title text-lg text-white transition-all duration-150 ease-in-out hover:bg-white hover:text-black sm:py-3"
           href="https://vercel.com/guides/nextjs-multi-tenant-application"
           rel="noreferrer"
           target="_blank"

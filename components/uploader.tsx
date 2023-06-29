@@ -31,7 +31,7 @@ export default function Uploader() {
         }
       }
     },
-    [setData]
+    [setData],
   );
 
   const [saving, setSaving] = useState(false);
@@ -69,7 +69,7 @@ export default function Uploader() {
                     </a>
                   </p>
                 </div>
-              </div>
+              </div>,
             );
           } else {
             const error = await res.text();
@@ -80,7 +80,7 @@ export default function Uploader() {
       }}
     >
       <div>
-        <div className="space-y-1 mb-4">
+        <div className="mb-4 space-y-1">
           <h2 className="text-xl font-semibold">Upload a file</h2>
           <p className="text-sm text-gray-500">
             Accepted formats: .png, .jpg, .gif, .mp4

@@ -18,7 +18,7 @@ export default async function OverviewSitesCTA() {
   return sites > 0 ? (
     <Link
       href="/sites"
-      className="font-medium text-sm px-4 py-1.5 rounded-lg border border-black bg-black hover:bg-white text-white hover:text-black active:bg-stone-100 transition-all"
+      className="rounded-lg border border-black bg-black px-4 py-1.5 text-sm font-medium text-white transition-all hover:bg-white hover:text-black active:bg-stone-100"
     >
       View All Sites
     </Link>

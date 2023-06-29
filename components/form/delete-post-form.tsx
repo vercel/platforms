@@ -24,7 +24,7 @@ export default function DeletePostForm({ postName }: { postName: string }) {
       className="rounded-lg border border-red-600 bg-white"
     >
       <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
-        <h2 className="text-xl font-cal">Delete Post</h2>
+        <h2 className="font-cal text-xl">Delete Post</h2>
         <p className="text-sm text-stone-500">
           Deletes your post permanently. Type in the name of your post{" "}
           <b>{postName}</b> to confirm.
@@ -40,8 +40,8 @@ export default function DeletePostForm({ postName }: { postName: string }) {
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 items-center justify-center sm:justify-between rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 sm:px-10">
-        <p className="text-sm text-center text-stone-500">
+      <div className="flex flex-col items-center justify-center space-y-2 rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 sm:flex-row sm:justify-between sm:space-y-0 sm:px-10">
+        <p className="text-center text-sm text-stone-500">
           This action is irreversible. Please proceed with caution.
         </p>
         <div className="w-32">
@@ -57,10 +57,10 @@ function FormButton() {
   return (
     <button
       className={clsx(
-        "flex h-8 sm:h-10 w-32 items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
+        "flex h-8 w-32 items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none sm:h-10",
         pending
           ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400"
-          : "border-red-600 bg-red-600 text-white hover:bg-white hover:text-red-600"
+          : "border-red-600 bg-red-600 text-white hover:bg-white hover:text-red-600",
       )}
       disabled={pending}
     >

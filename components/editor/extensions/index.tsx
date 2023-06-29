@@ -70,7 +70,7 @@ export const TiptapExtensions = [
 
             tr.insert(start - 1, this.type.create(attributes)).delete(
               tr.mapping.map(start),
-              tr.mapping.map(end)
+              tr.mapping.map(end),
             );
           },
         }),

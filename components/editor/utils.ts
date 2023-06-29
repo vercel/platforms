@@ -5,7 +5,7 @@ import { toast } from "sonner";
 export const handleImageUpload = (
   file: File,
   view: EditorView,
-  event: ClipboardEvent | DragEvent | Event
+  event: ClipboardEvent | DragEvent | Event,
 ) => {
   // check if the file is an image
   if (!file.type.includes("image/")) {
@@ -56,7 +56,7 @@ export const handleImageUpload = (
           };
           reader.readAsDataURL(file);
           throw new Error(
-            "`BLOB_READ_WRITE_TOKEN` environment variable not found, reading image locally instead."
+            "`BLOB_READ_WRITE_TOKEN` environment variable not found, reading image locally instead.",
           );
 
           // Unknown error
@@ -68,7 +68,7 @@ export const handleImageUpload = (
         loading: "Uploading image...",
         success: "Image uploaded successfully.",
         error: (e) => e.message,
-      }
+      },
     );
   }
 
@@ -81,8 +81,8 @@ export const handleImageUpload = (
             src: url,
             alt: file.name,
             title: file.name,
-          })
-        )
+          }),
+        ),
       );
 
       // for drag and drop events
@@ -108,8 +108,8 @@ export const handleImageUpload = (
             src: url,
             alt: file.name,
             title: file.name,
-          })
-        )
+          }),
+        ),
       );
     }
   };

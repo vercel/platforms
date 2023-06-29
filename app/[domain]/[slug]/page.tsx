@@ -13,7 +13,7 @@ export async function generateMetadata({
   const { domain, slug } = params;
   const data = await getPostData(domain, slug);
   if (!data) {
-    notFound();
+    return null;
   }
   const { title, description } = data;
 
@@ -47,15 +47,15 @@ export default async function SitePostPage({
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center">
-        <div className="text-center w-full md:w-7/12 m-auto">
-          <p className="text-sm md:text-base font-light text-gray-500 w-10/12 m-auto my-5">
+      <div className="flex flex-col items-center justify-center">
+        <div className="m-auto w-full text-center md:w-7/12">
+          <p className="m-auto my-5 w-10/12 text-sm font-light text-gray-500 md:text-base">
             {toDateString(data.createdAt)}
           </p>
-          <h1 className="font-bold text-3xl font-title md:text-6xl mb-10 text-gray-800">
+          <h1 className="mb-10 font-title text-3xl font-bold text-gray-800 md:text-6xl">
             {data.title}
           </h1>
-          <p className="text-md md:text-lg text-gray-600 w-10/12 m-auto">
+          <p className="text-md m-auto w-10/12 text-gray-600 md:text-lg">
             {data.description}
           </p>
         </div>
@@ -70,7 +70,7 @@ export default async function SitePostPage({
           target="_blank"
         >
           <div className="my-8">
-            <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden inline-block align-middle">
+            <div className="relative inline-block h-8 w-8 overflow-hidden rounded-full align-middle md:h-12 md:w-12">
               {data.site?.user?.image ? (
                 <BlurImage
                   alt={data.site?.user?.name ?? "User Avatar"}
@@ -79,23 +79,23 @@ export default async function SitePostPage({
                   width={80}
                 />
               ) : (
-                <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
+                <div className="absolute flex h-full w-full select-none items-center justify-center bg-gray-100 text-4xl text-gray-500">
                   ?
                 </div>
               )}
             </div>
-            <div className="inline-block text-md md:text-lg align-middle ml-3">
+            <div className="text-md ml-3 inline-block align-middle md:text-lg">
               by <span className="font-semibold">{data.site?.user?.name}</span>
             </div>
           </div>
         </a>
       </div>
-      <div className="relative h-80 md:h-150 w-full max-w-screen-lg lg:w-2/3 md:w-5/6 m-auto mb-10 md:mb-20 md:rounded-2xl overflow-hidden">
+      <div className="relative m-auto mb-10 h-80 w-full max-w-screen-lg overflow-hidden md:mb-20 md:h-150 md:w-5/6 md:rounded-2xl lg:w-2/3">
         <BlurImage
           alt={data.title ?? "Post image"}
           width={1200}
           height={630}
-          className="w-full h-full object-cover"
+          className="h-full w-full object-cover"
           placeholder="blur"
           blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
           src={data.image ?? "/placeholder.png"}
@@ -105,7 +105,7 @@ export default async function SitePostPage({
       <MDX source={data.mdxSource} />
 
       {data.adjacentPosts.length > 0 && (
-        <div className="relative mt-10 sm:mt-20 mb-20">
+        <div className="relative mb-20 mt-10 sm:mt-20">
           <div
             className="absolute inset-0 flex items-center"
             aria-hidden="true"
@@ -113,14 +113,14 @@ export default async function SitePostPage({
             <div className="w-full border-t border-gray-300" />
           </div>
           <div className="relative flex justify-center">
-            <span className="px-2 bg-white text-sm text-gray-500">
+            <span className="bg-white px-2 text-sm text-gray-500">
               Continue Reading
             </span>
           </div>
         </div>
       )}
       {data.adjacentPosts && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 mx-5 lg:mx-12 2xl:mx-auto mb-20 max-w-screen-xl">
+        <div className="mx-5 mb-20 grid max-w-screen-xl grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 lg:mx-12 xl:grid-cols-3 2xl:mx-auto">
           {data.adjacentPosts.map((data, index) => (
             <BlogCard key={index} data={data} />
           ))}

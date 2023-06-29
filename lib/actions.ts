@@ -18,7 +18,7 @@ import { getBlurDataURL } from "@/lib/utils";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-  7
+  7,
 ); // 7-character random string
 
 export const createSite = async (formData: FormData) => {
@@ -158,7 +158,7 @@ export const updateSite = withSiteAuth(
       console.log(
         "Updated site data! Revalidating tags: ",
         `${site.subdomain}-metadata`,
-        `${site.customDomain}-metadata`
+        `${site.customDomain}-metadata`,
       );
       revalidateTag(`${site.subdomain}-metadata`);
       site.customDomain && revalidateTag(`${site.customDomain}-metadata`);
@@ -171,7 +171,7 @@ export const updateSite = withSiteAuth(
         throw Error(error);
       }
     }
-  }
+  },
 );
 
 export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
@@ -262,7 +262,7 @@ export const updatePostMetadata = withPostAuth(
     post: Post & {
       site: Site;
     },
-    key: string
+    key: string,
   ) => {
     const value = formData.get(key) as string;
 
@@ -312,7 +312,7 @@ export const updatePostMetadata = withPostAuth(
         throw Error(error);
       }
     }
-  }
+  },
 );
 
 export const deletePost = withPostAuth(async (_: FormData, post: Post) => {
@@ -334,7 +334,7 @@ export const deletePost = withPostAuth(async (_: FormData, post: Post) => {
 export const editUser = async (
   formData: FormData,
   _id: unknown,
-  key: string
+  key: string,
 ) => {
   const session = await getSession();
   if (!session?.user.id) {

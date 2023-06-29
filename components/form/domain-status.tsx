@@ -8,7 +8,7 @@ export default function DomainStatus({ domain }: { domain: string }) {
   const { status, loading } = useDomainStatus({ domain });
 
   return (
-    <div className="absolute right-3 z-10 h-full flex items-center">
+    <div className="absolute right-3 z-10 flex h-full items-center">
       {loading ? (
         <LoadingSpinner />
       ) : status === "Valid Configuration" ? (

@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function NotFoundPost() {
   return (
-    <div className="flex flex-col mt-20 items-center space-x-4">
-      <h1 className="text-4xl font-cal">404</h1>
+    <div className="mt-20 flex flex-col items-center space-x-4">
+      <h1 className="font-cal text-4xl">404</h1>
       <Image
         alt="missing site"
         src="https://illustrations.popsy.co/gray/falling.svg"

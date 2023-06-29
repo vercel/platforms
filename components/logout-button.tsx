@@ -7,7 +7,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={() => signOut()}
-      className="text-stone-700 hover:bg-stone-200 active:bg-stone-300 rounded-lg p-1.5 transition-all ease-in-out duration-150"
+      className="rounded-lg p-1.5 text-stone-700 transition-all duration-150 ease-in-out hover:bg-stone-200 active:bg-stone-300"
     >
       <LogOut width={18} />
     </button>

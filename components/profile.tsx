@@ -11,10 +11,10 @@ export default async function Profile() {
   }
 
   return (
-    <div className="flex justify-between items-center w-full">
+    <div className="flex w-full items-center justify-between">
       <Link
         href="/settings"
-        className="flex flex-1 items-center space-x-3 w-full hover:bg-stone-200 active:bg-stone-300 rounded-lg px-2 py-1.5 transition-all ease-in-out duration-150"
+        className="flex w-full flex-1 items-center space-x-3 rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-stone-200 active:bg-stone-300"
       >
         <Image
           src={
@@ -26,7 +26,7 @@ export default async function Profile() {
           alt={session.user.name ?? "User avatar"}
           className="h-6 w-6 rounded-full"
         />
-        <span className="font-medium text-sm truncate">
+        <span className="truncate text-sm font-medium">
           {session.user.name}
         </span>
       </Link>

@@ -104,10 +104,10 @@ export default async function SiteLayout({
 
   return (
     <div className={fontMapper[data.font]}>
-      <div className="top-0 left-0 right-0 h-16 bg-white z-30 transition-all ease duration-150 flex">
-        <div className="flex justify-center items-center space-x-5 h-full max-w-screen-xl mx-auto px-10 sm:px-20">
-          <Link href="/" className="flex justify-center items-center">
-            <div className="h-8 w-8 inline-block rounded-full overflow-hidden align-middle">
+      <div className="ease left-0 right-0 top-0 z-30 flex h-16 bg-white transition-all duration-150">
+        <div className="mx-auto flex h-full max-w-screen-xl items-center justify-center space-x-5 px-10 sm:px-20">
+          <Link href="/" className="flex items-center justify-center">
+            <div className="inline-block h-8 w-8 overflow-hidden rounded-full align-middle">
               <Image
                 alt={data.name || ""}
                 height={40}
@@ -115,7 +115,7 @@ export default async function SiteLayout({
                 width={40}
               />
             </div>
-            <span className="inline-block font-title ml-3 font-medium truncate">
+            <span className="ml-3 inline-block truncate font-title font-medium">
               {data.name}
             </span>
           </Link>

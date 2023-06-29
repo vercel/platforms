@@ -29,8 +29,8 @@ export default async function SiteAnalyticsLayout({
 
   return (
     <>
-      <div className="flex items-center space-x-4 flex-col sm:flex-row space-y-2 sm:space-y-0">
-        <h1 className="font-cal text-xl sm:text-3xl font-bold">
+      <div className="flex flex-col items-center space-x-4 space-y-2 sm:flex-row sm:space-y-0">
+        <h1 className="font-cal text-xl font-bold sm:text-3xl">
           Settings for {data.name}
         </h1>
         <a
@@ -41,7 +41,7 @@ export default async function SiteAnalyticsLayout({
           }
           target="_blank"
           rel="noreferrer"
-          className="text-sm font-medium px-2 py-1 rounded-md bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors truncate"
+          className="truncate rounded-md bg-stone-100 px-2 py-1 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-200"
         >
           {url} ↗
         </a>

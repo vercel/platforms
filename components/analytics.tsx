@@ -90,7 +90,7 @@ export default function AnalyticsMockup() {
       <Card>
         <Title>Visitors</Title>
         <AreaChart
-          className="h-72 mt-4"
+          className="mt-4 h-72"
           data={chartdata}
           index="date"
           categories={["Visitors"]}

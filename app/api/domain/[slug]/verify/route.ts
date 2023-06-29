@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: { slug: string } },
 ) {
   const domain = params.slug;
   let status: DomainVerificationStatusProps = "Valid Configuration";

@@ -27,8 +27,8 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
     null;
 
   return (
-    <div className="border-t border-gray-200 px-10 pt-7 pb-5">
-      <div className="flex items-center space-x-2 mb-4">
+    <div className="border-t border-gray-200 px-10 pb-5 pt-7">
+      <div className="mb-4 flex items-center space-x-2">
         {status === "Pending Verification" ? (
           <AlertCircle fill="#FBBF24" stroke="white" />
         ) : (
@@ -53,7 +53,9 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
               <p className="mt-2 font-mono text-sm">
                 {txtVerification.domain.slice(
                   0,
-                  txtVerification.domain.length - domainJson.apexName.length - 1
+                  txtVerification.domain.length -
+                    domainJson.apexName.length -
+                    1,
                 )}
               </p>
             </div>

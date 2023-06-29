@@ -27,7 +27,7 @@ export default function SiteSettingsNav() {
   ];
 
   return (
-    <div className="flex space-x-4 pt-2 pb-4 border-b border-stone-200">
+    <div className="flex space-x-4 border-b border-stone-200 pb-4 pt-2">
       {navItems.map((item) => (
         <Link
           key={item.name}
@@ -37,7 +37,7 @@ export default function SiteSettingsNav() {
             "rounded-md px-2 py-1 text-sm font-medium transition-colors active:bg-stone-200",
             segment === item.segment
               ? "bg-stone-100 text-stone-600"
-              : "text-stone-600 hover:bg-stone-100"
+              : "text-stone-600 hover:bg-stone-100",
           )}
         >
           {item.name}
