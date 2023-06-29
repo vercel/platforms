@@ -4,6 +4,7 @@ import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
 import BlogCard from "@/components/blog-card";
 import { getPostsForSite, getSiteData } from "@/lib/fetchers";
+import Image from "next/image";
 
 export default async function SiteHomePage({
   params,
@@ -72,13 +73,11 @@ export default async function SiteHomePage({
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center py-20">
-            <BlurImage
-              src="/empty-state.png"
-              alt="No Posts"
-              width={613}
-              height={420}
-              placeholder="blur"
-              blurDataURL={placeholderBlurhash}
+            <Image
+              alt="missing post"
+              src="https://illustrations.popsy.co/gray/success.svg"
+              width={400}
+              height={400}
             />
             <p className="text-2xl font-title text-gray-600">No posts yet.</p>
           </div>

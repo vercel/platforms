@@ -32,7 +32,11 @@ export default function SiteCard({ data }: { data: Site }) {
       </Link>
       <div className="absolute bottom-4 w-full flex justify-between px-4 space-x-4">
         <a
-          href={`https://${url}`}
+          href={
+            process.env.NEXT_PUBLIC_VERCEL_ENV
+              ? `https://${url}`
+              : `http://${data.subdomain}.localhost:3000`
+          }
           target="_blank"
           rel="noreferrer"
           className="text-sm font-medium px-2 py-1 rounded-md bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors truncate"

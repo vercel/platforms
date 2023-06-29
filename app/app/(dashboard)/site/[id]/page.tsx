@@ -33,7 +33,11 @@ export default async function SitePosts({
             All Posts for {data.name}
           </h1>
           <a
-            href={`https://${url}`}
+            href={
+              process.env.NEXT_PUBLIC_VERCEL_ENV
+                ? `https://${url}`
+                : `http://${data.subdomain}.localhost:3000`
+            }
             target="_blank"
             rel="noreferrer"
             className="text-sm font-medium px-2 py-1 rounded-md bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors truncate"

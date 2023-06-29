@@ -125,23 +125,23 @@ export const updateSite = withSiteAuth(
           
           */
         }
-      } else if (key === "image") {
-        const file = formData.get("image") as File;
+      } else if (key === "image" || key === "logo") {
+        const file = formData.get(key) as File;
         const filename = `${nanoid()}.${file.type.split("/")[1]}`;
 
         const { url } = await put(filename, file, {
           access: "public",
         });
 
-        const blurhash = await getBlurDataURL(url);
+        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
         response = await prisma.site.update({
           where: {
             id: site.id,
           },
           data: {
-            image: url,
-            imageBlurhash: blurhash,
+            [key]: url,
+            ...(blurhash && { imageBlurhash: blurhash }),
           },
         });
         return url;
@@ -204,14 +204,20 @@ export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
   if (!session?.user.id) {
     throw new Error("Not authenticated");
   }
-  return await prisma.post.create({
+  const response = await prisma.post.create({
     data: {
       siteId: site.id,
       userId: session.user.id,
     },
   });
+
+  revalidateTag(`${site.subdomain}-posts`);
+  site.customDomain && revalidateTag(`${site.customDomain}-posts`);
+
+  return response;
 });
 
+// creating a separate function for this because we're not using FormData
 export const updatePost = async (data: Post) => {
   const session = await getSession();
   if (!session?.user.id) {
@@ -220,6 +226,9 @@ export const updatePost = async (data: Post) => {
   const post = await prisma.post.findUnique({
     where: {
       id: data.id,
+    },
+    include: {
+      site: true,
     },
   });
   if (!post || post.userId !== session.user.id) {
@@ -236,6 +245,11 @@ export const updatePost = async (data: Post) => {
         content: data.content,
       },
     });
+
+    revalidateTag(`${post.site?.subdomain}-posts`);
+    post.site?.customDomain &&
+      revalidateTag(`${post.site?.customDomain}-posts`);
+
     return response;
   } catch (error: any) {
     throw Error(error);
@@ -243,7 +257,13 @@ export const updatePost = async (data: Post) => {
 };
 
 export const updatePostMetadata = withPostAuth(
-  async (formData: FormData, post: Post, key: string) => {
+  async (
+    formData: FormData,
+    post: Post & {
+      site: Site;
+    },
+    key: string
+  ) => {
     const value = formData.get(key) as string;
 
     try {
@@ -278,6 +298,12 @@ export const updatePostMetadata = withPostAuth(
           },
         });
       }
+
+      revalidateTag(`${post.site?.subdomain}-posts`);
+
+      post.site?.customDomain &&
+        revalidateTag(`${post.site?.customDomain}-posts`);
+
       return response;
     } catch (error: any) {
       if (error.code === "P2002") {

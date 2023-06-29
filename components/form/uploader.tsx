@@ -1,12 +1,17 @@
 "use client";
 
+import clsx from "clsx";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function Uploader({
   defaultValue,
+  name,
+  aspectRatio,
 }: {
   defaultValue: string | null;
+  name: "image" | "logo";
+  aspectRatio: "aspect-video" | "aspect-square";
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [data, setData] = useState<{
@@ -41,7 +46,14 @@ export default function Uploader({
     <div>
       <label
         htmlFor="image-upload"
-        className="group relative mt-2 flex aspect-video max-w-screen-md cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
+        className={clsx(
+          "group relative mt-2 flex cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50",
+          aspectRatio,
+          {
+            "max-w-screen-md": aspectRatio === "aspect-video",
+            "max-w-xs": aspectRatio === "aspect-square",
+          }
+        )}
       >
         <div
           className="absolute z-[5] h-full w-full rounded-md"
@@ -118,7 +130,7 @@ export default function Uploader({
         <input
           id="image-upload"
           ref={inputRef}
-          name="image"
+          name={name}
           type="file"
           accept="image/*"
           className="sr-only"

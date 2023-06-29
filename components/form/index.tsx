@@ -61,8 +61,14 @@ export default function Form({
       <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
         <h2 className="text-xl font-cal">{title}</h2>
         <p className="text-sm text-stone-500">{description}</p>
-        {inputAttrs.name === "image" ? (
-          <Uploader defaultValue={inputAttrs.defaultValue} />
+        {inputAttrs.name === "image" || inputAttrs.name === "logo" ? (
+          <Uploader
+            defaultValue={inputAttrs.defaultValue}
+            name={inputAttrs.name}
+            aspectRatio={
+              inputAttrs.name === "image" ? "aspect-video" : "aspect-square"
+            }
+          />
         ) : inputAttrs.name === "font" ? (
           <div className="border border-stone-600 rounded-lg overflow-hidden flex items-center max-w-sm">
             <select

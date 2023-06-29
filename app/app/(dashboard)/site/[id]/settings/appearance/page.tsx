@@ -27,6 +27,17 @@ export default async function SiteSettingsAppearance({
         handleSubmit={updateSite}
       />
       <Form
+        title="Logo"
+        description="The logo for your site. Accepted formats: .png, .jpg, .jpeg"
+        helpText="Max file size 50MB. Recommended size 400x400."
+        inputAttrs={{
+          name: "logo",
+          type: "file",
+          defaultValue: data?.logo!,
+        }}
+        handleSubmit={updateSite}
+      />
+      <Form
         title="Font"
         description="The font for the heading text your site."
         helpText="Please select a font."

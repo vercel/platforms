@@ -21,10 +21,12 @@ export async function generateMetadata({
     name: title,
     description,
     image,
+    logo,
   } = data as {
     name: string;
     description: string;
     image: string;
+    logo: string;
   };
 
   return {
@@ -42,6 +44,7 @@ export async function generateMetadata({
       images: [image],
       creator: "@vercel",
     },
+    icons: [logo],
   };
 }
 

@@ -7,7 +7,7 @@ export default function NotFound() {
       <h1 className="text-4xl font-cal">404</h1>
       <Image
         alt="missing site"
-        src="https://illustrations.popsy.co/gray/falling.svg"
+        src="https://illustrations.popsy.co/gray/timed-out-error.svg"
         width={400}
         height={400}
       />

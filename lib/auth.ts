@@ -112,6 +112,9 @@ export function withPostAuth(action: any) {
       where: {
         id: postId,
       },
+      include: {
+        site: true,
+      },
     });
     if (!post || post.userId !== session.user.id) {
       throw new Error("Post not found");
