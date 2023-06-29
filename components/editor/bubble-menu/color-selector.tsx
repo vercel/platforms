@@ -1,5 +1,5 @@
 import { Editor } from "@tiptap/core";
-import cx from "classnames";
+import clsx from "clsx";
 import { Check, ChevronDown } from "lucide-react";
 import { Dispatch, FC, SetStateAction } from "react";
 
@@ -55,7 +55,7 @@ export const ColorSelector: FC<ColorSelectorProps> = ({
   ];
 
   const activeItem = items.find(({ color }) =>
-    editor.isActive("textStyle", { color }),
+    editor.isActive("textStyle", { color })
   );
 
   return (
@@ -78,11 +78,11 @@ export const ColorSelector: FC<ColorSelectorProps> = ({
                 editor.chain().focus().setColor(color).run();
                 setIsOpen(false);
               }}
-              className={cx(
+              className={clsx(
                 "flex items-center justify-between rounded-sm px-2 py-1 text-sm text-stone-600 hover:bg-stone-100",
                 {
                   "text-blue-600": editor.isActive("textStyle", { color }),
-                },
+                }
               )}
             >
               <div className="flex items-center space-x-2">
