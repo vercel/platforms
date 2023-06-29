@@ -157,10 +157,12 @@ export const updateSite = withSiteAuth(
       }
       console.log(
         "Updated site data! Revalidating tags: ",
-        `${site.subdomain}-metadata`,
+        `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
         `${site.customDomain}-metadata`,
       );
-      revalidateTag(`${site.subdomain}-metadata`);
+      revalidateTag(
+        `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+      );
       site.customDomain && revalidateTag(`${site.customDomain}-metadata`);
 
       return response;
@@ -211,7 +213,9 @@ export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
     },
   });
 
-  revalidateTag(`${site.subdomain}-posts`);
+  revalidateTag(
+    `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
+  );
   site.customDomain && revalidateTag(`${site.customDomain}-posts`);
 
   return response;
@@ -246,8 +250,12 @@ export const updatePost = async (data: Post) => {
       },
     });
 
-    revalidateTag(`${post.site?.subdomain}-posts`);
-    revalidateTag(`${post.site?.subdomain}-${post.slug}`);
+    revalidateTag(
+      `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
+    );
+    revalidateTag(
+      `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-${post.slug}`,
+    );
 
     // if the site has a custom domain, we need to revalidate those tags too
     post.site?.customDomain &&
@@ -303,8 +311,12 @@ export const updatePostMetadata = withPostAuth(
         });
       }
 
-      revalidateTag(`${post.site?.subdomain}-posts`);
-      revalidateTag(`${post.site?.subdomain}-${post.slug}`);
+      revalidateTag(
+        `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
+      );
+      revalidateTag(
+        `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-${post.slug}`,
+      );
 
       // if the site has a custom domain, we need to revalidate those tags too
       post.site?.customDomain &&
