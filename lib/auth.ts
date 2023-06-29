@@ -53,6 +53,7 @@ export const authOptions: NextAuthOptions = {
     session: async ({ session, token }) => {
       session.user = {
         ...session.user,
+        // @ts-expect-error
         id: token.sub,
         // @ts-expect-error
         username: token?.user?.username || token?.user?.gh_username,
@@ -62,13 +63,25 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
+export function getSession() {
+  return getServerSession(authOptions) as Promise<{
+    user: {
+      id: string;
+      name: string;
+      username: string;
+      email: string;
+      image: string;
+    };
+  } | null>;
+}
+
 export function withSiteAuth(action: any) {
   return async (
     formData: FormData | null,
     siteId: string,
     key: string | null
   ) => {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session) {
       throw new Error("Not authenticated");
     }
@@ -91,7 +104,7 @@ export function withPostAuth(action: any) {
     postId: string,
     key: string | null
   ) => {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session?.user.id) {
       throw new Error("Not authenticated");
     }

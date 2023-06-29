@@ -4,8 +4,7 @@ import prisma from "@/lib/prisma";
 import { Post, Site } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { withPostAuth, withSiteAuth } from "./auth";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import {
   addDomainToVercel,
   // getApexDomain,
@@ -23,7 +22,7 @@ const nanoid = customAlphabet(
 ); // 7-character random string
 
 export const createSite = async (formData: FormData) => {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user.id) {
     throw new Error("Not authenticated");
   }
@@ -201,7 +200,7 @@ export const getSiteFromPostId = async (postId: string) => {
 };
 
 export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user.id) {
     throw new Error("Not authenticated");
   }
@@ -214,7 +213,7 @@ export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
 });
 
 export const updatePost = async (data: Post) => {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user.id) {
     throw new Error("Not authenticated");
   }
@@ -311,7 +310,7 @@ export const editUser = async (
   _id: unknown,
   key: string
 ) => {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user.id) {
     throw new Error("Not authenticated");
   }
