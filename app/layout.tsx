@@ -1,4 +1,4 @@
-import "./globals.css";
+import "@/styles/globals.css";
 import { cal, inter } from "@/styles/fonts";
 import { Analytics } from "@vercel/analytics/react";
 import { Providers } from "./providers";

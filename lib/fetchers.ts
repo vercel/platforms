@@ -3,7 +3,6 @@ import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
 import { serialize } from "next-mdx-remote/serialize";
 import { replaceExamples, replaceTweets } from "@/lib/remark-plugins";
-import { _SiteData } from "@/types";
 
 export async function getSiteData(domain: string) {
   const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)

@@ -10,6 +10,7 @@ export default function PostCard({
   data: Post & { site: Site | null };
 }) {
   const url = `${data.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`;
+
   return (
     <div className="relative rounded-lg shadow-md hover:shadow-xl border border-stone-200 transition-all pb-10">
       <Link
@@ -36,7 +37,11 @@ export default function PostCard({
       </Link>
       <div className="absolute bottom-4 w-full flex px-4">
         <a
-          href={`https://${url}`}
+          href={
+            process.env.NEXT_PUBLIC_VERCEL_ENV
+              ? `https://${url}`
+              : `http://${data.site?.subdomain}.localhost:3000/${data.slug}`
+          }
           target="_blank"
           rel="noreferrer"
           className="text-sm font-medium px-2 py-1 rounded-md bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors truncate"

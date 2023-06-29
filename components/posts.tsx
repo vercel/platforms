@@ -22,7 +22,7 @@ export default async function Posts({
       ...(siteId ? { siteId } : {}),
     },
     orderBy: {
-      createdAt: "asc",
+      updatedAt: "desc",
     },
     include: {
       site: true,

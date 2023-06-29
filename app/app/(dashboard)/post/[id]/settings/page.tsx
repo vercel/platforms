@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Form from "@/components/form";
-import { updatePostMetadata } from "@/components/form/actions";
+import { updatePostMetadata } from "@/lib/actions";
 import DeletePostForm from "@/components/form/delete-post-form";
 
 export default async function PostSettings({

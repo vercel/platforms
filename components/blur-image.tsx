@@ -5,13 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 
 import type { ComponentProps } from "react";
-import type { WithClassName } from "@/types";
 
-interface BlurImageProps extends WithClassName, ComponentProps<typeof Image> {
-  alt: string;
-}
-
-export default function BlurImage(props: BlurImageProps) {
+export default function BlurImage(props: ComponentProps<typeof Image>) {
   const [isLoading, setLoading] = useState(true);
 
   return (

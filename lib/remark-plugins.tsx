@@ -1,19 +1,25 @@
 import Link from "next/link";
 import { visit } from "unist-util-visit";
 import type { Example, PrismaClient } from "@prisma/client";
-import type { WithChildren } from "@/types";
+import { ReactNode } from "react";
 
-export function replaceLinks(options: { href?: string } & WithChildren) {
+export function replaceLinks({
+  href,
+  children,
+}: {
+  href?: string;
+  children: ReactNode;
+}) {
   // this is technically not a remark plugin but it
   // replaces internal links with <Link /> component
   // and external links with <a target="_blank" />
-  return options.href?.startsWith("/") || options.href === "" ? (
-    <Link href={options.href} className="cursor-pointer">
-      {options.children}
+  return href?.startsWith("/") || href === "" ? (
+    <Link href={href} className="cursor-pointer">
+      {children}
     </Link>
   ) : (
-    <a href={options.href} target="_blank" rel="noopener noreferrer">
-      {options.children} ↗
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      {children} ↗
     </a>
   );
 }

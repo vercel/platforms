@@ -3,7 +3,7 @@ import Form from "@/components/form";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { editUser } from "@/components/form/actions";
+import { editUser } from "@/lib/actions";
 
 export default async function SettingsPage() {
   const session = await getServerSession(authOptions);

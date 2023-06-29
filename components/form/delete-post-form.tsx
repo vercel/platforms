@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
-import { deletePost } from "./actions";
+import { deletePost } from "@/lib/actions";
 
 export default function DeletePostForm({ postName }: { postName: string }) {
   const { id } = useParams() as { id: string };

@@ -3,7 +3,7 @@ import {
   getDomainResponse,
   verifyDomain,
 } from "@/lib/domains";
-import { DomainVerificationStatusProps } from "@/types";
+import { DomainVerificationStatusProps } from "@/lib/types";
 import { NextResponse } from "next/server";
 
 export async function GET(
