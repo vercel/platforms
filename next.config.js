@@ -2,14 +2,20 @@
  * @type {import('next').NextConfig}
  */
 module.exports = {
+  experimental: {
+    serverActions: true,
+  },
   images: {
     domains: [
+      "public.blob.vercel-storage.com",
       "res.cloudinary.com",
       "abs.twimg.com",
       "pbs.twimg.com",
       "avatars.githubusercontent.com",
+      "www.google.com",
+      "flag.vercel.app",
+      "illustrations.popsy.co",
     ],
   },
-  reactStrictMode: true,
-  swcMinify: false, // Required to fix: https://nextjs.org/docs/messages/failed-loading-swc
+  reactStrictMode: false,
 };

@@ -6,14 +6,14 @@ export const inter = Inter({
   subsets: ["latin"],
 });
 export const cal = localFont({
-  src: "./CalSans-SemiBold.woff2",
+  src: "./CalSans-SemiBold.otf",
   variable: "--font-cal",
   weight: "600",
   display: "swap",
 });
 
 export const calTitle = localFont({
-  src: "./CalSans-SemiBold.woff2",
+  src: "./CalSans-SemiBold.otf",
   variable: "--font-title",
   weight: "600",
   display: "swap",
@@ -35,4 +35,4 @@ export const fontMapper = {
   "font-cal": calTitle.variable,
   "font-lora": lora.variable,
   "font-work": work.variable,
-};
+} as Record<string, string>;

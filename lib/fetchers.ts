@@ -1,108 +1,118 @@
-import { cache } from "react";
-import type { _SiteData } from "@/types";
+import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
-import remarkMdx from "remark-mdx";
-import { remark } from "remark";
 import { serialize } from "next-mdx-remote/serialize";
 import { replaceExamples, replaceTweets } from "@/lib/remark-plugins";
 
-export const getSiteData = cache(async (site: string): Promise<_SiteData> => {
-  let filter: {
-    subdomain?: string;
-    customDomain?: string;
-  } = {
-    subdomain: site,
-  };
+export async function getSiteData(domain: string) {
+  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+    ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
+    : null;
 
-  if (site.includes(".")) {
-    filter = {
-      customDomain: site,
-    };
-  }
+  return await unstable_cache(
+    async () => {
+      return prisma.site.findUnique({
+        where: subdomain ? { subdomain } : { customDomain: domain },
+        include: { user: true },
+      });
+    },
+    [`${domain}-metadata`],
+    {
+      revalidate: 900,
+    }
+  )();
+}
 
-  const data = (await prisma.site.findUnique({
-    where: filter,
-    include: {
-      user: true,
-      posts: {
+export async function getPostsForSite(domain: string) {
+  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+    ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
+    : null;
+
+  return await unstable_cache(
+    async () => {
+      return prisma.post.findMany({
         where: {
+          site: subdomain ? { subdomain } : { customDomain: domain },
           published: true,
+        },
+        select: {
+          title: true,
+          description: true,
+          slug: true,
+          image: true,
+          imageBlurhash: true,
+          createdAt: true,
         },
         orderBy: [
           {
             createdAt: "desc",
           },
         ],
-      },
+      });
     },
-  })) as _SiteData;
+    [`${domain}-posts`],
+    {
+      revalidate: 900,
+    }
+  )();
+}
 
-  return data;
-});
+export async function getPostData(domain: string, slug: string) {
+  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+    ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
+    : null;
 
-export const getPostData = cache(async (site: string, slug: string) => {
-  let filter: {
-    subdomain?: string;
-    customDomain?: string;
-  } = {
-    subdomain: site,
-  };
-
-  if (site.includes(".")) {
-    filter = {
-      customDomain: site,
-    };
-  }
-
-  const data = await prisma.post.findFirst({
-    where: {
-      site: {
-        ...filter,
-      },
-      slug,
-    },
-    include: {
-      site: {
+  return await unstable_cache(
+    async () => {
+      const data = await prisma.post.findFirst({
+        where: {
+          site: subdomain ? { subdomain } : { customDomain: domain },
+          slug,
+          published: true,
+        },
         include: {
-          user: true,
+          site: {
+            include: {
+              user: true,
+            },
+          },
         },
-      },
+      });
+
+      if (!data) return null;
+
+      const [mdxSource, adjacentPosts] = await Promise.all([
+        getMdxSource(data.content!),
+        prisma.post.findMany({
+          where: {
+            site: subdomain ? { subdomain } : { customDomain: domain },
+            published: true,
+            NOT: {
+              id: data.id,
+            },
+          },
+          select: {
+            slug: true,
+            title: true,
+            createdAt: true,
+            description: true,
+            image: true,
+            imageBlurhash: true,
+          },
+        }),
+      ]);
+
+      return {
+        ...data,
+        mdxSource,
+        adjacentPosts,
+      };
     },
-  });
-
-  if (!data) return { notFound: true, revalidate: 10 };
-
-  const [mdxSource, adjacentPosts] = await Promise.all([
-    getMdxSource(data.content!),
-    prisma.post.findMany({
-      where: {
-        site: {
-          ...filter,
-        },
-        published: true,
-        NOT: {
-          id: data.id,
-        },
-      },
-      select: {
-        slug: true,
-        title: true,
-        createdAt: true,
-        description: true,
-        image: true,
-        imageBlurhash: true,
-      },
-    }),
-  ]);
-
-  return {
-    data: {
-      ...data,
-      mdxSource,
-    },
-    adjacentPosts,
-  };
-});
+    [`${domain}-${slug}`],
+    {
+      revalidate: 900,
+    }
+  )();
+}
 
 async function getMdxSource(postContents: string) {
   // Serialize the content string into MDX
