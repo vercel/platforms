@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import DomainStatus from "./domain-status";
 import DomainConfiguration from "./domain-configuration";
 import Uploader from "./uploader";
+import va from "@vercel/analytics";
 
 export default function Form({
   title,
@@ -46,13 +47,14 @@ export default function Form({
         }
         handleSubmit(data, id, inputAttrs.name)
           .then(async () => {
-            toast.success(`Successfully updated ${inputAttrs.name}!`);
+            va.track(`Updated ${inputAttrs.name}`, id ? { id } : {});
             if (id) {
               router.refresh();
             } else {
               await update();
               router.refresh();
             }
+            toast.success(`Successfully updated ${inputAttrs.name}!`);
           })
           .catch((err: Error) => toast.error(err.message));
       }}

@@ -7,6 +7,7 @@ import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import clsx from "clsx";
 import LoadingDots from "@/components/icons/loading-dots";
 import { useModal } from "./provider";
+import va from "@vercel/analytics";
 
 export default function CreateSiteModal() {
   const router = useRouter();
@@ -16,11 +17,12 @@ export default function CreateSiteModal() {
       action={async (data: FormData) =>
         createSite(data)
           .then((site) => {
-            toast.success(`Successfully created site!`);
+            va.track("Created Site");
             const { id } = site;
             router.refresh();
             router.push(`/site/${id}`);
             modal?.hide();
+            toast.success(`Successfully created site!`);
           })
           .catch((err: Error) => toast.error(err.message))
       }
