@@ -33,7 +33,9 @@ export default async function middleware(req: NextRequest) {
     } else if (session && path == "/login") {
       return NextResponse.redirect(new URL("/", req.url));
     }
-    return NextResponse.rewrite(new URL(`/app${path}`, req.url));
+    return NextResponse.rewrite(
+      new URL(`/app${path === "/" ? "" : path}`, req.url)
+    );
   }
 
   // rewrite root application to `/home` folder
