@@ -17,15 +17,22 @@ export default function PostCard({
         href={`/post/${data.id}`}
         className="flex flex-col rounded-lg overflow-hidden"
       >
-        <BlurImage
-          alt={data.title ?? "Card thumbnail"}
-          width={500}
-          height={400}
-          className="h-44 object-cover"
-          src={data.image ?? "/placeholder.png"}
-          placeholder="blur"
-          blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
-        />
+        <div className="relative h-44 overflow-hidden">
+          <BlurImage
+            alt={data.title ?? "Card thumbnail"}
+            width={500}
+            height={400}
+            className="object-cover h-full"
+            src={data.image ?? "/placeholder.png"}
+            placeholder="blur"
+            blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
+          />
+          {!data.published && (
+            <span className="absolute bottom-2 right-2 text-sm font-medium px-3 py-0.5 rounded-md bg-white text-stone-600 border border-stone-200 shadow-md">
+              Draft
+            </span>
+          )}
+        </div>
         <div className="p-4">
           <h3 className="font-cal my-0 text-xl font-bold tracking-wide truncate">
             {data.title}

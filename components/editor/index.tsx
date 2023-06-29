@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { TiptapEditorProps } from "./props";
 import { TiptapExtensions } from "./extensions";
@@ -12,17 +12,28 @@ import { useTransition } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { EditorBubbleMenu } from "./bubble-menu";
 import { Post } from "@prisma/client";
-import { updatePost } from "@/lib/actions";
+import { updatePost, updatePostMetadata } from "@/lib/actions";
+import clsx from "clsx";
+import LoadingDots from "../icons/loading-dots";
+import { ExternalLink } from "lucide-react";
 
-export default function Editor({ post }: { post: Post }) {
-  let [isPending, startTransition] = useTransition();
-  const [data, setData] = useState(post);
+type PostWithSite = Post & { site: { subdomain: string | null } | null };
+
+export default function Editor({ post }: { post: PostWithSite }) {
+  let [isPendingSaving, startTransitionSaving] = useTransition();
+  let [isPendingPublishing, startTransitionPublishing] = useTransition();
+
+  const [data, setData] = useState<PostWithSite>(post);
   const [hydrated, setHydrated] = useState(false);
+
+  const url = process.env.NEXT_PUBLIC_VERCEL_ENV
+    ? `https://${data.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`
+    : `http://${data.site?.subdomain}.localhost:3000/${data.slug}`;
 
   const [debouncedData] = useDebounce(data, 1000);
   useEffect(() => {
     if (debouncedData !== post) {
-      startTransition(async () => {
+      startTransitionSaving(async () => {
         await updatePost(debouncedData);
       });
     }
@@ -133,8 +144,52 @@ export default function Editor({ post }: { post: Post }) {
 
   return (
     <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
-      <div className="absolute right-5 top-5 mb-5 rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400">
-        {isPending ? "Saving..." : "Saved"}
+      <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
+        {data.published && (
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center space-x-1 text-sm text-stone-400 hover:text-stone-500"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </a>
+        )}
+        <div className="rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400">
+          {isPendingSaving ? "Saving..." : "Saved"}
+        </div>
+        <button
+          onClick={() => {
+            const formData = new FormData();
+            console.log(data.published, typeof data.published);
+            formData.append("published", String(!data.published));
+            startTransitionPublishing(async () => {
+              await updatePostMetadata(formData, post.id, "published").then(
+                () => {
+                  toast.success(
+                    `Successfully ${
+                      data.published ? "unpublished" : "published"
+                    } your post.`
+                  );
+                  setData((prev) => ({ ...prev, published: !prev.published }));
+                }
+              );
+            });
+          }}
+          className={clsx(
+            "flex w-24 h-7 text-sm items-center justify-center space-x-2 rounded-lg border transition-all focus:outline-none",
+            isPendingPublishing
+              ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400"
+              : "border border-black bg-black hover:bg-white text-white hover:text-black active:bg-stone-100"
+          )}
+          disabled={isPendingPublishing}
+        >
+          {isPendingPublishing ? (
+            <LoadingDots />
+          ) : (
+            <p>{data.published ? "Unpublish" : "Publish"}</p>
+          )}
+        </button>
       </div>
       <div className="mb-5 flex flex-col space-y-3 pb-5 border-b border-stone-200">
         <input

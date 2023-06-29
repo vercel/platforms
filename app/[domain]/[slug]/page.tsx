@@ -91,21 +91,15 @@ export default async function SitePostPage({
         </a>
       </div>
       <div className="relative h-80 md:h-150 w-full max-w-screen-lg lg:w-2/3 md:w-5/6 m-auto mb-10 md:mb-20 md:rounded-2xl overflow-hidden">
-        {data.image ? (
-          <BlurImage
-            alt={data.title ?? "Post image"}
-            width={1200}
-            height={630}
-            className="w-full h-full object-cover"
-            placeholder="blur"
-            blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
-            src={data.image}
-          />
-        ) : (
-          <div className="absolute flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-4xl select-none">
-            ?
-          </div>
-        )}
+        <BlurImage
+          alt={data.title ?? "Post image"}
+          width={1200}
+          height={630}
+          className="w-full h-full object-cover"
+          placeholder="blur"
+          blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
+          src={data.image ?? "/placeholder.png"}
+        />
       </div>
 
       <MDX source={data.mdxSource} />

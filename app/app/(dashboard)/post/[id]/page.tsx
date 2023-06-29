@@ -12,6 +12,13 @@ export default async function PostPage({ params }: { params: { id: string } }) {
     where: {
       id: params.id,
     },
+    include: {
+      site: {
+        select: {
+          subdomain: true,
+        },
+      },
+    },
   });
   if (!data || data.userId !== session.user.id) {
     notFound();

@@ -21,10 +21,10 @@ export default function CreatePostButton() {
         })
       }
       className={clsx(
-        "flex h-9 w-32 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
+        "flex h-9 w-36 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
         isPending
           ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400"
-          : "border border-stone-300 hover:border-black text-stone-500 hover:text-black"
+          : "border border-black bg-black hover:bg-white text-white hover:text-black active:bg-stone-100"
       )}
       disabled={isPending}
     >

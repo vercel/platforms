@@ -245,6 +245,7 @@ export const updatePost = async (data: Post) => {
 export const updatePostMetadata = withPostAuth(
   async (formData: FormData, post: Post, key: string) => {
     const value = formData.get(key) as string;
+    console.log({ key, value, post });
 
     try {
       let response;
@@ -274,7 +275,7 @@ export const updatePostMetadata = withPostAuth(
             id: post.id,
           },
           data: {
-            [key]: value,
+            [key]: key === "published" ? value === "true" : value,
           },
         });
       }
