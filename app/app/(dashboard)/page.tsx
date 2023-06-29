@@ -4,6 +4,7 @@ import OverviewStats from "@/components/overview-stats";
 import Posts from "@/components/posts";
 import Link from "next/link";
 import PlacholderCard from "@/components/placeholder-card";
+import OverviewSitesCTA from "@/components/overview-sites-cta";
 
 export default function Overview() {
   return (
@@ -16,12 +17,9 @@ export default function Overview() {
       <div className="flex flex-col space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="font-cal text-3xl font-bold">Top Sites</h1>
-          <Link
-            href="/sites"
-            className="font-medium text-sm px-4 py-1.5 rounded-lg border border-black bg-black hover:bg-white text-white hover:text-black active:bg-stone-100 transition-all"
-          >
-            View All Sites
-          </Link>
+          <Suspense fallback={null}>
+            <OverviewSitesCTA />
+          </Suspense>
         </div>
         <Suspense
           fallback={
