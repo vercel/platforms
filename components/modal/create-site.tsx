@@ -24,7 +24,12 @@ export default function CreateSiteModal() {
             modal?.hide();
             toast.success(`Successfully created site!`);
           })
-          .catch((err: Error) => toast.error(err.message))
+          .catch((err: Error) => {
+            console.log(err);
+            // ideally we'd wanna log the actual error, but for some reason
+            // server action errors are obfuscated in prod
+            toast.error(`This subdomain is already in use.`);
+          })
       }
       className="w-full rounded-md bg-white md:max-w-md md:border md:border-stone-200 md:shadow"
     >

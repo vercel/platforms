@@ -56,7 +56,12 @@ export default function Form({
             }
             toast.success(`Successfully updated ${inputAttrs.name}!`);
           })
-          .catch((err: Error) => toast.error(err.message));
+          .catch((err: Error) => {
+            console.log(err);
+            // ideally we'd wanna log the actual error, but for some reason
+            // server action errors are obfuscated in prod
+            toast.error(`This ${inputAttrs.name} is already in use.`);
+          });
       }}
       className="rounded-lg border border-stone-200 bg-white"
     >
