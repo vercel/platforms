@@ -7,7 +7,7 @@
 
 <p align="center">
   The <em>all-in-one</em> starter kit <br/>
-  for building platforms on Vercel.
+  for building multi-tenant applications.
 </p>
 
 <p align="center">
@@ -21,7 +21,11 @@
 
 ## Deploy Your Own
 
-[Read the guide](https://vercel.com/guides/nextjs-multi-tenant-application) to learn how to deploy your own version of this template.
+Deploy your own version of this starter kit with Vercel.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?demo-title=Platforms+Starter+Kit&demo-description=A+template+for+site+builders+and+low-code+tools.&demo-url=https%3A%2F%2Fdemo.vercel.pub%2F&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F40JwjdHlPr0Z575MPYbxUA%2Fd5903afc68cb34569a3886293414c37c%2FOG_Image.png&project-name=Platforms+Starter+Kit&repository-name=platforms-starter-kit&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fplatforms&from=templates&env=NEXT_PUBLIC_ROOT_DOMAIN%2CNEXTAUTH_SECRET%2CAUTH_GITHUB_ID%2CAUTH_GITHUB_SECRET%2CAUTH_BEARER_TOKEN%2CPROJECT_ID_VERCEL%2CTEAM_ID_VERCEL%2COPENAI_API_KEY&envDescription=These+environment+variables+are+required+to+run+this+application.&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fplatforms%2Fblob%2Fmain%2F.env.example&stores=[{"type":"postgres"},{"type":"blob"}])
+
+You can also [read the guide](https://vercel.com/guides/nextjs-multi-tenant-application) to learn how to develop your own version of this template.
 
 ## Introduction
 
@@ -51,8 +55,10 @@ Forget manually setting up CNAME records, wrestling with DNS, or making custom s
 
 - **Custom domains**: Subdomain and custom domains support with [Edge Functions](https://vercel.com/features/edge-functions) and the [Vercel Domains API](https://domains-api.vercel.app/).
 - **Static generation with ISR**: Performance without sacrificing personalization, by combining [Incremental Static Regeneration](https://vercel.com/docs/concepts/next.js/incremental-static-regeneration) (ISR) and [Middleware](https://vercel.com/docs/concepts/functions/edge-functions#middleware). ISR allows you to create new content (with custom domains) on demand without needing to redeploy your application.
+- **AI-powered content creation**: AI powered WYSIWYG editor for a Notion-style writing experience with [Novel](https://novel.sh/) and OpenAI
+- **Personalized content**: With the App Router and Layouts, you can allow customers to set custom fonts, 404 pages, and favicon for their sites.
 - **Uploading custom images**: Allow your customers to upload custom thumbnail images with [Vercel Blob](https://vercel.com/docs/storage/vercel-blob).
-- **Static tweets**: Avoid [Cumulative Layout Shift](https://vercel.com/blog/core-web-vitals) (CLS) from the native Twitter embed by using our [static tweets implementation](https://static-tweets-tailwind.vercel.app/) (supports image, video, gif, poll, retweets, quote retweets, and more).
+- **Static tweets**: Avoid [Cumulative Layout Shift](https://vercel.com/blog/core-web-vitals) (CLS) from the native Twitter embed by using our [static tweets implementation](https://github.com/vercel-labs/react-tweet) (supports image, video, gif, poll, retweets, quote retweets, and more).
 
 ## Examples of platforms
 
@@ -95,25 +101,11 @@ This working demo site was built using the Platforms Starter Kit and:
 - [Next.js](https://nextjs.org/) as the React framework
 - [Tailwind](https://tailwindcss.com/) for CSS styling
 - [Prisma](https://prisma.io/) as the ORM for database access
-- [PlanetScale](https://planetscale.com/) as the database (MySQL)
+- [Novel](https://novel.sh/) for the WYSIWYG editor
+- [Vercel Postgres](https://vercel.com/storage/postgres) for the database
+- [Vercel Blob](https://vercel.com/storage-blob) for image uploads
 - [NextAuth.js](https://next-auth.js.org/) for authentication
 - [Vercel](http://vercel.com/) for deployment
-
-We also have another [example](https://github.com/vercel/examples/tree/main/solutions/platforms-slate-supabase) of the Platforms Starter Kit that uses Supabase for the database and Slate.js for the text editor.
-
-## Frequently Asked Questions
-
-- **Should we be generating static webpages with `getStaticProps` and `getStaticPaths` at build time? It doesn't seem to be very scalable.**
-
-  For scale, we recommend using [Incremental Static Regeneration](https://nextjs.org/docs/basic-features/data-fetching/incremental-static-regeneration) instead. This basically means that instead of generating all pages at build time, you only specify a subset of pages and then generate the rest on the fly. Then when someone requests that page, all subsequent requests will be cached on the Vercel edge. You can also use [on-demand ISR](https://nextjs.org/docs/basic-features/data-fetching/incremental-static-regeneration#on-demand-revalidation) to programmatically invalidate caches per page every time someone makes a change to it, which is what we do [here](https://github.com/vercel/platforms/blob/1b2bd00055bbbdde8f2dcc89e0bdb2c3f8488f97/lib/api/post.ts#L243-L257).
-
-- **Is it wise to be using the `/_sites/[site]` path to serve all static pages/website? Wouldn't that lead to a significant amount of load on a single Next.js server?**
-
-  The beauty about a serverless setup is you won’t have to worry about load since each request invokes a separate serverless function, and once it’s cached, you don’t invoke the server anymore (the page is served directly from the Vercel edge). Read more about the [Vercel Edge Network](https://vercel.com/docs/concepts/edge-network/overview) and [how caching works](https://vercel.com/docs/concepts/edge-network/caching).
-
-## Caveats
-
-- This template does not work with i18n, which is an [advanced feature in Next.js](https://nextjs.org/docs/advanced-features/i18n-routing).
 
 ## Contributing
 
