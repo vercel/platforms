@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Platforms Starter Kit",
   description:
     "Create a fullstack application with multi-tenancy and custom domains support using Next.js, Prisma, and PostgreSQL",
+  icons: ["https://vercel.pub/favicon.ico"],
 };
 
 export default function RootLayout({
