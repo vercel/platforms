@@ -15,7 +15,7 @@ export async function getSiteData(domain: string) {
         include: { user: true },
       });
     },
-    [],
+    [`${domain}-metadata`],
     {
       revalidate: 900,
       tags: [`${domain}-metadata`],
@@ -50,7 +50,7 @@ export async function getPostsForSite(domain: string) {
         ],
       });
     },
-    [],
+    [`${domain}-posts`],
     {
       revalidate: 900,
       tags: [`${domain}-posts`],
@@ -109,7 +109,7 @@ export async function getPostData(domain: string, slug: string) {
         adjacentPosts,
       };
     },
-    [],
+    [`${domain}-${slug}`],
     {
       revalidate: 900,
       tags: [`${domain}-${slug}`],
