@@ -18,6 +18,7 @@ export default function DeletePostForm({ postName }: { postName: string }) {
         deletePost(data, id, "delete")
           .then((res) => {
             va.track("Deleted Post");
+            router.refresh();
             router.push(`/site/${res.siteId}`);
             toast.success(`Successfully deleted post!`);
           })
