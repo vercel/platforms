@@ -16,21 +16,21 @@ export default function LoginPage() {
         Platforms Starter Kit
       </h1>
       <p className="mt-2 text-center text-sm text-gray-600">
-        Build multi-tenant applications with custom domains. <br /> Read the{" "}
+        Build multi-tenant applications with custom domains. <br />
         <a
           className="font-medium text-black hover:text-gray-800"
-          href="https://demo.vercel.pub/platforms-starter-kit"
+          href="https://vercel.com/guides/nextjs-multi-tenant-application"
           rel="noreferrer"
           target="_blank"
         >
-          blog post
+          Read the guide.
         </a>
       </p>
 
       <div className="mx-auto mt-4 w-11/12 max-w-xs sm:w-full">
         <Suspense
           fallback={
-            <div className="h-10 w-full rounded-md border border-stone-200 bg-stone-100" />
+            <div className="my-2 h-10 w-full rounded-md border border-stone-200 bg-stone-100" />
           }
         >
           <LoginButton />

@@ -6,13 +6,14 @@ import {
   BarChart3,
   Edit3,
   Globe,
+  Layout,
   LayoutDashboard,
   Menu,
   Newspaper,
   Settings,
 } from "lucide-react";
 import { useParams, useSelectedLayoutSegments } from "next/navigation";
-import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { getSiteFromPostId } from "@/lib/actions";
 import Image from "next/image";
 import { FileCode, Github } from "lucide-react";
@@ -27,6 +28,11 @@ const externalLinks = [
     name: "Read the guide",
     href: "https://vercel.com/guides/nextjs-multi-tenant-application",
     icon: <FileCode width={18} />,
+  },
+  {
+    name: "View demo site",
+    href: "https://demo.vercel.pub",
+    icon: <Layout width={18} />,
   },
   {
     name: "Deploy your own",
