@@ -24,7 +24,9 @@ const nanoid = customAlphabet(
 export const createSite = async (formData: FormData) => {
   const session = await getSession();
   if (!session?.user.id) {
-    throw new Error("Not authenticated");
+    return {
+      error: "Not authenticated",
+    };
   }
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
@@ -46,9 +48,13 @@ export const createSite = async (formData: FormData) => {
     return response;
   } catch (error: any) {
     if (error.code === "P2002") {
-      throw new Error(`This subdomain is already taken`);
+      return {
+        error: `This subdomain is already taken`,
+      };
     } else {
-      throw Error(error);
+      return {
+        error: error.message,
+      };
     }
   }
 };
@@ -62,7 +68,9 @@ export const updateSite = withSiteAuth(
 
       if (key === "customDomain") {
         if (value.includes("vercel.pub")) {
-          throw Error("Cannot use vercel.pub subdomain as your custom domain");
+          return {
+            error: "Cannot use vercel.pub subdomain as your custom domain",
+          };
 
           // if the custom domain is valid, we need to add it to Vercel
         } else if (validDomainRegex.test(value)) {
@@ -126,6 +134,13 @@ export const updateSite = withSiteAuth(
           */
         }
       } else if (key === "image" || key === "logo") {
+        if (!process.env.BLOB_READ_WRITE_TOKEN) {
+          return {
+            error:
+              "Missing BLOB_READ_WRITE_TOKEN token. Note: Vercel Blob is currently in beta – ping @steventey on Twitter for access.",
+          };
+        }
+
         const file = formData.get(key) as File;
         const filename = `${nanoid()}.${file.type.split("/")[1]}`;
 
@@ -168,9 +183,13 @@ export const updateSite = withSiteAuth(
       return response;
     } catch (error: any) {
       if (error.code === "P2002") {
-        throw new Error(`This ${key} is already taken`);
+        return {
+          error: `This ${key} is already taken`,
+        };
       } else {
-        throw Error(error);
+        return {
+          error: error.message,
+        };
       }
     }
   },
@@ -185,7 +204,9 @@ export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
     });
     return response;
   } catch (error: any) {
-    throw Error(error);
+    return {
+      error: error.message,
+    };
   }
 });
 
@@ -204,7 +225,9 @@ export const getSiteFromPostId = async (postId: string) => {
 export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
   const session = await getSession();
   if (!session?.user.id) {
-    throw new Error("Not authenticated");
+    return {
+      error: "Not authenticated",
+    };
   }
   const response = await prisma.post.create({
     data: {
@@ -225,7 +248,9 @@ export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
 export const updatePost = async (data: Post) => {
   const session = await getSession();
   if (!session?.user.id) {
-    throw new Error("Not authenticated");
+    return {
+      error: "Not authenticated",
+    };
   }
   const post = await prisma.post.findUnique({
     where: {
@@ -236,7 +261,9 @@ export const updatePost = async (data: Post) => {
     },
   });
   if (!post || post.userId !== session.user.id) {
-    throw new Error("Post not found");
+    return {
+      error: "Post not found",
+    };
   }
   try {
     const response = await prisma.post.update({
@@ -264,7 +291,9 @@ export const updatePost = async (data: Post) => {
 
     return response;
   } catch (error: any) {
-    throw Error(error);
+    return {
+      error: error.message,
+    };
   }
 };
 
@@ -326,9 +355,13 @@ export const updatePostMetadata = withPostAuth(
       return response;
     } catch (error: any) {
       if (error.code === "P2002") {
-        throw new Error(`This slug is already in use`);
+        return {
+          error: `This slug is already in use`,
+        };
       } else {
-        throw Error(error);
+        return {
+          error: error.message,
+        };
       }
     }
   },
@@ -346,7 +379,9 @@ export const deletePost = withPostAuth(async (_: FormData, post: Post) => {
     });
     return response;
   } catch (error: any) {
-    throw Error(error);
+    return {
+      error: error.message,
+    };
   }
 });
 
@@ -357,7 +392,9 @@ export const editUser = async (
 ) => {
   const session = await getSession();
   if (!session?.user.id) {
-    throw new Error("Not authenticated");
+    return {
+      error: "Not authenticated",
+    };
   }
   const value = formData.get(key) as string;
 
@@ -373,9 +410,13 @@ export const editUser = async (
     return response;
   } catch (error: any) {
     if (error.code === "P2002") {
-      throw new Error(`This ${key} is already in use`);
+      return {
+        error: `This ${key} is already in use`,
+      };
     } else {
-      throw Error(error);
+      return {
+        error: error.message,
+      };
     }
   }
 };

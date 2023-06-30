@@ -15,14 +15,16 @@ export default function DeletePostForm({ postName }: { postName: string }) {
     <form
       action={async (data: FormData) =>
         window.confirm("Are you sure you want to delete your post?") &&
-        deletePost(data, id, "delete")
-          .then((res) => {
+        deletePost(data, id, "delete").then((res) => {
+          if (res.error) {
+            toast.error(res.error);
+          } else {
             va.track("Deleted Post");
             router.refresh();
             router.push(`/site/${res.siteId}`);
             toast.success(`Successfully deleted post!`);
-          })
-          .catch((err: Error) => toast.error(err.message))
+          }
+        })
       }
       className="rounded-lg border border-red-600 bg-white"
     >

@@ -83,7 +83,9 @@ export function withSiteAuth(action: any) {
   ) => {
     const session = await getSession();
     if (!session) {
-      throw new Error("Not authenticated");
+      return {
+        error: "Not authenticated",
+      };
     }
     const site = await prisma.site.findUnique({
       where: {
@@ -91,7 +93,9 @@ export function withSiteAuth(action: any) {
       },
     });
     if (!site || site.userId !== session.user.id) {
-      throw new Error("Not authorized");
+      return {
+        error: "Not authorized",
+      };
     }
 
     return action(formData, site, key);
@@ -106,7 +110,9 @@ export function withPostAuth(action: any) {
   ) => {
     const session = await getSession();
     if (!session?.user.id) {
-      throw new Error("Not authenticated");
+      return {
+        error: "Not authenticated",
+      };
     }
     const post = await prisma.post.findUnique({
       where: {
@@ -117,7 +123,9 @@ export function withPostAuth(action: any) {
       },
     });
     if (!post || post.userId !== session.user.id) {
-      throw new Error("Post not found");
+      return {
+        error: "Post not found",
+      };
     }
 
     return action(formData, post, key);

@@ -45,8 +45,10 @@ export default function Form({
         ) {
           return;
         }
-        handleSubmit(data, id, inputAttrs.name)
-          .then(async () => {
+        handleSubmit(data, id, inputAttrs.name).then(async (res: any) => {
+          if (res.error) {
+            toast.error(res.error);
+          } else {
             va.track(`Updated ${inputAttrs.name}`, id ? { id } : {});
             if (id) {
               router.refresh();
@@ -55,13 +57,8 @@ export default function Form({
               router.refresh();
             }
             toast.success(`Successfully updated ${inputAttrs.name}!`);
-          })
-          .catch((err: Error) => {
-            console.log(err);
-            // ideally we'd wanna log the actual error, but for some reason
-            // server action errors are obfuscated in prod
-            toast.error(`This ${inputAttrs.name} is already in use.`);
-          });
+          }
+        });
       }}
       className="rounded-lg border border-stone-200 bg-white"
     >

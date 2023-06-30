@@ -15,21 +15,18 @@ export default function CreateSiteModal() {
   return (
     <form
       action={async (data: FormData) =>
-        createSite(data)
-          .then((site) => {
+        createSite(data).then((res: any) => {
+          if (res.error) {
+            toast.error(res.error);
+          } else {
             va.track("Created Site");
-            const { id } = site;
+            const { id } = res;
             router.refresh();
             router.push(`/site/${id}`);
             modal?.hide();
             toast.success(`Successfully created site!`);
-          })
-          .catch((err: Error) => {
-            console.log(err);
-            // ideally we'd wanna log the actual error, but for some reason
-            // server action errors are obfuscated in prod
-            toast.error(`This subdomain is already in use.`);
-          })
+          }
+        })
       }
       className="w-full rounded-md bg-white md:max-w-md md:border md:border-stone-200 md:shadow"
     >
