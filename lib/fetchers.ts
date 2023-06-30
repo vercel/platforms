@@ -17,7 +17,7 @@ export async function getSiteData(domain: string) {
     },
     [`${domain}-metadata`],
     {
-      revalidate: 900,
+      revalidate: 1,
     },
   )();
 }
@@ -51,7 +51,7 @@ export async function getPostsForSite(domain: string) {
     },
     [`${domain}-posts`],
     {
-      revalidate: 900,
+      revalidate: 1,
     },
   )();
 }
