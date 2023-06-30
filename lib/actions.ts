@@ -159,7 +159,6 @@ export const updateSite = withSiteAuth(
             ...(blurhash && { imageBlurhash: blurhash }),
           },
         });
-        return url;
       } else {
         response = await prisma.site.update({
           where: {
@@ -328,7 +327,6 @@ export const updatePostMetadata = withPostAuth(
             imageBlurhash: blurhash,
           },
         });
-        return url;
       } else {
         response = await prisma.post.update({
           where: {
