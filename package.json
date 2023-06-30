@@ -39,7 +39,7 @@
     "js-cookie": "^3.0.1",
     "lucide-react": "^0.244.0",
     "nanoid": "^4.0.2",
-    "next": "13.4.8-canary.9",
+    "next": "13.4.8-canary.13",
     "next-auth": "4.22.1",
     "next-mdx-remote": "^4.4.1",
     "openai-edge": "^1.1.0",

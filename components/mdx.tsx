@@ -32,6 +32,7 @@ interface ExampleCardProps
 }
 
 function Examples({ data }: { data: string }) {
+  if (!data) return null;
   const parsedData = JSON.parse(data) as Array<ExampleCardProps>;
   return (
     <div className="not-prose my-10 grid grid-cols-1 gap-x-4 gap-y-4 lg:-mx-36 lg:mb-20 lg:grid-cols-3 lg:gap-y-8">

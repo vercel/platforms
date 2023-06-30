@@ -18,6 +18,7 @@ export default function DeleteSiteForm({ siteName }: { siteName: string }) {
         deleteSite(data, id, "delete")
           .then(async () => {
             va.track("Deleted Site");
+            router.refresh();
             router.push("/sites");
             toast.success(`Successfully deleted site!`);
           })
