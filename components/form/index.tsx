@@ -69,9 +69,6 @@ export default function Form({
           <Uploader
             defaultValue={inputAttrs.defaultValue}
             name={inputAttrs.name}
-            aspectRatio={
-              inputAttrs.name === "image" ? "aspect-video" : "aspect-square"
-            }
           />
         ) : inputAttrs.name === "font" ? (
           <div className="flex max-w-sm items-center overflow-hidden rounded-lg border border-stone-600">

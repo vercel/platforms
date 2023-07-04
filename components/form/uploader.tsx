@@ -7,17 +7,15 @@ import { toast } from "sonner";
 export default function Uploader({
   defaultValue,
   name,
-  aspectRatio,
 }: {
   defaultValue: string | null;
   name: "image" | "logo";
-  aspectRatio: "aspect-video" | "aspect-square";
 }) {
+  const aspectRatio = name === "image" ? "aspect-video" : "aspect-square";
+
   const inputRef = useRef<HTMLInputElement>(null);
-  const [data, setData] = useState<{
-    image: string | null;
-  }>({
-    image: defaultValue,
+  const [data, setData] = useState({
+    [name]: defaultValue,
   });
 
   const [dragActive, setDragActive] = useState(false);
@@ -35,7 +33,7 @@ export default function Uploader({
       } else {
         const reader = new FileReader();
         reader.onload = (e) => {
-          setData((prev) => ({ ...prev, image: e.target?.result as string }));
+          setData((prev) => ({ ...prev, [name]: e.target?.result as string }));
         };
         reader.readAsDataURL(file);
       }
@@ -45,7 +43,7 @@ export default function Uploader({
   return (
     <div>
       <label
-        htmlFor="image-upload"
+        htmlFor={`${name}-upload`}
         className={clsx(
           "group relative mt-2 flex cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50",
           aspectRatio,
@@ -86,7 +84,7 @@ export default function Uploader({
           className={`${
             dragActive ? "border-2 border-black" : ""
           } absolute z-[3] flex h-full w-full flex-col items-center justify-center rounded-md px-10 transition-all ${
-            data.image
+            data[name]
               ? "bg-white/80 opacity-0 hover:opacity-100 hover:backdrop-blur-md"
               : "bg-white opacity-100 hover:bg-gray-50"
           }`}
@@ -117,10 +115,10 @@ export default function Uploader({
           </p>
           <span className="sr-only">Photo upload</span>
         </div>
-        {data.image && (
+        {data[name] && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={data.image}
+            src={data[name] as string}
             alt="Preview"
             className="h-full w-full rounded-md object-cover"
           />
@@ -128,7 +126,7 @@ export default function Uploader({
       </label>
       <div className="mt-1 flex rounded-md shadow-sm">
         <input
-          id="image-upload"
+          id={`${name}-upload`}
           ref={inputRef}
           name={name}
           type="file"
