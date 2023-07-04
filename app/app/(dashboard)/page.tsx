@@ -10,13 +10,17 @@ export default function Overview() {
   return (
     <div className="flex max-w-screen-xl flex-col space-y-12 p-8">
       <div className="flex flex-col space-y-6">
-        <h1 className="font-cal text-3xl font-bold">Overview</h1>
+        <h1 className="font-cal text-3xl font-bold dark:text-white">
+          Overview
+        </h1>
         <OverviewStats />
       </div>
 
       <div className="flex flex-col space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="font-cal text-3xl font-bold">Top Sites</h1>
+          <h1 className="font-cal text-3xl font-bold dark:text-white">
+            Top Sites
+          </h1>
           <Suspense fallback={null}>
             <OverviewSitesCTA />
           </Suspense>
@@ -35,7 +39,9 @@ export default function Overview() {
       </div>
 
       <div className="flex flex-col space-y-6">
-        <h1 className="font-cal text-3xl font-bold">Recent Posts</h1>
+        <h1 className="font-cal text-3xl font-bold dark:text-white">
+          Recent Posts
+        </h1>
         <Suspense
           fallback={
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

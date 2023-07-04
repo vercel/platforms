@@ -21,6 +21,11 @@
   border-radius: 20%;
   background: black;
 }
+@media (prefers-color-scheme: dark) {
+  .spinner div:after {
+    background: white;
+  }
+}
 .spinner div:nth-child(1) {
   transform: rotate(0deg);
   animation-delay: -1.1s;

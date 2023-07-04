@@ -164,7 +164,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
   }, [editor, post, hydrated]);
 
   return (
-    <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
+    <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 dark:border-stone-700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
       <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
         {data.published && (
           <a
@@ -176,7 +176,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
             <ExternalLink className="h-4 w-4" />
           </a>
         )}
-        <div className="rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400">
+        <div className="rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400 dark:bg-stone-800 dark:text-stone-500">
           {isPendingSaving ? "Saving..." : "Saved"}
         </div>
         <button
@@ -200,8 +200,8 @@ export default function Editor({ post }: { post: PostWithSite }) {
           className={clsx(
             "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
             isPendingPublishing
-              ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400"
-              : "border border-black bg-black text-white hover:bg-white hover:text-black active:bg-stone-100",
+              ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"
+              : "border border-black bg-black text-white hover:bg-white hover:text-black active:bg-stone-100 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-white dark:active:bg-stone-800",
           )}
           disabled={isPendingPublishing}
         >
@@ -212,20 +212,20 @@ export default function Editor({ post }: { post: PostWithSite }) {
           )}
         </button>
       </div>
-      <div className="mb-5 flex flex-col space-y-3 border-b border-stone-200 pb-5">
+      <div className="mb-5 flex flex-col space-y-3 border-b border-stone-200 pb-5 dark:border-stone-700">
         <input
           type="text"
           placeholder="Title"
           defaultValue={post?.title || ""}
           autoFocus
           onChange={(e) => setData({ ...data, title: e.target.value })}
-          className="border-none px-0 font-cal text-3xl placeholder:text-stone-400 focus:outline-none focus:ring-0"
+          className="dark:placeholder-text-600 border-none px-0 font-cal text-3xl placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
         />
         <TextareaAutosize
           placeholder="Description"
           defaultValue={post?.description || ""}
           onChange={(e) => setData({ ...data, description: e.target.value })}
-          className="w-full resize-none border-none px-0 placeholder:text-stone-400 focus:outline-none focus:ring-0"
+          className="dark:placeholder-text-600 w-full resize-none border-none px-0 placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
         />
       </div>
       {editor && <EditorBubbleMenu editor={editor} />}

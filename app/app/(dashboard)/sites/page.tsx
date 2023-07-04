@@ -9,7 +9,9 @@ export default function AllSites({ params }: { params: { id: string } }) {
     <div className="flex max-w-screen-xl flex-col space-y-12 p-8">
       <div className="flex flex-col space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="font-cal text-3xl font-bold">All Sites</h1>
+          <h1 className="font-cal text-3xl font-bold dark:text-white">
+            All Sites
+          </h1>
           <CreateSiteButton>
             <CreateSiteModal />
           </CreateSiteButton>
