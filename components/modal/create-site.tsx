@@ -8,10 +8,28 @@ import clsx from "clsx";
 import LoadingDots from "@/components/icons/loading-dots";
 import { useModal } from "./provider";
 import va from "@vercel/analytics";
+import { useEffect, useState } from "react";
 
 export default function CreateSiteModal() {
   const router = useRouter();
   const modal = useModal();
+
+  const [data, setData] = useState({
+    name: "",
+    subdomain: "",
+    description: "",
+  });
+
+  useEffect(() => {
+    setData((prev) => ({
+      ...prev,
+      subdomain: prev.name
+        .toLowerCase()
+        .trim()
+        .replace(/[\W_]+/g, "-"),
+    }));
+  }, [data.name]);
+
   return (
     <form
       action={async (data: FormData) =>
@@ -41,6 +59,8 @@ export default function CreateSiteModal() {
             name="name"
             type="text"
             placeholder="My Awesome Site"
+            value={data.name}
+            onChange={(e) => setData({ ...data, name: e.target.value })}
             maxLength={32}
             required
             className="w-full rounded-md border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black  focus:outline-none focus:ring-black"
@@ -59,6 +79,9 @@ export default function CreateSiteModal() {
               name="subdomain"
               type="text"
               placeholder="subdomain"
+              value={data.subdomain}
+              onChange={(e) => setData({ ...data, subdomain: e.target.value })}
+              autoCapitalize="off"
               pattern="[a-zA-Z0-9\-]+" // only allow lowercase letters, numbers, and dashes
               maxLength={32}
               required
@@ -80,6 +103,8 @@ export default function CreateSiteModal() {
           <textarea
             name="description"
             placeholder="Description about why my site is so awesome"
+            value={data.description}
+            onChange={(e) => setData({ ...data, description: e.target.value })}
             maxLength={140}
             rows={3}
             className="w-full rounded-md border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black  focus:outline-none focus:ring-black"
