@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #000000;
+  }
+}
+
 @layer utilities {
   .overflow-hidden {
     -webkit-mask-image: -webkit-radial-gradient(white, black);
