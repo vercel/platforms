@@ -87,7 +87,6 @@ export default function Editor({ post }: { post: PostWithSite }) {
         }));
       }
     },
-    autofocus: "end",
   });
 
   const { complete, completion, isLoading, stop } = useCompletion({
@@ -218,6 +217,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
           type="text"
           placeholder="Title"
           defaultValue={post?.title || ""}
+          autoFocus
           onChange={(e) => setData({ ...data, title: e.target.value })}
           className="border-none px-0 font-cal text-3xl placeholder:text-stone-400 focus:outline-none focus:ring-0"
         />
