@@ -45,6 +45,9 @@ export const createSite = async (formData: FormData) => {
         },
       },
     });
+    revalidateTag(
+      `${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+    );
     return response;
   } catch (error: any) {
     if (error.code === "P2002") {
@@ -201,6 +204,10 @@ export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
         id: site.id,
       },
     });
+    revalidateTag(
+      `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+    );
+    response.customDomain && revalidateTag(`${site.customDomain}-metadata`);
     return response;
   } catch (error: any) {
     return {
