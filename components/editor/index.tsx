@@ -32,11 +32,17 @@ export default function Editor({ post }: { post: PostWithSite }) {
 
   const [debouncedData] = useDebounce(data, 1000);
   useEffect(() => {
-    if (debouncedData !== post) {
-      startTransitionSaving(async () => {
-        await updatePost(debouncedData);
-      });
+    // compare the title, description and content only
+    if (
+      debouncedData.title === post.title &&
+      debouncedData.description === post.description &&
+      debouncedData.content === post.content
+    ) {
+      return;
     }
+    startTransitionSaving(async () => {
+      await updatePost(debouncedData);
+    });
   }, [debouncedData, post]);
 
   const editor = useEditor({
