@@ -45,6 +45,22 @@ export default function Editor({ post }: { post: PostWithSite }) {
     });
   }, [debouncedData, post]);
 
+  // listen to CMD + S and override the default behavior
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey && e.key === "s") {
+        e.preventDefault();
+        startTransitionSaving(async () => {
+          await updatePost(data);
+        });
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [data, startTransitionSaving]);
+
   const editor = useEditor({
     extensions: TiptapExtensions,
     editorProps: TiptapEditorProps,
