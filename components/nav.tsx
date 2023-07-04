@@ -12,7 +12,11 @@ import {
   Newspaper,
   Settings,
 } from "lucide-react";
-import { useParams, useSelectedLayoutSegments } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useSelectedLayoutSegments,
+} from "next/navigation";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { getSiteFromPostId } from "@/lib/actions";
 import Image from "next/image";
@@ -136,6 +140,13 @@ export default function Nav({ children }: { children: ReactNode }) {
   }, [segments, id, siteId]);
 
   const [showSidebar, setShowSidebar] = useState(false);
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // hide sidebar on path change
+    setShowSidebar(false);
+  }, [pathname]);
 
   return (
     <>
