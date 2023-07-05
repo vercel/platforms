@@ -84,7 +84,7 @@ export default async function SitePostPage({
                 </div>
               )}
             </div>
-            <div className="text-md ml-3 inline-block align-middle md:text-lg">
+            <div className="text-md ml-3 inline-block align-middle dark:text-white md:text-lg">
               by <span className="font-semibold">{data.site?.user?.name}</span>
             </div>
           </div>
