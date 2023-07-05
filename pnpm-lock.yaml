@@ -117,8 +117,8 @@ dependencies:
     specifier: ^8.4.0
     version: 8.4.1(@types/react@18.2.14)(react@18.2.0)
   react-tweet:
-    specifier: ^3.0.0
-    version: 3.0.0(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^3.0.1
+    version: 3.0.1(react-dom@18.2.0)(react@18.2.0)
   remark:
     specifier: ^14.0.2
     version: 14.0.3
@@ -5504,8 +5504,8 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /react-tweet@3.0.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-oLtr5AsBmoYFlZeSm1zWFn1P1oS4Vja/wGAcw1BEtCSJAENcsLlUNnsJdExZ8QTuxv2w3ETjvNeHTv68+xhciA==}
+  /react-tweet@3.0.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-CXi9Lc5HajpnOWr8lxg1lmd3N1LNxVk9hC9Gb+Vb9JmAAqYL7ChBClyKITkrmJNuKvt2MwH8Y2q0PLvDWYjYxw==}
     peerDependencies:
       react: '>= 18.0.0'
       react-dom: '>= 18.0.0'
