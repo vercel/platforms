@@ -8,6 +8,7 @@ import {
   Globe,
   Layout,
   LayoutDashboard,
+  Megaphone,
   Menu,
   Newspaper,
   Settings,
@@ -23,6 +24,11 @@ import Image from "next/image";
 import { FileCode, Github } from "lucide-react";
 
 const externalLinks = [
+  {
+    name: "Read announcement",
+    href: "https://vercel.com/blog/platforms-starter-kit",
+    icon: <Megaphone width={18} />,
+  },
   {
     name: "Star on GitHub",
     href: "https://github.com/vercel/platforms",

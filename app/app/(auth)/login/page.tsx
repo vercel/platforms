@@ -19,11 +19,11 @@ export default function LoginPage() {
         Build multi-tenant applications with custom domains. <br />
         <a
           className="font-medium text-black hover:text-gray-800"
-          href="https://vercel.com/guides/nextjs-multi-tenant-application"
+          href="https://vercel.com/blog/platforms-starter-kit"
           rel="noreferrer"
           target="_blank"
         >
-          Read the guide.
+          Read the announcement.
         </a>
       </p>
 
