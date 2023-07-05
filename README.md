@@ -117,6 +117,7 @@ This working demo site was built using the Platforms Starter Kit and:
 - [Vercel Postgres](https://vercel.com/storage/postgres) for the database
 - [Vercel Blob](https://vercel.com/storage/blob) for image uploads
 - [NextAuth.js](https://next-auth.js.org/) for authentication
+- [Tremor](https://tremor.so/) for charts
 - [Vercel](http://vercel.com/) for deployment
 
 ## Contributing
