@@ -92,21 +92,17 @@ export default function Editor({ post }: { post: PostWithSite }) {
   const { complete, completion, isLoading, stop } = useCompletion({
     id: "novel",
     api: "/api/generate",
-    onResponse: (response) => {
-      if (response.status === 429) {
-        toast.error("You have reached your request limit for the day.");
-        va.track("Rate Limit Reached");
-        return;
-      }
-    },
     onFinish: (_prompt, completion) => {
       editor?.commands.setTextSelection({
         from: editor.state.selection.from - completion.length,
         to: editor.state.selection.from,
       });
     },
-    onError: () => {
-      toast.error("Something went wrong.");
+    onError: (err) => {
+      toast.error(err.message);
+      if (err.message === "You have reached your request limit for the day.") {
+        va.track("Rate Limit Reached");
+      }
     },
   });
 
