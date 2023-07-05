@@ -12,10 +12,10 @@ export default function LoginPage() {
         className="relative mx-auto h-12 w-auto"
         src="/logo.png"
       />
-      <h1 className="mt-6 text-center font-cal text-3xl text-gray-900">
+      <h1 className="mt-6 text-center font-cal text-3xl text-gray-900 dark:text-white">
         Platforms Starter Kit
       </h1>
-      <p className="mt-2 text-center text-sm text-gray-600">
+      <p className="mt-2 text-center text-sm text-gray-600 dark:text-white">
         Build multi-tenant applications with custom domains. <br />
         <a
           className="font-medium text-black hover:text-gray-800"
