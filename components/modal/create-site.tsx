@@ -115,7 +115,7 @@ export default function CreateSiteModal() {
           />
         </div>
       </div>
-      <div className="flex items-center justify-end rounded-b-lg border-t border-stone-200 bg-stone-50 dark:bg-stone-800 dark:border-stone-700 p-3 md:px-10">
+      <div className="flex items-center justify-end rounded-b-lg border-t border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800 md:px-10">
         <CreateSiteFormButton />
       </div>
     </form>
