@@ -36,7 +36,6 @@
     "date-fns": "^2.29.3",
     "focus-trap-react": "^10.1.4",
     "framer-motion": "^10.12.17",
-    "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "js-cookie": "^3.0.1",
     "lucide-react": "^0.244.0",
