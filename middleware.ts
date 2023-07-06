@@ -39,7 +39,10 @@ export default async function middleware(req: NextRequest) {
   }
 
   // rewrite root application to `/home` folder
-  if (hostname === "localhost:3000" || hostname === "vercel.pub") {
+  if (
+    hostname === "localhost:3000" ||
+    hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
+  ) {
     // return NextResponse.rewrite(new URL(`/home${path}`, req.url));
     // we're redirecting to the blog post for this demo, but you can change this to
     // rewrite to the /home folder if you want to use the home page (or whatever you wanna name it)

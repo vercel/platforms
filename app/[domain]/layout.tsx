@@ -126,7 +126,7 @@ export default async function SiteLayout({
 
       <div className="mt-20">{children}</div>
 
-      {params.domain == `demo.vercel.pub` ||
+      {params.domain == `demo.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` ||
       params.domain == `platformize.co` ? (
         <CTA />
       ) : (
