@@ -29,9 +29,9 @@ export function replaceTweets() {
     new Promise<void>(async (resolve, reject) => {
       const nodesToChange = new Array();
 
-      visit(tree, "text", (node: any) => {
+      visit(tree, "link", (node: any) => {
         if (
-          node.value.match(
+          node.url.match(
             /https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)([^\?])(\?.*)?/g,
           )
         ) {
@@ -43,8 +43,8 @@ export function replaceTweets() {
       for (const { node } of nodesToChange) {
         try {
           const regex = /\/status\/(\d+)/gm;
+          const matches = regex.exec(node.url);
 
-          const matches = regex.exec(node.value);
           if (!matches) throw new Error(`Failed to get tweet: ${node}`);
 
           const id = matches[1];
