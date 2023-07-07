@@ -111,15 +111,18 @@ export async function getPostData(domain: string, slug: string) {
     },
     [`${domain}-${slug}`],
     {
-      revalidate: 900,
+      revalidate: 900, // 15 minutes
       tags: [`${domain}-${slug}`],
     },
   )();
 }
 
 async function getMdxSource(postContents: string) {
+  // transforms links like <link> to [link](link) as MDX doesn't support <link> syntax
+  // https://mdxjs.com/docs/what-is-mdx/#markdown
+  const content = postContents.replaceAll(/<(https?:\/\/\S+)>/g, "[$1]($1)");
   // Serialize the content string into MDX
-  const mdxSource = await serialize(postContents, {
+  const mdxSource = await serialize(content, {
     mdxOptions: {
       remarkPlugins: [replaceTweets, () => replaceExamples(prisma)],
     },
