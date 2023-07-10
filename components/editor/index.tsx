@@ -77,7 +77,11 @@ export default function Editor({ post }: { post: PostWithSite }) {
           to: selection.from,
         });
         // we're using this for now until we can figure out a way to stream markdown text with proper formatting: https://github.com/steven-tey/novel/discussions/7
-        complete(e.editor.getText());
+        complete(
+          `Title: ${data.title}\n Desc: ${
+            data.description
+          }\n\n ${e.editor.getText()}`,
+        );
         // complete(e.editor.storage.markdown.getMarkdown());
         va.track("Autocomplete Shortcut Used");
       } else {
@@ -135,7 +139,11 @@ export default function Editor({ post }: { post: PostWithSite }) {
       e.stopPropagation();
       stop();
       if (window.confirm("AI writing paused. Continue?")) {
-        complete(editor?.getText() || "");
+        complete(
+          `Title: ${data.title}\n Desc: ${data.description}\n\n ${
+            editor?.getText() || " "
+          }`,
+        );
       }
     };
     if (isLoading) {
