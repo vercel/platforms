@@ -120,7 +120,8 @@ export async function getPostData(domain: string, slug: string) {
 async function getMdxSource(postContents: string) {
   // transforms links like <link> to [link](link) as MDX doesn't support <link> syntax
   // https://mdxjs.com/docs/what-is-mdx/#markdown
-  const content = postContents.replaceAll(/<(https?:\/\/\S+)>/g, "[$1]($1)");
+  const content =
+    postContents?.replaceAll(/<(https?:\/\/\S+)>/g, "[$1]($1)") ?? "";
   // Serialize the content string into MDX
   const mdxSource = await serialize(content, {
     mdxOptions: {
