@@ -78,7 +78,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
         });
         // we're using this for now until we can figure out a way to stream markdown text with proper formatting: https://github.com/steven-tey/novel/discussions/7
         complete(
-          `Title: ${data.title}\n Desc: ${
+          `Title: ${data.title}\n Description: ${
             data.description
           }\n\n ${e.editor.getText()}`,
         );
@@ -140,7 +140,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
       stop();
       if (window.confirm("AI writing paused. Continue?")) {
         complete(
-          `Title: ${data.title}\n Desc: ${data.description}\n\n ${
+          `Title: ${data.title}\n Description: ${data.description}\n\n ${
             editor?.getText() || " "
           }`,
         );
@@ -157,7 +157,15 @@ export default function Editor({ post }: { post: PostWithSite }) {
       document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("mousedown", mousedownHandler);
     };
-  }, [stop, isLoading, editor, complete, completion.length]);
+  }, [
+    stop,
+    isLoading,
+    editor,
+    complete,
+    completion.length,
+    data.title,
+    data.description,
+  ]);
 
   // Hydrate the editor with the content
   useEffect(() => {
