@@ -4,10 +4,22 @@ import { useState } from "react";
 import { useDomainStatus } from "./use-domain-status";
 import { getSubdomain } from "@/lib/domains";
 import { AlertCircle, XCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const InlineSnippet = ({ children }: { children: string }) => {
+export const InlineSnippet = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: string;
+}) => {
   return (
-    <span className="inline-block rounded-md bg-blue-100 px-1 py-0.5 font-mono text-blue-900 dark:bg-blue-900 dark:text-blue-100">
+    <span
+      className={cn(
+        "inline-block rounded-md bg-blue-100 px-1 py-0.5 font-mono text-blue-900 dark:bg-blue-900 dark:text-blue-100",
+        className,
+      )}
+    >
       {children}
     </span>
   );

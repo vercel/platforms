@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState ,useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { TiptapEditorProps } from "./props";
 import { TiptapExtensions } from "./extensions";
@@ -12,7 +12,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { EditorBubbleMenu } from "./bubble-menu";
 import { Post } from "@prisma/client";
 import { updatePost, updatePostMetadata } from "@/lib/actions";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 import LoadingDots from "../icons/loading-dots";
 import { ExternalLink } from "lucide-react";
 
@@ -208,7 +208,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
               );
             });
           }}
-          className={clsx(
+          className={cn(
             "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
             isPendingPublishing
               ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"

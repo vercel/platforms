@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -44,7 +44,7 @@ export default function Uploader({
     <div>
       <label
         htmlFor={`${name}-upload`}
-        className={clsx(
+        className={cn(
           "group relative mt-2 flex cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50",
           aspectRatio,
           {

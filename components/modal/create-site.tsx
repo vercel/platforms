@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { createSite } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 import LoadingDots from "@/components/icons/loading-dots";
 import { useModal } from "./provider";
 import va from "@vercel/analytics";
@@ -125,7 +125,7 @@ function CreateSiteFormButton() {
   const { pending } = useFormStatus();
   return (
     <button
-      className={clsx(
+      className={cn(
         "flex h-10 w-full items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
         pending
           ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"

@@ -52,6 +52,7 @@
     "sharp": "^0.31.3",
     "sonner": "^0.4.0",
     "swr": "^2.2.0",
+    "tailwind-merge": "^1.13.2",
     "tippy.js": "^6.3.7",
     "tiptap-markdown": "^0.8.1",
     "unist-util-visit": "^4.1.2",

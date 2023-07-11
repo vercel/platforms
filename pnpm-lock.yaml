@@ -134,6 +134,9 @@ dependencies:
   swr:
     specifier: ^2.2.0
     version: 2.2.0(react@18.2.0)
+  tailwind-merge:
+    specifier: ^1.13.2
+    version: 1.13.2
   tippy.js:
     specifier: ^6.3.7
     version: 6.3.7
