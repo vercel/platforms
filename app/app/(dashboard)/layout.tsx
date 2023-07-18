@@ -6,7 +6,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div>
       <Nav>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div className="text-center dark:text-white">Loading...</div>
+          }
+        >
           <Profile />
         </Suspense>
       </Nav>
