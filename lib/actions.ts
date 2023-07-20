@@ -140,7 +140,7 @@ export const updateSite = withSiteAuth(
         if (!process.env.BLOB_READ_WRITE_TOKEN) {
           return {
             error:
-              "Missing BLOB_READ_WRITE_TOKEN token. Note: Vercel Blob is currently in beta – ping @steventey on Twitter for access.",
+              "Missing BLOB_READ_WRITE_TOKEN token. Note: Vercel Blob is currently in beta – please fill out this form for access: https://tally.so/r/nPDMNd",
           };
         }
 
