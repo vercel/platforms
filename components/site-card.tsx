@@ -1,7 +1,7 @@
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, random } from "@/lib/utils";
 import { Site } from "@prisma/client";
-import { BarChart, ExternalLink } from "lucide-react";
+import { BarChart } from "lucide-react";
 import Link from "next/link";
 
 export default function SiteCard({ data }: { data: Site }) {
@@ -22,7 +22,7 @@ export default function SiteCard({ data }: { data: Site }) {
           blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
         />
         <div className="border-t border-stone-200 p-4 dark:border-stone-700">
-          <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide dark:text-white dark:text-white">
+          <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide dark:text-white">
             {data.name}
           </h3>
           <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-stone-500 dark:text-stone-400">

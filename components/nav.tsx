@@ -12,6 +12,7 @@ import {
   Menu,
   Newspaper,
   Settings,
+  X,
 } from "lucide-react";
 import {
   useParams,
@@ -165,7 +166,7 @@ export default function Nav({ children }: { children: ReactNode }) {
         } sm:hidden`}
         onClick={() => setShowSidebar(!showSidebar)}
       >
-        <Menu width={24} />
+        {showSidebar ? <X width={24} /> : <Menu width={24} />}
       </button>
       <div
         className={`transform ${
