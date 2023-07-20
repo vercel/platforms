@@ -23,7 +23,7 @@ export default async function SiteSettingsIndex({
         inputAttrs={{
           name: "name",
           type: "text",
-          defaultValue: data?.name!,
+          defaultValue: data!.name!,
           placeholder: "My Awesome Site",
           maxLength: 32,
         }}
@@ -37,7 +37,7 @@ export default async function SiteSettingsIndex({
         inputAttrs={{
           name: "description",
           type: "text",
-          defaultValue: data?.description!,
+          defaultValue: data!.description!,
           placeholder: "A blog about really interesting things.",
         }}
         handleSubmit={updateSite}

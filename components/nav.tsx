@@ -12,6 +12,7 @@ import {
   Menu,
   Newspaper,
   Settings,
+  X,
 } from "lucide-react";
 import {
   useParams,
@@ -157,15 +158,15 @@ export default function Nav({ children }: { children: ReactNode }) {
   return (
     <>
       <button
-        className={`fixed z-20 ${
+        className={`fixed z-20 dark:text-white ${
           // left align for Editor, right align for other pages
           segments[0] === "post" && segments.length === 2 && !showSidebar
             ? "left-5 top-5"
-            : "right-5 top-7"
+            : "right-5 top-8"
         } sm:hidden`}
         onClick={() => setShowSidebar(!showSidebar)}
       >
-        <Menu width={20} />
+        {showSidebar ? <X width={24} /> : <Menu width={24} />}
       </button>
       <div
         className={`transform ${
