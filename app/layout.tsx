@@ -1,9 +1,12 @@
 import "@/styles/globals.css";
-import { cal, inter } from "@/styles/fonts";
+
 import { Analytics } from "@vercel/analytics/react";
-import { Providers } from "./providers";
 import { Metadata } from "next";
+
 import { cn } from "@/lib/utils";
+import { cal, inter } from "@/styles/fonts";
+
+import { Providers } from "./providers";
 
 const title =
   "Platforms Starter Kit – The all-in-one starter kit for building multi-tenant applications.";
@@ -12,22 +15,22 @@ const description =
 const image = "https://vercel.pub/thumbnail.png";
 
 export const metadata: Metadata = {
-  title,
   description,
   icons: ["https://vercel.pub/favicon.ico"],
+  metadataBase: new URL("https://vercel.pub"),
   openGraph: {
-    title,
     description,
     images: [image],
+    title,
   },
+  title,
   twitter: {
     card: "summary_large_image",
-    title,
+    creator: "@vercel",
     description,
     images: [image],
-    creator: "@vercel",
+    title,
   },
-  metadataBase: new URL("https://vercel.pub"),
 };
 
 export default function RootLayout({

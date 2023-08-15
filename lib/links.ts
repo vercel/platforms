@@ -1,0 +1,58 @@
+import crypto from "crypto";
+
+import {
+  DynamicLinkInfo,
+  DynamicLinkResponse,
+  UrlType,
+} from "@/app/api/v1/shortLinks/route";
+import prisma from "@/lib/prisma";
+
+export async function generateDynamicLink(
+  params: DynamicLinkInfo,
+  userId: string,
+): Promise<DynamicLinkResponse> {
+  return {
+    previewLink: "",
+    shortLink: await getUniqueUrl(
+      params.domainUriPrefix,
+      userId,
+      params.suffix?.option,
+    ),
+  };
+}
+
+async function getUniqueUrl(
+  domainUriPrefix: string,
+  userId: string,
+  type: UrlType = "SHORT",
+): Promise<string> {
+  let bytesRequired = type === "SHORT" ? 2 : 9;
+
+  // if we have too many links for a given length of url, increase the default length for the user
+  const count = await prisma.dynamicLink.count({ where: { userId } });
+  if (Math.pow(16, bytesRequired * 2) / 50 > count) {
+    bytesRequired += 1;
+  }
+  while (true) {
+    let url = `${domainUriPrefix}/${crypto
+      .randomBytes(bytesRequired)
+      .toString("hex")}`;
+
+    // default to 17 characters to align with firebase defaults for long links
+    if (url.length === 18) {
+      url = url.slice(0, -1);
+    }
+    const exists = await urlExists(url);
+    if (!exists) return url;
+  }
+}
+
+async function urlExists(url: string): Promise<boolean> {
+  const exists = await prisma.dynamicLink.findUnique({
+    where: {
+      url,
+    },
+  });
+
+  return exists !== null;
+}

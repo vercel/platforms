@@ -1,6 +1,6 @@
 import {
-  DomainResponse,
   DomainConfigResponse,
+  DomainResponse,
   DomainVerificationResponse,
 } from "@/lib/types";
 
@@ -48,11 +48,11 @@ export const getDomainResponse = async (
   return await fetch(
     `https://api.vercel.com/v9/projects/${process.env.PROJECT_ID_VERCEL}/domains/${domain}?teamId=${process.env.TEAM_ID_VERCEL}`,
     {
-      method: "GET",
       headers: {
         Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
         "Content-Type": "application/json",
       },
+      method: "GET",
     },
   ).then((res) => {
     return res.json();
@@ -65,11 +65,11 @@ export const getConfigResponse = async (
   return await fetch(
     `https://api.vercel.com/v6/domains/${domain}/config?teamId=${process.env.TEAM_ID_VERCEL}`,
     {
-      method: "GET",
       headers: {
         Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
         "Content-Type": "application/json",
       },
+      method: "GET",
     },
   ).then((res) => res.json());
 };
@@ -80,11 +80,11 @@ export const verifyDomain = async (
   return await fetch(
     `https://api.vercel.com/v9/projects/${process.env.PROJECT_ID_VERCEL}/domains/${domain}/verify?teamId=${process.env.TEAM_ID_VERCEL}`,
     {
-      method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
         "Content-Type": "application/json",
       },
+      method: "POST",
     },
   ).then((res) => res.json());
 };

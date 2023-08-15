@@ -28,6 +28,7 @@ model User {
   sessions      Session[]
   sites         Site[]
   posts         Post[]
+  links         DynamicLink[]
 }
 
 model Account {
@@ -120,4 +121,16 @@ model Example {
   url           String?
   image         String? @db.Text
   imageBlurhash String? @db.Text
+}
+
+model DynamicLink {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  info          Json     
+  url           String   @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        String
+  
+  @@index([url])
 }

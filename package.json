@@ -38,7 +38,7 @@
     "framer-motion": "^10.12.18",
     "gray-matter": "^4.0.3",
     "js-cookie": "^3.0.5",
-    "lucide-react": "^0.244.0",
+    "lucide-react": "^0.263.1",
     "nanoid": "^4.0.2",
     "next": "canary",
     "next-auth": "4.22.1",

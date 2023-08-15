@@ -1,8 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useParams, useSelectedLayoutSegment } from "next/navigation";
+
+import { cn } from "@/lib/utils";
 
 export default function SiteSettingsNav() {
   const { id } = useParams() as { id?: string };
@@ -10,18 +11,18 @@ export default function SiteSettingsNav() {
 
   const navItems = [
     {
-      name: "General",
       href: `/site/${id}/settings`,
+      name: "General",
       segment: null,
     },
     {
-      name: "Domains",
       href: `/site/${id}/settings/domains`,
+      name: "Domains",
       segment: "domains",
     },
     {
-      name: "Appearance",
       href: `/site/${id}/settings/appearance`,
+      name: "Appearance",
       segment: "appearance",
     },
   ];
