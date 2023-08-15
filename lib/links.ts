@@ -3,21 +3,28 @@ import crypto from "crypto";
 import {
   DynamicLinkInfo,
   DynamicLinkResponse,
+  UrlSuffix,
   UrlType,
 } from "@/app/api/v1/shortLinks/route";
 import prisma from "@/lib/prisma";
 
 export async function generateDynamicLink(
-  params: DynamicLinkInfo,
+  info: DynamicLinkInfo,
   userId: string,
+  suffix?: UrlSuffix,
 ): Promise<DynamicLinkResponse> {
+  const url = await getUniqueUrl(info.domainUriPrefix, userId, suffix?.option);
+
+  await prisma.dynamicLink.create({
+    data: {
+      info,
+      url,
+      userId,
+    },
+  });
   return {
     previewLink: "",
-    shortLink: await getUniqueUrl(
-      params.domainUriPrefix,
-      userId,
-      params.suffix?.option,
-    ),
+    shortLink: url,
   };
 }
 
@@ -30,7 +37,7 @@ async function getUniqueUrl(
 
   // if we have too many links for a given length of url, increase the default length for the user
   const count = await prisma.dynamicLink.count({ where: { userId } });
-  if (Math.pow(16, bytesRequired * 2) / 50 > count) {
+  if (count > Math.pow(16, bytesRequired * 2) / 2) {
     bytesRequired += 1;
   }
   while (true) {
@@ -42,8 +49,7 @@ async function getUniqueUrl(
     if (url.length === 18) {
       url = url.slice(0, -1);
     }
-    const exists = await urlExists(url);
-    if (!exists) return url;
+    if (!(await urlExists(url))) return url;
   }
 }
 

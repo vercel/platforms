@@ -3,11 +3,11 @@ import { NextResponse } from "next/server";
 import { generateDynamicLink } from "@/lib/links";
 
 export type UrlType = "SHORT" | "UNGUESSABLE";
-type UrlSuffix = {
+export type UrlSuffix = {
   option: UrlType;
 };
 
-type LongDynamicLinkInfo = {
+type LongDynamicLinkInfoRequest = {
   longDynamicLink: string;
   suffix?: UrlSuffix;
 };
@@ -57,11 +57,15 @@ export type DynamicLinkInfo = {
     socialImageLink?: string;
     socialTitle?: string;
   };
+};
+
+type DynamicLinkInfoRequest = {
+  dynamicLinkInfo: DynamicLinkInfo;
   suffix?: UrlSuffix;
 };
 
 // https://firebase.google.com/docs/dynamic-links/create-manually
-function parseLongDynamicLink(linkParams: LongDynamicLinkInfo) {
+function parseLongDynamicLink(linkParams: LongDynamicLinkInfoRequest) {
   const urlSearchParams = new URLSearchParams(linkParams.longDynamicLink);
   const params = Object.fromEntries(urlSearchParams.entries());
 
@@ -199,41 +203,44 @@ export type DynamicLinkResponse = {
   shortLink: string;
 };
 
-function paramsIsLongDynamicLinkInfo(
-  params: LongDynamicLinkInfo | DynamicLinkInfo,
-): params is LongDynamicLinkInfo {
-  return (params as LongDynamicLinkInfo).longDynamicLink !== undefined;
+function paramsIsLongDynamicLinkInfoRequest(
+  params: LongDynamicLinkInfoRequest | DynamicLinkInfoRequest,
+): params is LongDynamicLinkInfoRequest {
+  return (params as LongDynamicLinkInfoRequest)?.longDynamicLink !== undefined;
 }
 
-function paramsIsDynamicLinkInfo(
-  params: LongDynamicLinkInfo | DynamicLinkInfo,
-): params is DynamicLinkInfo {
-  return (params as DynamicLinkInfo).link !== undefined;
+function paramsIsDynamicLinkInfoRequest(
+  params: LongDynamicLinkInfoRequest | DynamicLinkInfoRequest,
+): params is DynamicLinkInfoRequest {
+  return (params as DynamicLinkInfoRequest)?.dynamicLinkInfo !== undefined;
 }
 
-export async function POST(
-  req: Request,
-  { params }: { params: LongDynamicLinkInfo | DynamicLinkInfo },
-) {
+export async function POST(req: Request) {
   // TODO: add apiKey query parameter check agianst database
   if (process.env.MULTITENANCY_MODE && !req.url.includes("apiKey=")) {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  const body = (await req.json()) as
+    | LongDynamicLinkInfoRequest
+    | DynamicLinkInfoRequest;
+
   // TODO; parse this from API Key
-  const userId = "DEV_USER_ID";
+  const userId = "cllc3z3jx0000qx16vtiqeg7y";
 
   let parsed: DynamicLinkInfo;
-  if (paramsIsLongDynamicLinkInfo(params)) {
-    parsed = parseLongDynamicLink(params);
-  } else if (paramsIsDynamicLinkInfo(params)) {
-    parsed = params;
+  if (paramsIsLongDynamicLinkInfoRequest(body)) {
+    parsed = parseLongDynamicLink(body);
+  } else if (paramsIsDynamicLinkInfoRequest(body)) {
+    parsed = body.dynamicLinkInfo;
   } else {
     return new Response("Invalid params", { status: 400 });
   }
 
   try {
-    return NextResponse.json(await generateDynamicLink(parsed, userId));
+    return NextResponse.json(
+      await generateDynamicLink(parsed, userId, body.suffix),
+    );
   } catch (err) {
     console.error("Error generating dynamic link", err);
     return new Response(JSON.stringify({ error: true }), { status: 500 });
