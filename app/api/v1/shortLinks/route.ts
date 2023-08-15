@@ -70,7 +70,7 @@ function parseLongDynamicLink(linkParams: LongDynamicLinkInfoRequest) {
   const params = Object.fromEntries(urlSearchParams.entries());
 
   let dynamicLinkInfo: DynamicLinkInfo = {
-    domainUriPrefix: params.link.split("?")[0].split("/?")[0],
+    domainUriPrefix: linkParams.longDynamicLink.split("/?")[0].split("?")[0],
     link: params.link,
   };
 
