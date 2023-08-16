@@ -112,7 +112,7 @@ export default function AnalyticsMockup() {
                 <Bold>Visitors</Bold>
               </Text>
             </Flex>
-            <BarList
+            {/* <BarList
               // @ts-ignore
               className="mt-2"
               data={data.map(({ code, name, value }) => ({
@@ -144,7 +144,7 @@ export default function AnalyticsMockup() {
                 name,
                 value,
               }))}
-            />
+            /> */}
           </Card>
         ))}
       </Grid>
