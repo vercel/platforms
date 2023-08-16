@@ -1,5 +1,5 @@
 # Segtrace 
-An open source alternative to Branch & Appsflyer. 
+An open source alternative to Branch & Appsflyer (Alpha). 
 
 ## Commands
 ```
@@ -15,4 +15,4 @@ corepack prepare pnpm@latest --activate
 
 ## License
 
-The MIT License.
+MIT License.
