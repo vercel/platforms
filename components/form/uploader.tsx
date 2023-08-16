@@ -1,8 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+
+import { cn } from "@/lib/utils";
 
 export default function Uploader({
   defaultValue,
@@ -43,7 +44,6 @@ export default function Uploader({
   return (
     <div>
       <label
-        htmlFor={`${name}-upload`}
         className={cn(
           "group relative mt-2 flex cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50",
           aspectRatio,
@@ -52,14 +52,10 @@ export default function Uploader({
             "max-w-xs": aspectRatio === "aspect-square",
           },
         )}
+        htmlFor={`${name}-upload`}
       >
         <div
           className="absolute z-[5] h-full w-full rounded-md"
-          onDragOver={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setDragActive(true);
-          }}
           onDragEnter={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -69,6 +65,11 @@ export default function Uploader({
             e.preventDefault();
             e.stopPropagation();
             setDragActive(false);
+          }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setDragActive(true);
           }}
           onDrop={(e) => {
             e.preventDefault();
@@ -93,15 +94,15 @@ export default function Uploader({
             className={`${
               dragActive ? "scale-110" : "scale-100"
             } h-7 w-7 text-gray-500 transition-all duration-75 group-hover:scale-110 group-active:scale-95`}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
             fill="none"
+            height="24"
             stroke="currentColor"
-            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
           >
             <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
             <path d="M12 12v9"></path>
@@ -118,24 +119,24 @@ export default function Uploader({
         {data[name] && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={data[name] as string}
             alt="Preview"
             className="h-full w-full rounded-md object-cover"
+            src={data[name] as string}
           />
         )}
       </label>
       <div className="mt-1 flex rounded-md shadow-sm">
         <input
-          id={`${name}-upload`}
-          ref={inputRef}
-          name={name}
-          type="file"
           accept="image/*"
           className="sr-only"
+          id={`${name}-upload`}
+          name={name}
           onChange={(e) => {
             const file = e.currentTarget.files && e.currentTarget.files[0];
             handleUpload(file);
           }}
+          ref={inputRef}
+          type="file"
         />
       </div>
     </div>

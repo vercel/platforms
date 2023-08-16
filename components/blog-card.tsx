@@ -1,8 +1,9 @@
-import Link from "next/link";
-import BlurImage from "./blur-image";
-
 import type { Post } from "@prisma/client";
+import Link from "next/link";
+
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
+
+import BlurImage from "./blur-image";
 
 interface BlogCardProps {
   data: Pick<
@@ -16,13 +17,13 @@ export default function BlogCard({ data }: BlogCardProps) {
     <Link href={`/${data.slug}`}>
       <div className="ease overflow-hidden rounded-2xl border-2 border-stone-100 bg-white shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-xl dark:border-stone-800">
         <BlurImage
-          src={data.image!}
           alt={data.title ?? "Blog Post"}
-          width={500}
-          height={400}
-          className="h-64 w-full object-cover"
-          placeholder="blur"
           blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
+          className="h-64 w-full object-cover"
+          height={400}
+          placeholder="blur"
+          src={data.image!}
+          width={500}
         />
         <div className="h-36 border-t border-stone-200 px-5 py-8 dark:border-stone-700 dark:bg-black">
           <h3 className="font-title text-xl tracking-wide dark:text-white">

@@ -1,35 +1,37 @@
 "use client";
 
-import LoadingDots from "@/components/icons/loading-dots";
-import { cn } from "@/lib/utils";
-import { useSession } from "next-auth/react";
+import va from "@vercel/analytics";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
-import DomainStatus from "./domain-status";
+
+import LoadingDots from "@/components/icons/loading-dots";
+import { cn } from "@/lib/utils";
+
 import DomainConfiguration from "./domain-configuration";
+import DomainStatus from "./domain-status";
 import Uploader from "./uploader";
-import va from "@vercel/analytics";
 
 export default function Form({
-  title,
   description,
+  handleSubmit,
   helpText,
   inputAttrs,
-  handleSubmit,
+  title,
 }: {
-  title: string;
   description: string;
+  handleSubmit: any;
   helpText: string;
   inputAttrs: {
-    name: string;
-    type: string;
     defaultValue: string;
-    placeholder?: string;
     maxLength?: number;
+    name: string;
     pattern?: string;
+    placeholder?: string;
+    type: string;
   };
-  handleSubmit: any;
+  title: string;
 }) {
   const { id } = useParams() as { id?: string };
   const router = useRouter();
@@ -75,9 +77,9 @@ export default function Form({
         ) : inputAttrs.name === "font" ? (
           <div className="flex max-w-sm items-center overflow-hidden rounded-lg border border-stone-600">
             <select
-              name="font"
-              defaultValue={inputAttrs.defaultValue}
               className="w-full rounded-none border-none bg-white px-4 py-2 text-sm font-medium text-stone-700 focus:outline-none focus:ring-black dark:bg-black dark:text-stone-200 dark:focus:ring-white"
+              defaultValue={inputAttrs.defaultValue}
+              name="font"
             >
               <option value="font-cal">Cal Sans</option>
               <option value="font-lora">Lora</option>
@@ -88,8 +90,8 @@ export default function Form({
           <div className="flex w-full max-w-md">
             <input
               {...inputAttrs}
+              className="z-10 flex-1 rounded-l-md border border-stone-300 text-sm text-stone-900 placeholder:text-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder:text-stone-700"
               required
-              className="z-10 flex-1 rounded-l-md border border-stone-300 text-sm text-stone-900 placeholder-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder-stone-700"
             />
             <div className="flex items-center rounded-r-md border border-l-0 border-stone-300 bg-stone-100 px-3 text-sm dark:border-stone-600 dark:bg-stone-800 dark:text-stone-400">
               {process.env.NEXT_PUBLIC_ROOT_DOMAIN}
@@ -99,7 +101,7 @@ export default function Form({
           <div className="relative flex w-full max-w-md">
             <input
               {...inputAttrs}
-              className="z-10 flex-1 rounded-md border border-stone-300 text-sm text-stone-900 placeholder-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder-stone-700"
+              className="z-10 flex-1 rounded-md border border-stone-300 text-sm text-stone-900 placeholder:text-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder:text-stone-700"
             />
             {inputAttrs.defaultValue && (
               <div className="absolute right-3 z-10 flex h-full items-center">
@@ -110,15 +112,15 @@ export default function Form({
         ) : inputAttrs.name === "description" ? (
           <textarea
             {...inputAttrs}
-            rows={3}
+            className="w-full max-w-xl rounded-md border border-stone-300 text-sm text-stone-900 placeholder:text-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder:text-stone-700"
             required
-            className="w-full max-w-xl rounded-md border border-stone-300 text-sm text-stone-900 placeholder-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder-stone-700"
+            rows={3}
           />
         ) : (
           <input
             {...inputAttrs}
+            className="w-full max-w-md rounded-md border border-stone-300 text-sm text-stone-900 placeholder:text-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder:text-stone-700"
             required
-            className="w-full max-w-md rounded-md border border-stone-300 text-sm text-stone-900 placeholder-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder-stone-700"
           />
         )}
       </div>

@@ -1,13 +1,15 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import va from "@vercel/analytics";
 import { AlertTriangle } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
-import LoadingDots from "./icons/loading-dots";
-import va from "@vercel/analytics";
 import { toast } from "sonner";
+
+import { cn } from "@/lib/utils";
+
+import LoadingDots from "./icons/loading-dots";
 
 export default function ReportAbuse() {
   const [open, setOpen] = useState(false);
@@ -47,19 +49,19 @@ export default function ReportAbuse() {
 
           <div>
             <label
-              htmlFor="domain"
               className="block text-sm font-medium leading-6 text-stone-900"
+              htmlFor="domain"
             >
               URL to report
             </label>
             <div className="mt-2">
               <input
-                type="text"
-                name="url"
-                id="url"
-                readOnly
-                value={url}
                 className="block w-full cursor-not-allowed rounded-md border border-stone-200 bg-stone-100 py-1.5 text-stone-900 shadow-sm ring-0 focus:outline-none sm:text-sm sm:leading-6"
+                id="url"
+                name="url"
+                readOnly
+                type="text"
+                value={url}
               />
             </div>
           </div>

@@ -32,11 +32,11 @@ export const handleImageUpload = (
     // upload to Vercel Blob
     toast.promise(
       fetch("/api/upload", {
-        method: "POST",
+        body: file,
         headers: {
           "content-type": file?.type || "application/octet-stream",
         },
-        body: file,
+        method: "POST",
       }).then(async (res) => {
         // Successfully uploaded image
         if (res.status === 200) {
@@ -65,9 +65,9 @@ export const handleImageUpload = (
         }
       }),
       {
+        error: (e) => e.message,
         loading: "Uploading image...",
         success: "Image uploaded successfully.",
-        error: (e) => e.message,
       },
     );
   }
@@ -78,8 +78,8 @@ export const handleImageUpload = (
       return view.dispatch(
         view.state.tr.replaceSelectionWith(
           view.state.schema.nodes.image.create({
-            src: url,
             alt: file.name,
+            src: url,
             title: file.name,
           }),
         ),
@@ -93,8 +93,8 @@ export const handleImageUpload = (
         top: event.clientY,
       });
       const node = schema.nodes.image.create({
-        src: url,
         alt: file.name,
+        src: url,
         title: file.name,
       }); // creates the image element
       const transaction = view.state.tr.insert(coordinates?.pos || 0, node); // places it in the correct position
@@ -105,8 +105,8 @@ export const handleImageUpload = (
       return view.dispatch(
         view.state.tr.replaceSelectionWith(
           view.state.schema.nodes.image.create({
-            src: url,
             alt: file.name,
+            src: url,
             title: file.name,
           }),
         ),

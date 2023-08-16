@@ -1,16 +1,17 @@
 import Image from "next/image";
-import LoginButton from "./login-button";
 import { Suspense } from "react";
+
+import LoginButton from "./login-button";
 
 export default function LoginPage() {
   return (
     <div className="mx-5 border border-stone-200 py-10 dark:border-stone-700 sm:mx-auto sm:w-full sm:max-w-md sm:rounded-lg sm:shadow-md">
       <Image
         alt="Platforms Starter Kit"
-        width={100}
-        height={100}
         className="relative mx-auto h-12 w-auto dark:scale-110 dark:rounded-full dark:border dark:border-stone-400"
+        height={100}
         src="/logo.png"
+        width={100}
       />
       <h1 className="mt-6 text-center font-cal text-3xl dark:text-white">
         Platforms Starter Kit

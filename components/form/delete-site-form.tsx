@@ -1,12 +1,13 @@
 "use client";
 
-import LoadingDots from "@/components/icons/loading-dots";
-import { cn } from "@/lib/utils";
+import va from "@vercel/analytics";
 import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
+
+import LoadingDots from "@/components/icons/loading-dots";
 import { deleteSite } from "@/lib/actions";
-import va from "@vercel/analytics";
+import { cn } from "@/lib/utils";
 
 export default function DeleteSiteForm({ siteName }: { siteName: string }) {
   const { id } = useParams() as { id: string };
@@ -38,12 +39,12 @@ export default function DeleteSiteForm({ siteName }: { siteName: string }) {
         </p>
 
         <input
+          className="w-full max-w-md rounded-md border border-stone-300 text-sm text-stone-900 placeholder:text-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder:text-stone-700"
           name="confirm"
-          type="text"
-          required
           pattern={siteName}
           placeholder={siteName}
-          className="w-full max-w-md rounded-md border border-stone-300 text-sm text-stone-900 placeholder-stone-300 focus:border-stone-500 focus:outline-none focus:ring-stone-500 dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder-stone-700"
+          required
+          type="text"
         />
       </div>
 

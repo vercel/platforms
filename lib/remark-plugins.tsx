@@ -1,24 +1,24 @@
-import Link from "next/link";
-import { visit } from "unist-util-visit";
 import type { Example, PrismaClient } from "@prisma/client";
+import Link from "next/link";
 import { ReactNode } from "react";
+import { visit } from "unist-util-visit";
 
 export function replaceLinks({
-  href,
   children,
+  href,
 }: {
-  href?: string;
   children: ReactNode;
+  href?: string;
 }) {
   // this is technically not a remark plugin but it
   // replaces internal links with <Link /> component
   // and external links with <a target="_blank" />
   return href?.startsWith("/") || href === "" ? (
-    <Link href={href} className="cursor-pointer">
+    <Link className="cursor-pointer" href={href}>
       {children}
     </Link>
   ) : (
-    <a href={href} target="_blank" rel="noopener noreferrer">
+    <a href={href} rel="noopener noreferrer" target="_blank">
       {children} ↗
     </a>
   );
@@ -53,8 +53,8 @@ export function replaceTweets() {
           node.name = "Tweet";
           node.attributes = [
             {
-              type: "mdxJsxAttribute",
               name: "id",
+              type: "mdxJsxAttribute",
               value: id,
             },
           ];
@@ -85,8 +85,8 @@ export function replaceExamples(prisma: PrismaClient) {
           const data = await getExamples(node, prisma);
           node.attributes = [
             {
-              type: "mdxJsxAttribute",
               name: "data",
+              type: "mdxJsxAttribute",
               value: data,
             },
           ];

@@ -1,20 +1,20 @@
-import { useEffect, useRef, ReactNode, Dispatch, SetStateAction } from "react";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { Dispatch, ReactNode, SetStateAction, useEffect, useRef } from "react";
 
 export default function Leaflet({
-  setShow,
   children,
+  setShow,
 }: {
-  setShow: Dispatch<SetStateAction<boolean>>;
   children: ReactNode;
+  setShow: Dispatch<SetStateAction<boolean>>;
 }) {
   const leafletRef = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
-  const transitionProps = { type: "spring", stiffness: 500, damping: 30 };
+  const transitionProps = { damping: 30, stiffness: 500, type: "spring" };
   useEffect(() => {
     controls.start({
-      y: 20,
       transition: transitionProps,
+      y: 20,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -24,28 +24,28 @@ export default function Leaflet({
     const velocity = info.velocity.y;
     const height = leafletRef.current?.getBoundingClientRect().height || 0;
     if (offset > height / 2 || velocity > 800) {
-      await controls.start({ y: "100%", transition: transitionProps });
+      await controls.start({ transition: transitionProps, y: "100%" });
       setShow(false);
     } else {
-      controls.start({ y: 0, transition: transitionProps });
+      controls.start({ transition: transitionProps, y: 0 });
     }
   }
 
   return (
     <AnimatePresence>
       <motion.div
-        ref={leafletRef}
-        key="leaflet"
-        className="group fixed inset-x-0 bottom-0 z-40 w-screen cursor-grab bg-white pb-5 active:cursor-grabbing sm:hidden"
-        initial={{ y: "100%" }}
         animate={controls}
-        exit={{ y: "100%" }}
-        transition={transitionProps}
+        className="group fixed inset-x-0 bottom-0 z-40 w-screen cursor-grab bg-white pb-5 active:cursor-grabbing sm:hidden"
         drag="y"
+        dragConstraints={{ bottom: 0, top: 0 }}
         dragDirectionLock
+        dragElastic={{ bottom: 1, top: 0 }}
+        exit={{ y: "100%" }}
+        initial={{ y: "100%" }}
+        key="leaflet"
         onDragEnd={handleDragEnd}
-        dragElastic={{ top: 0, bottom: 1 }}
-        dragConstraints={{ top: 0, bottom: 0 }}
+        ref={leafletRef}
+        transition={transitionProps}
       >
         <div
           className={`rounded-t-4xl -mb-1 flex h-7 w-full items-center justify-center border-t border-gray-200`}
@@ -56,11 +56,11 @@ export default function Leaflet({
         {children}
       </motion.div>
       <motion.div
-        key="leaflet-backdrop"
-        className="fixed inset-0 z-30 bg-gray-100 bg-opacity-10 backdrop-blur"
-        initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        className="fixed inset-0 z-30 bg-gray-100 bg-opacity-10 backdrop-blur"
         exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }}
+        key="leaflet-backdrop"
         onClick={() => setShow(false)}
       />
     </AnimatePresence>

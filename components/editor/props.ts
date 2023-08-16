@@ -1,5 +1,6 @@
-import { handleImageUpload } from "./utils";
 import { EditorProps } from "@tiptap/pm/view";
+
+import { handleImageUpload } from "./utils";
 
 export const TiptapEditorProps: EditorProps = {
   attributes: {
@@ -17,18 +18,6 @@ export const TiptapEditorProps: EditorProps = {
       }
     },
   },
-  handlePaste: (view, event) => {
-    if (
-      event.clipboardData &&
-      event.clipboardData.files &&
-      event.clipboardData.files[0]
-    ) {
-      event.preventDefault();
-      const file = event.clipboardData.files[0];
-      return handleImageUpload(file, view, event);
-    }
-    return false;
-  },
   handleDrop: (view, event, _slice, moved) => {
     if (
       !moved &&
@@ -38,6 +27,18 @@ export const TiptapEditorProps: EditorProps = {
     ) {
       event.preventDefault();
       const file = event.dataTransfer.files[0];
+      return handleImageUpload(file, view, event);
+    }
+    return false;
+  },
+  handlePaste: (view, event) => {
+    if (
+      event.clipboardData &&
+      event.clipboardData.files &&
+      event.clipboardData.files[0]
+    ) {
+      event.preventDefault();
+      const file = event.clipboardData.files[0];
       return handleImageUpload(file, view, event);
     }
     return false;

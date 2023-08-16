@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
-import { getPostData } from "@/lib/fetchers";
+
 import BlogCard from "@/components/blog-card";
 import BlurImage from "@/components/blur-image";
 import MDX from "@/components/mdx";
+import { getPostData } from "@/lib/fetchers";
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
 
 export async function generateMetadata({
@@ -15,20 +16,20 @@ export async function generateMetadata({
   if (!data) {
     return null;
   }
-  const { title, description } = data;
+  const { description, title } = data;
 
   return {
-    title,
     description,
     openGraph: {
-      title,
       description,
+      title,
     },
+    title,
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
       creator: "@vercel",
+      description,
+      title,
     },
   };
 }
@@ -93,12 +94,12 @@ export default async function SitePostPage({
       <div className="relative m-auto mb-10 h-80 w-full max-w-screen-lg overflow-hidden md:mb-20 md:h-150 md:w-5/6 md:rounded-2xl lg:w-2/3">
         <BlurImage
           alt={data.title ?? "Post image"}
-          width={1200}
-          height={630}
-          className="h-full w-full object-cover"
-          placeholder="blur"
           blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
+          className="h-full w-full object-cover"
+          height={630}
+          placeholder="blur"
           src={data.image ?? "/placeholder.png"}
+          width={1200}
         />
       </div>
 
@@ -107,8 +108,8 @@ export default async function SitePostPage({
       {data.adjacentPosts.length > 0 && (
         <div className="relative mb-20 mt-10 sm:mt-20">
           <div
-            className="absolute inset-0 flex items-center"
             aria-hidden="true"
+            className="absolute inset-0 flex items-center"
           >
             <div className="w-full border-t border-stone-300 dark:border-stone-700" />
           </div>
@@ -122,7 +123,7 @@ export default async function SitePostPage({
       {data.adjacentPosts && (
         <div className="mx-5 mb-20 grid max-w-screen-xl grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 xl:mx-auto xl:grid-cols-3">
           {data.adjacentPosts.map((data, index) => (
-            <BlogCard key={index} data={data} />
+            <BlogCard data={data} key={index} />
           ))}
         </div>
       )}

@@ -1,203 +1,203 @@
 const DEFAULT_EDITOR_CONTENT = {
-  type: "doc",
   content: [
     {
-      type: "heading",
       attrs: { level: 2 },
-      content: [{ type: "text", text: "Introducing Novel" }],
+      content: [{ text: "Introducing Novel", type: "text" }],
+      type: "heading",
     },
     {
-      type: "paragraph",
       content: [
         {
-          type: "text",
           text: "Novel is a Notion-style WYSIWYG editor with AI-powered autocompletion. Built with ",
+          type: "text",
         },
         {
-          type: "text",
           marks: [
             {
-              type: "link",
               attrs: {
-                href: "https://tiptap.dev/",
-                target: "_blank",
                 class:
                   "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                href: "https://tiptap.dev/",
+                target: "_blank",
               },
+              type: "link",
             },
           ],
           text: "Tiptap",
-        },
-        { type: "text", text: " and " },
-        {
           type: "text",
+        },
+        { text: " and ", type: "text" },
+        {
           marks: [
             {
-              type: "link",
               attrs: {
-                href: "https://sdk.vercel.ai/docs",
-                target: "_blank",
                 class:
                   "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                href: "https://sdk.vercel.ai/docs",
+                target: "_blank",
               },
+              type: "link",
             },
           ],
           text: "Vercel AI SDK",
+          type: "text",
         },
-        { type: "text", text: "." },
+        { text: ".", type: "text" },
       ],
+      type: "paragraph",
     },
     {
-      type: "heading",
       attrs: { level: 3 },
-      content: [{ type: "text", text: "Features" }],
+      content: [{ text: "Features", type: "text" }],
+      type: "heading",
     },
     {
-      type: "orderedList",
-      attrs: { tight: true, start: 1 },
+      attrs: { start: 1, tight: true },
       content: [
         {
-          type: "listItem",
           content: [
             {
+              content: [{ text: "Slash menu & bubble menu", type: "text" }],
               type: "paragraph",
-              content: [{ type: "text", text: "Slash menu & bubble menu" }],
             },
           ],
+          type: "listItem",
         },
         {
-          type: "listItem",
           content: [
             {
-              type: "paragraph",
               content: [
-                { type: "text", text: "AI autocomplete (type " },
-                { type: "text", marks: [{ type: "code" }], text: "++" },
+                { text: "AI autocomplete (type ", type: "text" },
+                { marks: [{ type: "code" }], text: "++", type: "text" },
                 {
-                  type: "text",
                   text: " to activate, or select from slash menu)",
+                  type: "text",
                 },
               ],
+              type: "paragraph",
             },
           ],
+          type: "listItem",
         },
         {
-          type: "listItem",
           content: [
             {
-              type: "paragraph",
               content: [
                 {
-                  type: "text",
                   text: "Image uploads (drag & drop / copy & paste, or select from slash menu)",
+                  type: "text",
                 },
               ],
+              type: "paragraph",
             },
           ],
+          type: "listItem",
         },
       ],
+      type: "orderedList",
     },
     {
-      type: "image",
       attrs: {
-        src: "https://public.blob.vercel-storage.com/pJrjXbdONOnAeZAZ/banner-2wQk82qTwyVgvlhTW21GIkWgqPGD2C.png",
         alt: "banner.png",
+        src: "https://public.blob.vercel-storage.com/pJrjXbdONOnAeZAZ/banner-2wQk82qTwyVgvlhTW21GIkWgqPGD2C.png",
         title: "banner.png",
       },
+      type: "image",
     },
     { type: "horizontalRule" },
     {
-      type: "heading",
       attrs: { level: 3 },
-      content: [{ type: "text", text: "Learn more" }],
+      content: [{ text: "Learn more", type: "text" }],
+      type: "heading",
     },
     {
-      type: "taskList",
       content: [
         {
-          type: "taskItem",
           attrs: { checked: false },
           content: [
             {
-              type: "paragraph",
               content: [
-                { type: "text", text: "Check out the " },
+                { text: "Check out the ", type: "text" },
                 {
-                  type: "text",
                   marks: [
                     {
-                      type: "link",
                       attrs: {
-                        href: "https://twitter.com/steventey/status/1669762868416512000",
-                        target: "_blank",
                         class:
                           "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                        href: "https://twitter.com/steventey/status/1669762868416512000",
+                        target: "_blank",
                       },
+                      type: "link",
                     },
                   ],
                   text: "launch video",
+                  type: "text",
                 },
               ],
+              type: "paragraph",
             },
           ],
+          type: "taskItem",
         },
         {
-          type: "taskItem",
           attrs: { checked: false },
           content: [
             {
-              type: "paragraph",
               content: [
-                { type: "text", text: "Star us on " },
+                { text: "Star us on ", type: "text" },
                 {
-                  type: "text",
                   marks: [
                     {
-                      type: "link",
                       attrs: {
-                        href: "https://github.com/steven-tey/novel",
-                        target: "_blank",
                         class:
                           "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                        href: "https://github.com/steven-tey/novel",
+                        target: "_blank",
                       },
+                      type: "link",
                     },
                   ],
                   text: "GitHub",
+                  type: "text",
                 },
               ],
+              type: "paragraph",
             },
           ],
+          type: "taskItem",
         },
         {
-          type: "taskItem",
           attrs: { checked: false },
           content: [
             {
-              type: "paragraph",
               content: [
                 {
-                  type: "text",
                   marks: [
                     {
-                      type: "link",
                       attrs: {
-                        href: "https://vercel.com/templates/next.js/novel",
-                        target: "_blank",
                         class:
                           "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                        href: "https://vercel.com/templates/next.js/novel",
+                        target: "_blank",
                       },
+                      type: "link",
                     },
                   ],
                   text: "Deploy your own",
+                  type: "text",
                 },
-                { type: "text", text: " to Vercel" },
+                { text: " to Vercel", type: "text" },
               ],
+              type: "paragraph",
             },
           ],
+          type: "taskItem",
         },
       ],
+      type: "taskList",
     },
   ],
+  type: "doc",
 };
 
 export default DEFAULT_EDITOR_CONTENT;
