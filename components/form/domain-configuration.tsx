@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useDomainStatus } from "./use-domain-status";
-import { getSubdomain } from "@/lib/domains";
 import { AlertCircle, XCircle } from "lucide-react";
+import { useState } from "react";
+
+import { getSubdomain } from "@/lib/domains";
 import { cn } from "@/lib/utils";
 
+import { useDomainStatus } from "./use-domain-status";
+
 export const InlineSnippet = ({
-  className,
   children,
+  className,
 }: {
-  className?: string;
   children: string;
+  className?: string;
 }) => {
   return (
     <span
@@ -27,7 +29,7 @@ export const InlineSnippet = ({
 export default function DomainConfiguration({ domain }: { domain: string }) {
   const [recordType, setRecordType] = useState<"A" | "CNAME">("A");
 
-  const { status, domainJson } = useDomainStatus({ domain });
+  const { domainJson, status } = useDomainStatus({ domain });
 
   if (!status || status === "Valid Configuration" || !domainJson) return null;
 
@@ -43,15 +45,15 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
       <div className="mb-4 flex items-center space-x-2">
         {status === "Pending Verification" ? (
           <AlertCircle
+            className="text-white dark:text-black"
             fill="#FBBF24"
             stroke="currentColor"
-            className="text-white dark:text-black"
           />
         ) : (
           <XCircle
+            className="text-white dark:text-black"
             fill="#DC2626"
             stroke="currentColor"
-            className="text-white dark:text-black"
           />
         )}
         <p className="text-lg font-semibold dark:text-white">{status}</p>
@@ -100,24 +102,24 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
         <>
           <div className="flex justify-start space-x-4">
             <button
-              type="button"
-              onClick={() => setRecordType("A")}
               className={`${
                 recordType == "A"
                   ? "border-black text-black dark:border-white dark:text-white"
                   : "border-white text-stone-400 dark:border-black dark:text-stone-600"
               } ease border-b-2 pb-1 text-sm transition-all duration-150`}
+              onClick={() => setRecordType("A")}
+              type="button"
             >
               A Record{!subdomain && " (recommended)"}
             </button>
             <button
-              type="button"
-              onClick={() => setRecordType("CNAME")}
               className={`${
                 recordType == "CNAME"
                   ? "border-black text-black dark:border-white dark:text-white"
                   : "border-white text-stone-400 dark:border-black dark:text-stone-600"
               } ease border-b-2 pb-1 text-sm transition-all duration-150`}
+              onClick={() => setRecordType("CNAME")}
+              type="button"
             >
               CNAME Record{subdomain && " (recommended)"}
             </button>

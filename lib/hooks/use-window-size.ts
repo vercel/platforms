@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 
 export default function useWindowSize() {
   const [windowSize, setWindowSize] = useState<{
-    width: number | undefined;
     height: number | undefined;
+    width: number | undefined;
   }>({
-    width: undefined,
     height: undefined,
+    width: undefined,
   });
 
   useEffect(() => {
@@ -14,8 +14,8 @@ export default function useWindowSize() {
     function handleResize() {
       // Set window width/height to state
       setWindowSize({
-        width: window.innerWidth,
         height: window.innerHeight,
+        width: window.innerWidth,
       });
     }
 
@@ -30,9 +30,9 @@ export default function useWindowSize() {
   }, []); // Empty array ensures that effect is only run on mount
 
   return {
-    windowSize,
-    isMobile: typeof windowSize?.width === "number" && windowSize?.width < 768,
     isDesktop:
       typeof windowSize?.width === "number" && windowSize?.width >= 768,
+    isMobile: typeof windowSize?.width === "number" && windowSize?.width < 768,
+    windowSize,
   };
 }

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback, useMemo, ChangeEvent } from "react";
-import { toast } from "sonner";
-import LoadingDots from "@/components/icons/loading-dots";
 import { BlobResult } from "@vercel/blob";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
+
+import LoadingDots from "@/components/icons/loading-dots";
 
 export default function Uploader() {
   const [data, setData] = useState<{
@@ -47,9 +48,9 @@ export default function Uploader() {
         e.preventDefault();
         setSaving(true);
         fetch("/api/upload", {
-          method: "POST",
-          headers: { "content-type": file?.type || "application/octet-stream" },
           body: file,
+          headers: { "content-type": file?.type || "application/octet-stream" },
+          method: "POST",
         }).then(async (res) => {
           if (res.status === 200) {
             const { url } = (await res.json()) as BlobResult;
@@ -62,8 +63,8 @@ export default function Uploader() {
                     <a
                       className="font-medium text-gray-900 underline"
                       href={url}
-                      target="_blank"
                       rel="noopener noreferrer"
+                      target="_blank"
                     >
                       {url}
                     </a>
@@ -87,16 +88,11 @@ export default function Uploader() {
           </p>
         </div>
         <label
-          htmlFor="image-upload"
           className="group relative mt-2 flex h-72 cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
+          htmlFor="image-upload"
         >
           <div
             className="absolute z-[5] h-full w-full rounded-md"
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setDragActive(true);
-            }}
             onDragEnter={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -106,6 +102,11 @@ export default function Uploader() {
               e.preventDefault();
               e.stopPropagation();
               setDragActive(false);
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragActive(true);
             }}
             onDrop={(e) => {
               e.preventDefault();
@@ -143,15 +144,15 @@ export default function Uploader() {
               className={`${
                 dragActive ? "scale-110" : "scale-100"
               } h-7 w-7 text-gray-500 transition-all duration-75 group-hover:scale-110 group-active:scale-95`}
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
               fill="none"
+              height="24"
               stroke="currentColor"
-              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
               <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
               <path d="M12 12v9"></path>
@@ -168,31 +169,31 @@ export default function Uploader() {
           {data.image && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={data.image}
               alt="Preview"
               className="h-full w-full rounded-md object-cover"
+              src={data.image}
             />
           )}
         </label>
         <div className="mt-1 flex rounded-md shadow-sm">
           <input
-            id="image-upload"
-            name="image"
-            type="file"
             accept="image/*"
             className="sr-only"
+            id="image-upload"
+            name="image"
             onChange={onChangePicture}
+            type="file"
           />
         </div>
       </div>
 
       <button
-        disabled={saveDisabled}
         className={`${
           saveDisabled
             ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
             : "border-black bg-black text-white hover:bg-white hover:text-black"
         } flex h-10 w-full items-center justify-center rounded-md border text-sm transition-all focus:outline-none`}
+        disabled={saveDisabled}
       >
         {saving ? (
           <LoadingDots color="#808080" />

@@ -1,39 +1,41 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-  useRef,
-  useLayoutEffect,
-} from "react";
-import { Editor, Range, Extension } from "@tiptap/core";
-import Suggestion from "@tiptap/suggestion";
+import { Editor, Extension, Range } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
+import Suggestion from "@tiptap/suggestion";
+import va from "@vercel/analytics";
 import { useCompletion } from "ai/react";
-import tippy from "tippy.js";
 import {
+  CheckSquare,
+  Code,
   Heading1,
   Heading2,
   Heading3,
+  Image as ImageIcon,
   List,
   ListOrdered,
   MessageSquarePlus,
   Text,
   TextQuote,
-  Image as ImageIcon,
-  Code,
-  CheckSquare,
 } from "lucide-react";
-import LoadingCircle from "@/components/icons/loading-circle";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
-import va from "@vercel/analytics";
+import tippy from "tippy.js";
+
+import LoadingCircle from "@/components/icons/loading-circle";
 import Magic from "@/components/icons/magic";
+
 import { handleImageUpload } from "../utils";
 
 interface CommandItemProps {
-  title: string;
   description: string;
   icon: ReactNode;
+  title: string;
 }
 
 interface CommandProps {
@@ -42,19 +44,18 @@ interface CommandProps {
 }
 
 const Command = Extension.create({
-  name: "slash-command",
   addOptions() {
     return {
       suggestion: {
         char: "/",
         command: ({
           editor,
-          range,
           props,
+          range,
         }: {
           editor: Editor;
-          range: Range;
           props: any;
+          range: Range;
         }) => {
           props.command({ editor, range });
         },
@@ -69,30 +70,27 @@ const Command = Extension.create({
       }),
     ];
   },
+  name: "slash-command",
 });
 
 const getSuggestionItems = ({ query }: { query: string }) => {
   return [
     {
-      title: "Continue writing",
       description: "Use AI to expand your thoughts.",
-      searchTerms: ["gpt"],
       icon: <Magic className="w-7 text-black dark:text-white" />,
+      searchTerms: ["gpt"],
+      title: "Continue writing",
     },
     {
-      title: "Send Feedback",
-      description: "Let us know how we can improve.",
-      icon: <MessageSquarePlus size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).run();
         window.open("https://github.com/vercel/platforms/issues", "_blank");
       },
+      description: "Let us know how we can improve.",
+      icon: <MessageSquarePlus size={18} />,
+      title: "Send Feedback",
     },
     {
-      title: "Text",
-      description: "Just start typing with plain text.",
-      searchTerms: ["p", "paragraph"],
-      icon: <Text size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor
           .chain()
@@ -101,21 +99,21 @@ const getSuggestionItems = ({ query }: { query: string }) => {
           .toggleNode("paragraph", "paragraph")
           .run();
       },
+      description: "Just start typing with plain text.",
+      icon: <Text size={18} />,
+      searchTerms: ["p", "paragraph"],
+      title: "Text",
     },
     {
-      title: "To-do List",
-      description: "Track tasks with a to-do list.",
-      searchTerms: ["todo", "task", "list", "check", "checkbox"],
-      icon: <CheckSquare size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).toggleTaskList().run();
       },
+      description: "Track tasks with a to-do list.",
+      icon: <CheckSquare size={18} />,
+      searchTerms: ["todo", "task", "list", "check", "checkbox"],
+      title: "To-do List",
     },
     {
-      title: "Heading 1",
-      description: "Big section heading.",
-      searchTerms: ["title", "big", "large"],
-      icon: <Heading1 size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor
           .chain()
@@ -124,12 +122,12 @@ const getSuggestionItems = ({ query }: { query: string }) => {
           .setNode("heading", { level: 1 })
           .run();
       },
+      description: "Big section heading.",
+      icon: <Heading1 size={18} />,
+      searchTerms: ["title", "big", "large"],
+      title: "Heading 1",
     },
     {
-      title: "Heading 2",
-      description: "Medium section heading.",
-      searchTerms: ["subtitle", "medium"],
-      icon: <Heading2 size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor
           .chain()
@@ -138,12 +136,12 @@ const getSuggestionItems = ({ query }: { query: string }) => {
           .setNode("heading", { level: 2 })
           .run();
       },
+      description: "Medium section heading.",
+      icon: <Heading2 size={18} />,
+      searchTerms: ["subtitle", "medium"],
+      title: "Heading 2",
     },
     {
-      title: "Heading 3",
-      description: "Small section heading.",
-      searchTerms: ["subtitle", "small"],
-      icon: <Heading3 size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor
           .chain()
@@ -152,30 +150,30 @@ const getSuggestionItems = ({ query }: { query: string }) => {
           .setNode("heading", { level: 3 })
           .run();
       },
+      description: "Small section heading.",
+      icon: <Heading3 size={18} />,
+      searchTerms: ["subtitle", "small"],
+      title: "Heading 3",
     },
     {
-      title: "Bullet List",
-      description: "Create a simple bullet list.",
-      searchTerms: ["unordered", "point"],
-      icon: <List size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).toggleBulletList().run();
       },
+      description: "Create a simple bullet list.",
+      icon: <List size={18} />,
+      searchTerms: ["unordered", "point"],
+      title: "Bullet List",
     },
     {
-      title: "Numbered List",
-      description: "Create a list with numbering.",
-      searchTerms: ["ordered"],
-      icon: <ListOrdered size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).toggleOrderedList().run();
       },
+      description: "Create a list with numbering.",
+      icon: <ListOrdered size={18} />,
+      searchTerms: ["ordered"],
+      title: "Numbered List",
     },
     {
-      title: "Quote",
-      description: "Capture a quote.",
-      searchTerms: ["blockquote"],
-      icon: <TextQuote size={18} />,
       command: ({ editor, range }: CommandProps) =>
         editor
           .chain()
@@ -184,20 +182,20 @@ const getSuggestionItems = ({ query }: { query: string }) => {
           .toggleNode("paragraph", "paragraph")
           .toggleBlockquote()
           .run(),
+      description: "Capture a quote.",
+      icon: <TextQuote size={18} />,
+      searchTerms: ["blockquote"],
+      title: "Quote",
     },
     {
-      title: "Code",
-      description: "Capture a code snippet.",
-      searchTerms: ["codeblock"],
-      icon: <Code size={18} />,
       command: ({ editor, range }: CommandProps) =>
         editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
+      description: "Capture a code snippet.",
+      icon: <Code size={18} />,
+      searchTerms: ["codeblock"],
+      title: "Code",
     },
     {
-      title: "Image",
-      description: "Upload an image from your computer.",
-      searchTerms: ["photo", "picture", "media"],
-      icon: <ImageIcon size={18} />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).run();
         // upload image
@@ -212,6 +210,10 @@ const getSuggestionItems = ({ query }: { query: string }) => {
         };
         input.click();
       },
+      description: "Upload an image from your computer.",
+      icon: <ImageIcon size={18} />,
+      searchTerms: ["photo", "picture", "media"],
+      title: "Image",
     },
   ].filter((item) => {
     if (typeof query === "string" && query.length > 0) {
@@ -242,28 +244,23 @@ export const updateScrollView = (container: HTMLElement, item: HTMLElement) => {
 };
 
 const CommandList = ({
-  items,
   command,
   editor,
+  items,
   range,
 }: {
-  items: CommandItemProps[];
   command: any;
   editor: any;
+  items: CommandItemProps[];
   range: any;
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const { complete, isLoading } = useCompletion({
-    id: "novel",
     api: "/api/generate",
-    onResponse: (response) => {
-      if (response.status === 429) {
-        toast.error("You have reached your request limit for the day.");
-        va.track("Rate Limit Reached");
-        return;
-      }
-      editor.chain().focus().deleteRange(range).run();
+    id: "novel",
+    onError: () => {
+      toast.error("Something went wrong.");
     },
     onFinish: (_prompt, completion) => {
       // highlight the generated text
@@ -272,8 +269,13 @@ const CommandList = ({
         to: range.from + completion.length,
       });
     },
-    onError: () => {
-      toast.error("Something went wrong.");
+    onResponse: (response) => {
+      if (response.status === 429) {
+        toast.error("You have reached your request limit for the day.");
+        va.track("Rate Limit Reached");
+        return;
+      }
+      editor.chain().focus().deleteRange(range).run();
     },
   });
 
@@ -338,9 +340,9 @@ const CommandList = ({
 
   return items.length > 0 ? (
     <div
+      className="z-50 h-auto max-h-[330px] w-72 overflow-y-auto scroll-smooth rounded-md border border-stone-200 bg-white px-1 py-2 shadow-md transition-all dark:border-stone-700 dark:bg-black"
       id="slash-command"
       ref={commandListContainer}
-      className="z-50 h-auto max-h-[330px] w-72 overflow-y-auto scroll-smooth rounded-md border border-stone-200 bg-white px-1 py-2 shadow-md transition-all dark:border-stone-700 dark:bg-black"
     >
       {items.map((item: CommandItemProps, index: number) => {
         return (
@@ -376,30 +378,9 @@ const renderItems = () => {
   let popup: any | null = null;
 
   return {
-    onStart: (props: { editor: Editor; clientRect: DOMRect }) => {
-      component = new ReactRenderer(CommandList, {
-        props,
-        editor: props.editor,
-      });
-
-      // @ts-ignore
-      popup = tippy("body", {
-        getReferenceClientRect: props.clientRect,
-        appendTo: () => document.body,
-        content: component.element,
-        showOnCreate: true,
-        interactive: true,
-        trigger: "manual",
-        placement: "bottom-start",
-      });
-    },
-    onUpdate: (props: { editor: Editor; clientRect: DOMRect }) => {
-      component?.updateProps(props);
-
-      popup &&
-        popup[0].setProps({
-          getReferenceClientRect: props.clientRect,
-        });
+    onExit: () => {
+      popup?.[0].destroy();
+      component?.destroy();
     },
     onKeyDown: (props: { event: KeyboardEvent }) => {
       if (props.event.key === "Escape") {
@@ -411,9 +392,30 @@ const renderItems = () => {
       // @ts-ignore
       return component?.ref?.onKeyDown(props);
     },
-    onExit: () => {
-      popup?.[0].destroy();
-      component?.destroy();
+    onStart: (props: { clientRect: DOMRect; editor: Editor }) => {
+      component = new ReactRenderer(CommandList, {
+        editor: props.editor,
+        props,
+      });
+
+      // @ts-ignore
+      popup = tippy("body", {
+        appendTo: () => document.body,
+        content: component.element,
+        getReferenceClientRect: props.clientRect,
+        interactive: true,
+        placement: "bottom-start",
+        showOnCreate: true,
+        trigger: "manual",
+      });
+    },
+    onUpdate: (props: { clientRect: DOMRect; editor: Editor }) => {
+      component?.updateProps(props);
+
+      popup &&
+        popup[0].setProps({
+          getReferenceClientRect: props.clientRect,
+        });
     },
   };
 };

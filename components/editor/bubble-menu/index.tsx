@@ -1,21 +1,22 @@
 import { BubbleMenu, BubbleMenuProps } from "@tiptap/react";
-import { FC, useState } from "react";
 import {
   BoldIcon,
-  ItalicIcon,
-  UnderlineIcon,
-  StrikethroughIcon,
   CodeIcon,
+  ItalicIcon,
+  StrikethroughIcon,
+  UnderlineIcon,
 } from "lucide-react";
+import { FC, useState } from "react";
 
-import { NodeSelector } from "./node-selector";
 import { cn } from "@/lib/utils";
 
+import { NodeSelector } from "./node-selector";
+
 export interface BubbleMenuItem {
-  name: string;
-  isActive: () => boolean;
   command: () => void;
   icon: typeof BoldIcon;
+  isActive: () => boolean;
+  name: string;
 }
 
 type EditorBubbleMenuProps = Omit<BubbleMenuProps, "children">;
@@ -23,34 +24,34 @@ type EditorBubbleMenuProps = Omit<BubbleMenuProps, "children">;
 export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
   const items: BubbleMenuItem[] = [
     {
-      name: "bold",
-      isActive: () => props.editor.isActive("bold"),
       command: () => props.editor.chain().focus().toggleBold().run(),
       icon: BoldIcon,
+      isActive: () => props.editor.isActive("bold"),
+      name: "bold",
     },
     {
-      name: "italic",
-      isActive: () => props.editor.isActive("italic"),
       command: () => props.editor.chain().focus().toggleItalic().run(),
       icon: ItalicIcon,
+      isActive: () => props.editor.isActive("italic"),
+      name: "italic",
     },
     {
-      name: "underline",
-      isActive: () => props.editor.isActive("underline"),
       command: () => props.editor.chain().focus().toggleUnderline().run(),
       icon: UnderlineIcon,
+      isActive: () => props.editor.isActive("underline"),
+      name: "underline",
     },
     {
-      name: "strike",
-      isActive: () => props.editor.isActive("strike"),
       command: () => props.editor.chain().focus().toggleStrike().run(),
       icon: StrikethroughIcon,
+      isActive: () => props.editor.isActive("strike"),
+      name: "strike",
     },
     {
-      name: "code",
-      isActive: () => props.editor.isActive("code"),
       command: () => props.editor.chain().focus().toggleCode().run(),
       icon: CodeIcon,
+      isActive: () => props.editor.isActive("code"),
+      name: "code",
     },
   ];
 
@@ -88,9 +89,9 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
 
       {items.map((item, index) => (
         <button
+          className="p-2 text-stone-600 hover:bg-stone-100 active:bg-stone-200"
           key={index}
           onClick={item.command}
-          className="p-2 text-stone-600 hover:bg-stone-100 active:bg-stone-200"
         >
           <item.icon
             className={cn("h-4 w-4", {

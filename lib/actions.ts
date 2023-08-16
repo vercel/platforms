@@ -1,9 +1,10 @@
 "use server";
 
-import prisma from "@/lib/prisma";
 import { Post, Site } from "@prisma/client";
+import { put } from "@vercel/blob";
+import { customAlphabet } from "nanoid";
 import { revalidateTag } from "next/cache";
-import { withPostAuth, withSiteAuth } from "./auth";
+
 import { getSession } from "@/lib/auth";
 import {
   addDomainToVercel,
@@ -12,9 +13,10 @@ import {
   // removeDomainFromVercelTeam,
   validDomainRegex,
 } from "@/lib/domains";
-import { put } from "@vercel/blob";
-import { customAlphabet } from "nanoid";
+import prisma from "@/lib/prisma";
 import { getBlurDataURL } from "@/lib/utils";
+
+import { withPostAuth, withSiteAuth } from "./auth";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -35,8 +37,8 @@ export const createSite = async (formData: FormData) => {
   try {
     const response = await prisma.site.create({
       data: {
-        name,
         description,
+        name,
         subdomain,
         user: {
           connect: {
@@ -78,11 +80,11 @@ export const updateSite = withSiteAuth(
           // if the custom domain is valid, we need to add it to Vercel
         } else if (validDomainRegex.test(value)) {
           response = await prisma.site.update({
-            where: {
-              id: site.id,
-            },
             data: {
               customDomain: value,
+            },
+            where: {
+              id: site.id,
             },
           });
           await addDomainToVercel(value);
@@ -90,11 +92,11 @@ export const updateSite = withSiteAuth(
           // empty value means the user wants to remove the custom domain
         } else if (value === "") {
           response = await prisma.site.update({
-            where: {
-              id: site.id,
-            },
             data: {
               customDomain: null,
+            },
+            where: {
+              id: site.id,
             },
           });
         }
@@ -154,21 +156,21 @@ export const updateSite = withSiteAuth(
         const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
         response = await prisma.site.update({
-          where: {
-            id: site.id,
-          },
           data: {
             [key]: url,
             ...(blurhash && { imageBlurhash: blurhash }),
           },
-        });
-      } else {
-        response = await prisma.site.update({
           where: {
             id: site.id,
           },
+        });
+      } else {
+        response = await prisma.site.update({
           data: {
             [key]: value,
+          },
+          where: {
+            id: site.id,
           },
         });
       }
@@ -220,11 +222,11 @@ export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
 
 export const getSiteFromPostId = async (postId: string) => {
   const post = await prisma.post.findUnique({
-    where: {
-      id: postId,
-    },
     select: {
       siteId: true,
+    },
+    where: {
+      id: postId,
     },
   });
   return post?.siteId;
@@ -261,11 +263,11 @@ export const updatePost = async (data: Post) => {
     };
   }
   const post = await prisma.post.findUnique({
-    where: {
-      id: data.id,
-    },
     include: {
       site: true,
+    },
+    where: {
+      id: data.id,
     },
   });
   if (!post || post.userId !== session.user.id) {
@@ -275,13 +277,13 @@ export const updatePost = async (data: Post) => {
   }
   try {
     const response = await prisma.post.update({
+      data: {
+        content: data.content,
+        description: data.description,
+        title: data.title,
+      },
       where: {
         id: data.id,
-      },
-      data: {
-        title: data.title,
-        description: data.description,
-        content: data.content,
       },
     });
 
@@ -328,21 +330,21 @@ export const updatePostMetadata = withPostAuth(
         const blurhash = await getBlurDataURL(url);
 
         response = await prisma.post.update({
-          where: {
-            id: post.id,
-          },
           data: {
             image: url,
             imageBlurhash: blurhash,
           },
-        });
-      } else {
-        response = await prisma.post.update({
           where: {
             id: post.id,
           },
+        });
+      } else {
+        response = await prisma.post.update({
           data: {
             [key]: key === "published" ? value === "true" : value,
+          },
+          where: {
+            id: post.id,
           },
         });
       }
@@ -377,11 +379,11 @@ export const updatePostMetadata = withPostAuth(
 export const deletePost = withPostAuth(async (_: FormData, post: Post) => {
   try {
     const response = await prisma.post.delete({
-      where: {
-        id: post.id,
-      },
       select: {
         siteId: true,
+      },
+      where: {
+        id: post.id,
       },
     });
     return response;
@@ -407,11 +409,11 @@ export const editUser = async (
 
   try {
     const response = await prisma.user.update({
-      where: {
-        id: session.user.id,
-      },
       data: {
         [key]: value,
+      },
+      where: {
+        id: session.user.id,
       },
     });
     return response;

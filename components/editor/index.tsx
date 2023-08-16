@@ -1,20 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import { TiptapEditorProps } from "./props";
-import { TiptapExtensions } from "./extensions";
-import { useDebounce } from "use-debounce";
-import { useCompletion } from "ai/react";
-import { toast } from "sonner";
-import va from "@vercel/analytics";
-import TextareaAutosize from "react-textarea-autosize";
-import { EditorBubbleMenu } from "./bubble-menu";
 import { Post } from "@prisma/client";
+import { EditorContent, useEditor } from "@tiptap/react";
+import va from "@vercel/analytics";
+import { useCompletion } from "ai/react";
+import { ExternalLink } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
+
 import { updatePost, updatePostMetadata } from "@/lib/actions";
 import { cn } from "@/lib/utils";
+
 import LoadingDots from "../icons/loading-dots";
-import { ExternalLink } from "lucide-react";
+import { EditorBubbleMenu } from "./bubble-menu";
+import { TiptapExtensions } from "./extensions";
+import { TiptapEditorProps } from "./props";
 
 type PostWithSite = Post & { site: { subdomain: string | null } | null };
 
@@ -61,8 +63,8 @@ export default function Editor({ post }: { post: PostWithSite }) {
   }, [data, startTransitionSaving]);
 
   const editor = useEditor({
-    extensions: TiptapExtensions,
     editorProps: TiptapEditorProps,
+    extensions: TiptapExtensions,
     onUpdate: (e) => {
       const selection = e.editor.state.selection;
       const lastTwo = e.editor.state.doc.textBetween(
@@ -93,19 +95,19 @@ export default function Editor({ post }: { post: PostWithSite }) {
   });
 
   const { complete, completion, isLoading, stop } = useCompletion({
-    id: "novel",
     api: "/api/generate",
-    onFinish: (_prompt, completion) => {
-      editor?.commands.setTextSelection({
-        from: editor.state.selection.from - completion.length,
-        to: editor.state.selection.from,
-      });
-    },
+    id: "novel",
     onError: (err) => {
       toast.error(err.message);
       if (err.message === "You have reached your request limit for the day.") {
         va.track("Rate Limit Reached");
       }
+    },
+    onFinish: (_prompt, completion) => {
+      editor?.commands.setTextSelection({
+        from: editor.state.selection.from - completion.length,
+        to: editor.state.selection.from,
+      });
     },
   });
 
@@ -179,10 +181,10 @@ export default function Editor({ post }: { post: PostWithSite }) {
       <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
         {data.published && (
           <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
             className="flex items-center space-x-1 text-sm text-stone-400 hover:text-stone-500"
+            href={url}
+            rel="noopener noreferrer"
+            target="_blank"
           >
             <ExternalLink className="h-4 w-4" />
           </a>
@@ -191,6 +193,13 @@ export default function Editor({ post }: { post: PostWithSite }) {
           {isPendingSaving ? "Saving..." : "Saved"}
         </div>
         <button
+          className={cn(
+            "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
+            isPendingPublishing
+              ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"
+              : "border border-black bg-black text-white hover:bg-white hover:text-black active:bg-stone-100 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-white dark:active:bg-stone-800",
+          )}
+          disabled={isPendingPublishing}
           onClick={() => {
             const formData = new FormData();
             console.log(data.published, typeof data.published);
@@ -208,13 +217,6 @@ export default function Editor({ post }: { post: PostWithSite }) {
               );
             });
           }}
-          className={cn(
-            "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
-            isPendingPublishing
-              ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"
-              : "border border-black bg-black text-white hover:bg-white hover:text-black active:bg-stone-100 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-white dark:active:bg-stone-800",
-          )}
-          disabled={isPendingPublishing}
         >
           {isPendingPublishing ? (
             <LoadingDots />
@@ -225,18 +227,18 @@ export default function Editor({ post }: { post: PostWithSite }) {
       </div>
       <div className="mb-5 flex flex-col space-y-3 border-b border-stone-200 pb-5 dark:border-stone-700">
         <input
-          type="text"
-          placeholder="Title"
-          defaultValue={post?.title || ""}
           autoFocus
+          className="dark:placeholder:text-text-600 border-none px-0 font-cal text-3xl placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
+          defaultValue={post?.title || ""}
           onChange={(e) => setData({ ...data, title: e.target.value })}
-          className="dark:placeholder-text-600 border-none px-0 font-cal text-3xl placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
+          placeholder="Title"
+          type="text"
         />
         <TextareaAutosize
-          placeholder="Description"
+          className="dark:placeholder:text-text-600 w-full resize-none border-none px-0 placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
           defaultValue={post?.description || ""}
           onChange={(e) => setData({ ...data, description: e.target.value })}
-          className="dark:placeholder-text-600 w-full resize-none border-none px-0 placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
+          placeholder="Description"
         />
       </div>
       {editor && <EditorBubbleMenu editor={editor} />}

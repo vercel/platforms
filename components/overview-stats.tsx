@@ -1,8 +1,9 @@
 "use client";
 
-import { random } from "@/lib/utils";
-import { Card, Metric, Text, AreaChart, BadgeDelta, Flex } from "@tremor/react";
+import { AreaChart, BadgeDelta, Card, Flex, Metric, Text } from "@tremor/react";
 import { useMemo } from "react";
+
+import { random } from "@/lib/utils";
 
 export default function OverviewStats() {
   const data = useMemo(() => {
@@ -24,32 +25,32 @@ export default function OverviewStats() {
       <Card className="dark:!bg-stone-900">
         <Text>Total Visitors</Text>
         <Flex
+          alignItems="baseline"
           className="space-x-3 truncate"
           justifyContent="start"
-          alignItems="baseline"
         >
           <Metric className="font-cal">170,418</Metric>
           <BadgeDelta
-            deltaType="moderateIncrease"
             className="dark:bg-green-900 dark:bg-opacity-50 dark:text-green-400"
+            deltaType="moderateIncrease"
           >
             34.3%
           </BadgeDelta>
         </Flex>
         <AreaChart
+          categories={["Total Visitors"]}
           className="mt-6 h-28"
+          colors={["blue"]}
           data={data}
           index="Month"
+          showGridLines={false}
+          showLegend={false}
+          showXAxis={true}
+          showYAxis={false}
+          startEndOnly={true}
           valueFormatter={(number: number) =>
             `${Intl.NumberFormat("us").format(number).toString()}`
           }
-          categories={["Total Visitors"]}
-          colors={["blue"]}
-          showXAxis={true}
-          showGridLines={false}
-          startEndOnly={true}
-          showYAxis={false}
-          showLegend={false}
         />
       </Card>
     </div>

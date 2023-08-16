@@ -1,6 +1,6 @@
-import prisma from "@/lib/prisma";
 import Form from "@/components/form";
 import { updateSite } from "@/lib/actions";
+import prisma from "@/lib/prisma";
 
 export default async function SiteSettingsDomains({
   params,
@@ -16,31 +16,31 @@ export default async function SiteSettingsDomains({
   return (
     <div className="flex flex-col space-y-6">
       <Form
-        title="Subdomain"
         description="The subdomain for your site."
+        handleSubmit={updateSite}
         helpText="Please use 32 characters maximum."
         inputAttrs={{
-          name: "subdomain",
-          type: "text",
           defaultValue: data?.subdomain!,
-          placeholder: "subdomain",
           maxLength: 32,
+          name: "subdomain",
+          placeholder: "subdomain",
+          type: "text",
         }}
-        handleSubmit={updateSite}
+        title="Subdomain"
       />
       <Form
-        title="Custom Domain"
         description="The custom domain for your site."
+        handleSubmit={updateSite}
         helpText="Please enter a valid domain."
         inputAttrs={{
-          name: "customDomain",
-          type: "text",
           defaultValue: data?.customDomain!,
-          placeholder: "yourdomain.com",
           maxLength: 64,
+          name: "customDomain",
           pattern: "^[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}$",
+          placeholder: "yourdomain.com",
+          type: "text",
         }}
-        handleSubmit={updateSite}
+        title="Custom Domain"
       />
     </div>
   );

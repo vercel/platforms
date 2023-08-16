@@ -1,10 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import BlurImage from "@/components/blur-image";
-import { placeholderBlurhash, toDateString } from "@/lib/utils";
+
 import BlogCard from "@/components/blog-card";
+import BlurImage from "@/components/blur-image";
 import { getPostsForSite, getSiteData } from "@/lib/fetchers";
-import Image from "next/image";
+import { placeholderBlurhash, toDateString } from "@/lib/utils";
 
 export default async function SiteHomePage({
   params,
@@ -31,10 +32,10 @@ export default async function SiteHomePage({
                   alt={posts[0].title ?? ""}
                   blurDataURL={posts[0].imageBlurhash ?? placeholderBlurhash}
                   className="h-full w-full object-cover group-hover:scale-105 group-hover:duration-300"
-                  width={1300}
                   height={630}
                   placeholder="blur"
                   src={posts[0].image ?? "/placeholder.png"}
+                  width={1300}
                 />
               </div>
               <div className="mx-auto mt-10 w-5/6 lg:w-full">
@@ -49,10 +50,10 @@ export default async function SiteHomePage({
                     {data.user?.image ? (
                       <BlurImage
                         alt={data.user?.name ?? "User Avatar"}
-                        width={100}
-                        height={100}
                         className="h-full w-full object-cover"
+                        height={100}
                         src={data.user?.image}
+                        width={100}
                       />
                     ) : (
                       <div className="absolute flex h-full w-full select-none items-center justify-center bg-stone-100 text-4xl text-stone-500">
@@ -75,17 +76,17 @@ export default async function SiteHomePage({
           <div className="flex flex-col items-center justify-center py-20">
             <Image
               alt="missing post"
+              className="dark:hidden"
+              height={400}
               src="https://illustrations.popsy.co/gray/success.svg"
               width={400}
-              height={400}
-              className="dark:hidden"
             />
             <Image
               alt="missing post"
+              className="hidden dark:block"
+              height={400}
               src="https://illustrations.popsy.co/white/success.svg"
               width={400}
-              height={400}
-              className="hidden dark:block"
             />
             <p className="font-title text-2xl text-stone-600 dark:text-stone-400">
               No posts yet.
@@ -101,7 +102,7 @@ export default async function SiteHomePage({
           </h2>
           <div className="grid w-full grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
             {posts.slice(1).map((metadata, index) => (
-              <BlogCard key={index} data={metadata} />
+              <BlogCard data={metadata} key={index} />
             ))}
           </div>
         </div>

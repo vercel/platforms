@@ -1,23 +1,25 @@
 "use client";
 
-import { toast } from "sonner";
-import { createSite } from "@/lib/actions";
-import { useRouter } from "next/navigation";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
-import { cn } from "@/lib/utils";
-import LoadingDots from "@/components/icons/loading-dots";
-import { useModal } from "./provider";
 import va from "@vercel/analytics";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { experimental_useFormStatus as useFormStatus } from "react-dom";
+import { toast } from "sonner";
+
+import LoadingDots from "@/components/icons/loading-dots";
+import { createSite } from "@/lib/actions";
+import { cn } from "@/lib/utils";
+
+import { useModal } from "./provider";
 
 export default function CreateSiteModal() {
   const router = useRouter();
   const modal = useModal();
 
   const [data, setData] = useState({
+    description: "",
     name: "",
     subdomain: "",
-    description: "",
   });
 
   useEffect(() => {
@@ -53,43 +55,43 @@ export default function CreateSiteModal() {
 
         <div className="flex flex-col space-y-2">
           <label
-            htmlFor="name"
             className="text-sm font-medium text-stone-500 dark:text-stone-400"
+            htmlFor="name"
           >
             Site Name
           </label>
           <input
-            name="name"
-            type="text"
-            placeholder="My Awesome Site"
             autoFocus
-            value={data.name}
-            onChange={(e) => setData({ ...data, name: e.target.value })}
+            className="w-full rounded-md border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black focus:outline-none focus:ring-black dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder:text-stone-700 dark:focus:ring-white"
             maxLength={32}
+            name="name"
+            onChange={(e) => setData({ ...data, name: e.target.value })}
+            placeholder="My Awesome Site"
             required
-            className="w-full rounded-md border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black focus:outline-none focus:ring-black dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder-stone-700 dark:focus:ring-white"
+            type="text"
+            value={data.name}
           />
         </div>
 
         <div className="flex flex-col space-y-2">
           <label
-            htmlFor="subdomain"
             className="text-sm font-medium text-stone-500"
+            htmlFor="subdomain"
           >
             Subdomain
           </label>
           <div className="flex w-full max-w-md">
             <input
-              name="subdomain"
-              type="text"
-              placeholder="subdomain"
-              value={data.subdomain}
-              onChange={(e) => setData({ ...data, subdomain: e.target.value })}
               autoCapitalize="off"
-              pattern="[a-zA-Z0-9\-]+" // only allow lowercase letters, numbers, and dashes
+              className="w-full rounded-l-lg border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black focus:outline-none focus:ring-black dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder:text-stone-700 dark:focus:ring-white"
               maxLength={32}
+              name="subdomain"
+              onChange={(e) => setData({ ...data, subdomain: e.target.value })}
+              pattern="[a-zA-Z0-9\-]+" // only allow lowercase letters, numbers, and dashes
+              placeholder="subdomain"
               required
-              className="w-full rounded-l-lg border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black focus:outline-none focus:ring-black dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder-stone-700 dark:focus:ring-white"
+              type="text"
+              value={data.subdomain}
             />
             <div className="flex items-center rounded-r-lg border border-l-0 border-stone-200 bg-stone-100 px-3 text-sm dark:border-stone-600 dark:bg-stone-800 dark:text-stone-400">
               .{process.env.NEXT_PUBLIC_ROOT_DOMAIN}
@@ -99,19 +101,19 @@ export default function CreateSiteModal() {
 
         <div className="flex flex-col space-y-2">
           <label
-            htmlFor="description"
             className="text-sm font-medium text-stone-500"
+            htmlFor="description"
           >
             Description
           </label>
           <textarea
-            name="description"
-            placeholder="Description about why my site is so awesome"
-            value={data.description}
-            onChange={(e) => setData({ ...data, description: e.target.value })}
+            className="w-full rounded-md border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black  focus:outline-none focus:ring-black dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder:text-stone-700 dark:focus:ring-white"
             maxLength={140}
+            name="description"
+            onChange={(e) => setData({ ...data, description: e.target.value })}
+            placeholder="Description about why my site is so awesome"
             rows={3}
-            className="w-full rounded-md border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600 placeholder:text-stone-400 focus:border-black  focus:outline-none focus:ring-black dark:border-stone-600 dark:bg-black dark:text-white dark:placeholder-stone-700 dark:focus:ring-white"
+            value={data.description}
           />
         </div>
       </div>

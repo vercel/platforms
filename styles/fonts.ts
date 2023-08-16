@@ -1,34 +1,34 @@
-import localFont from "next/font/local";
 import { Inter, Lora, Work_Sans } from "next/font/google";
+import localFont from "next/font/local";
 
 export const inter = Inter({
-  variable: "--font-inter",
   subsets: ["latin"],
+  variable: "--font-inter",
 });
 export const cal = localFont({
+  display: "swap",
   src: "./CalSans-SemiBold.otf",
   variable: "--font-cal",
   weight: "600",
-  display: "swap",
 });
 
 export const calTitle = localFont({
+  display: "swap",
   src: "./CalSans-SemiBold.otf",
   variable: "--font-title",
   weight: "600",
-  display: "swap",
 });
 export const lora = Lora({
-  variable: "--font-title",
-  subsets: ["latin"],
-  weight: "600",
   display: "swap",
+  subsets: ["latin"],
+  variable: "--font-title",
+  weight: "600",
 });
 export const work = Work_Sans({
-  variable: "--font-title",
-  subsets: ["latin"],
-  weight: "600",
   display: "swap",
+  subsets: ["latin"],
+  variable: "--font-title",
+  weight: "600",
 });
 
 export const fontMapper = {

@@ -1,10 +1,11 @@
+import { NextResponse } from "next/server";
+
 import {
   getConfigResponse,
   getDomainResponse,
   verifyDomain,
 } from "@/lib/domains";
 import { DomainVerificationStatusProps } from "@/lib/types";
-import { NextResponse } from "next/server";
 
 export async function GET(
   _req: Request,
@@ -42,7 +43,7 @@ export async function GET(
   }
 
   return NextResponse.json({
-    status,
     domainJson,
+    status,
   });
 }

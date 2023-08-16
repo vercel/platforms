@@ -1,3 +1,32 @@
 {
-  "extends": "next/core-web-vitals"
+  "parser": "@typescript-eslint/parser",
+  "extends": ["plugin:prettier/recommended", "plugin:tailwindcss/recommended", "next/core-web-vitals"],
+  "root": true,
+
+  "plugins": [
+    "prettier",
+    "react",
+    "simple-import-sort",
+    "sort-destructure-keys",
+    "sort-keys-fix",
+    "tailwindcss",
+    "typescript-sort-keys"
+  ],
+
+  "rules": {
+    "prettier/prettier": "error",
+    "react/jsx-sort-props": "error",
+    "tailwindcss/no-custom-classname": [
+      1,
+      {
+        "whitelist": ["dark", "fa*"]
+      }
+    ],
+    "simple-import-sort/exports": "error",
+    "simple-import-sort/imports": "error",
+    "sort-destructure-keys/sort-destructure-keys": "error",
+    "sort-keys-fix/sort-keys-fix": "error",
+    "typescript-sort-keys/interface": "error",
+    "typescript-sort-keys/string-enum": "error"
+  }
 }

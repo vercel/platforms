@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { truncate } from "@/lib/utils";
-import { ImageResponse } from "next/server";
 import { sql } from "@vercel/postgres";
+import { ImageResponse } from "next/server";
+
+import { truncate } from "@/lib/utils";
 
 export const runtime = "edge";
 
@@ -53,30 +54,30 @@ export default async function PostOG({
           </p>
           <div tw="flex items-center justify-center">
             <img
-              tw="w-12 h-12 rounded-full mr-4"
-              src={data.authorImage}
               alt={data.authorName}
+              src={data.authorImage}
+              tw="w-12 h-12 rounded-full mr-4"
             />
             <p tw="text-xl font-medium text-gray-900">by {data.authorName}</p>
           </div>
           <img
-            tw="mt-4 w-5/6 rounded-2xl border border-gray-200 shadow-md"
-            src={data.image}
             alt={data.title}
+            src={data.image}
+            tw="mt-4 w-5/6 rounded-2xl border border-gray-200 shadow-md"
           />
         </div>
       </div>
     ),
     {
-      width: 1200,
-      height: 600,
+      emoji: "blobmoji",
       fonts: [
         {
-          name: "Clash",
           data: clashData,
+          name: "Clash",
         },
       ],
-      emoji: "blobmoji",
+      height: 600,
+      width: 1200,
     },
   );
 }

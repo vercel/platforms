@@ -1,13 +1,14 @@
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 import { ReactNode } from "react";
-import prisma from "@/lib/prisma";
+
 import CTA from "@/components/cta";
 import ReportAbuse from "@/components/report-abuse";
-import { notFound, redirect } from "next/navigation";
 import { getSiteData } from "@/lib/fetchers";
+import prisma from "@/lib/prisma";
 import { fontMapper } from "@/styles/fonts";
-import { Metadata } from "next";
 
 export async function generateMetadata({
   params,
@@ -19,34 +20,34 @@ export async function generateMetadata({
     return null;
   }
   const {
-    name: title,
     description,
     image,
     logo,
+    name: title,
   } = data as {
-    name: string;
     description: string;
     image: string;
     logo: string;
+    name: string;
   };
 
   return {
-    title,
     description,
-    openGraph: {
-      title,
-      description,
-      images: [image],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [image],
-      creator: "@vercel",
-    },
     icons: [logo],
     metadataBase: new URL(`https://${params.domain}`),
+    openGraph: {
+      description,
+      images: [image],
+      title,
+    },
+    title,
+    twitter: {
+      card: "summary_large_image",
+      creator: "@vercel",
+      description,
+      images: [image],
+      title,
+    },
   };
 }
 
@@ -58,13 +59,13 @@ export async function generateStaticParams() {
       },
     }),
     prisma.site.findMany({
+      select: {
+        customDomain: true,
+      },
       where: {
         NOT: {
           customDomain: null,
         },
-      },
-      select: {
-        customDomain: true,
       },
     }),
   ]);
@@ -82,11 +83,11 @@ export async function generateStaticParams() {
 }
 
 export default async function SiteLayout({
-  params,
   children,
+  params,
 }: {
-  params: { domain: string };
   children: ReactNode;
+  params: { domain: string };
 }) {
   const { domain } = params;
   const data = await getSiteData(domain);
@@ -106,9 +107,9 @@ export default async function SiteLayout({
 
   return (
     <div className={fontMapper[data.font]}>
-      <div className="ease left-0 right-0 top-0 z-30 flex h-16 bg-white transition-all duration-150 dark:bg-black dark:text-white">
+      <div className="ease inset-x-0 top-0 z-30 flex h-16 bg-white transition-all duration-150 dark:bg-black dark:text-white">
         <div className="mx-auto flex h-full max-w-screen-xl items-center justify-center space-x-5 px-10 sm:px-20">
-          <Link href="/" className="flex items-center justify-center">
+          <Link className="flex items-center justify-center" href="/">
             <div className="inline-block h-8 w-8 overflow-hidden rounded-full align-middle">
               <Image
                 alt={data.name || ""}

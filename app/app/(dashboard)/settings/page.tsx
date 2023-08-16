@@ -1,8 +1,9 @@
-import { ReactNode } from "react";
-import Form from "@/components/form";
-import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { ReactNode } from "react";
+
+import Form from "@/components/form";
 import { editUser } from "@/lib/actions";
+import { getSession } from "@/lib/auth";
 
 export default async function SettingsPage() {
   const session = await getSession();
@@ -16,29 +17,29 @@ export default async function SettingsPage() {
           Settings
         </h1>
         <Form
-          title="Name"
           description="Your name on this app."
+          handleSubmit={editUser}
           helpText="Please use 32 characters maximum."
           inputAttrs={{
-            name: "name",
-            type: "text",
             defaultValue: session.user.name!,
-            placeholder: "Brendon Urie",
             maxLength: 32,
+            name: "name",
+            placeholder: "Brendon Urie",
+            type: "text",
           }}
-          handleSubmit={editUser}
+          title="Name"
         />
         <Form
-          title="Email"
           description="Your email on this app."
+          handleSubmit={editUser}
           helpText="Please enter a valid email."
           inputAttrs={{
-            name: "email",
-            type: "email",
             defaultValue: session.user.email!,
+            name: "email",
             placeholder: "panic@thedis.co",
+            type: "email",
           }}
-          handleSubmit={editUser}
+          title="Email"
         />
       </div>
     </div>

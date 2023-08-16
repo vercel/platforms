@@ -1,44 +1,28 @@
-import StarterKit from "@tiptap/starter-kit";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import TiptapLink from "@tiptap/extension-link";
-import TiptapImage from "@tiptap/extension-image";
-import Placeholder from "@tiptap/extension-placeholder";
-import TiptapUnderline from "@tiptap/extension-underline";
-import TextStyle from "@tiptap/extension-text-style";
+import { InputRule } from "@tiptap/core";
 import { Color } from "@tiptap/extension-color";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import TiptapImage from "@tiptap/extension-image";
+import TiptapLink from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
+import TextStyle from "@tiptap/extension-text-style";
+import TiptapUnderline from "@tiptap/extension-underline";
+import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "tiptap-markdown";
 
 import SlashCommand from "./slash-command";
-import { InputRule } from "@tiptap/core";
 
 export const TiptapExtensions = [
   StarterKit.configure({
-    bulletList: {
-      HTMLAttributes: {
-        class: "list-disc list-outside leading-3 -mt-2",
-      },
-    },
-    orderedList: {
-      HTMLAttributes: {
-        class: "list-decimal list-outside leading-3 -mt-2",
-      },
-    },
-    listItem: {
-      HTMLAttributes: {
-        class: "leading-normal -mb-2",
-      },
-    },
     blockquote: {
       HTMLAttributes: {
         class: "border-l-4 border-stone-700",
       },
     },
-    codeBlock: {
+    bulletList: {
       HTMLAttributes: {
-        class:
-          "rounded-sm bg-stone-100 p-5 font-mono font-medium text-stone-800",
+        class: "list-disc list-outside leading-3 -mt-2",
       },
     },
     code: {
@@ -48,12 +32,28 @@ export const TiptapExtensions = [
         spellcheck: "false",
       },
     },
-    horizontalRule: false,
+    codeBlock: {
+      HTMLAttributes: {
+        class:
+          "rounded-sm bg-stone-100 p-5 font-mono font-medium text-stone-800",
+      },
+    },
     dropcursor: {
       color: "#DBEAFE",
       width: 4,
     },
     gapcursor: false,
+    horizontalRule: false,
+    listItem: {
+      HTMLAttributes: {
+        class: "leading-normal -mb-2",
+      },
+    },
+    orderedList: {
+      HTMLAttributes: {
+        class: "list-decimal list-outside leading-3 -mt-2",
+      },
+    },
   }),
   // patch to fix horizontal rule bug: https://github.com/ueberdosis/tiptap/pull/3859#issuecomment-1536799740
   HorizontalRule.extend({
@@ -61,7 +61,7 @@ export const TiptapExtensions = [
       return [
         new InputRule({
           find: /^(?:---|—-|___\s|\*\*\*\s)$/,
-          handler: ({ state, range }) => {
+          handler: ({ range, state }) => {
             const attributes = {};
 
             const { tr } = state;
@@ -88,19 +88,19 @@ export const TiptapExtensions = [
     },
   }),
   TiptapImage.configure({
-    allowBase64: true,
     HTMLAttributes: {
       class: "rounded-lg border border-stone-200",
     },
+    allowBase64: true,
   }),
   Placeholder.configure({
+    includeChildren: true,
     placeholder: ({ node }) => {
       if (node.type.name === "heading") {
         return `Heading ${node.attrs.level}`;
       }
       return "Press '/' for commands, or '++' for AI autocomplete...";
     },
-    includeChildren: true,
   }),
   SlashCommand,
   TiptapUnderline,

@@ -1,41 +1,41 @@
 "use client";
 
 import {
-  Card,
-  Text,
-  Title,
+  AreaChart,
   BarList,
+  Bold,
+  Card,
   Flex,
   Grid,
-  Bold,
-  AreaChart,
+  Text,
+  Title,
 } from "@tremor/react";
 import Image from "next/image";
 
 const chartdata = [
   {
-    date: "Jan 23",
     Visitors: 2890,
+    date: "Jan 23",
   },
   {
-    date: "Feb 23",
     Visitors: 2756,
+    date: "Feb 23",
   },
   {
-    date: "Mar 23",
     Visitors: 3322,
+    date: "Mar 23",
   },
   {
-    date: "Apr 23",
     Visitors: 3470,
+    date: "Apr 23",
   },
   {
-    date: "May 23",
     Visitors: 3475,
+    date: "May 23",
   },
   {
-    date: "Jun 23",
     Visitors: 3129,
+    date: "Jun 23",
   },
 ];
 
@@ -59,28 +59,28 @@ const referrers = [
 ];
 
 const countries = [
-  { name: "United States of America", value: 789, code: "US" },
-  { name: "India", value: 676, code: "IN" },
-  { name: "Germany", value: 564, code: "DE" },
-  { name: "United Kingdom", value: 234, code: "GB" },
-  { name: "Spain", value: 191, code: "ES" },
+  { code: "US", name: "United States of America", value: 789 },
+  { code: "IN", name: "India", value: 676 },
+  { code: "DE", name: "Germany", value: 564 },
+  { code: "GB", name: "United Kingdom", value: 234 },
+  { code: "ES", name: "Spain", value: 191 },
 ];
 
 const categories = [
   {
-    title: "Top Pages",
-    subtitle: "Page",
     data: pages,
+    subtitle: "Page",
+    title: "Top Pages",
   },
   {
-    title: "Top Referrers",
-    subtitle: "Source",
     data: referrers,
+    subtitle: "Source",
+    title: "Top Referrers",
   },
   {
-    title: "Countries",
-    subtitle: "Country",
     data: countries,
+    subtitle: "Country",
+    title: "Countries",
   },
 ];
 
@@ -90,19 +90,19 @@ export default function AnalyticsMockup() {
       <Card>
         <Title>Visitors</Title>
         <AreaChart
+          categories={["Visitors"]}
           className="mt-4 h-72"
+          colors={["indigo"]}
           data={chartdata}
           index="date"
-          categories={["Visitors"]}
-          colors={["indigo"]}
           valueFormatter={(number: number) =>
             Intl.NumberFormat("us").format(number).toString()
           }
         />
       </Card>
-      <Grid numItemsSm={2} numItemsLg={3} className="gap-6">
-        {categories.map(({ title, subtitle, data }) => (
-          <Card key={title} className="max-w-lg">
+      <Grid className="gap-6" numItemsLg={3} numItemsSm={2}>
+        {categories.map(({ data, subtitle, title }) => (
+          <Card className="max-w-lg" key={title}>
             <Title>{title}</Title>
             <Flex className="mt-4">
               <Text>
@@ -114,36 +114,36 @@ export default function AnalyticsMockup() {
             </Flex>
             <BarList
               // @ts-ignore
-              data={data.map(({ name, value, code }) => ({
-                name,
-                value,
+              className="mt-2"
+              data={data.map(({ code, name, value }) => ({
                 icon: () => {
                   if (title === "Top Referrers") {
                     return (
                       <Image
-                        src={`https://www.google.com/s2/favicons?sz=64&domain_url=${name}`}
                         alt={name}
                         className="mr-2.5"
-                        width={20}
                         height={20}
+                        src={`https://www.google.com/s2/favicons?sz=64&domain_url=${name}`}
+                        width={20}
                       />
                     );
                   } else if (title === "Countries") {
                     return (
                       <Image
-                        src={`https://flag.vercel.app/m/${code}.svg`}
-                        className="mr-2.5"
                         alt={code}
-                        width={24}
+                        className="mr-2.5"
                         height={16}
+                        src={`https://flag.vercel.app/m/${code}.svg`}
+                        width={24}
                       />
                     );
                   } else {
                     return null;
                   }
                 },
+                name,
+                value,
               }))}
-              className="mt-2"
             />
           </Card>
         ))}

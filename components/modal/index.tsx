@@ -1,5 +1,7 @@
 "use client";
 
+import FocusTrap from "focus-trap-react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Dispatch,
   SetStateAction,
@@ -7,19 +9,19 @@ import {
   useEffect,
   useRef,
 } from "react";
-import FocusTrap from "focus-trap-react";
-import { AnimatePresence, motion } from "framer-motion";
-import Leaflet from "./leaflet";
+
 import useWindowSize from "@/lib/hooks/use-window-size";
+
+import Leaflet from "./leaflet";
 
 export default function Modal({
   children,
-  showModal,
   setShowModal,
+  showModal,
 }: {
   children: React.ReactNode;
-  showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
+  showModal: boolean;
 }) {
   const desktopModalRef = useRef(null);
 
@@ -37,7 +39,7 @@ export default function Modal({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
 
-  const { isMobile, isDesktop } = useWindowSize();
+  const { isDesktop, isMobile } = useWindowSize();
 
   return (
     <AnimatePresence>
@@ -48,27 +50,27 @@ export default function Modal({
             <>
               <FocusTrap focusTrapOptions={{ initialFocus: false }}>
                 <motion.div
-                  ref={desktopModalRef}
-                  key="desktop-modal"
-                  className="fixed inset-0 z-40 hidden min-h-screen items-center justify-center md:flex"
-                  initial={{ scale: 0.95 }}
                   animate={{ scale: 1 }}
+                  className="fixed inset-0 z-40 hidden min-h-screen items-center justify-center md:flex"
                   exit={{ scale: 0.95 }}
+                  initial={{ scale: 0.95 }}
+                  key="desktop-modal"
                   onMouseDown={(e) => {
                     if (desktopModalRef.current === e.target) {
                       setShowModal(false);
                     }
                   }}
+                  ref={desktopModalRef}
                 >
                   {children}
                 </motion.div>
               </FocusTrap>
               <motion.div
-                key="desktop-backdrop"
-                className="fixed inset-0 z-30 bg-gray-100 bg-opacity-10 backdrop-blur"
-                initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                className="fixed inset-0 z-30 bg-gray-100 bg-opacity-10 backdrop-blur"
                 exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="desktop-backdrop"
                 onClick={() => setShowModal(false)}
               />
             </>
