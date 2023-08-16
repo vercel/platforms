@@ -3,10 +3,11 @@ import { sql } from "@vercel/postgres";
 import { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { NextResponse } from "next/server";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { UAParser } from "ua-parser-js";
 
-import { DynamicLinkInfo, getFallbackUrl } from "@/lib/links";
+import { DynamicLinkInfo } from "@/lib/links/types";
+import { getFallbackUrl } from "@/lib/links/utils";
 
 // export async function generateMetadata({
 //   params,
@@ -54,7 +55,7 @@ import { DynamicLinkInfo, getFallbackUrl } from "@/lib/links";
 // if not, its being requested from a browser and the use doesn't have the app
 // so we have to take them to the fallback URL so we need to redirect to the fallback url
 // Finally, its possible that we can't find the link at all at which point we return 404
-export async function GET(request: Request) {
+export async function GET(request: NextRequest, context: NextFetchEvent) {
   const domain = request.headers.get("host");
 
   // going for @vercel/postgres
@@ -79,9 +80,21 @@ export async function GET(request: Request) {
 
   const userAgent = new UAParser(request.headers.get("user-agent") || "");
 
+  if (userAgent.getOS().name === "iOS") {
+    // Show preview page with action button to copy the link
+
+    // TODO; add analytics info for preview page?
+    // context.waitUntil(handleAnalytics('preview'))
+    client.release();
+
+    // TODO; return HTML page with preview link
+    return "";
+  }
+
   const fallbackUrl = getFallbackUrl(dynamicLinkInfo, userAgent);
 
   // TODO; add analytics info for redirect
+  // context.waitUntil(handleAnalytics('redirect'))
   client.release();
   return NextResponse.redirect(fallbackUrl, { status: 301 });
 }

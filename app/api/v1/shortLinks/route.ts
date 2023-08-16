@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { DynamicLinkInfo, generateDynamicLink, UrlSuffix } from "@/lib/links";
+import { generateDynamicLink } from "@/lib/links/controller";
+import { DynamicLinkInfo, UrlSuffix } from "@/lib/links/types";
 
 type LongDynamicLinkInfoRequest = {
   longDynamicLink: string;
