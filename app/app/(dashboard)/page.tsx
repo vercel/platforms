@@ -3,7 +3,7 @@ import Sites from "@/components/sites";
 import OverviewStats from "@/components/overview-stats";
 import Posts from "@/components/posts";
 import Link from "next/link";
-import PlacholderCard from "@/components/placeholder-card";
+import PlaceholderCard from "@/components/placeholder-card";
 import OverviewSitesCTA from "@/components/overview-sites-cta";
 
 export default function Overview() {
@@ -29,7 +29,7 @@ export default function Overview() {
           fallback={
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <PlacholderCard key={i} />
+                <PlaceholderCard key={i} />
               ))}
             </div>
           }
@@ -46,7 +46,7 @@ export default function Overview() {
           fallback={
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <PlacholderCard key={i} />
+                <PlaceholderCard key={i} />
               ))}
             </div>
           }
