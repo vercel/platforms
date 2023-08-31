@@ -12,37 +12,22 @@ const description =
 const image = "https://vercel.pub/thumbnail.png";
 
 export const metadata: Metadata = {
-  title,
-  description,
-  icons: ["https://vercel.pub/favicon.ico"],
-  openGraph: {
-    title,
-    description,
-    images: [image],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-    images: [image],
-    creator: "@vercel",
-  },
-  metadataBase: new URL("https://vercel.pub"),
-};
+  title: 'Home',
+  description: 'Welcome to Next.js',
+}
+
 
 export default function RootLayout({
+  // Layouts must accept a children prop.
+  // This will be populated with nested layouts or pages
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={cn(cal.variable, inter.variable)}>
-        <Providers>
-          {children}
-          <Analytics />
-        </Providers>
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
-  );
+  )
 }
+
