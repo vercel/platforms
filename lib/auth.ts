@@ -2,11 +2,59 @@ import { getServerSession, type NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
+import { getCsrfToken } from "next-auth/react";
+import { SiweMessage } from "siwe";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    CredentialsProvider({
+      name: "Ethereum",
+      credentials: {
+        message: {
+          label: "Message",
+          type: "text",
+          placeholder: "0x0",
+        },
+        signature: {
+          label: "Signature",
+          type: "text",
+          placeholder: "0x0",
+        },
+      },
+      async authorize(credentials, req) {
+        try {
+          if (!process.env.NEXTAUTH_URL) {
+            throw new Error("NEXTAUTH_URL is not set");
+          }
+          const siwe = new SiweMessage(
+            JSON.parse(credentials?.message || "{}"),
+          );
+          const nextAuthUrl = new URL(process.env.NEXTAUTH_URL);
+
+          // const nonce = await getCsrfToken({ req });
+
+          // console.log(nonce);
+
+          const result = await siwe.verify({
+            signature: credentials?.signature || "",
+            domain: nextAuthUrl.host,
+            // nonce: nonce,
+          });
+          console.log(result);
+          if (result.success) {
+            return {
+              id: siwe.address,
+            };
+          }
+          return null;
+        } catch (e) {
+          return null;
+        }
+      },
+    }),
     GitHubProvider({
       clientId: process.env.AUTH_GITHUB_ID as string,
       clientSecret: process.env.AUTH_GITHUB_SECRET as string,
