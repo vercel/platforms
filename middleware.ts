@@ -54,16 +54,22 @@ export default async function middleware(req: NextRequest) {
       "https://vercel.com/blog/platforms-starter-kit",
     );
   }
-  
+
   // rewrite root application to `/home` folder
   if (
     hostname === "localhost:3000" ||
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
-    console.log("Hostname is localhost or root domain, rewriting URL to /home folder");
+    console.log(
+      "Hostname is localhost or root domain, rewriting URL to /home folder",
+    );
     return NextResponse.rewrite(new URL(`/home${path}`, req.url));
   }
 
+  // rewrite root application to `/home` folder
+  if (hostname === process.env.VERCEL_URL && path === "/") {
+    return NextResponse.rewrite(new URL(`/home${path}`, req.url));
+  }
   console.log("process.env", process.env);
 
   // rewrite everything else to `/[domain]/[path] dynamic route
