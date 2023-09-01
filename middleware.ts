@@ -64,6 +64,8 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.rewrite(new URL(`/home${path}`, req.url));
   }
 
+  console.log("process.env", process.env);
+
   // rewrite everything else to `/[domain]/[path] dynamic route
   console.log("Rewriting URL for all other cases");
   return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url));
