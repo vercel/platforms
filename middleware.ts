@@ -30,7 +30,7 @@ export default async function middleware(req: NextRequest) {
   console.log(`Path: ${path}`);
 
   // rewrites for app pages
-  if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` || `app.${process.env.VERCEL_URL}`) {
+  if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` || hostname === `app.${process.env.VERCEL_URL}`) {
     console.log("Hostname matches app domain");
     const session = await getToken({ req });
     console.log(`Session: ${session}`);
