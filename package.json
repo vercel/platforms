@@ -46,6 +46,7 @@
     "openai-edge": "^1.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-globe.gl": "^2.24.3",
     "react-textarea-autosize": "^8.5.2",
     "react-tweet": "^3.0.2",
     "remark": "^14.0.3",

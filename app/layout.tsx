@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import { cal, inter } from "@/styles/fonts";
+import { avenirNext, cal, inter, reckless, recklessNeue } from "@/styles/fonts";
 import { Analytics } from "@vercel/analytics/react";
 import { Providers } from "./providers";
 import { Metadata } from "next";
@@ -37,7 +37,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(cal.variable, inter.variable)}>
+      <body
+        className={cn(
+          reckless.variable,
+          recklessNeue.variable,
+          avenirNext.variable,
+          cal.variable,
+          inter.variable,
+        )}
+      >
         <Providers>
           {children}
           <Analytics />
