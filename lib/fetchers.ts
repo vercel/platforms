@@ -4,8 +4,10 @@ import { serialize } from "next-mdx-remote/serialize";
 import { replaceExamples, replaceTweets } from "@/lib/remark-plugins";
 
 export async function getSiteData(domain: string) {
-  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
-    ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
+  const cleanDomain = domain.replace('%3A', ':');
+  console.log(`getSiteData Domain: ${cleanDomain}`);
+  const subdomain = cleanDomain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+    ? cleanDomain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
     : null;
 
   return await unstable_cache(
@@ -15,10 +17,10 @@ export async function getSiteData(domain: string) {
         include: { user: true },
       });
     },
-    [`${domain}-metadata`],
+    [`${cleanDomain}-metadata`],
     {
       revalidate: 900,
-      tags: [`${domain}-metadata`],
+      tags: [`${cleanDomain}-metadata`],
     },
   )();
 }

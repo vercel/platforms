@@ -1,6 +1,8 @@
 import Image from "next/image";
 import LoginButton from "./login-button";
 import { Suspense } from "react";
+import Siwe from "@/components/siwe";
+import LandingPageForm from "@/components/landing-page-form";
 
 export default function LoginPage() {
   return (
@@ -34,6 +36,20 @@ export default function LoginPage() {
           }
         >
           <LoginButton />
+        </Suspense>
+        <Suspense
+          fallback={
+            <div className="my-2 h-10 w-full rounded-md border border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-800" />
+          }
+        >
+          <Siwe />
+        </Suspense>
+        <Suspense
+          fallback={
+            <div className="my-2 h-10 w-full rounded-md border border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-800" />
+          }
+        >
+          <LandingPageForm />
         </Suspense>
       </div>
     </div>

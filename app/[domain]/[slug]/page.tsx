@@ -10,7 +10,8 @@ export async function generateMetadata({
 }: {
   params: { domain: string; slug: string };
 }) {
-  const { domain, slug } = params;
+  const { slug } = params;
+  const domain = params.domain.replace('%3A', ':');
   const data = await getPostData(domain, slug);
   if (!data) {
     return null;
@@ -38,7 +39,8 @@ export default async function SitePostPage({
 }: {
   params: { domain: string; slug: string };
 }) {
-  const { domain, slug } = params;
+  const domain = params.domain.replace('%3A', ':');
+  const { slug } = params;
   const data = await getPostData(domain, slug);
 
   if (!data) {

@@ -2,11 +2,73 @@ import { getServerSession, type NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
+import { getCsrfToken } from "next-auth/react";
+import { SiweMessage } from "siwe";
+import CredentialsProvider from "next-auth/providers/credentials";
+import EmailProvider from "next-auth/providers/email";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // passwordless / magic link
+
+    EmailProvider({
+      server: {
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      },
+      from: process.env.SMTP_FROM,
+    }),
+    // sign in with ethereum
+    CredentialsProvider({
+      name: "Ethereum",
+      credentials: {
+        message: {
+          label: "Message",
+          type: "text",
+          placeholder: "0x0",
+        },
+        signature: {
+          label: "Signature",
+          type: "text",
+          placeholder: "0x0",
+        },
+      },
+      async authorize(credentials, req) {
+        try {
+          if (!process.env.NEXTAUTH_URL) {
+            throw new Error("NEXTAUTH_URL is not set");
+          }
+          const siwe = new SiweMessage(
+            JSON.parse(credentials?.message || "{}"),
+          );
+          const nextAuthUrl = new URL(process.env.NEXTAUTH_URL);
+
+          // const nonce = await getCsrfToken({ req });
+
+          // console.log(nonce);
+
+          const result = await siwe.verify({
+            signature: credentials?.signature || "",
+            domain: nextAuthUrl.host,
+            // nonce: nonce,
+          });
+          if (result.success) {
+            return {
+              id: siwe.address,
+            };
+          }
+          return null;
+        } catch (e) {
+          return null;
+        }
+      },
+    }),
     GitHubProvider({
       clientId: process.env.AUTH_GITHUB_ID as string,
       clientSecret: process.env.AUTH_GITHUB_SECRET as string,

@@ -17,9 +17,9 @@ const LandingPage = () => {
           <span> new cities.</span>
         </p>
         {/* <LandingPageForm /> */}
-        {/* <div className="mb-8">
+        <div className="mt-8 mb-8">
           <PrimaryOutlineButton>Connect Passport</PrimaryOutlineButton>
-        </div> */}
+        </div>
       </div>
       <div className="flex w-full items-center overflow-hidden md:w-1/2">
         <Suspense fallback="loading...">
