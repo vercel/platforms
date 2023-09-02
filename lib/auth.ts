@@ -5,11 +5,26 @@ import prisma from "@/lib/prisma";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import CredentialsProvider from "next-auth/providers/credentials";
+import EmailProvider from "next-auth/providers/email";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // passwordless / magic link
+
+    EmailProvider({
+      server: {
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      },
+      from: process.env.SMTP_FROM,
+    }),
+    // sign in with ethereum
     CredentialsProvider({
       name: "Ethereum",
       credentials: {
@@ -43,7 +58,6 @@ export const authOptions: NextAuthOptions = {
             domain: nextAuthUrl.host,
             // nonce: nonce,
           });
-          console.log(result);
           if (result.success) {
             return {
               id: siwe.address,

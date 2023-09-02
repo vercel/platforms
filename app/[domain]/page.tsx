@@ -11,9 +11,13 @@ export default async function SiteHomePage({
 }: {
   params: { domain: string };
 }) {
+  // domain = domain.replace('%3A', ':');
+  const domain = params.domain.replace('%3A', ':');
+
+  const sitedata = await getSiteData(domain);
   const [data, posts] = await Promise.all([
-    getSiteData(params.domain),
-    getPostsForSite(params.domain),
+    getSiteData(domain),
+    getPostsForSite(domain),
   ]);
 
   if (!data) {

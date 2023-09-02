@@ -73,6 +73,7 @@ export default async function middleware(req: NextRequest) {
 
   // rewrite everything else to `/[domain]/[path] dynamic route
   console.log("Rewriting URL for all other cases");
-  return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url));
+  const nextUrl = new URL(`/${hostname}${path}`, req.url);
+  return NextResponse.rewrite(nextUrl);
 }
 console.log("Middleware function ended");

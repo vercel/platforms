@@ -1,9 +1,17 @@
 "use client";
+import { signIn } from 'next-auth/react';
+
 export default function LandingPageForm() {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const email = (e.target as HTMLFormElement).email.value;
+    await signIn('email', { email: email });
+  };
 
   return (
-    <form className="mt-8 mb-8 w-full max-w-sm from-brand-gray300 to-brand-primary flex items-center rounded bg-gradient-to-r p-0.5">
+    <form onSubmit={handleSubmit} className="mt-8 mb-8 w-full max-w-sm from-brand-gray300 to-brand-primary flex items-center rounded bg-gradient-to-r p-0.5">
         <input
+          id='email'
           className="bg-brand-gray950 w-full flex-1 rounded p-2"
           placeholder="Enter your email"
           name="email"
@@ -31,3 +39,4 @@ export default function LandingPageForm() {
     </form>
   );
 }
+

@@ -83,9 +83,6 @@ dependencies:
   date-fns:
     specifier: ^2.30.0
     version: 2.30.0
-  ethers:
-    specifier: ^6.7.1
-    version: 6.7.1
   focus-trap-react:
     specifier: ^10.2.1
     version: 10.2.1(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
@@ -109,13 +106,19 @@ dependencies:
     version: 13.4.20-canary.15(@babel/core@7.22.8)(react-dom@18.2.0)(react@18.2.0)
   next-auth:
     specifier: 4.22.1
-    version: 4.22.1(next@13.4.20-canary.15)(react-dom@18.2.0)(react@18.2.0)
+    version: 4.22.1(next@13.4.20-canary.15)(nodemailer@6.9.4)(react-dom@18.2.0)(react@18.2.0)
   next-mdx-remote:
     specifier: ^4.4.1
     version: 4.4.1(react-dom@18.2.0)(react@18.2.0)
+  nodemailer:
+    specifier: ^6.9.4
+    version: 6.9.4
   openai-edge:
     specifier: ^1.2.0
     version: 1.2.0
+  postmark:
+    specifier: ^3.0.19
+    version: 3.0.19
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -161,9 +164,6 @@ dependencies:
   use-debounce:
     specifier: ^9.0.4
     version: 9.0.4(react@18.2.0)
-  viem:
-    specifier: ^1.9.5
-    version: 1.9.5(typescript@5.1.6)
   wagmi:
     specifier: ^1.3.11
     version: 1.3.11(@types/react@18.2.14)(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)(viem@1.9.5)
@@ -181,6 +181,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.4.1
     version: 20.4.1
+  '@types/nodemailer':
+    specifier: ^6.4.9
+    version: 6.4.9
   '@types/react':
     specifier: ^18.2.14
     version: 18.2.14
@@ -912,7 +915,7 @@ packages:
       next-auth: ^4
     dependencies:
       '@prisma/client': 5.2.0(prisma@5.2.0)
-      next-auth: 4.22.1(next@13.4.20-canary.15)(react-dom@18.2.0)(react@18.2.0)
+      next-auth: 4.22.1(next@13.4.20-canary.15)(nodemailer@6.9.4)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /@next/env@13.4.20-canary.15:
@@ -1993,6 +1996,12 @@ packages:
   /@types/node@20.4.1:
     resolution: {integrity: sha512-JIzsAvJeA/5iY6Y/OxZbv1lUcc8dNSE77lb2gnBH+/PJ3lFR1Ccvgwl5JWnHAkNHcRsT0TbpVOsiMKZ1F/yyJg==}
 
+  /@types/nodemailer@6.4.9:
+    resolution: {integrity: sha512-XYG8Gv+sHjaOtUpiuytahMy2mM3rectgroNbs6R3djZEKmPNiIJwe9KqOJBGzKKnNZNKvnuvmugBgpq3w/S0ig==}
+    dependencies:
+      '@types/node': 20.4.1
+    dev: true
+
   /@types/object.omit@3.0.0:
     resolution: {integrity: sha512-I27IoPpH250TUzc9FzXd0P1BV/BMJuzqD3jOz98ehf9dQqGkxlq+hO1bIqZGWqCg5bVOy0g4AUVJtnxe0klDmw==}
     dev: false
@@ -3024,6 +3033,14 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /axios@0.25.0:
+    resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
+    dependencies:
+      follow-redirects: 1.15.2
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /axobject-query@3.2.1:
     resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
     dependencies:
@@ -3127,7 +3144,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001514
+      caniuse-lite: 1.0.30001525
       electron-to-chromium: 1.4.455
       node-releases: 2.0.13
       update-browserslist-db: 1.0.11(browserslist@4.21.9)
@@ -3196,10 +3213,10 @@ packages:
 
   /caniuse-lite@1.0.30001514:
     resolution: {integrity: sha512-ENcIpYBmwAAOm/V2cXgM7rZUrKKaqisZl4ZAI520FIkqGXUxJjmaIssbRW5HVVR5tyV6ygTLIm15aU8LUmQSaQ==}
+    dev: true
 
   /caniuse-lite@1.0.30001525:
     resolution: {integrity: sha512-/3z+wB4icFt3r0USMwxujAqRvaD/B7rvGTsKhbhSQErVrJvkZCLhgNLJxU8MevahQVH6hCU9FsHdNUFbiwmE7Q==}
-    dev: false
 
   /case-anything@2.1.13:
     resolution: {integrity: sha512-zlOQ80VrQ2Ue+ymH5OuM/DlDq64mEm+B9UTdHULv5osUMD6HalNTblf2b1u/m6QecjsnOkBpqVZ+XPwIVsy7Ng==}
@@ -4468,6 +4485,16 @@ packages:
       tabbable: 6.2.0
     dev: false
 
+  /follow-redirects@1.15.2:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: false
+
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
     dependencies:
@@ -5329,7 +5356,7 @@ packages:
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
-      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -6092,7 +6119,7 @@ packages:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
 
-  /next-auth@4.22.1(next@13.4.20-canary.15)(react-dom@18.2.0)(react@18.2.0):
+  /next-auth@4.22.1(next@13.4.20-canary.15)(nodemailer@6.9.4)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-NTR3f6W7/AWXKw8GSsgSyQcDW6jkslZLH8AiZa5PQ09w1kR8uHtR9rez/E9gAq/o17+p0JYHE8QjF3RoniiObA==}
     peerDependencies:
       next: ^12.2.5 || ^13
@@ -6108,6 +6135,7 @@ packages:
       cookie: 0.5.0
       jose: 4.14.4
       next: 13.4.20-canary.15(@babel/core@7.22.8)(react-dom@18.2.0)(react@18.2.0)
+      nodemailer: 6.9.4
       oauth: 0.9.15
       openid-client: 5.4.3
       preact: 10.16.0
@@ -6208,6 +6236,11 @@ packages:
 
   /node-releases@2.0.13:
     resolution: {integrity: sha512-uYr7J37ae/ORWdZeQ1xxMJe3NtdmqMC/JZK+geofDrkLUApKRHPd18/TxtBOJ4A0/+uUIliorNrfYV6s1b02eQ==}
+
+  /nodemailer@6.9.4:
+    resolution: {integrity: sha512-CXjQvrQZV4+6X5wP6ZIgdehJamI63MFoYFGGPtHudWym9qaEHDNdPzaj5bfMCvxG1vhAileSWW90q7nL0N36mA==}
+    engines: {node: '>=6.0.0'}
+    dev: false
 
   /normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -6678,6 +6711,14 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       xtend: 4.0.2
+    dev: false
+
+  /postmark@3.0.19:
+    resolution: {integrity: sha512-ujO8OnL1P60qXCwqLrsQqB4aGHaxrvYP3+wCLilUthKmAv9q88nMFHw5VganNljPmzurrVwvyczQc3AUijP2aw==}
+    dependencies:
+      axios: 0.25.0
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /preact-render-to-string@5.2.6(preact@10.16.0):
