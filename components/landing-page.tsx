@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import LandingPageForm from "./landing-page-form";
 import { Suspense } from "react";
 import PrimaryOutlineButton from "./primary-outline-button";
+import Link from "next/link";
 
 const Globe = dynamic(() => import("./globe"), { ssr: false });
 
@@ -17,8 +18,10 @@ const LandingPage = () => {
           <span> new cities.</span>
         </p>
         {/* <LandingPageForm /> */}
-        <div className="mt-8 mb-8">
-          <PrimaryOutlineButton>Connect Passport</PrimaryOutlineButton>
+        <div className="mb-8 mt-8">
+          <Link href={`${process.env.NEXTAUTH_URL}/login`}>
+            <PrimaryOutlineButton>Join Fora</PrimaryOutlineButton>
+          </Link>
         </div>
       </div>
       <div className="flex w-full items-center overflow-hidden md:w-1/2">
