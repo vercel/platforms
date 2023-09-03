@@ -1,9 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "dev": "pnpm exec -- sh -c \"prisma generate & pnpm next:dev & pnpm local-ssl-proxy\"",
+    "dev": "pnpm exec -- sh -c \"prisma generate & pnpm next:dev & pnpm proxy\"",
     "next:dev": "next dev -p 3001",
-    "local-ssl-proxy": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3000 --target 3001",
+    "proxy": "npx local-ssl-proxy --key .dev/localhost-key.pem --cert .dev/localhost.pem --source 3000 --target 3001",
     "build": "prisma generate && prisma db push && next build",
     "format:write": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
