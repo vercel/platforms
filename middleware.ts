@@ -21,7 +21,8 @@ export default async function middleware(req: NextRequest) {
   const hostname = req.headers
     .get("host")!
     .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
-
+  const subDomain = hostname.split(".")[0];
+  
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = url.pathname;
 
@@ -53,7 +54,7 @@ export default async function middleware(req: NextRequest) {
   ) {
     return NextResponse.rewrite(new URL(`/home${path}`, req.url));
   }
-
+  
   // rewrite everything else to `/[domain]/[path] dynamic route
-  return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url));
+  return NextResponse.rewrite(new URL(`/${subDomain}${path}`, req.url));
 }
