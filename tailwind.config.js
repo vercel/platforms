@@ -136,6 +136,9 @@ module.exports = {
         inter: ["var(--font-inter)", ...fontFamily.sans],
         sans: ["var(--font-avenir-next)", ...fontFamily.sans],
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
       typography: {
         DEFAULT: {
           css: {

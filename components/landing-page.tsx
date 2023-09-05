@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import LandingPageForm from "./landing-page-form";
+import LandingPageForm from "../app/app/(auth)/login/email-form";
 import { Suspense } from "react";
 import PrimaryOutlineButton from "./primary-outline-button";
 import Link from "next/link";

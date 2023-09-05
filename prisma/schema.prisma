@@ -112,7 +112,7 @@ model Site {
   @@index([userId])
 }
 
-model Example {
+model Event {
   id            Int     @id @default(autoincrement())
   name          String?
   description   String? @db.Text
