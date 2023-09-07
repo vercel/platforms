@@ -14,7 +14,7 @@ export default async function SiteAnalytics({
   }
   const data = await prisma.site.findUnique({
     where: {
-      id: params.id,
+      id: decodeURIComponent(params.id),
     },
   });
   if (!data || data.userId !== session.user.id) {

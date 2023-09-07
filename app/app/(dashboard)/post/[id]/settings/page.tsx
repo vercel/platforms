@@ -16,7 +16,7 @@ export default async function PostSettings({
   }
   const data = await prisma.post.findUnique({
     where: {
-      id: params.id,
+      id: decodeURIComponent(params.id),
     },
   });
   if (!data || data.userId !== session.user.id) {

@@ -26,7 +26,7 @@ export default function AllSites({ params }: { params: { id: string } }) {
           }
         >
           {/* @ts-expect-error Server Component */}
-          <Sites siteId={params.id} />
+          <Sites siteId={decodeURIComponent(params.id)} />
         </Suspense>
       </div>
     </div>
