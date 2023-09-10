@@ -7,7 +7,8 @@
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "check": "next lint"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
