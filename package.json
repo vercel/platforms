@@ -6,7 +6,8 @@
     "format:write": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
@@ -53,6 +54,7 @@
     "autoprefixer": "^10.4.14",
     "eslint": "8.31.0",
     "eslint-config-next": "^13.4.9",
+    "husky": "^8.0.3",
     "postcss": "^8.4.25",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
