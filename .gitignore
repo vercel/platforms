@@ -6,3 +6,4 @@
 .vscode
 **.git
 .vercel
+.env*.local
