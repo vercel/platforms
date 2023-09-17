@@ -60,7 +60,7 @@ export default function CTA() {
       >
         <a
           className="whitespace-no-wrap flex-auto rounded-md border border-stone-200 px-5 py-1 font-title text-lg text-black transition-all duration-150 ease-in-out hover:border-black dark:border-stone-700 dark:text-white dark:hover:border-white sm:py-3"
-          href="https://app.vercel.pub"
+          href="https://app.tiny.garden"
           rel="noreferrer"
           target="_blank"
         >
