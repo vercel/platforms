@@ -38,7 +38,13 @@ export default async function middleware(req: NextRequest) {
     }
     return rewrite(`/app${path === "/" ? "" : path}`, req);
   }
-  
+  // special case for `vercel.pub` domain
+  if (subdomain === "vercel.pub") {
+    return NextResponse.redirect(
+      "https://vercel.com/blog/platforms-starter-kit",
+    );
+  }
+
   // rewrite root application to `/home` folder
   if (subdomain === "" || subdomain === "www") {
     return rewrite(`/home${path}`, req);
