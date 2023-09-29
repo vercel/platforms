@@ -47,6 +47,13 @@ export async function generateMetadata({
     },
     icons: [logo],
     metadataBase: new URL(`https://${params.domain}`),
+    // Optional: Set canonical URL to custom domain if it exists
+    // ...(params.domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) &&
+    //   data.customDomain && {
+    //     alternates: {
+    //       canonical: `https://${data.customDomain}`,
+    //     },
+    //   }),
   };
 }
 
