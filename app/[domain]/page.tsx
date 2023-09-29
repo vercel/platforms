@@ -27,10 +27,8 @@ export async function generateStaticParams() {
   ]);
 
   const allPaths = [
-    ...subdomains.map(({ subdomain }: { subdomain: string }) => subdomain),
-    ...customDomains.map(
-      ({ customDomain }: { customDomain: string }) => customDomain,
-    ),
+    ...subdomains.map(({ subdomain }) => subdomain),
+    ...customDomains.map(({ customDomain }) => customDomain),
   ].filter((path) => path);
 
   return allPaths.map((domain) => ({

@@ -60,31 +60,20 @@ export async function generateStaticParams() {
   });
 
   return allPosts
-    .flatMap(
-      ({
-        site: { subdomain, customDomain },
-        slug,
-      }: {
-        site: {
-          subdomain: string;
-          customDomain: string;
-        };
-        slug: string;
-      }) => [
-        {
-          params: {
-            domain: subdomain,
-            slug,
-          },
+    .flatMap(({ site, slug }) => [
+      site?.subdomain && {
+        params: {
+          domain: site.subdomain,
+          slug,
         },
-        customDomain && {
-          params: {
-            domain: customDomain,
-            slug,
-          },
+      },
+      site?.customDomain && {
+        params: {
+          domain: site.customDomain,
+          slug,
         },
-      ],
-    )
+      },
+    ])
     .filter(Boolean);
 }
 
