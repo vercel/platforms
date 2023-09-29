@@ -8,34 +8,25 @@ import { getPostsForSite, getSiteData } from "@/lib/fetchers";
 import Image from "next/image";
 
 export async function generateStaticParams() {
-  const [subdomains, customDomains] = await Promise.all([
-    prisma.site.findMany({
-      select: {
-        subdomain: true,
-      },
-    }),
-    prisma.site.findMany({
-      where: {
-        NOT: {
-          customDomain: null,
-        },
-      },
-      select: {
-        customDomain: true,
-      },
-    }),
-  ]);
-
-  const allPaths = [
-    ...subdomains.map(({ subdomain }) => subdomain),
-    ...customDomains.map(({ customDomain }) => customDomain),
-  ].filter((path) => path);
-
-  return allPaths.map((domain) => ({
-    params: {
-      domain,
+  const allSites = await prisma.site.findMany({
+    select: {
+      subdomain: true,
+      customDomain: true,
     },
-  }));
+  });
+
+  const allPaths = allSites
+    .flatMap(({ subdomain, customDomain }) => [
+      subdomain && {
+        domain: subdomain,
+      },
+      customDomain && {
+        domain: customDomain,
+      },
+    ])
+    .filter(Boolean);
+
+  return allPaths;
 }
 
 export default async function SiteHomePage({

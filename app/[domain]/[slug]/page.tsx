@@ -59,22 +59,20 @@ export async function generateStaticParams() {
     },
   });
 
-  return allPosts
+  const allPaths = allPosts
     .flatMap(({ site, slug }) => [
       site?.subdomain && {
-        params: {
-          domain: site.subdomain,
-          slug,
-        },
+        domain: site.subdomain,
+        slug,
       },
       site?.customDomain && {
-        params: {
-          domain: site.customDomain,
-          slug,
-        },
+        domain: site.customDomain,
+        slug,
       },
     ])
     .filter(Boolean);
+
+  return allPaths;
 }
 
 export default async function SitePostPage({
