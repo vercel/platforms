@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPostData } from "@/lib/fetchers";
+import { getPostData, getSiteData } from "@/lib/fetchers";
 import BlogCard from "@/components/blog-card";
 import BlurImage from "@/components/blur-image";
 import MDX from "@/components/mdx";
@@ -11,8 +11,11 @@ export async function generateMetadata({
   params: { domain: string; slug: string };
 }) {
   const { domain, slug } = params;
-  const data = await getPostData(domain, slug);
-  if (!data) {
+  const [data, siteData] = await Promise.all([
+    getPostData(domain, slug),
+    getSiteData(domain),
+  ]);
+  if (!data || !siteData) {
     return null;
   }
   const { title, description } = data;
@@ -30,6 +33,13 @@ export async function generateMetadata({
       description,
       creator: "@vercel",
     },
+    // Optional: Set canonical URL to custom domain if it exists
+    // ...(params.domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) &&
+    //   siteData.customDomain && {
+    //     alternates: {
+    //       canonical: `https://${siteData.customDomain}/${params.slug}`,
+    //     },
+    //   }),
   };
 }
 
