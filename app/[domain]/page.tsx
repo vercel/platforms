@@ -6,6 +6,39 @@ import BlogCard from "@/components/blog-card";
 import { getPostsForSite, getSiteData } from "@/lib/fetchers";
 import Image from "next/image";
 
+export async function generateStaticParams() {
+  const [subdomains, customDomains] = await Promise.all([
+    prisma.site.findMany({
+      select: {
+        subdomain: true,
+      },
+    }),
+    prisma.site.findMany({
+      where: {
+        NOT: {
+          customDomain: null,
+        },
+      },
+      select: {
+        customDomain: true,
+      },
+    }),
+  ]);
+
+  const allPaths = [
+    ...subdomains.map(({ subdomain }: { subdomain: string }) => subdomain),
+    ...customDomains.map(
+      ({ customDomain }: { customDomain: string }) => customDomain,
+    ),
+  ].filter((path) => path) as Array<string>;
+
+  return allPaths.map((domain) => ({
+    params: {
+      domain,
+    },
+  }));
+}
+
 export default async function SiteHomePage({
   params,
 }: {
@@ -101,7 +134,7 @@ export default async function SiteHomePage({
             More stories
           </h2>
           <div className="grid w-full grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
-            {posts.slice(1).map((metadata, index) => (
+            {posts.slice(1).map((metadata: any, index: number) => (
               <BlogCard key={index} data={metadata} />
             ))}
           </div>

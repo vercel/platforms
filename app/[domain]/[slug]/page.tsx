@@ -45,6 +45,49 @@ export async function generateMetadata({
   };
 }
 
+export async function generateStaticParams() {
+  const allPosts = await prisma.post.findMany({
+    select: {
+      slug: true,
+      site: {
+        select: {
+          subdomain: true,
+          customDomain: true,
+        },
+      },
+    },
+  });
+  const allPaths = allPosts
+    .flatMap(
+      ({
+        site: { subdomain, customDomain },
+        slug,
+      }: {
+        site: {
+          subdomain: string;
+          customDomain: string;
+        };
+        slug: string;
+      }) => [
+        {
+          params: {
+            domain: subdomain,
+            slug,
+          },
+        },
+        customDomain && {
+          params: {
+            domain: customDomain,
+            slug,
+          },
+        },
+      ],
+    )
+    .filter(Boolean) as Array<{ params: { domain: string; slug: string } }>;
+
+  return allPaths;
+}
+
 export default async function SitePostPage({
   params,
 }: {

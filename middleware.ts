@@ -22,8 +22,11 @@ export default async function middleware(req: NextRequest) {
     .get("host")!
     .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
 
+  const searchParams = req.nextUrl.searchParams.toString();
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
-  const path = url.pathname;
+  const path = `${url.pathname}${
+    searchParams.length > 0 ? `?${searchParams}` : ""
+  }`;
 
   // rewrites for app pages
   if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
@@ -38,14 +41,13 @@ export default async function middleware(req: NextRequest) {
     );
   }
 
-
   // special case for `vercel.pub` domain
   if (hostname === "vercel.pub") {
     return NextResponse.redirect(
       "https://vercel.com/blog/platforms-starter-kit",
     );
   }
-  
+
   // rewrite root application to `/home` folder
   if (
     hostname === "localhost:3000" ||

@@ -58,37 +58,6 @@ export async function generateMetadata({
   };
 }
 
-export async function generateStaticParams() {
-  const [subdomains, customDomains] = await Promise.all([
-    prisma.site.findMany({
-      select: {
-        subdomain: true,
-      },
-    }),
-    prisma.site.findMany({
-      where: {
-        NOT: {
-          customDomain: null,
-        },
-      },
-      select: {
-        customDomain: true,
-      },
-    }),
-  ]);
-
-  const allPaths = [
-    ...subdomains.map(({ subdomain }) => subdomain),
-    ...customDomains.map(({ customDomain }) => customDomain),
-  ].filter((path) => path) as Array<string>;
-
-  return allPaths.map((domain) => ({
-    params: {
-      domain,
-    },
-  }));
-}
-
 export default async function SiteLayout({
   params,
   children,
