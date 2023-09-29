@@ -31,7 +31,7 @@ export async function generateStaticParams() {
     ...customDomains.map(
       ({ customDomain }: { customDomain: string }) => customDomain,
     ),
-  ].filter((path) => path) as Array<string>;
+  ].filter((path) => path);
 
   return allPaths.map((domain) => ({
     params: {

@@ -58,7 +58,8 @@ export async function generateStaticParams() {
       },
     },
   });
-  const allPaths = allPosts
+
+  return allPosts
     .flatMap(
       ({
         site: { subdomain, customDomain },
@@ -84,9 +85,7 @@ export async function generateStaticParams() {
         },
       ],
     )
-    .filter(Boolean) as Array<{ params: { domain: string; slug: string } }>;
-
-  return allPaths;
+    .filter(Boolean);
 }
 
 export default async function SitePostPage({
