@@ -14,7 +14,8 @@ export async function generateMetadata({
 }: {
   params: { domain: string };
 }): Promise<Metadata | null> {
-  const data = await getSiteData(params.domain);
+  const domain = decodeURIComponent(params.domain);
+  const data = await getSiteData(domain);
   if (!data) {
     return null;
   }
@@ -46,7 +47,7 @@ export async function generateMetadata({
       creator: "@vercel",
     },
     icons: [logo],
-    metadataBase: new URL(`https://${params.domain}`),
+    metadataBase: new URL(`https://${domain}`),
     // Optional: Set canonical URL to custom domain if it exists
     // ...(params.domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) &&
     //   data.customDomain && {
@@ -95,7 +96,7 @@ export default async function SiteLayout({
   params: { domain: string };
   children: ReactNode;
 }) {
-  const { domain } = params;
+  const domain = decodeURIComponent(params.domain);
   const data = await getSiteData(domain);
 
   if (!data) {
@@ -133,8 +134,8 @@ export default async function SiteLayout({
 
       <div className="mt-20">{children}</div>
 
-      {params.domain == `demo.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` ||
-      params.domain == `platformize.co` ? (
+      {domain == `demo.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` ||
+      domain == `platformize.co` ? (
         <CTA />
       ) : (
         <ReportAbuse />

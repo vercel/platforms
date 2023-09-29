@@ -15,7 +15,7 @@ export default async function SitePosts({
   }
   const data = await prisma.site.findUnique({
     where: {
-      id: params.id,
+      id: decodeURIComponent(params.id),
     },
   });
 
@@ -47,7 +47,7 @@ export default async function SitePosts({
         </div>
         <CreatePostButton />
       </div>
-      <Posts siteId={params.id} />
+      <Posts siteId={decodeURIComponent(params.id)} />
     </>
   );
 }

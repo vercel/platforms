@@ -10,7 +10,9 @@ export async function generateMetadata({
 }: {
   params: { domain: string; slug: string };
 }) {
-  const { domain, slug } = params;
+  const domain = decodeURIComponent(params.domain);
+  const slug = decodeURIComponent(params.slug);
+
   const [data, siteData] = await Promise.all([
     getPostData(domain, slug),
     getSiteData(domain),
@@ -48,7 +50,8 @@ export default async function SitePostPage({
 }: {
   params: { domain: string; slug: string };
 }) {
-  const { domain, slug } = params;
+  const domain = decodeURIComponent(params.domain);
+  const slug = decodeURIComponent(params.slug);
   const data = await getPostData(domain, slug);
 
   if (!data) {

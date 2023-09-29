@@ -10,7 +10,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   }
   const data = await prisma.post.findUnique({
     where: {
-      id: params.id,
+      id: decodeURIComponent(params.id),
     },
     include: {
       site: {
