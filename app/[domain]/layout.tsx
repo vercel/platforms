@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
-import prisma from "@/lib/prisma";
 import CTA from "@/components/cta";
 import ReportAbuse from "@/components/report-abuse";
 import { notFound, redirect } from "next/navigation";

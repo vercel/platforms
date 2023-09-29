@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import prisma from "@/lib/prisma";
 import { getPostData, getSiteData } from "@/lib/fetchers";
 import BlogCard from "@/components/blog-card";
 import BlurImage from "@/components/blur-image";
