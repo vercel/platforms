@@ -6,18 +6,24 @@ import {
 
 export const addDomainToVercel = async (domain: string) => {
   return await fetch(
-    `https://api.vercel.com/v9/projects/${
+    `https://api.vercel.com/v10/projects/${
       process.env.PROJECT_ID_VERCEL
     }/domains${
       process.env.TEAM_ID_VERCEL ? `?teamId=${process.env.TEAM_ID_VERCEL}` : ""
     }`,
     {
-      body: `{\n  "name": "${domain}"\n}`,
+      method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.AUTH_BEARER_TOKEN}`,
         "Content-Type": "application/json",
       },
-      method: "POST",
+      body: JSON.stringify({
+        name: domain,
+        // Optional: Redirect www. to root domain
+        // ...(domain.startsWith("www.") && {
+        //   redirect: domain.replace("www.", ""),
+        // }),
+      }),
     },
   ).then((res) => res.json());
 };

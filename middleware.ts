@@ -18,9 +18,11 @@ export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
-  const hostname = req.headers
+  let hostname = req.headers
     .get("host")!
     .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
+
+  hostname = hostname.replace("www.", ""); // remove www. from domain
 
   const searchParams = req.nextUrl.searchParams.toString();
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
@@ -53,7 +55,9 @@ export default async function middleware(req: NextRequest) {
     hostname === "localhost:3000" ||
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
-    return NextResponse.rewrite(new URL(`/home${path === "/" ? "" : path}`, req.url));
+    return NextResponse.rewrite(
+      new URL(`/home${path === "/" ? "" : path}`, req.url),
+    );
   }
 
   // rewrite everything else to `/[domain]/[path] dynamic route
