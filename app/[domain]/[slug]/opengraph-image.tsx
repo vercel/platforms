@@ -11,7 +11,8 @@ export default async function PostOG({
 }: {
   params: { domain: string; slug: string };
 }) {
-  const { domain, slug } = params;
+  const domain = decodeURIComponent(params.domain);
+  const slug = decodeURIComponent(params.slug);
 
   const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
     ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")

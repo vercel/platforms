@@ -17,7 +17,7 @@ export default async function SiteAnalyticsLayout({
   }
   const data = await prisma.site.findUnique({
     where: {
-      id: params.id,
+      id: decodeURIComponent(params.id),
     },
   });
 

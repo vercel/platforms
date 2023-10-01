@@ -10,7 +10,7 @@ export default async function SiteSettingsIndex({
 }) {
   const data = await prisma.site.findUnique({
     where: {
-      id: params.id,
+      id: decodeURIComponent(params.id),
     },
   });
 

@@ -85,7 +85,11 @@ export const updateSite = withSiteAuth(
               customDomain: value,
             },
           });
-          await addDomainToVercel(value);
+          await Promise.all([
+            addDomainToVercel(value),
+            // Optional: add www subdomain as well and redirect to apex domain
+            // addDomainToVercel(`www.${value}`),
+          ]);
 
           // empty value means the user wants to remove the custom domain
         } else if (value === "") {

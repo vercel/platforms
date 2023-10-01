@@ -25,8 +25,11 @@ export default async function middleware(req: NextRequest) {
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
   const subdomain = url.searchParams.get("host") ?? req.headers.get("host")!;
 
+  const searchParams = req.nextUrl.searchParams.toString();
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
-  const path = url.pathname;
+  const path = `${url.pathname}${
+    searchParams.length > 0 ? `?${searchParams}` : ""
+  }`;
 
   // rewrites for app pages
   if (subdomain == "app") {
@@ -48,6 +51,10 @@ export default async function middleware(req: NextRequest) {
   // rewrite root application to `/home` folder
   if (subdomain === "" || subdomain === "www") {
     return rewrite(`/home${path}`, req);
+  ) {
+    return NextResponse.rewrite(
+      new URL(`/home${path === "/" ? "" : path}`, req.url),
+    );
   }
 
   // rewrite everything else to `/[domain]/[path] dynamic route

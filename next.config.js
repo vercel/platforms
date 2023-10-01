@@ -11,6 +11,7 @@ module.exports = {
       "res.cloudinary.com",
       "abs.twimg.com",
       "pbs.twimg.com",
+      "avatar.vercel.sh",
       "avatars.githubusercontent.com",
       "www.google.com",
       "flag.vercel.app",

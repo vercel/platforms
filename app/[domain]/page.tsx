@@ -1,4 +1,5 @@
 import Link from "next/link";
+import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
@@ -6,14 +7,41 @@ import BlogCard from "@/components/blog-card";
 import { getPostsForSite, getSiteData } from "@/lib/fetchers";
 import Image from "next/image";
 
+export async function generateStaticParams() {
+  const allSites = await prisma.site.findMany({
+    select: {
+      subdomain: true,
+      customDomain: true,
+    },
+    // feel free to remove this filter if you want to generate paths for all sites
+    where: {
+      subdomain: "demo",
+    },
+  });
+
+  const allPaths = allSites
+    .flatMap(({ subdomain, customDomain }) => [
+      subdomain && {
+        domain: subdomain,
+      },
+      customDomain && {
+        domain: customDomain,
+      },
+    ])
+    .filter(Boolean);
+
+  return allPaths;
+}
+
 export default async function SiteHomePage({
   params,
 }: {
   params: { domain: string };
 }) {
+  const domain = decodeURIComponent(params.domain);
   const [data, posts] = await Promise.all([
-    getSiteData(params.domain),
-    getPostsForSite(params.domain),
+    getSiteData(domain),
+    getPostsForSite(domain),
   ]);
 
   if (!data) {
@@ -100,7 +128,7 @@ export default async function SiteHomePage({
             More stories
           </h2>
           <div className="grid w-full grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
-            {posts.slice(1).map((metadata, index) => (
+            {posts.slice(1).map((metadata: any, index: number) => (
               <BlogCard key={index} data={metadata} />
             ))}
           </div>
