@@ -1,7 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "dev": "prisma generate && next dev",
+    "dev": "pnpm exec -- sh -c \"prisma generate & pnpm next:dev & pnpm proxy\"",
+    "next:dev": "next dev -p 3001",
+    "proxy": "npx local-ssl-proxy --key .dev/localhost-key.pem --cert .dev/localhost.pem --source 3000 --target 3001",
     "build": "prisma generate && prisma db push && next build",
     "format:write": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
@@ -53,6 +55,7 @@
     "autoprefixer": "^10.4.14",
     "eslint": "8.31.0",
     "eslint-config-next": "^13.4.9",
+    "local-ssl-proxy": "^2.0.5",
     "postcss": "^8.4.25",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
