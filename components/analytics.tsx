@@ -40,7 +40,7 @@ const chartdata = [
 ];
 
 const pages = [
-  { name: "/platforms-starter-kit", value: "1,230" },
+  { name: "/platforms-starter-kit", value: 1230 },
   { name: "/vercel-is-now-bercel", value: 751 },
   { name: "/nextjs-conf", value: 471 },
   { name: "/150m-series-d", value: 280 },
