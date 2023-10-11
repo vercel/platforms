@@ -66,9 +66,16 @@ export default async function middleware(req: NextRequest) {
     );
   }
 
+  if (
+    hostname === 'api.' + process.env.NEXT_PUBLIC_ROOT_DOMAIN
+  ) {
+    console.log("Hostname is api, redirecting to api");
+    return NextResponse.rewrite(new URL(`/api${path}`, req.url));
+    
+  }
+
   // rewrite root application to `/home` folder
   if (
-    hostname === "localhost:3000" ||
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
     console.log(

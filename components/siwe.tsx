@@ -4,9 +4,9 @@ import { SiweMessage } from "siwe";
 import { useAccount, useConnect, useNetwork, useSignMessage } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { useEffect, useState } from "react";
-import {EthereumLogo} from '@/components/icons/ethereum-eth-logo'
+import { EthereumLogo } from "@/components/icons/ethereum-eth-logo";
 
-function Siwe() {
+function Siwe({ redirect = true, callbackUrl = "/" }) {
   const { signMessageAsync } = useSignMessage();
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
@@ -17,7 +17,6 @@ function Siwe() {
 
   const handleLogin = async () => {
     try {
-      const callbackUrl = `/`;
       const message = new SiweMessage({
         domain: window.location.host,
         address: address,
@@ -32,12 +31,14 @@ function Siwe() {
       });
       const response = await signIn("credentials", {
         message: JSON.stringify(message),
-        redirect: false,
+        redirect,
         signature,
-        // callbackUrl,
+        callbackUrl,
       });
 
-      console.log(response);
+      // if (response?.ok) {
+      //   redirect(callbackUrl);
+      // }
     } catch (error) {
       window.alert(error);
     }
@@ -61,9 +62,12 @@ function Siwe() {
           handleLogin();
         }
       }}
-      className="flex cursor-pointer items-center border border-brand-primary/80 bg-brand-primary/10 hover:bg-brand-primary/40 text-brand-gray100 hover:text-brand-gray50 transition-colors duration-300  font-semibold py-1.5 px-[16px] rounded-[8px] tracking-wider"
+      className="flex w-full cursor-pointer items-center justify-center rounded-[8px] border border-brand-primary/80 bg-brand-primary/10 px-[16px] py-1.5 font-semibold tracking-wider  transition-colors duration-300 hover:bg-brand-primary/40 dark:text-brand-gray100 dark:hover:text-brand-gray50"
     >
-      <span className="h-6 mx-3 my-1"><EthereumLogo /></span>Sign in with Ethereum
+      <span className="mx-3 my-1 h-6">
+        <EthereumLogo />
+      </span>
+      Sign in with Ethereum
     </button>
   );
 }

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import prisma from "@/lib/prisma";
 import CTA from "@/components/cta";
 import ReportAbuse from "@/components/report-abuse";
@@ -8,13 +8,23 @@ import { notFound, redirect } from "next/navigation";
 import { getSiteData } from "@/lib/fetchers";
 import { fontMapper } from "@/styles/fonts";
 import { Metadata } from "next";
+import dynamic from "next/dynamic";
+import CityDrawer from "@/components/city-drawer";
+import Profile from "@/components/profile";
+
+const ConnectEthButton = dynamic(
+  () => import("@/components/connect-eth-button"),
+  {
+    ssr: false,
+  },
+);
 
 export async function generateMetadata({
   params,
 }: {
   params: { domain: string };
 }): Promise<Metadata | null> {
-  const domain = params.domain.replace('%3A', ':');
+  const domain = params.domain.replace("%3A", ":");
   const data = await getSiteData(domain);
   if (!data) {
     return null;
@@ -53,12 +63,12 @@ export async function generateMetadata({
 
 export async function generateStaticParams() {
   const [subdomains, customDomains] = await Promise.all([
-    prisma.site.findMany({
+    prisma.organization.findMany({
       select: {
         subdomain: true,
       },
     }),
-    prisma.site.findMany({
+    prisma.organization.findMany({
       where: {
         NOT: {
           customDomain: null,
@@ -89,7 +99,7 @@ export default async function SiteLayout({
   params: { domain: string };
   children: ReactNode;
 }) {
-  const domain = params.domain.replace('%3A', ':');
+  const domain = params.domain.replace("%3A", ":");
   console.log("SiteLayout domain: ", domain);
   const data = await getSiteData(domain);
 
@@ -108,7 +118,7 @@ export default async function SiteLayout({
 
   return (
     <div className={fontMapper[data.font]}>
-      <div className="ease left-0 right-0 top-0 z-30 flex h-16 bg-white transition-all duration-150 dark:bg-black dark:text-white">
+      <nav className="ease left-0 right-0 top-0 z-30 flex h-16  transition-all duration-150">
         <div className="mx-auto flex h-full max-w-screen-xl items-center justify-center space-x-5 px-10 sm:px-20">
           <Link href="/" className="flex items-center justify-center">
             <div className="inline-block h-8 w-8 overflow-hidden rounded-full align-middle">
@@ -124,16 +134,13 @@ export default async function SiteLayout({
             </span>
           </Link>
         </div>
-      </div>
+        <ConnectEthButton />
+      </nav>
+      <CityDrawer>
 
-      <div className="mt-20">{children}</div>
+      </CityDrawer>
 
-      {domain == `demo.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` ||
-      domain == `platformize.co` ? (
-        <CTA />
-      ) : (
-        <ReportAbuse />
-      )}
+      <div className="min-h-screen sm:pl-60">{children}</div>
     </div>
   );
 }

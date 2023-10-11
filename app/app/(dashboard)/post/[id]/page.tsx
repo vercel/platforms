@@ -13,7 +13,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
       id: params.id,
     },
     include: {
-      site: {
+      organization: {
         select: {
           subdomain: true,
         },

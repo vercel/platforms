@@ -1,9 +1,10 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { Post, Site } from "@prisma/client";
+import mongoClient from "@/lib/tripsha/db-connect";
+import { Post, Organization } from "@prisma/client";
 import { revalidateTag } from "next/cache";
-import { withPostAuth, withSiteAuth } from "./auth";
+import { withPostAuth, withOrganizationAuth } from "./auth";
 import { getSession } from "@/lib/auth";
 import {
   addDomainToVercel,
@@ -21,7 +22,7 @@ const nanoid = customAlphabet(
   7,
 ); // 7-character random string
 
-export const createSite = async (formData: FormData) => {
+export const createOrganization = async (formData: FormData) => {
   const session = await getSession();
   if (!session?.user.id) {
     return {
@@ -33,7 +34,7 @@ export const createSite = async (formData: FormData) => {
   const subdomain = formData.get("subdomain") as string;
 
   try {
-    const response = await prisma.site.create({
+    const organization = await prisma.organization.create({
       data: {
         name,
         description,
@@ -43,13 +44,48 @@ export const createSite = async (formData: FormData) => {
             id: session.user.id,
           },
         },
+        roles: {
+          create: {
+            name: "admin",
+          },
+        },
+      },
+      include: {
+        roles: true,
       },
     });
+
+    try {
+      await prisma.userRole.create({
+        data: {
+          user: {
+            connect: {
+              id: session.user.id,
+            },
+          },
+          role: {
+            connect: {
+              id: organization.roles[0].id,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      // If user role creation fails, delete the organization
+      await prisma.organization.delete({
+        where: {
+          id: organization.id,
+        },
+      });
+      throw error; // Re-throw the error to be handled by the outer catch block
+    }
+
     await revalidateTag(
       `${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
     );
-    return response;
+    return organization;
   } catch (error: any) {
+    console.error(error);
     if (error.code === "P2002") {
       return {
         error: `This subdomain is already taken`,
@@ -62,8 +98,8 @@ export const createSite = async (formData: FormData) => {
   }
 };
 
-export const updateSite = withSiteAuth(
-  async (formData: FormData, site: Site, key: string) => {
+export const updateOrganization = withOrganizationAuth(
+  async (formData: FormData, organization: Organization, key: string) => {
     const value = formData.get(key) as string;
 
     try {
@@ -77,9 +113,9 @@ export const updateSite = withSiteAuth(
 
           // if the custom domain is valid, we need to add it to Vercel
         } else if (validDomainRegex.test(value)) {
-          response = await prisma.site.update({
+          response = await prisma.organization.update({
             where: {
-              id: site.id,
+              id: organization.id,
             },
             data: {
               customDomain: value,
@@ -89,9 +125,9 @@ export const updateSite = withSiteAuth(
 
           // empty value means the user wants to remove the custom domain
         } else if (value === "") {
-          response = await prisma.site.update({
+          response = await prisma.organization.update({
             where: {
-              id: site.id,
+              id: organization.id,
             },
             data: {
               customDomain: null,
@@ -99,15 +135,17 @@ export const updateSite = withSiteAuth(
           });
         }
 
-        // if the site had a different customDomain before, we need to remove it from Vercel
-        if (site.customDomain && site.customDomain !== value) {
-          response = await removeDomainFromVercelProject(site.customDomain);
+        // if the Organization had a different customDomain before, we need to remove it from Vercel
+        if (organization.customDomain && organization.customDomain !== value) {
+          response = await removeDomainFromVercelProject(
+            organization.customDomain,
+          );
 
           /* Optional: remove domain from Vercel team 
 
-          // first, we need to check if the apex domain is being used by other sites
-          const apexDomain = getApexDomain(`https://${site.customDomain}`);
-          const domainCount = await prisma.site.count({
+          // first, we need to check if the apex domain is being used by other Organizations
+          const apexDomain = getApexDomain(`https://${organization.customDomain}`);
+          const domainCount = await prisma.organization.count({
             where: {
               OR: [
                 {
@@ -122,15 +160,15 @@ export const updateSite = withSiteAuth(
             },
           });
 
-          // if the apex domain is being used by other sites
+          // if the apex domain is being used by other Organizations
           // we should only remove it from our Vercel project
           if (domainCount >= 1) {
-            await removeDomainFromVercelProject(site.customDomain);
+            await removeDomainFromVercelProject(organization.customDomain);
           } else {
-            // this is the only site using this apex domain
+            // this is the only Organization using this apex domain
             // so we can remove it entirely from our Vercel team
             await removeDomainFromVercelTeam(
-              site.customDomain
+              organization.customDomain
             );
           }
           
@@ -153,9 +191,9 @@ export const updateSite = withSiteAuth(
 
         const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
-        response = await prisma.site.update({
+        response = await prisma.organization.update({
           where: {
-            id: site.id,
+            id: organization.id,
           },
           data: {
             [key]: url,
@@ -163,9 +201,9 @@ export const updateSite = withSiteAuth(
           },
         });
       } else {
-        response = await prisma.site.update({
+        response = await prisma.organization.update({
           where: {
-            id: site.id,
+            id: organization.id,
           },
           data: {
             [key]: value,
@@ -173,15 +211,15 @@ export const updateSite = withSiteAuth(
         });
       }
       console.log(
-        "Updated site data! Revalidating tags: ",
-        `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
-        `${site.customDomain}-metadata`,
+        "Updated Organization data! Revalidating tags: ",
+        `${organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+        `${organization.customDomain}-metadata`,
       );
       await revalidateTag(
-        `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+        `${organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
       );
-      site.customDomain &&
-        (await revalidateTag(`${site.customDomain}-metadata`));
+      organization.customDomain &&
+        (await revalidateTag(`${organization.customDomain}-metadata`));
 
       return response;
     } catch (error: any) {
@@ -198,59 +236,68 @@ export const updateSite = withSiteAuth(
   },
 );
 
-export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
-  try {
-    const response = await prisma.site.delete({
-      where: {
-        id: site.id,
-      },
-    });
-    await revalidateTag(
-      `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
-    );
-    response.customDomain &&
-      (await revalidateTag(`${site.customDomain}-metadata`));
-    return response;
-  } catch (error: any) {
-    return {
-      error: error.message,
-    };
-  }
-});
+export const deleteOrganization = withOrganizationAuth(
+  async (_: FormData, organization: Organization) => {
+    try {
+      const response = await prisma.organization.delete({
+        where: {
+          id: organization.id,
+        },
+      });
+      await revalidateTag(
+        `${organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+      );
+      response.customDomain &&
+        (await revalidateTag(`${organization.customDomain}-metadata`));
+      return response;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
 
-export const getSiteFromPostId = async (postId: string) => {
+export const getOrganizationFromPostId = async (postId: string) => {
   const post = await prisma.post.findUnique({
     where: {
       id: postId,
     },
-    select: {
-      siteId: true,
+    include: {
+      organization: {
+        select: {
+          subdomain: true,
+        },
+      },
     },
   });
-  return post?.siteId;
+  return post?.organization?.subdomain ?? undefined;
 };
 
-export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
-  const session = await getSession();
-  if (!session?.user.id) {
-    return {
-      error: "Not authenticated",
-    };
-  }
-  const response = await prisma.post.create({
-    data: {
-      siteId: site.id,
-      userId: session.user.id,
-    },
-  });
+export const createPost = withOrganizationAuth(
+  async (_: FormData, organization: Organization) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const response = await prisma.post.create({
+      data: {
+        organizationId: organization.id,
+        userId: session.user.id,
+      },
+    });
 
-  await revalidateTag(
-    `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
-  );
-  site.customDomain && (await revalidateTag(`${site.customDomain}-posts`));
+    await revalidateTag(
+      `${organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
+    );
+    organization.customDomain &&
+      (await revalidateTag(`${organization.customDomain}-posts`));
 
-  return response;
-});
+    return response;
+  },
+);
 
 // creating a separate function for this because we're not using FormData
 export const updatePost = async (data: Post) => {
@@ -265,7 +312,7 @@ export const updatePost = async (data: Post) => {
       id: data.id,
     },
     include: {
-      site: true,
+      organization: true,
     },
   });
   if (!post || post.userId !== session.user.id) {
@@ -286,16 +333,16 @@ export const updatePost = async (data: Post) => {
     });
 
     await revalidateTag(
-      `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
+      `${post.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
     );
     await revalidateTag(
-      `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-${post.slug}`,
+      `${post.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-${post.slug}`,
     );
 
-    // if the site has a custom domain, we need to revalidate those tags too
-    post.site?.customDomain &&
-      (await revalidateTag(`${post.site?.customDomain}-posts`),
-      await revalidateTag(`${post.site?.customDomain}-${post.slug}`));
+    // if the Organization has a custom domain, we need to revalidate those tags too
+    post.organization?.customDomain &&
+      (await revalidateTag(`${post.organization?.customDomain}-posts`),
+      await revalidateTag(`${post.organization?.customDomain}-${post.slug}`));
 
     return response;
   } catch (error: any) {
@@ -309,7 +356,7 @@ export const updatePostMetadata = withPostAuth(
   async (
     formData: FormData,
     post: Post & {
-      site: Site;
+      organization: Organization;
     },
     key: string,
   ) => {
@@ -348,16 +395,16 @@ export const updatePostMetadata = withPostAuth(
       }
 
       await revalidateTag(
-        `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
+        `${post.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
       );
       await revalidateTag(
-        `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-${post.slug}`,
+        `${post.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-${post.slug}`,
       );
 
-      // if the site has a custom domain, we need to revalidate those tags too
-      post.site?.customDomain &&
-        (await revalidateTag(`${post.site?.customDomain}-posts`),
-        await revalidateTag(`${post.site?.customDomain}-${post.slug}`));
+      // if the Organization has a custom domain, we need to revalidate those tags too
+      post.organization?.customDomain &&
+        (await revalidateTag(`${post.organization?.customDomain}-posts`),
+        await revalidateTag(`${post.organization?.customDomain}-${post.slug}`));
 
       return response;
     } catch (error: any) {
@@ -381,7 +428,7 @@ export const deletePost = withPostAuth(async (_: FormData, post: Post) => {
         id: post.id,
       },
       select: {
-        siteId: true,
+        organizationId: true,
       },
     });
     return response;
@@ -427,3 +474,101 @@ export const editUser = async (
     }
   }
 };
+
+export const createRole = withOrganizationAuth(
+  async (formData: FormData, organization: Organization) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+
+    try {
+      const role = await prisma.role.create({
+        data: {
+          name,
+          description,
+          organization: {
+            connect: {
+              id: organization.id,
+            },
+          },
+        },
+      });
+      return role;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export const updateRole = withOrganizationAuth(
+  async (formData: FormData, organization: Organization, roleId: string) => {
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+
+    try {
+      const role = await prisma.role.update({
+        where: {
+          id: roleId,
+        },
+        data: {
+          name,
+          description,
+        },
+      });
+      return role;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export const deleteRole = withOrganizationAuth(
+  async (_: FormData, organization: Organization, roleId: string) => {
+    try {
+      const role = await prisma.role.delete({
+        where: {
+          id: roleId,
+        },
+      });
+      return role;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export async function getUsersWithOrganizationRole(subdomain: string) {
+  return await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            organization: {
+              subdomain: subdomain,
+            },
+          },
+        },
+      },
+    },
+    include: {
+      userRoles: {
+        include: {
+          role: true,
+        },
+      },
+    },
+  });
+}
+
+export async function getBookings() {}

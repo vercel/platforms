@@ -5,10 +5,10 @@ import PostCard from "./post-card";
 import Image from "next/image";
 
 export default async function Posts({
-  siteId,
+  organizationId,
   limit,
 }: {
-  siteId?: string;
+  organizationId?: string;
   limit?: number;
 }) {
   const session = await getSession();
@@ -18,13 +18,13 @@ export default async function Posts({
   const posts = await prisma.post.findMany({
     where: {
       userId: session.user.id as string,
-      ...(siteId ? { siteId } : {}),
+      ...(organizationId ? { organizationId } : {}),
     },
     orderBy: {
       updatedAt: "desc",
     },
     include: {
-      site: true,
+      organization: true,
     },
     ...(limit ? { take: limit } : {}),
   });

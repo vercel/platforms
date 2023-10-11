@@ -8,32 +8,6 @@
   }
 }
 
-html,
-body {
-  -webkit-font-smoothing: antialiased;
-  width: 100vw;
-  overflow-x: hidden;
-  @apply font-sans;
-}
-
-/* Change Autocomplete styles in Chrome
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus,
-select:-webkit-autofill,
-select:-webkit-autofill:hover,
-select:-webkit-autofill:focus {
-  border: 1px solid var(--brand-gray300);
-  -webkit-text-fill-color: var(--brand-gray200);
-  -webkit-box-shadow: 0 0 0px 1000px var(--brand-gray300) inset;
-  box-shadow: 0 0 0px 1000px gray inset;
-  transition: background-color 5000s ease-in-out 0s;
-  color: white;
-} */
-
 @layer utilities {
   .overflow-hidden {
     -webkit-mask-image: -webkit-radial-gradient(white, black);
@@ -47,7 +21,6 @@ select:-webkit-autofill:focus {
   pointer-events: none;
   height: 0;
 }
-
 .ProseMirror .is-empty::before {
   content: attr(data-placeholder);
   float: left;
@@ -74,18 +47,18 @@ select:-webkit-autofill:focus {
 
 /* Custom TODO list checkboxes – shoutout to this awesome tutorial: https://moderncss.dev/pure-css-custom-checkbox-style/ */
 
-ul[data-type="taskList"] li>label {
+ul[data-type="taskList"] li > label {
   margin-right: 0.2rem;
   user-select: none;
 }
 
 @media screen and (max-width: 768px) {
-  ul[data-type="taskList"] li>label {
+  ul[data-type="taskList"] li > label {
     margin-right: 0.5rem;
   }
 }
 
-ul[data-type="taskList"] li>label input[type="checkbox"] {
+ul[data-type="taskList"] li > label input[type="checkbox"] {
   -webkit-appearance: none;
   appearance: none;
   background-color: #fff;
@@ -124,7 +97,7 @@ ul[data-type="taskList"] li>label input[type="checkbox"] {
   }
 }
 
-ul[data-type="taskList"] li[data-checked="true"]>div>p {
+ul[data-type="taskList"] li[data-checked="true"] > div > p {
   color: #a8a29e;
   text-decoration: line-through;
   text-decoration-thickness: 2px;

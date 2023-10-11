@@ -124,20 +124,13 @@ module.exports = {
       margin: {
         30: "7.5rem",
       },
-      fontWeight: {
-        semibold: "600",
-      },
       fontFamily: {
-        base: ["var(--font-avenir-next)", ...fontFamily.sans],
+        default: ["var(--font-avenir-next)", ...fontFamily.sans],
+        serif: ["var(--font-reckless)", ...fontFamily.serif],
+        sans: ["var(--font-avenir-next)", ...fontFamily.sans],
         cal: ["var(--font-cal)", ...fontFamily.sans],
         title: ["var(--font-title)", ...fontFamily.sans],
         mono: ["Consolas", ...fontFamily.mono],
-        serif: ["var(--font-reckless-neue)", ...fontFamily.serif],
-        inter: ["var(--font-inter)", ...fontFamily.sans],
-        sans: ["var(--font-avenir-next)", ...fontFamily.sans],
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
       typography: {
         DEFAULT: {

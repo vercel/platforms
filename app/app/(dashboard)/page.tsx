@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Sites from "@/components/sites";
+import Organizations from "@/components/organizations";
 import OverviewStats from "@/components/overview-stats";
 import Posts from "@/components/posts";
 import Link from "next/link";
@@ -19,7 +19,7 @@ export default function Overview() {
       <div className="flex flex-col space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="font-cal text-3xl font-bold dark:text-white">
-            Top Sites
+            All Cities
           </h1>
           <Suspense fallback={null}>
             <OverviewSitesCTA />
@@ -34,7 +34,7 @@ export default function Overview() {
             </div>
           }
         >
-          <Sites limit={4} />
+          <Organizations limit={4} />
         </Suspense>
       </div>
 

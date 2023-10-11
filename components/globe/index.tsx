@@ -20,28 +20,12 @@ const World = () => {
     const getAlt = (d: CityData) => d.elevation * 5e-5
 
     const getTooltip = (d: CityData) => `
-      <div class="bg-brand-gray200">
+      <div class="bg-gray-200">
         <div><b>${d.name}</b>, ${d.country}</div>
         <div>(${d.type})</div>
         <div>Elevation: <em>${d.elevation}</em>m</div>
       </div>
     `
-
-    // primary: "#00FFEA",
-    //                 secondary: "#FF8000",
-    //                 magenta: "#FF0062",
-    //                 lightBase: "#fbfaf8",
-    //                 darkBase: "#2C2A26",
-    //                 gray50: "#fbfaf8",
-    //                 gray100: "#F8F6F2",
-    //                 gray200: "#F2EDE5",
-    //                 gray300: "#ECE5D8",
-    //                 gray400: "#9C9485",
-    //                 gray600: "#706A5F",
-    //                 gray700: "#59544C",
-    //                 gray800: "#433F39",
-    //                 gray900: "#2C2A26",
-    //                 gray950: "#1A1916",
 
     const width =
         window.innerWidth < 768
@@ -59,8 +43,8 @@ const World = () => {
             height={width}
             width={width}
             ref={globeRef}
-            globeImageUrl="/earth-dark.jpg"
-            bumpImageUrl="/earth-topology.png"
+            // globeImageUrl="/earth-dark.jpg"
+            // bumpImageUrl="/earth-topology.png"
             waitForGlobeReady={true}
             backgroundColor="#1A1916"
             pointsData={cities}

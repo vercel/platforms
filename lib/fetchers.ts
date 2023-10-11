@@ -12,7 +12,7 @@ export async function getSiteData(domain: string) {
 
   return await unstable_cache(
     async () => {
-      return prisma.site.findUnique({
+      return prisma.organization.findUnique({
         where: subdomain ? { subdomain } : { customDomain: domain },
         include: { user: true },
       });
@@ -25,7 +25,7 @@ export async function getSiteData(domain: string) {
   )();
 }
 
-export async function getPostsForSite(domain: string) {
+export async function getPostsForOrganization(domain: string) {
   const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
     ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
     : null;
@@ -34,7 +34,7 @@ export async function getPostsForSite(domain: string) {
     async () => {
       return prisma.post.findMany({
         where: {
-          site: subdomain ? { subdomain } : { customDomain: domain },
+          organization: subdomain ? { subdomain } : { customDomain: domain },
           published: true,
         },
         select: {
@@ -69,12 +69,12 @@ export async function getPostData(domain: string, slug: string) {
     async () => {
       const data = await prisma.post.findFirst({
         where: {
-          site: subdomain ? { subdomain } : { customDomain: domain },
+          organization: subdomain ? { subdomain } : { customDomain: domain },
           slug,
           published: true,
         },
         include: {
-          site: {
+          organization: {
             include: {
               user: true,
             },
@@ -88,7 +88,7 @@ export async function getPostData(domain: string, slug: string) {
         getMdxSource(data.content!),
         prisma.post.findMany({
           where: {
-            site: subdomain ? { subdomain } : { customDomain: domain },
+            organization: subdomain ? { subdomain } : { customDomain: domain },
             published: true,
             NOT: {
               id: data.id,

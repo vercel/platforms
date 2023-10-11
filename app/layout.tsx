@@ -44,6 +44,7 @@ export default function RootLayout({
           avenirNext.variable,
           cal.variable,
           inter.variable,
+          'bg-brand-gray100 dark:bg-brand-gray900 text-brand-gray900 dark:text-brand-gray100 font-default'
         )}
       >
         <Providers>

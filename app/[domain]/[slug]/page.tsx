@@ -64,20 +64,20 @@ export default async function SitePostPage({
         <a
           // if you are using Github OAuth, you can get rid of the Twitter option
           href={
-            data.site?.user?.username
-              ? `https://twitter.com/${data.site.user.username}`
-              : `https://github.com/${data.site?.user?.gh_username}`
+            data.organization?.user?.username
+              ? `https://twitter.com/${data.organization.user.username}`
+              : `https://github.com/${data.organization?.user?.gh_username}`
           }
           rel="noreferrer"
           target="_blank"
         >
           <div className="my-8">
             <div className="relative inline-block h-8 w-8 overflow-hidden rounded-full align-middle md:h-12 md:w-12">
-              {data.site?.user?.image ? (
+              {data.organization?.user?.image ? (
                 <BlurImage
-                  alt={data.site?.user?.name ?? "User Avatar"}
+                  alt={data.organization?.user?.name ?? "User Avatar"}
                   height={80}
-                  src={data.site.user.image}
+                  src={data.organization.user.image}
                   width={80}
                 />
               ) : (
@@ -87,7 +87,7 @@ export default async function SitePostPage({
               )}
             </div>
             <div className="text-md ml-3 inline-block align-middle dark:text-white md:text-lg">
-              by <span className="font-semibold">{data.site?.user?.name}</span>
+              by <span className="font-semibold">{data.organization?.user?.name}</span>
             </div>
           </div>
         </a>
