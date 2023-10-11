@@ -22,13 +22,13 @@ export default function OverviewStats() {
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       <Card className="dark:!bg-stone-900">
-        <Text>Total Visitors</Text>
+        <Text>Annual Income</Text>
         <Flex
           className="space-x-3 truncate"
           justifyContent="start"
           alignItems="baseline"
         >
-          <Metric className="font-cal">170,418</Metric>
+          <Metric className="font-cal">$170,418</Metric>
           <BadgeDelta
             deltaType="moderateIncrease"
             className="dark:bg-green-900 dark:bg-opacity-50 dark:text-green-400"
@@ -37,7 +37,39 @@ export default function OverviewStats() {
           </BadgeDelta>
         </Flex>
         <AreaChart
-          className="mt-6 h-28"
+          className="mt-6 h-20"
+          data={data}
+          index="Month"
+          valueFormatter={(number: number) =>
+            `${Intl.NumberFormat("us").format(number).toString()}`
+          }
+          categories={["Total Visitors"]}
+          colors={["blue"]}
+          showXAxis={true}
+          showGridLines={false}
+          startEndOnly={true}
+          showYAxis={false}
+          showLegend={false}
+        />
+      </Card>
+
+      <Card className="dark:!bg-stone-900">
+        <Text>Sq Meters</Text>
+        <Flex
+          className="space-x-3 truncate"
+          justifyContent="start"
+          alignItems="baseline"
+        >
+          <Metric className="font-cal">10,418</Metric>
+          <BadgeDelta
+            deltaType="moderateIncrease"
+            className="dark:bg-green-900 dark:bg-opacity-50 dark:text-green-400"
+          >
+            17%
+          </BadgeDelta>
+        </Flex>
+        <AreaChart
+          className="mt-6 h-20"
           data={data}
           index="Month"
           valueFormatter={(number: number) =>

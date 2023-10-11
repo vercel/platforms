@@ -114,7 +114,7 @@ model Organization {
   posts         Post[]
   events        Event[]
   roles         Role[] // Add this line
-
+  api_keys      ApiKey[]
   @@index([userId])
 }
 
@@ -162,4 +162,17 @@ model UserRole {
   role   Role   @relation(fields: [roleId], references: [id])
 
   @@unique([userId, roleId])
+}
+
+model ApiKey {
+  id              String        @id @default(cuid())
+  key             String        @unique
+  name            String
+  description     String?
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([organizationId])
 }

@@ -61,7 +61,10 @@ const bookingSchema = new mongoose.Schema<IBooking>(
   {
     // First two required for create booking
     tripId: { type: Schema.Types.ObjectId, index: true },
-    memberId: { type: Schema.Types.ObjectId, index: true },
+    memberId: {
+      type: Schema.Types.ObjectId,
+      ref: 'member' // or 'Member', depending on your schema
+    },
     onwerId: { type: Schema.Types.ObjectId, index: true },
     stripePaymentMethod: { type: Object },
     /**
