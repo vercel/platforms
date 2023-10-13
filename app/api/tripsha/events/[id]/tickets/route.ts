@@ -28,7 +28,7 @@ export async function GET(
     console.log(value, key)
   })
   const apiKey = request.nextUrl.searchParams.get("key");
-  console.log('key: ', apiKey);
+  console.log('key: ', apiKey, 'process.env.TRIPSHA_API_KEY', process.env.TRIPSHA_API_KEY);
 
   if (apiKey !== process.env.TRIPSHA_API_KEY) {
     return NextResponse.json("Invalid API Key", { status: 400 });
