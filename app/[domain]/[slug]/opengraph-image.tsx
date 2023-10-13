@@ -20,12 +20,12 @@ export default async function PostOG({
   const response = await sql`
   SELECT post.title, post.description, post.image, "user".name as "authorName", "user".image as "authorImage"
   FROM "Post" AS post 
-  INNER JOIN "Site" AS site ON post."siteId" = site.id 
-  INNER JOIN "User" AS "user" ON site."userId" = "user".id 
+  INNER JOIN "Organization" AS organization ON post."organizationId" = organization.id 
+  INNER JOIN "User" AS "user" ON organization."userId" = "user".id 
   WHERE 
     (
-        site.subdomain = ${subdomain}
-        OR site."customDomain" = ${domain}
+        organization.subdomain = ${subdomain}
+        OR organization."customDomain" = ${domain}
     )
     AND post.slug = ${slug}
   LIMIT 1;

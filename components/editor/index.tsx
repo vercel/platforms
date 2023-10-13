@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import LoadingDots from "../icons/loading-dots";
 import { ExternalLink } from "lucide-react";
 
-type PostWithSite = Post & { site: { subdomain: string | null } | null };
+type PostWithSite = Post & { organization: { subdomain: string | null } | null };
 
 export default function Editor({ post }: { post: PostWithSite }) {
   let [isPendingSaving, startTransitionSaving] = useTransition();
@@ -26,8 +26,8 @@ export default function Editor({ post }: { post: PostWithSite }) {
   const [hydrated, setHydrated] = useState(false);
 
   const url = process.env.NEXT_PUBLIC_VERCEL_ENV
-    ? `https://${data.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`
-    : `http://${data.site?.subdomain}.localhost:3000/${data.slug}`;
+    ? `https://${data.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`
+    : `http://${data.organization?.subdomain}.localhost:3000/${data.slug}`;
 
   const [debouncedData] = useDebounce(data, 1000);
   useEffect(() => {
@@ -175,19 +175,19 @@ export default function Editor({ post }: { post: PostWithSite }) {
   }, [editor, post, hydrated]);
 
   return (
-    <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 dark:border-stone-700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
+    <div className="relative min-h-[500px] w-full max-w-screen-lg bg-brand-gray50 border-stone-200 p-12 px-8 dark:border-stone-700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
       <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
         {data.published && (
           <a
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center space-x-1 text-sm text-stone-400 hover:text-stone-500"
+            className="flex items-center space-x-1 text-sm text-brand-gray400 hover:text-brand-gray500"
           >
             <ExternalLink className="h-4 w-4" />
           </a>
         )}
-        <div className="rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400 dark:bg-stone-800 dark:text-stone-500">
+        <div className="rounded-lg bg-brand-50 px-2 py-1 text-sm text-brand-gray400 dark:bg-stone-800 dark:text-brand-gray500">
           {isPendingSaving ? "Saving..." : "Saved"}
         </div>
         <button
@@ -211,8 +211,8 @@ export default function Editor({ post }: { post: PostWithSite }) {
           className={cn(
             "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
             isPendingPublishing
-              ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"
-              : "border border-black bg-black text-white hover:bg-white hover:text-black active:bg-stone-100 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-white dark:active:bg-stone-800",
+              ? "cursor-not-allowed border-stone-200 bg-brand-50 text-brand-gray400 dark:border-stone-700 dark:bg-stone-800 dark:text-brand-gray300"
+              : "border border-black bg-black text-brand-gray100 hover:bg-brand-gray50 hover:text-black active:bg-brand-50 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-brand-gray100 dark:active:bg-stone-800",
           )}
           disabled={isPendingPublishing}
         >
@@ -230,13 +230,13 @@ export default function Editor({ post }: { post: PostWithSite }) {
           defaultValue={post?.title || ""}
           autoFocus
           onChange={(e) => setData({ ...data, title: e.target.value })}
-          className="dark:placeholder-text-600 border-none px-0 font-cal text-3xl placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
+          className="bg-brand-gray50 text-brand-gray800 dark:placeholder-text-600 border-none px-0 font-cal text-3xl placeholder:text-brand-gray400 focus:outline-none focus:ring-0 dark:bg-black dark:text-brand-gray100"
         />
         <TextareaAutosize
           placeholder="Description"
           defaultValue={post?.description || ""}
           onChange={(e) => setData({ ...data, description: e.target.value })}
-          className="dark:placeholder-text-600 w-full resize-none border-none px-0 placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
+          className="bg-brand-gray50 text-brand-gray800 dark:placeholder-text-600 w-full resize-none border-none px-0 placeholder:text-brand-gray400 focus:outline-none focus:ring-0 dark:bg-black dark:text-brand-gray100"
         />
       </div>
       {editor && <EditorBubbleMenu editor={editor} />}

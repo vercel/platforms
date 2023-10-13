@@ -1,5 +1,9 @@
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import DiscordProvider from "next-auth/providers/discord";
+import TwitterProvider from "next-auth/providers/twitter";
+
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import { getCsrfToken } from "next-auth/react";
@@ -51,16 +55,70 @@ export const authOptions: NextAuthOptions = {
 
           // const nonce = await getCsrfToken({ req });
 
-          // console.log(nonce);
+          // console.log("nonce", nonce);
+          // if (siwe.nonce !== nonce) {
+          //   return null;
+          // }
 
           const result = await siwe.verify({
             signature: credentials?.signature || "",
             domain: nextAuthUrl.host,
             // nonce: nonce,
           });
+          console.log("result", result);
           if (result.success) {
+            // Check if account already exists
+            let account = await prisma.account.findFirst({
+              where: {
+                providerAccountId: siwe.address,
+              },
+              include: {
+                user: true,
+              }
+            });
+
+            console.log("account", account);
+
+            // If account does not exist, create a new account and user
+            if (!account) {
+
+              
+              const user = await prisma.user.create({
+                data: {
+                  eth_address: siwe.address,
+                  // ens_name: 
+                  /* user data */
+                },
+              });
+
+              try {
+                account = await prisma.account.create({
+                  data: {
+                    type: 'ethereum', // Add this line
+                    provider: 'ethereum', // Add this line
+                    providerAccountId: siwe.address, // Add this line
+                    user: {
+                      connect: {
+                        id: user.id,
+                      },
+                    },
+                  },
+                  include: {
+                    user: true, // Include the user
+                  },
+                });
+              } catch (error) {
+                console.log("error", error);
+              }
+
+            }
+            console.log("account", account);
+            if (!account?.user) {
+              return null;
+            }
+
             return {
-              id: siwe.address,
+              id: account.user.id,
             };
           }
           return null;
@@ -95,7 +153,7 @@ export const authOptions: NextAuthOptions = {
       name: `${VERCEL_DEPLOYMENT ? "__Secure-" : ""}next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: "lax",
+        sameorganization: "lax",
         path: "/",
         // When working on localhost, the cookie domain must be omitted entirely (https://stackoverflow.com/a/1188145)
         domain: VERCEL_DEPLOYMENT
@@ -137,10 +195,10 @@ export function getSession() {
   } | null>;
 }
 
-export function withSiteAuth(action: any) {
+export function withOrganizationAuth(action: any) {
   return async (
     formData: FormData | null,
-    siteId: string,
+    subdomain: string,
     key: string | null,
   ) => {
     const session = await getSession();
@@ -149,18 +207,21 @@ export function withSiteAuth(action: any) {
         error: "Not authenticated",
       };
     }
-    const site = await prisma.site.findUnique({
+    const organization = await prisma.organization.findUnique({
       where: {
-        id: siteId,
+        subdomain: subdomain,
       },
     });
-    if (!site || site.userId !== session.user.id) {
+  // fetch roles from 
+
+
+    if (!organization || organization.userId !== session.user.id) {
       return {
         error: "Not authorized",
       };
     }
 
-    return action(formData, site, key);
+    return action(formData, organization, key);
   };
 }
 
@@ -181,7 +242,7 @@ export function withPostAuth(action: any) {
         id: postId,
       },
       include: {
-        site: true,
+        organization: true,
       },
     });
     if (!post || post.userId !== session.user.id) {

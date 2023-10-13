@@ -39,11 +39,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          reckless.variable,
           recklessNeue.variable,
           avenirNext.variable,
           cal.variable,
           inter.variable,
+          'bg-brand-gray100 dark:bg-brand-gray900 text-brand-gray900 dark:text-brand-gray100 font-default'
         )}
       >
         <Providers>

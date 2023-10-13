@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
 import BlogCard from "@/components/blog-card";
-import { getPostsForSite, getSiteData } from "@/lib/fetchers";
+import { getPostsForOrganization, getSiteData } from "@/lib/fetchers";
 import Image from "next/image";
+import { getSession } from "@/lib/auth";
 
 export default async function SiteHomePage({
   params,
@@ -13,11 +14,12 @@ export default async function SiteHomePage({
 }) {
   // domain = domain.replace('%3A', ':');
   const domain = params.domain.replace('%3A', ':');
-
+  const session = await getSession();
+  console.log("domain session: ", session);
   const sitedata = await getSiteData(domain);
   const [data, posts] = await Promise.all([
     getSiteData(domain),
-    getPostsForSite(domain),
+    getPostsForOrganization(domain),
   ]);
 
   if (!data) {

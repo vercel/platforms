@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #000000;
-  }
-}
 
 html,
 body {
@@ -16,6 +11,11 @@ body {
   @apply font-sans;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #000000;
+  }
+}
 
 @layer utilities {
   .overflow-hidden {

@@ -9,14 +9,14 @@ import va from "@vercel/analytics";
 
 export default function CreatePostButton() {
   const router = useRouter();
-  const { id } = useParams() as { id: string };
+  const { subdomain } = useParams() as { subdomain: string };
   const [isPending, startTransition] = useTransition();
 
   return (
     <button
       onClick={() =>
         startTransition(async () => {
-          const post = await createPost(null, id, null);
+          const post = await createPost(null, subdomain, null);
           va.track("Created Post");
           router.refresh();
           router.push(`/post/${post.id}`);

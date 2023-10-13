@@ -41,7 +41,7 @@ export default function ReportAbuse() {
               Report Abuse
             </h2>
             <p className="mt-2 text-sm leading-6 text-stone-600">
-              Found a site with abusive content? Let us know!
+              Found a city with abusive content? Let us know!
             </p>
           </div>
 

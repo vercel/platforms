@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BubbleMenu, BubbleMenuProps } from "@tiptap/react";
 import { FC, useState } from "react";
 import {
@@ -10,6 +11,7 @@ import {
 
 import { NodeSelector } from "./node-selector";
 import { cn } from "@/lib/utils";
+import { Editor } from "@tiptap/core";
 
 export interface BubbleMenuItem {
   name: string;
@@ -79,7 +81,7 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
       className="flex rounded border border-stone-200 bg-white shadow-xl"
     >
       <NodeSelector
-        editor={props.editor}
+        editor={props.editor as Editor}
         isOpen={isNodeSelectorOpen}
         setIsOpen={() => {
           setIsNodeSelectorOpen(!isNodeSelectorOpen);

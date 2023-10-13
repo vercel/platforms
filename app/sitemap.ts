@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { getPostsForSite } from "@/lib/fetchers";
+import { getPostsForOrganization } from "@/lib/fetchers";
 
 export default async function Sitemap() {
   const headersList = headers();
@@ -10,7 +10,7 @@ export default async function Sitemap() {
     "vercel.pub";
     console.log(`Sitemap Domain: ${domain}`);
 
-  const posts = await getPostsForSite(domain);
+  const posts = await getPostsForOrganization(domain);
 
   return [
     {
