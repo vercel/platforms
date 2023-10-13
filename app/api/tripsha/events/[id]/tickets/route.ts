@@ -24,6 +24,8 @@ export async function GET(
     return NextResponse.json("Trip ID is required", { status: 400 });
   }
 
+  console.log('request.nextUrl.searchParams', request.nextUrl.searchParams)
+
   request.nextUrl.searchParams.forEach((value, key) => {
     console.log(value, key)
   })
