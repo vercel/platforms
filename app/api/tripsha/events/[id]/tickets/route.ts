@@ -25,12 +25,13 @@ export async function GET(
   }
 
   const API_KEY = request.nextUrl.searchParams.get("API_KEY");
+  console.log('API_KEY: ', API_KEY);
 
   if (API_KEY !== process.env.TRIPSHA_API_KEY) {
     return NextResponse.json("Invalid API Key", { status: 400 });
   }
 
-  // only allow this one trip for now
+  // only allow this for one trip for now
   if (params.id !== ZUCONNECT_TRIP_ID) {
     return NextResponse.json("Invalid Request", { status: 400 });
   }
