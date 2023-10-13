@@ -126,7 +126,7 @@ module.exports = {
       },
       fontFamily: {
         default: ["var(--font-avenir-next)", ...fontFamily.sans],
-        serif: ["var(--font-reckless)", ...fontFamily.serif],
+        serif: ["var(--font-reckless-neue)", ...fontFamily.serif],
         sans: ["var(--font-avenir-next)", ...fontFamily.sans],
         cal: ["var(--font-cal)", ...fontFamily.sans],
         title: ["var(--font-title)", ...fontFamily.sans],
@@ -136,13 +136,13 @@ module.exports = {
         DEFAULT: {
           css: {
             h1: {
-              fontFamily: "Cal Sans",
+              fontFamily: "Reckless Neue",
             },
             h2: {
-              fontFamily: "Cal Sans",
+              fontFamily: "Reckless Neue",
             },
             h3: {
-              fontFamily: "Cal Sans",
+              fontFamily: "Reckless Neue",
             },
             "blockquote p:first-of-type::before": { content: "none" },
             "blockquote p:first-of-type::after": { content: "none" },

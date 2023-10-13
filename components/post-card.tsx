@@ -1,13 +1,13 @@
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, random } from "@/lib/utils";
-import { Post, Site } from "@prisma/client";
+import { Post, Organization } from "@prisma/client";
 import { BarChart, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 export default function PostCard({
   data,
 }: {
-  data: Post & { organization: Site | null };
+  data: Post & { organization: Organization | null };
 }) {
   const url = `${data.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`;
 

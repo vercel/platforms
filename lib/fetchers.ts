@@ -1,7 +1,7 @@
 import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
 import { serialize } from "next-mdx-remote/serialize";
-import { replaceExamples, replaceTweets } from "@/lib/remark-plugins";
+import { replaceTweets } from "@/lib/remark-plugins";
 
 export async function getSiteData(domain: string) {
   const cleanDomain = domain.replace('%3A', ':');
@@ -127,7 +127,7 @@ async function getMdxSource(postContents: string) {
   // Serialize the content string into MDX
   const mdxSource = await serialize(content, {
     mdxOptions: {
-      remarkPlugins: [replaceTweets, () => replaceExamples(prisma)],
+      remarkPlugins: [replaceTweets],
     },
   });
 

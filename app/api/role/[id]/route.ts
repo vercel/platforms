@@ -23,8 +23,8 @@ export async function GET(
   }
   console.log("session: ", session);
 
-  const allCookies = cookies().getAll();
-  console.log("allCookies: ", allCookies);
+  // const allCookies = cookies().getAll();
+  // console.log("allCookies: ", allCookies);
   try {
     const role = await prisma.role.findUnique({
       where: {

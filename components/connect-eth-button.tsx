@@ -6,6 +6,7 @@ import {
   useEnsAvatar,
   useEnsName,
 } from "wagmi";
+import Image from "next/image";
 
 export default function Profile() {
   const { address, connector, isConnected } = useAccount();
@@ -18,7 +19,7 @@ export default function Profile() {
   if (isConnected) {
     return (
       <div>
-        <img src={ensAvatar} alt="ENS Avatar" />
+        {ensAvatar && <Image src={ensAvatar} alt="ENS Avatar" />}
         <div>{ensName ? `${ensName} (${address})` : address}</div>
         <div>Connected to {connector?.name}</div>
         <button onClick={() => disconnect()}>Disconnect</button>

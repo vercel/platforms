@@ -39,7 +39,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          reckless.variable,
           recklessNeue.variable,
           avenirNext.variable,
           cal.variable,
