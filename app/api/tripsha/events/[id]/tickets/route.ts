@@ -24,10 +24,13 @@ export async function GET(
     return NextResponse.json("Trip ID is required", { status: 400 });
   }
 
-  const API_KEY = request.nextUrl.searchParams.get("API_KEY");
-  console.log('API_KEY: ', API_KEY);
+  request.nextUrl.searchParams.forEach((value, key) => {
+    console.log(value, key)
+  })
+  const apiKey = request.nextUrl.searchParams.get("key");
+  console.log('key: ', apiKey);
 
-  if (API_KEY !== process.env.TRIPSHA_API_KEY) {
+  if (apiKey !== process.env.TRIPSHA_API_KEY) {
     return NextResponse.json("Invalid API Key", { status: 400 });
   }
 
