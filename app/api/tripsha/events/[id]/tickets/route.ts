@@ -17,20 +17,14 @@ const ZUCONNECT_TRIP_ID = "64ff3a6eb4b6950008dee4f8";
 const selectTicketName = (booking: any) => booking?.rooms?.[0]?.variant?.name;
 
 export async function GET(
-  request: NextRequest,
+  request: Request,
   { params }: { params?: { id: string } },
 ) {
   if (!params?.id) {
     return NextResponse.json("Trip ID is required", { status: 400 });
   }
-
-  console.log('request.nextUrl.searchParams', request.nextUrl.searchParams)
-
-  request.nextUrl.searchParams.forEach((value, key) => {
-    console.log(value, key)
-  })
-  const apiKey = request.nextUrl.searchParams.get("key");
-  console.log('key: ', apiKey, 'process.env.TRIPSHA_API_KEY', process.env.TRIPSHA_API_KEY);
+  const { searchParams } = new URL(request.url);
+  const apiKey = searchParams.get("key");
 
   if (apiKey !== process.env.TRIPSHA_API_KEY) {
     return NextResponse.json("Invalid API Key", { status: 400 });
