@@ -70,7 +70,12 @@ export default async function middleware(req: NextRequest) {
     hostname === 'api.' + process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
     console.log("Hostname is api, redirecting to api");
-    return NextResponse.rewrite(new URL(`/api${path}`, req.url));
+    return NextResponse.rewrite(new URL(
+      `/api${path === "/" ? "" : path}${
+        typeof searchParams === "string" ? `?${searchParams}` : ""
+      }`,
+      req.url,
+    ));
     
   }
 
