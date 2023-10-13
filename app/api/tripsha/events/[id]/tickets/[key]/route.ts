@@ -18,13 +18,14 @@ const selectTicketName = (booking: any) => booking?.rooms?.[0]?.variant?.name;
 
 export async function GET(
   request: Request,
-  { params }: { params?: { id: string } },
+  { params }: { params?: { id: string, key: string } },
 ) {
   if (!params?.id) {
     return NextResponse.json("Trip ID is required", { status: 400 });
   }
   const { searchParams } = new URL(request.url);
-  const apiKey = searchParams.get("key");
+  console.log('searchParams', searchParams, searchParams.get('key'))
+  const apiKey = searchParams.get("key") || params.key;
 
   if (apiKey !== process.env.TRIPSHA_API_KEY) {
     return NextResponse.json("Invalid API Key", { status: 400 });
