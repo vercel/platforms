@@ -20,6 +20,7 @@
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/themes": "^2.0.0",
+    "@supabase/supabase-js": "^2.38.1",
     "@tanstack/react-table": "^8.10.6",
     "@tiptap/core": "^2.0.3",
     "@tiptap/extension-color": "^2.0.3",

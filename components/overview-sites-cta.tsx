@@ -9,18 +9,26 @@ export default async function OverviewSitesCTA() {
   if (!session) {
     return 0;
   }
-  const organizations = await prisma.organization.count({
-    where: {
-      userId: session.user.id as string,
-    },
-  });
+
+  // const userRoles = await prisma.userRole.findMany({
+  //   where: {
+  //     userId: session.user.id as string,
+
+  //   },
+  // });
+
+  // const organizationIds = userRoles.map(userRole => userRole.roleId);
+
+  const organizations = await prisma.organization.findMany();
+
+  console.log("organizations: ", organizations);
 
   return organizations > 0 ? (
     <Link
       href="/cities"
-      className="rounded-lg border border-black bg-black px-4 py-1.5 text-sm font-medium text-white transition-all hover:bg-white hover:text-black active:bg-stone-100 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-white dark:active:bg-stone-800"
+      className="rounded-lg border border-black bg-black px-4 py-1.5 text-sm font-medium text-white transition-all hover:bg-white hover:text-black active:bg-brand-gray100 dark:border-brand-gray700 dark:hover:border-brand-gray200 dark:hover:bg-black dark:hover:text-white dark:active:bg-brand-gray800"
     >
-      View All Cities
+      View My Cities
     </Link>
   ) : (
     <CreateOrganizationButton>

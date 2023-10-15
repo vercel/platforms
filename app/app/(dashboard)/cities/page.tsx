@@ -10,7 +10,7 @@ export default function AllCities({ params }: { params: { id: string } }) {
       <div className="flex flex-col space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="font-cal text-3xl font-bold dark:text-white">
-            All Cities
+            My Cities
           </h1>
           <CreateOrganizationButton>
             <CreateOrganizationModal />

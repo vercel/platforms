@@ -29,13 +29,13 @@ export default function AuthModal() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[420px] rounded-2xl border border-stone-200 bg-brand-gray50/95 dark:bg-brand-gray900/50 py-10 shadow-md backdrop-blur-xl dark:border-stone-700">
+    <div className="mx-auto w-full max-w-[420px] rounded-2xl border border-brand-gray200 bg-brand-gray50/95 dark:bg-brand-gray900/50 py-10 shadow-md backdrop-blur-xl dark:border-brand-gray700">
       <div className="mx-6">
         <h1 className="mt-2 font-serif text-2xl font-light dark:text-brand-gray50 md:text-3xl">
           {steps[state] === "email" && "It's time to build new cities"}
           {steps[state] === "verify" && "We sent you an email"}
         </h1>
-        <p className="mt-3 text-sm font-medium text-stone-600 dark:text-brand-gray100">
+        <p className="mt-3 text-sm font-medium text-brand-gray600 dark:text-brand-gray100">
           {steps[state] === "email" && "Sign in or Sign up below."}
           {steps[state] === "verify" &&
             "Click the link in the email we sent you to continue."}
@@ -52,14 +52,14 @@ export default function AuthModal() {
         {/* <Siwe /> */}
         {/* <Suspense
           fallback={
-            <div className="my-2 h-10 w-full rounded-md border border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-800" />
+            <div className="my-2 h-10 w-full rounded-md border border-brand-gray200 bg-brand-gray100 dark:border-brand-gray700 dark:bg-brand-gray800" />
           }
         >
           <LoginButton />
         </Suspense>
         <Suspense
           fallback={
-            <div className="my-2 h-10 w-full rounded-md border border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-800" />
+            <div className="my-2 h-10 w-full rounded-md border border-brand-gray200 bg-brand-gray100 dark:border-brand-gray700 dark:bg-brand-gray800" />
           }
         >
           <Siwe />

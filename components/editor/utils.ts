@@ -38,6 +38,7 @@ export const handleImageUpload = (
         },
         body: file,
       }).then(async (res) => {
+        console.log('res: ', res);
         // Successfully uploaded image
         if (res.status === 200) {
           const { url } = (await res.json()) as BlobResult;

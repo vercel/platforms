@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function NotFoundSite() {
+export default function NotFoundCity() {
   return (
     <div className="mt-20 flex flex-col items-center space-x-4">
       <h1 className="font-cal text-4xl dark:text-white">404</h1>
@@ -18,8 +18,8 @@ export default function NotFoundSite() {
         height={400}
         className="hidden dark:block"
       />
-      <p className="text-lg text-stone-500 dark:text-stone-400">
-        Site does not exist, or you do not have permission to view it
+      <p className="text-lg text-brand-gray500 dark:text-brand-gray400">
+        City does not exist, or you do not have permission to view it
       </p>
     </div>
   );

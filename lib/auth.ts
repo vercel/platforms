@@ -10,6 +10,7 @@ import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
+import { userHasOrgRole } from "./actions";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
@@ -74,19 +75,17 @@ export const authOptions: NextAuthOptions = {
               },
               include: {
                 user: true,
-              }
+              },
             });
 
             console.log("account", account);
 
             // If account does not exist, create a new account and user
             if (!account) {
-
-              
               const user = await prisma.user.create({
                 data: {
                   eth_address: siwe.address,
-                  // ens_name: 
+                  // ens_name:
                   /* user data */
                 },
               });
@@ -94,8 +93,8 @@ export const authOptions: NextAuthOptions = {
               try {
                 account = await prisma.account.create({
                   data: {
-                    type: 'ethereum', // Add this line
-                    provider: 'ethereum', // Add this line
+                    type: "ethereum", // Add this line
+                    provider: "ethereum", // Add this line
                     providerAccountId: siwe.address, // Add this line
                     user: {
                       connect: {
@@ -110,7 +109,6 @@ export const authOptions: NextAuthOptions = {
               } catch (error) {
                 console.log("error", error);
               }
-
             }
             console.log("account", account);
             if (!account?.user) {
@@ -212,10 +210,16 @@ export function withOrganizationAuth(action: any) {
         subdomain: subdomain,
       },
     });
-  // fetch roles from 
 
+    if (!organization) {
+      return {
+        error: "Organization not found",
+      };
+    }
 
-    if (!organization || organization.userId !== session.user.id) {
+    const userIsCityAdmin = await userHasOrgRole(session.user.id, organization.id, "Admin");
+
+    if (!userIsCityAdmin) {
       return {
         error: "Not authorized",
       };

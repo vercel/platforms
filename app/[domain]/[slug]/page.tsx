@@ -34,7 +34,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function SitePostPage({
+export default async function SiteEventPage({
   params,
 }: {
   params: { domain: string; slug: string };
@@ -51,13 +51,13 @@ export default async function SitePostPage({
     <>
       <div className="flex flex-col items-center justify-center">
         <div className="m-auto w-full text-center md:w-7/12">
-          <p className="m-auto my-5 w-10/12 text-sm font-light text-stone-500 dark:text-stone-400 md:text-base">
+          <p className="m-auto my-5 w-10/12 text-sm font-light text-brand-gray500 dark:text-brand-gray400 md:text-base">
             {toDateString(data.createdAt)}
           </p>
-          <h1 className="mb-10 font-title text-3xl font-bold text-stone-800 dark:text-white md:text-6xl">
+          <h1 className="mb-10 font-title text-3xl font-bold text-brand-gray800 dark:text-white md:text-6xl">
             {data.title}
           </h1>
-          <p className="text-md m-auto w-10/12 text-stone-600 dark:text-stone-400 md:text-lg">
+          <p className="text-md m-auto w-10/12 text-brand-gray600 dark:text-brand-gray400 md:text-lg">
             {data.description}
           </p>
         </div>
@@ -81,7 +81,7 @@ export default async function SitePostPage({
                   width={80}
                 />
               ) : (
-                <div className="absolute flex h-full w-full select-none items-center justify-center bg-stone-100 text-4xl text-stone-500">
+                <div className="absolute flex h-full w-full select-none items-center justify-center bg-brand-gray100 text-4xl text-brand-gray500">
                   ?
                 </div>
               )}
@@ -112,10 +112,10 @@ export default async function SitePostPage({
             className="absolute inset-0 flex items-center"
             aria-hidden="true"
           >
-            <div className="w-full border-t border-stone-300 dark:border-stone-700" />
+            <div className="w-full border-t border-brand-gray300 dark:border-brand-gray700" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-white px-2 text-sm text-stone-500 dark:bg-black dark:text-stone-400">
+            <span className="bg-white px-2 text-sm text-brand-gray500 bg-brand-gray900 dark:text-brand-gray400">
               Continue Reading
             </span>
           </div>

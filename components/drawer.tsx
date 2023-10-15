@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   BarChart3,
   Edit3,
+  Ticket,
   Globe,
   Layout,
   LayoutDashboard,
@@ -25,43 +26,43 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import { getOrganizationFromPostId } from "@/lib/actions";
 import Image from "next/image";
 
-const externalLinks = [
-  {
-    name: "Read announcement",
-    href: "https://vercel.com/blog/platforms-starter-kit",
-    icon: <Megaphone width={18} />,
-  },
-  {
-    name: "Star on GitHub",
-    href: "https://github.com/vercel/platforms",
-    icon: <Github width={18} />,
-  },
-  {
-    name: "Read the guide",
-    href: "https://vercel.com/guides/nextjs-multi-tenant-application",
-    icon: <FileCode width={18} />,
-  },
-  {
-    name: "View demo site",
-    href: "https://demo.vercel.pub",
-    icon: <Layout width={18} />,
-  },
-  {
-    name: "Deploy your own",
-    href: "app.localhost:3000",
-    icon: (
-      <svg
-        width={18}
-        viewBox="0 0 76 76"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="py-1 text-black dark:text-white"
-      >
-        <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="currentColor" />
-      </svg>
-    ),
-  },
-];
+// const externalLinks = [
+//   {
+//     name: "Read announcement",
+//     href: "https://vercel.com/blog/platforms-starter-kit",
+//     icon: <Megaphone width={18} />,
+//   },
+//   {
+//     name: "Star on GitHub",
+//     href: "https://github.com/vercel/platforms",
+//     icon: <Github width={18} />,
+//   },
+//   {
+//     name: "Read the guide",
+//     href: "https://vercel.com/guides/nextjs-multi-tenant-application",
+//     icon: <FileCode width={18} />,
+//   },
+//   {
+//     name: "View demo site",
+//     href: "https://demo.vercel.pub",
+//     icon: <Layout width={18} />,
+//   },
+//   {
+//     name: "Deploy your own",
+//     href: "app.localhost:3000",
+//     icon: (
+//       <svg
+//         width={18}
+//         viewBox="0 0 76 76"
+//         fill="none"
+//         xmlns="http://www.w3.org/2000/svg"
+//         className="py-1 text-black dark:text-white"
+//       >
+//         <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="currentColor" />
+//       </svg>
+//     ),
+//   },
+// ];
 
 export default function Drawer({ children }: { children: ReactNode }) {
   const segments = useSelectedLayoutSegments();
@@ -83,7 +84,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
     if (segments[0] === "city" && subdomain) {
       return [
         {
-          name: "Back to All Cities",
+          name: "Back to My Cities",
           href: "/cities",
           icon: <ArrowLeft width={18} />,
         },
@@ -94,9 +95,15 @@ export default function Drawer({ children }: { children: ReactNode }) {
           icon: <Users2 width={18} />,
         },
         {
+          name: "Events",
+          href: `/city/${subdomain}/events`,
+          isActive: segments.includes("events"),
+          icon: <Ticket width={18} />,
+        },
+        {
           name: "Docs",
-          href: `/city/${subdomain}`,
-          isActive: segments.length === 2,
+          href: `/city/${subdomain}/docs`,
+          isActive: segments.includes("docs"),
           icon: <Newspaper width={18} />,
         },
         {
@@ -211,7 +218,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 />
               </svg>
             </a>
-            <div className="h-6 rotate-[30deg] border-l border-brand-gray400 dark:border-brand-gray500" />
+            <div className="dark:border-brand-gray500 h-6 rotate-[30deg] border-l border-brand-gray400" />
             <Link
               href="/"
               className="rounded-lg p-2 hover:bg-brand-gray200 dark:hover:bg-brand-gray700"
@@ -231,7 +238,9 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 key={name}
                 href={href}
                 className={`flex items-center space-x-3 ${
-                  isActive ? "bg-brand-gray200 text-black dark:bg-brand-gray700" : ""
+                  isActive
+                    ? "bg-brand-gray200 text-black dark:bg-brand-gray700"
+                    : ""
                 } rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray200 active:bg-brand-gray300 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800`}
               >
                 {icon}

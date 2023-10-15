@@ -13,21 +13,20 @@ generator client {
 }
 
 model User {
-  id            String         @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
   // if you are using Github OAuth, you can get rid of the username attribute (that is for Twitter OAuth)
   username      String?
   gh_username   String?
   eth_address   String?
   ens_name      String?
-  email         String?        @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   accounts      Account[]
   sessions      Session[]
-  organizations Organization[]
   posts         Post[]
   userRoles     UserRole[]
 }
@@ -100,39 +99,62 @@ model Organization {
   header      String? @db.Text
   description String? @db.Text
 
-  logo          String?  @default("https://public.blob.vercel-storage.com/eEZHAoPTOBSYGBE3/JRajRyC-PhBHEinQkupt02jqfKacBVHLWJq7Iy.png") @db.Text
-  font          String   @default("font-cal")
-  image         String?  @default("https://public.blob.vercel-storage.com/eEZHAoPTOBSYGBE3/hxfcV5V-eInX3jbVUhjAt1suB7zB88uGd1j20b.png") @db.Text
-  imageBlurhash String?  @default("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAhCAYAAACbffiEAAAACXBIWXMAABYlAAAWJQFJUiTwAAABfUlEQVR4nN3XyZLDIAwE0Pz/v3q3r55JDlSBplsIEI49h76k4opexCK/juP4eXjOT149f2Tf9ySPgcjCc7kdpBTgDPKByKK2bTPFEdMO0RDrusJ0wLRBGCIuelmWJAjkgPGDSIQEMBDCfA2CEPM80+Qwl0JkNxBimiaYGOTUlXYI60YoehzHJDEm7kxjV3whOQTD3AaCuhGKHoYhyb+CBMwjIAFz647kTqyapdV4enGINuDJMSScPmijSwjCaHeLcT77C7EC0C1ugaCTi2HYfAZANgj6Z9A8xY5eiYghDMNQBJNCWhASot0jGsSCUiHWZcSGQjaWWCDaGMOWnsCcn2QhVkRuxqqNxMSdUSElCDbp1hbNOsa6Ugxh7xXauF4DyM1m5BLtCylBXgaxvPXVwEoOBjeIFVODtW74oj1yBQah3E8tyz3SkpolKS9Geo9YMD1QJR1Go4oJkgO1pgbNZq0AOUPChyjvh7vlXaQa+X1UXwKxgHokB2XPxbX+AnijwIU4ahazAAAAAElFTkSuQmCC") @db.Text
-  subdomain     String?  @unique
-  customDomain  String?  @unique
-  message404    String?  @default("Blimey! You've found a page that doesn't exist.") @db.Text
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId        String?
+  logo          String?            @default("https://public.blob.vercel-storage.com/eEZHAoPTOBSYGBE3/JRajRyC-PhBHEinQkupt02jqfKacBVHLWJq7Iy.png") @db.Text
+  font          String             @default("font-cal")
+  image         String?            @default("https://public.blob.vercel-storage.com/eEZHAoPTOBSYGBE3/hxfcV5V-eInX3jbVUhjAt1suB7zB88uGd1j20b.png") @db.Text
+  imageBlurhash String?            @default("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAhCAYAAACbffiEAAAACXBIWXMAABYlAAAWJQFJUiTwAAABfUlEQVR4nN3XyZLDIAwE0Pz/v3q3r55JDlSBplsIEI49h76k4opexCK/juP4eXjOT149f2Tf9ySPgcjCc7kdpBTgDPKByKK2bTPFEdMO0RDrusJ0wLRBGCIuelmWJAjkgPGDSIQEMBDCfA2CEPM80+Qwl0JkNxBimiaYGOTUlXYI60YoehzHJDEm7kxjV3whOQTD3AaCuhGKHoYhyb+CBMwjIAFz647kTqyapdV4enGINuDJMSScPmijSwjCaHeLcT77C7EC0C1ugaCTi2HYfAZANgj6Z9A8xY5eiYghDMNQBJNCWhASot0jGsSCUiHWZcSGQjaWWCDaGMOWnsCcn2QhVkRuxqqNxMSdUSElCDbp1hbNOsa6Ugxh7xXauF4DyM1m5BLtCylBXgaxvPXVwEoOBjeIFVODtW74oj1yBQah3E8tyz3SkpolKS9Geo9YMD1QJR1Go4oJkgO1pgbNZq0AOUPChyjvh7vlXaQa+X1UXwKxgHokB2XPxbX+AnijwIU4ahazAAAAAElFTkSuQmCC") @db.Text
+  subdomain     String?            @unique
+  customDomain  String?            @unique
+  message404    String?            @default("Blimey! You've found a page that doesn't exist.") @db.Text
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
   posts         Post[]
   events        Event[]
-  roles         Role[] // Add this line
-  api_keys      ApiKey[]
-  @@index([userId])
+  roles         OrganizationRole[] // Add this line
+  apiKeys       ApiKey[]
 }
 
 model Event {
-  id             Int           @id @default(autoincrement())
-  name           String?
-  description    String?       @db.Text
-  image          String?       @db.Text
-  imageBlurhash  String?       @db.Text
-  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  organizationId String?
+  id             String       @id @default(cuid())
+  name           String
+  path           String
+  description    String?      @db.Text
+  image          String?      @db.Text
+  imageBlurhash  String?      @db.Text
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String
+  eventRole      EventRole[]
 }
 
-model Permission {
-  id              String           @id @default(cuid())
-  name            String
-  description     String?
-  rolePermissions RolePermission[]
+model OrganizationRole {
+  roleId         String
+  organizationId String
+  role           Role         @relation(fields: [roleId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@id([roleId, organizationId])
+}
+
+model EventRole {
+  roleId  String
+  eventId String
+  role    Role   @relation(fields: [roleId], references: [id])
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  @@id([roleId, eventId])
+}
+
+model Role {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+
+  userRoles        UserRole[]
+  rolePermissions  RolePermission[]
+  organizationRole OrganizationRole[]
+  eventRole        EventRole[]
 }
 
 model RolePermission {
@@ -144,13 +166,10 @@ model RolePermission {
   @@id([roleId, permissionId])
 }
 
-model Role {
+model Permission {
   id              String           @id @default(cuid())
   name            String
   description     String?
-  organizationId  String
-  organization    Organization     @relation(fields: [organizationId], references: [id])
-  userRoles       UserRole[]
   rolePermissions RolePermission[]
 }
 
@@ -165,14 +184,14 @@ model UserRole {
 }
 
 model ApiKey {
-  id              String        @id @default(cuid())
-  key             String        @unique
-  name            String
-  description     String?
-  organizationId  String
-  organization    Organization @relation(fields: [organizationId], references: [id])
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id             String       @id @default(cuid())
+  key            String       @unique
+  name           String
+  description    String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   @@index([organizationId])
 }

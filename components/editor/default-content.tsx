@@ -22,7 +22,7 @@ const DEFAULT_EDITOR_CONTENT = {
                 href: "https://tiptap.dev/",
                 target: "_blank",
                 class:
-                  "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                  "text-brand-gray400 underline underline-offset-[3px] hover:text-brand-gray600 transition-colors cursor-pointer",
               },
             },
           ],
@@ -38,7 +38,7 @@ const DEFAULT_EDITOR_CONTENT = {
                 href: "https://sdk.vercel.ai/docs",
                 target: "_blank",
                 class:
-                  "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                  "text-brand-gray400 underline underline-offset-[3px] hover:text-brand-gray600 transition-colors cursor-pointer text-brand-gray400 underline underline-offset-[3px] hover:text-brand-gray600 transition-colors cursor-pointer",
               },
             },
           ],
@@ -131,7 +131,7 @@ const DEFAULT_EDITOR_CONTENT = {
                         href: "https://twitter.com/steventey/status/1669762868416512000",
                         target: "_blank",
                         class:
-                          "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                          "text-brand-gray400 underline underline-offset-[3px] hover:text-brand-gray600 transition-colors cursor-pointer text-brand-gray400 underline underline-offset-[3px] hover:text-brand-gray600 transition-colors cursor-pointer",
                       },
                     },
                   ],
@@ -158,7 +158,7 @@ const DEFAULT_EDITOR_CONTENT = {
                         href: "https://github.com/steven-tey/novel",
                         target: "_blank",
                         class:
-                          "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                          "text-brand-gray400 underline underline-offset-[3px] hover:text-brand-gray600 transition-colors cursor-pointer",
                       },
                     },
                   ],
@@ -184,7 +184,7 @@ const DEFAULT_EDITOR_CONTENT = {
                         href: "https://vercel.com/templates/next.js/novel",
                         target: "_blank",
                         class:
-                          "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
+                          "text-brand-gray400 underline underline-offset-[3px] hover:text-brand-gray600 transition-colors cursor-pointer",
                       },
                     },
                   ],

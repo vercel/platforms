@@ -19,14 +19,14 @@ export default function CreatePostButton() {
           const post = await createPost(null, subdomain, null);
           va.track("Created Post");
           router.refresh();
-          router.push(`/post/${post.id}`);
+          router.push(`${subdomain}/docs/${post.id}`);
         })
       }
       className={cn(
         "flex h-8 w-36 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none sm:h-9",
         isPending
-          ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"
-          : "border border-black bg-black text-white hover:bg-white hover:text-black active:bg-stone-100 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-white dark:active:bg-stone-800",
+          ? "cursor-not-allowed border-brand-gray200 bg-brand-gray100 text-brand-gray400 dark:border-brand-gray700 dark:bg-brand-gray800 dark:text-brand-gray300"
+          : "border border-brand-gray900 bg-brand-gray900 text-white hover:bg-white hover:text-brand-gray900 active:bg-brand-gray100 dark:border-brand-gray700 dark:hover:border-brand-gray200 dark:hover:bg-brand-gray900 dark:hover:text-white dark:active:bg-brand-gray800",
       )}
       disabled={isPending}
     >

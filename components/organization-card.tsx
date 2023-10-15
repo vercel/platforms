@@ -1,13 +1,13 @@
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, random } from "@/lib/utils";
 import { Organization } from "@prisma/client";
-import { BarChart, ExternalLink } from "lucide-react";
+import { BarChart } from "lucide-react";
 import Link from "next/link";
 
 export default function OrganizationCard({ data }: { data: Organization }) {
   const url = `${data.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
   return (
-    <div className="relative rounded-lg border border-stone-200 pb-10 shadow-md transition-all hover:shadow-xl dark:border-stone-700 dark:hover:border-white">
+    <div className="relative rounded-lg border border-brand-gray200 pb-10 shadow-md transition-all hover:shadow-xl dark:border-brand-gray700 dark:hover:border-white">
       <Link
         href={`/city/${data.subdomain}`}
         className="flex flex-col overflow-hidden rounded-lg"
@@ -21,11 +21,11 @@ export default function OrganizationCard({ data }: { data: Organization }) {
           placeholder="blur"
           blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
         />
-        <div className="border-t border-stone-200 p-4 dark:border-stone-700">
+        <div className="border-t border-brand-gray200 p-4 dark:border-brand-gray700">
           <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide text-brand-gray800 dark:text-brand-gray200">
             {data.name}
           </h3>
-          <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-stone-500 dark:text-stone-400">
+          <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-brand-gray500 dark:text-brand-gray400">
             {data.description}
           </p>
         </div>
@@ -39,7 +39,7 @@ export default function OrganizationCard({ data }: { data: Organization }) {
           }
           target="_blank"
           rel="noreferrer"
-          className="truncate rounded-md bg-stone-100 px-2 py-1 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700"
+          className="truncate rounded-md bg-brand-gray100 px-2 py-1 text-sm font-medium text-brand-gray600 transition-colors hover:bg-brand-gray200 dark:bg-brand-gray800 dark:text-brand-gray400 dark:hover:bg-brand-gray700"
         >
           {url} ↗
         </a>

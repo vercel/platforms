@@ -8,7 +8,7 @@ export default function CTA() {
     <div
       className={`${
         closeCTA ? "h-14 lg:h-auto" : "h-60 sm:h-40 lg:h-auto"
-      } fixed inset-x-0 bottom-5 mx-5 flex max-w-screen-xl flex-col items-center justify-between space-y-3 rounded-lg border-t-4 border-black bg-white px-5 pb-3 pt-0 drop-shadow-lg transition-all duration-150 ease-in-out dark:border dark:border-t-4 dark:border-stone-700 dark:bg-black dark:text-white
+      } fixed inset-x-0 bottom-5 mx-5 flex max-w-screen-xl flex-col items-center justify-between space-y-3 rounded-lg border-t-4 border-black bg-white px-5 pb-3 pt-0 drop-shadow-lg transition-all duration-150 ease-in-out dark:border dark:border-t-4 dark:border-brand-gray700 bg-brand-gray900 dark:text-white
           lg:flex-row lg:space-y-0 lg:pt-3 xl:mx-auto`}
     >
       <button
@@ -38,7 +38,7 @@ export default function CTA() {
         <p
           className={`${
             closeCTA ? "hidden lg:block" : ""
-          } mt-2 text-sm text-stone-700 dark:text-stone-300 lg:mt-0`}
+          } mt-2 text-sm text-brand-gray700 dark:text-brand-gray300 lg:mt-0`}
         >
           This is a demo site showcasing how to build a multi-tenant application
           with{" "}
@@ -59,7 +59,7 @@ export default function CTA() {
         } flex w-full flex-col space-y-3 text-center sm:flex-row sm:space-x-3 sm:space-y-0 lg:w-auto`}
       >
         <a
-          className="whitespace-no-wrap flex-auto rounded-md border border-stone-200 px-5 py-1 font-title text-lg text-black transition-all duration-150 ease-in-out hover:border-black dark:border-stone-700 dark:text-white dark:hover:border-white sm:py-3"
+          className="whitespace-no-wrap flex-auto rounded-md border border-brand-gray200 px-5 py-1 font-title text-lg text-black transition-all duration-150 ease-in-out hover:border-black dark:border-brand-gray700 dark:text-white dark:hover:border-white sm:py-3"
           href="https://app.vercel.pub"
           rel="noreferrer"
           target="_blank"

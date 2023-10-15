@@ -61,7 +61,7 @@ export default async function SiteHomePage({
                         src={data.user?.image}
                       />
                     ) : (
-                      <div className="absolute flex h-full w-full select-none items-center justify-center bg-stone-100 text-4xl text-stone-500">
+                      <div className="absolute flex h-full w-full select-none items-center justify-center bg-brand-gray100 text-4xl text-brand-gray500">
                         ?
                       </div>
                     )}
@@ -69,8 +69,8 @@ export default async function SiteHomePage({
                   <p className="ml-3 inline-block whitespace-nowrap align-middle text-sm font-semibold dark:text-white md:text-base">
                     {data.user?.name}
                   </p>
-                  <div className="h-6 border-l border-stone-600 dark:border-stone-400" />
-                  <p className="m-auto my-5 w-10/12 text-sm font-light text-stone-500 dark:text-stone-400 md:text-base">
+                  <div className="h-6 border-l border-brand-gray600 dark:border-brand-gray400" />
+                  <p className="m-auto my-5 w-10/12 text-sm font-light text-brand-gray500 dark:text-brand-gray400 md:text-base">
                     {toDateString(posts[0].createdAt)}
                   </p>
                 </div>
@@ -93,7 +93,7 @@ export default async function SiteHomePage({
               height={400}
               className="hidden dark:block"
             />
-            <p className="font-title text-2xl text-stone-600 dark:text-stone-400">
+            <p className="font-title text-2xl text-brand-gray600 dark:text-brand-gray400">
               No posts yet.
             </p>
           </div>

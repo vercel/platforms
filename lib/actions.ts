@@ -16,6 +16,7 @@ import {
 import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
+import supabase from "./supabase";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -34,44 +35,62 @@ export const createOrganization = async (formData: FormData) => {
   const subdomain = formData.get("subdomain") as string;
 
   try {
-    const organization = await prisma.organization.create({
-      data: {
-        name,
-        description,
-        subdomain,
-        user: {
-          connect: {
-            id: session.user.id,
-          },
+    const [role, organization] = await prisma.$transaction([
+      prisma.role.create({
+        data: {
+          name: "Admin",
         },
-        roles: {
-          create: {
-            name: "admin",
-          },
+      }),
+      prisma.organization.create({
+        data: {
+          name,
+          description,
+          subdomain,
         },
-      },
-      include: {
-        roles: true,
-      },
-    });
+        include: {
+          roles: true,
+        },
+      }),
+    ]);
 
     try {
-      await prisma.userRole.create({
-        data: {
-          user: {
-            connect: {
-              id: session.user.id,
+      await prisma.$transaction([
+        prisma.organizationRole.create({
+          data: {
+            organization: {
+              connect: {
+                id: organization.id,
+              },
+            },
+            role: {
+              connect: {
+                id: role.id,
+              },
             },
           },
-          role: {
-            connect: {
-              id: organization.roles[0].id,
+        }),
+        prisma.userRole.create({
+          data: {
+            user: {
+              connect: {
+                id: session.user.id,
+              },
+            },
+            role: {
+              connect: {
+                id: role.id,
+              },
             },
           },
-        },
-      });
+        }),
+      ]);
     } catch (error) {
       // If user role creation fails, delete the organization
+      await prisma.role.delete({
+        where: {
+          id: role.id,
+        },
+      });
       await prisma.organization.delete({
         where: {
           id: organization.id,
@@ -95,6 +114,117 @@ export const createOrganization = async (formData: FormData) => {
         error: error.message,
       };
     }
+  }
+};
+
+export async function userHasOrgRole(
+  userId: string,
+  organizationId: string,
+  roleName: string,
+) {
+  const userRoles = await prisma.userRole.findMany({
+    where: {
+      userId: userId,
+      role: {
+        organizationRole: {
+          some: {
+            organizationId: organizationId,
+            role: {
+              name: roleName,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return userRoles.length > 0;
+}
+
+export const createEvent = async (input: {
+  name: string;
+  description: string;
+  organizationId: string;
+  path: string;
+}) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const name = input.name;
+  const description = input.description;
+  const organizationId = input.organizationId;
+  const path = input.path;
+
+  const hasAdminRole = await userHasOrgRole(
+    session.user.id,
+    organizationId,
+    "Admin",
+  );
+
+  console.log("has admin role: ", hasAdminRole);
+
+  try {
+    const [event, role] = await prisma.$transaction([
+      prisma.event.create({
+        data: {
+          name,
+          description,
+          path,
+          organization: {
+            connect: {
+              id: organizationId,
+            },
+          },
+        },
+      }),
+      prisma.role.create({
+        data: {
+          name: "Host",
+        },
+      }),
+    ]);
+
+    const [_eventRole, _userRole] = await prisma.$transaction([
+      prisma.eventRole.create({
+        data: {
+          event: {
+            connect: {
+              id: event.id,
+            },
+          },
+          role: {
+            connect: {
+              id: role.id,
+            },
+          },
+        },
+      }),
+      prisma.userRole.create({
+        data: {
+          user: {
+            connect: {
+              id: session.user.id,
+            },
+          },
+          role: {
+            connect: {
+              id: role.id,
+            },
+          },
+        },
+      }),
+    ]);
+
+    return event;
+  } catch (error: any) {
+    console.error(error);
+    return {
+      error: error.message,
+    };
   }
 };
 
@@ -175,21 +305,34 @@ export const updateOrganization = withOrganizationAuth(
           */
         }
       } else if (key === "image" || key === "logo") {
-        if (!process.env.BLOB_READ_WRITE_TOKEN) {
+        if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
           return {
             error:
-              "Missing BLOB_READ_WRITE_TOKEN token. Note: Vercel Blob is currently in beta – please fill out this form for access: https://tally.so/r/nPDMNd",
+              "Missing SUPABASE_URL or SUPABASE_ANON_KEY token.",
           };
         }
 
         const file = formData.get(key) as File;
         const filename = `${nanoid()}.${file.type.split("/")[1]}`;
 
-        const { url } = await put(filename, file, {
-          access: "public",
-        });
+        const { data, error } = await supabase.storage
+          .from("media")
+          .upload(`/public/${filename}`, file);
 
-        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
+        console.log({ data, error });
+        // const { url } = await put(filename, file, {
+        //   access: "public",
+        // });
+
+        if (error || !data?.path) {
+          return {
+            error: "Failed to upload image.",
+          };
+        }
+        const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/media/${data.path}`;
+
+        const blurhash =
+          key === "image" ? await getBlurDataURL(url) : null;
 
         response = await prisma.organization.update({
           where: {
@@ -475,87 +618,91 @@ export const editUser = async (
   }
 };
 
-export const createRole = withOrganizationAuth(
-  async (formData: FormData, organization: Organization) => {
-    const session = await getSession();
-    if (!session?.user.id) {
-      return {
-        error: "Not authenticated",
-      };
-    }
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
+// export const createRole = withOrganizationAuth(
+//   async (formData: FormData, organization: Organization) => {
+//     const session = await getSession();
+//     if (!session?.user.id) {
+//       return {
+//         error: "Not authenticated",
+//       };
+//     }
+//     const name = formData.get("name") as string;
+//     const description = formData.get("description") as string;
 
-    try {
-      const role = await prisma.role.create({
-        data: {
-          name,
-          description,
-          organization: {
-            connect: {
-              id: organization.id,
-            },
-          },
-        },
-      });
-      return role;
-    } catch (error: any) {
-      return {
-        error: error.message,
-      };
-    }
-  },
-);
+//     try {
+//       const role = await prisma.role.create({
+//         data: {
+//           name,
+//           description,
+//           organization: {
+//             connect: {
+//               id: organization.id,
+//             },
+//           },
+//         },
+//       });
+//       return role;
+//     } catch (error: any) {
+//       return {
+//         error: error.message,
+//       };
+//     }
+//   },
+// );
 
-export const updateRole = withOrganizationAuth(
-  async (formData: FormData, organization: Organization, roleId: string) => {
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
+// export const updateRole = withOrganizationAuth(
+//   async (formData: FormData, organization: Organization, roleId: string) => {
+//     const name = formData.get("name") as string;
+//     const description = formData.get("description") as string;
 
-    try {
-      const role = await prisma.role.update({
-        where: {
-          id: roleId,
-        },
-        data: {
-          name,
-          description,
-        },
-      });
-      return role;
-    } catch (error: any) {
-      return {
-        error: error.message,
-      };
-    }
-  },
-);
+//     try {
+//       const role = await prisma.role.update({
+//         where: {
+//           id: roleId,
+//         },
+//         data: {
+//           name,
+//           description,
+//         },
+//       });
+//       return role;
+//     } catch (error: any) {
+//       return {
+//         error: error.message,
+//       };
+//     }
+//   },
+// );
 
-export const deleteRole = withOrganizationAuth(
-  async (_: FormData, organization: Organization, roleId: string) => {
-    try {
-      const role = await prisma.role.delete({
-        where: {
-          id: roleId,
-        },
-      });
-      return role;
-    } catch (error: any) {
-      return {
-        error: error.message,
-      };
-    }
-  },
-);
+// export const deleteRole = withOrganizationAuth(
+//   async (_: FormData, organization: Organization, roleId: string) => {
+//     try {
+//       const role = await prisma.role.delete({
+//         where: {
+//           id: roleId,
+//         },
+//       });
+//       return role;
+//     } catch (error: any) {
+//       return {
+//         error: error.message,
+//       };
+//     }
+//   },
+// );
 
-export async function getUsersWithOrganizationRole(subdomain: string) {
+export async function getUsersWithRoleInOrganization(subdomain: string) {
   return await prisma.user.findMany({
     where: {
       userRoles: {
         some: {
           role: {
-            organization: {
-              subdomain: subdomain,
+            organizationRole: {
+              some: {
+                organization: {
+                  subdomain: subdomain,
+                },
+              },
             },
           },
         },
@@ -564,7 +711,11 @@ export async function getUsersWithOrganizationRole(subdomain: string) {
     include: {
       userRoles: {
         include: {
-          role: true,
+          role: {
+            include: {
+              organizationRole: true,
+            },
+          },
         },
       },
     },

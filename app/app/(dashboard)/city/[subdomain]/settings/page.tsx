@@ -3,7 +3,7 @@ import Form from "@/components/form";
 import { updateOrganization } from "@/lib/actions";
 import DeleteOrganizationForm from "@/components/form/delete-organization-form";
 
-export default async function SiteSettingsIndex({
+export default async function CitySettingsIndex({
   params,
 }: {
   params: { subdomain: string };
@@ -13,6 +13,8 @@ export default async function SiteSettingsIndex({
       subdomain: params.subdomain,
     },
   });
+
+  console.log('CitySettingsIndex', data)
 
   return (
     <div className="flex flex-col space-y-6">

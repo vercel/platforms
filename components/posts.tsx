@@ -44,7 +44,7 @@ export default async function Posts({
         width={400}
         height={400}
       />
-      <p className="text-lg text-stone-500">
+      <p className="text-lg text-brand-gray500">
         You do not have any posts yet. Create one to get started.
       </p>
     </div>
