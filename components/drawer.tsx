@@ -66,7 +66,7 @@ import Image from "next/image";
 
 export default function Drawer({ children }: { children: ReactNode }) {
   const segments = useSelectedLayoutSegments();
-  const { subdomain } = useParams() as { subdomain?: string };
+  const { subdomain, path } = useParams() as { subdomain?: string, path?: string };
 
   const [organizationSubdomain, setOrganizationSubdomain] = useState<
     string | undefined
@@ -81,6 +81,36 @@ export default function Drawer({ children }: { children: ReactNode }) {
   }, [segments, subdomain]);
 
   const tabs = useMemo(() => {
+    if (segments?.[2] === "events" && subdomain && path && segments?.[4] === "settings") {
+      return [
+        {
+          name: "Back",
+          href: `/city/${subdomain}/events/${path}`,
+          icon: <ArrowLeft width={18} />,
+        },
+        {
+          name: "Settings",
+          href: `/city/${subdomain}/events/${path}/settings`,
+          isActive: segments.includes("settings"),
+          icon: <Settings width={18} />,
+        },
+      ]
+    }
+    if (segments?.[2] === "events" && subdomain && segments?.[3]) {
+      return [
+        {
+          name: "Back",
+          href: `/city/${subdomain}`,
+          icon: <ArrowLeft width={18} />,
+        },
+        {
+          name: "Settings",
+          href: `/city/${subdomain}/events/${segments[3]}/settings`,
+          isActive: segments.includes("settings"),
+          icon: <Settings width={18} />,
+        },
+      ]
+    }
     if (segments[0] === "city" && subdomain) {
       return [
         {

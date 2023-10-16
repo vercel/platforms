@@ -10,7 +10,7 @@ import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
-import { userHasOrgRole } from "./actions";
+import { userHasEventRole, userHasOrgRole } from "./actions";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
@@ -196,7 +196,7 @@ export function getSession() {
 export function withOrganizationAuth(action: any) {
   return async (
     formData: FormData | null,
-    subdomain: string,
+    context: { params: { subdomain: string; path: string } },
     key: string | null,
   ) => {
     const session = await getSession();
@@ -207,7 +207,7 @@ export function withOrganizationAuth(action: any) {
     }
     const organization = await prisma.organization.findUnique({
       where: {
-        subdomain: subdomain,
+        subdomain: context.params.subdomain,
       },
     });
 
@@ -217,15 +217,67 @@ export function withOrganizationAuth(action: any) {
       };
     }
 
-    const userIsCityAdmin = await userHasOrgRole(session.user.id, organization.id, "Admin");
+    const userIsOrgAdmin = await userHasOrgRole(
+      session.user.id,
+      organization.id,
+      "Admin",
+    );
 
-    if (!userIsCityAdmin) {
+    if (!userIsOrgAdmin) {
       return {
         error: "Not authorized",
       };
     }
 
     return action(formData, organization, key);
+  };
+}
+
+export function withEventAuth(action: any) {
+  return async (
+    formData: FormData | null,
+    context: { params: { subdomain: string; path: string } },
+    key: string | null,
+  ) => {
+    const session = await getSession();
+    if (!session) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const data = await prisma.event.findFirst({
+      where: {
+        organization: {
+          subdomain: context.params.subdomain,
+        },
+        path: context.params.path,
+      },
+      include: {
+        organization: true,
+      },
+    });
+
+    console.log(data);
+
+    if (!data?.organization) {
+      return {
+        error: "Organization not found",
+      };
+    }
+
+    const userIsEventHost = await userHasEventRole(
+      session.user.id,
+      data.id,
+      "Host",
+    );
+
+    if (!userIsEventHost) {
+      return {
+        error: "Not authorized",
+      };
+    }
+
+    return action(formData, data, key);
   };
 }
 

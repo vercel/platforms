@@ -48,9 +48,9 @@ export default function CreateEventModal({
             toast.error(res.error);
           } else {
             va.track("Created Site");
-            const { id } = res;
+            const { path } = res;
             router.refresh();
-            router.push(`/city/${organization.subdomain}/events/${id}`);
+            router.push(`/city/${organization.subdomain}/events/${path}`);
             modal?.hide();
             toast.success(`Successfully created City!`);
           }
@@ -68,7 +68,7 @@ export default function CreateEventModal({
             htmlFor="name"
             className="text-brand-gray500 text-sm font-medium dark:text-brand-gray400"
           >
-            Site Name
+            Event Name
           </label>
           <input
             name="name"

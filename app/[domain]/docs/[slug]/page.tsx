@@ -5,6 +5,7 @@ import BlurImage from "@/components/blur-image";
 import MDX from "@/components/mdx";
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
 import { User } from "@prisma/client";
+import { selectUsername } from "@/lib/profile";
 
 export async function generateMetadata({
   params,
@@ -35,14 +36,6 @@ export async function generateMetadata({
   };
 }
 
-const selectAuthorUsername = (user: User) => {
-  if (user?.username) return user.username;
-  if (user?.gh_username) return user.gh_username;
-  if (user?.ens_name) return user.ens_name;
-  if (user?.eth_address) return user.eth_address;
-};
-
-
 export default async function OrganizationDocPage({
   params,
 }: {
@@ -51,8 +44,6 @@ export default async function OrganizationDocPage({
   const domain = params.domain.replace("%3A", ":");
   const { slug } = params;
   const data = await getPostData(domain, slug);
-
-  console.log("data: ", data);
 
   if (!data) {
     notFound();
@@ -63,7 +54,7 @@ export default async function OrganizationDocPage({
   }
 
 
-  const authorUsername = selectAuthorUsername(data.user);
+  const authorUsername = selectUsername(data.user);
 
   return (
     <>

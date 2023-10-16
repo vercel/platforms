@@ -2,53 +2,62 @@ import { ReactNode } from "react";
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
-import OrganizationSettingsNav from "./nav";
-import { userHasOrgRole } from "@/lib/actions";
+import EventSettingsNav from "./nav";
+import { getUserEventRoles, userHasOrgRole } from "@/lib/actions";
 
-export default async function SiteSettingsLayout({
+export default async function EventSettingsLayout({
   params,
   children,
 }: {
-  params: { subdomain: string };
+  params: { subdomain: string, path: string };
   children: ReactNode;
 }) {
   const session = await getSession();
   if (!session) {
     redirect("/login");
   }
-  const organization = await prisma.organization.findUnique({
+
+  const event = await prisma.event.findFirst({
     where: {
-      subdomain: params.subdomain,
+      path: params.path,
     },
+    include: {
+      organization: true
+    }
   });
 
-  if (!organization) {
+  console.log('Event Settings', event)
+
+  if (!event) {
     notFound();
   }
 
-  const userIsAdmin = await userHasOrgRole(
-    session.user.id,
-    organization?.id,
-    "Admin",
-  );
+  const userEventRoles = await getUserEventRoles(session.user.id, event.id);
 
-  if (!userIsAdmin) {
+  const isHost = userEventRoles.findIndex(eventRole => eventRole.role.name === 'Host') > -1;
+
+
+  if (!isHost) {
+    notFound();
+  }
+  if (!event) {
     notFound();
   }
 
-  const url = `${organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+  const url = `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${event.path}`;
+
 
   return (
     <>
       <div className="flex flex-col items-center space-x-4 space-y-2 sm:flex-row sm:space-y-0">
         <h1 className="font-cal text-xl font-bold dark:text-white sm:text-3xl">
-          Settings for {organization.name}
+          Settings for {event.name}
         </h1>
         <a
           href={
             process.env.NEXT_PUBLIC_VERCEL_ENV
               ? `https://${url}`
-              : `http://${organization.subdomain}.localhost:3000`
+              : `http://${event.organization.subdomain}.localhost:3000/${event.path}`
           }
           target="_blank"
           rel="noreferrer"
@@ -57,7 +66,7 @@ export default async function SiteSettingsLayout({
           {url} ↗
         </a>
       </div>
-      <OrganizationSettingsNav />
+      <EventSettingsNav />
       {children}
     </>
   );

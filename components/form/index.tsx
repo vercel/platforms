@@ -31,7 +31,7 @@ export default function Form({
   };
   handleSubmit: any;
 }) {
-  const { subdomain } = useParams() as { subdomain?: string };
+  const params = useParams() as { subdomain?: string, path?: string };
   const router = useRouter();
   const { update } = useSession();
   return (
@@ -45,12 +45,12 @@ export default function Form({
         ) {
           return;
         }
-        handleSubmit(data, subdomain, inputAttrs.name).then(async (res: any) => {
+        handleSubmit(data, {params}, inputAttrs.name).then(async (res: any) => {
           if (res.error) {
             toast.error(res.error);
           } else {
-            va.track(`Updated ${inputAttrs.name}`, subdomain ? { subdomain } : {});
-            if (subdomain) {
+            va.track(`Updated ${inputAttrs.name}`, params.subdomain ? { subdomain: params.subdomain } : {});
+            if (params.subdomain) {
               router.refresh();
             } else {
               await update();

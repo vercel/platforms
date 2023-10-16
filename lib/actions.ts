@@ -2,9 +2,9 @@
 
 import prisma from "@/lib/prisma";
 import mongoClient from "@/lib/tripsha/db-connect";
-import { Post, Organization } from "@prisma/client";
+import { Event, Post, Organization } from "@prisma/client";
 import { revalidateTag } from "next/cache";
-import { withPostAuth, withOrganizationAuth } from "./auth";
+import { withPostAuth, withOrganizationAuth, withEventAuth } from "./auth";
 import { getSession } from "@/lib/auth";
 import {
   addDomainToVercel,
@@ -117,6 +117,24 @@ export const createOrganization = async (formData: FormData) => {
   }
 };
 
+export async function userOrgRoles(userId: string, organizationId: string) {
+  return await prisma.userRole.findMany({
+    where: {
+      userId: userId,
+      role: {
+        organizationRole: {
+          some: {
+            organizationId: organizationId,
+          },
+        },
+      },
+    },
+    include: {
+      role: true,
+    },
+  });
+}
+
 export async function userHasOrgRole(
   userId: string,
   organizationId: string,
@@ -139,6 +157,37 @@ export async function userHasOrgRole(
   });
 
   return userRoles.length > 0;
+}
+
+export async function getUserEventRoles(userId: string, eventId: string) {
+  const userRoles = await prisma.userRole.findMany({
+    where: {
+      userId: userId,
+      role: {
+        eventRole: {
+          some: {
+            eventId: eventId,
+          },
+        },
+      },
+    },
+    include: {
+      role: true,
+    },
+  });
+
+  return userRoles;
+}
+
+export async function userHasEventRole(
+  userId: string,
+  eventId: string,
+  role: string,
+) {
+  const userEventRoles = await getUserEventRoles(userId, eventId);
+  const hasRole =
+    userEventRoles.findIndex((eventRole) => eventRole.role.name === role) > -1;
+  return hasRole;
 }
 
 export const createEvent = async (input: {
@@ -228,6 +277,30 @@ export const createEvent = async (input: {
   }
 };
 
+export async function getOrganizationData(domain: string) {
+  return await prisma.organization.findFirst({
+    where: {
+      // Assuming domain can be either subdomain or customDomain
+      OR: [{ subdomain: domain }, { customDomain: domain }],
+    },
+  });
+}
+
+export async function getEventData(path: string, domain: string) {
+  return await prisma.event.findFirst({
+    where: {
+      path: path,
+      organization: {
+        // Assuming domain can be either subdomain or customDomain
+        OR: [{ subdomain: domain }, { customDomain: domain }],
+      },
+    },
+    include: {
+      organization: true,
+    },
+  });
+}
+
 export const updateOrganization = withOrganizationAuth(
   async (formData: FormData, organization: Organization, key: string) => {
     const value = formData.get(key) as string;
@@ -307,8 +380,7 @@ export const updateOrganization = withOrganizationAuth(
       } else if (key === "image" || key === "logo") {
         if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
           return {
-            error:
-              "Missing SUPABASE_URL or SUPABASE_ANON_KEY token.",
+            error: "Missing SUPABASE_URL or SUPABASE_ANON_KEY token.",
           };
         }
 
@@ -331,8 +403,7 @@ export const updateOrganization = withOrganizationAuth(
         }
         const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/media/${data.path}`;
 
-        const blurhash =
-          key === "image" ? await getBlurDataURL(url) : null;
+        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
         response = await prisma.organization.update({
           where: {
@@ -722,4 +793,104 @@ export async function getUsersWithRoleInOrganization(subdomain: string) {
   });
 }
 
-export async function getBookings() {}
+export async function getEventRolesAndUsers(eventId: string) {
+  return await prisma.userRole.findMany({
+    where: {
+      role: {
+        eventRole: {
+          some: {
+            eventId: eventId,
+          },
+        },
+      },
+    },
+    include: {
+      user: true,
+      role: true,
+    },
+  });
+}
+
+export const updateEvent = withEventAuth(
+  async (
+    formData: FormData,
+    event: Event & { organization: Organization },
+    key: string,
+  ) => {
+    const value = formData.get(key) as string;
+
+    try {
+      let response;
+
+      if (key === "image" || key === "logo") {
+        if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+          return {
+            error: "Missing SUPABASE_URL or SUPABASE_ANON_KEY token.",
+          };
+        }
+
+        const file = formData.get(key) as File;
+        const filename = `${nanoid()}.${file.type.split("/")[1]}`;
+
+        const { data, error } = await supabase.storage
+          .from("media")
+          .upload(`/public/${filename}`, file);
+
+        console.log({ data, error });
+        // const { url } = await put(filename, file, {
+        //   access: "public",
+        // });
+
+        if (error || !data?.path) {
+          return {
+            error: "Failed to upload image.",
+          };
+        }
+        const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/media/${data.path}`;
+
+        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
+
+        response = await prisma.event.update({
+          where: {
+            id: event.id,
+          },
+          data: {
+            [key]: url,
+            ...(blurhash && { imageBlurhash: blurhash }),
+          },
+        });
+      } else {
+        response = await prisma.event.update({
+          where: {
+            id: event.id,
+          },
+          data: {
+            [key]: value,
+          },
+        });
+      }
+      console.log(
+        "Updated Organization data! Revalidating tags: ",
+        `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+        `${event.organization.customDomain}-metadata`,
+      );
+      await revalidateTag(
+        `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${event.path}-metadata`,
+      );
+      event.organization.customDomain &&
+        (await revalidateTag(`${event.organization.customDomain}/${event.path}-metadata`));
+
+      return response;
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        return {
+          error: `This ${key} is already taken`,
+        };
+      } else {
+        return {
+          error: error.message,
+        };
+      }
+    }
+  },
+);
