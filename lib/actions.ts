@@ -763,7 +763,7 @@ export const editUser = async (
 // );
 
 export async function getUsersWithRoleInOrganization(subdomain: string) {
-  return await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: {
       userRoles: {
         some: {
@@ -782,15 +782,16 @@ export async function getUsersWithRoleInOrganization(subdomain: string) {
     include: {
       userRoles: {
         include: {
-          role: {
-            include: {
-              organizationRole: true,
-            },
-          },
+          role: true,
         },
       },
     },
   });
+
+  return users.map(user => ({
+    ...user,
+    roles: user.userRoles.map(userRole => userRole.role),
+  }));
 }
 
 export async function getEventRolesAndUsers(eventId: string) {
