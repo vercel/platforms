@@ -33,6 +33,7 @@ export const columns: ColumnDef<UserAndRoles>[] = [
   },
   {
     accessorKey: "roles",
+    header: "Roles",
     cell: ({ row }) => {
       // const amount = parseFloat(row.getValue("amount"))
       // const formatted = new Intl.NumberFormat("en-US", {
@@ -46,7 +47,7 @@ export const columns: ColumnDef<UserAndRoles>[] = [
         <div className="flex flex-wrap space-x-1">
           {roles.map((role) => {
             return (
-              <Badge key={role.id} variant="outline">
+              <Badge key={role.id} variant="default">
                 {role.name}
               </Badge>
             );
@@ -73,7 +74,7 @@ export const columns: ColumnDef<UserAndRoles>[] = [
             className="hover:underline underline-offset-1"
           >
             <span>{shortenString(address, 6, 6)}</span>
-            <span className="ml-1.5 text-lg">↗️</span>
+            <span className="ml-1.5">↗️</span>
           </a>
         </div>
       );

@@ -29,6 +29,7 @@ model User {
   sessions      Session[]
   posts         Post[]
   userRoles     UserRole[]
+  tickets       Ticket[] // Add this line
 }
 
 model Account {
@@ -140,8 +141,9 @@ model OrganizationRole {
 model EventRole {
   roleId  String
   eventId String
-  role    Role   @relation(fields: [roleId], references: [id])
-  event   Event  @relation(fields: [eventId], references: [id])
+  role    Role     @relation(fields: [roleId], references: [id])
+  event   Event    @relation(fields: [eventId], references: [id])
+  tickets Ticket[] // Add this line
 
   @@id([roleId, eventId])
 }
@@ -194,4 +196,17 @@ model ApiKey {
   updatedAt      DateTime     @updatedAt
 
   @@index([organizationId])
+}
+
+model Ticket {
+  id        String    @id @default(cuid())
+  userId    String
+  roleId    String
+  eventId   String
+  validFrom DateTime
+  validTo   DateTime
+  user      User      @relation(fields: [userId], references: [id])
+  eventRole EventRole @relation(fields: [roleId, eventId], references: [roleId, eventId])
+
+  @@unique([userId, roleId, eventId])
 }
