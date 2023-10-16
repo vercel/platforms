@@ -30,6 +30,7 @@ model User {
   posts         Post[]
   userRoles     UserRole[]
   tickets       Ticket[] // Add this line
+  Answers       Answers[]
 }
 
 model Account {
@@ -139,11 +140,12 @@ model OrganizationRole {
 }
 
 model EventRole {
-  roleId  String
-  eventId String
-  role    Role     @relation(fields: [roleId], references: [id])
-  event   Event    @relation(fields: [eventId], references: [id])
-  tickets Ticket[] // Add this line
+  roleId      String
+  eventId     String
+  role        Role          @relation(fields: [roleId], references: [id])
+  event       Event         @relation(fields: [eventId], references: [id])
+  tickets     Ticket[] // Add this line
+  Application Application[]
 
   @@id([roleId, eventId])
 }
@@ -209,4 +211,46 @@ model Ticket {
   eventRole EventRole @relation(fields: [roleId, eventId], references: [roleId, eventId])
 
   @@unique([userId, roleId, eventId])
+}
+
+model Application {
+  id                 String     @id @default(cuid())
+  // You are applying for this role, at this event, for this time span.
+  roleId             String
+  eventId            String
+  validFrom          DateTime
+  validTo            DateTime
+  eventRole          EventRole  @relation(fields: [roleId, eventId], references: [roleId, eventId])
+  questions          Question[]
+  applicationAnswers Answers[]
+}
+
+model Question {
+  id            String      @id @default(cuid())
+  text          String
+  type          String // 'text', 'dropdown', 'multi-select', etc.
+  options       Json? // JSON for storing options
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id])
+  answers       Answer[]
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  value      Json // JSON for storing the answer value
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  answers    Answers? @relation(fields: [answersId], references: [id])
+  answersId  String?
+}
+
+model Answers {
+  id            String      @id @default(cuid())
+  userId        String
+  applicationId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id])
+  application   Application @relation(fields: [applicationId], references: [id])
+  answers       Answer[]
 }
