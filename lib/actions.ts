@@ -22,6 +22,8 @@ import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
 import supabase from "./supabase";
+import { CreatTicketTierFormSchema } from "./schema";
+import { z } from "zod";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -1002,8 +1004,6 @@ export const updateEvent = withEventAuth(
   },
 );
 
-import { CreatTicketTierFormSchema } from "./schema";
-import { z } from "zod";
 export const createTicketTier = withEventAuth(
   async (data: z.infer<typeof CreatTicketTierFormSchema>, event: Event & { organization: Organization }) => {
     const session = await getSession();
@@ -1043,3 +1043,27 @@ export async function getEventTicketTiers(eventId: string) {
     }
   });
 }
+
+export const createEventForm = withEventAuth(
+  async (_: any,  event: Event & { organization: Organization }) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const response = await prisma.form.create({
+      data: {
+        organizationId: event.organization.id,
+        eventId: event.id,
+      },
+      include: {
+        organization: true,
+        event: true,
+      }
+    });
+
+    return response;
+  },
+);

@@ -114,6 +114,7 @@ model Organization {
   events        Event[]
   roles         OrganizationRole[] // Add this line
   apiKeys       ApiKey[]
+  form          Form[]
 }
 
 model Event {
@@ -130,6 +131,7 @@ model Event {
   eventRole      EventRole[]
   ticketTier     TicketTier[]
   ticket         Ticket[]
+  form           Form[]
 }
 
 model OrganizationRole {
@@ -241,15 +243,17 @@ model TicketTier {
 }
 
 model Form {
-  id           String         @id @default(cuid())
+  id             String         @id @default(cuid())
   // You are applying for this role, at this event, for this time span.
-  eventId      String
-  validFrom    DateTime
-  validTo      DateTime
-  questions    Question[]
-  formResponse FormResponse[]
-  role         Role[]
-  ticketTier   TicketTier[]
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String
+  event          Event?         @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  eventId        String?
+  image          String?
+  questions      Question[]
+  formResponse   FormResponse[]
+  role           Role[]
+  ticketTier     TicketTier[]
 }
 
 model Question {

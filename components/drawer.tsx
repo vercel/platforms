@@ -12,6 +12,7 @@ import {
   Settings,
   Users,
   Users2,
+  ClipboardSignature
 } from "lucide-react";
 import {
   useParams,
@@ -99,6 +100,16 @@ export default function Drawer({ children }: { children: ReactNode }) {
           icon: <Users width={18} />,
         },
         {
+          name: "Event Tickets",
+          href: `/city/${subdomain}/events/${path}/tickets`,
+          icon: <Ticket width={18} />,
+        },
+        {
+          name: "Event Forms",
+          href: `/city/${subdomain}/events/${path}/forms`,
+          icon: <ClipboardSignature width={18} />,
+        },
+        {
           name: "Settings",
           href: `/city/${subdomain}/events/${path}/settings`,
           isActive: segments.includes("settings"),
@@ -124,6 +135,11 @@ export default function Drawer({ children }: { children: ReactNode }) {
           name: "Event Tickets",
           href: `/city/${subdomain}/events/${path}/tickets`,
           icon: <Ticket width={18} />,
+        },
+        {
+          name: "Event Forms",
+          href: `/city/${subdomain}/events/${path}/forms`,
+          icon: <ClipboardSignature width={18} />,
         },
         {
           name: "Settings",
