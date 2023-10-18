@@ -1,5 +1,5 @@
 import { placeholderBlurhash } from "@/lib/utils";
-import { Event, Organization, Role, User, UserRole } from "@prisma/client";
+import { Event, Organization, Role, TicketTier, User, UserRole } from "@prisma/client";
 import Image from "next/image";
 import { useMemo } from "react";
 import {
@@ -68,12 +68,37 @@ export function AboutCard({ event }: { event: Event }) {
   );
 }
 
+export function RegistrationCard({ ticketTiers }: { ticketTiers: (TicketTier & { role: Role})[] }) {
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Registration Options</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {ticketTiers.map((ticketTier) => (
+          <div key={ticketTier.id} className="border rounded p-4">
+            <h3 className="font-bold">{ticketTier.name}</h3>
+            <p>{ticketTier.description}</p>
+            <p>Role: {ticketTier.role.name}</p>
+            <p>Issued: {ticketTier.issued}</p>
+            <p>Quantity: {ticketTier.quantity}</p>
+            <p>Price: {ticketTier.price} {ticketTier.currency}</p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function Event({
   event,
   rolesAndUsers,
+  ticketTiers,
 }: {
   event: Event & { organization: Organization };
   rolesAndUsers: RolesAndUsers[];
+  ticketTiers: (TicketTier & { role: Role}) [];
 }) {
   const uniqueUsers = useMemo(
     () =>
@@ -133,6 +158,7 @@ export default function Event({
             </div>
           </div>
         </Card>
+        <RegistrationCard ticketTiers={ticketTiers} />
         <AboutCard event={event} />
         <HostsCard hostUsers={hostUsers} />
       </div>

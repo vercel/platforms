@@ -1001,3 +1001,45 @@ export const updateEvent = withEventAuth(
     }
   },
 );
+
+import { CreatTicketTierFormSchema } from "./schema";
+import { z } from "zod";
+export const createTicketTier = withEventAuth(
+  async (data: z.infer<typeof CreatTicketTierFormSchema>, event: Event & { organization: Organization }) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const result = CreatTicketTierFormSchema.safeParse(data);
+    if (!result.success) {
+      return {
+        error: result.error.formErrors.fieldErrors
+      }
+    }
+
+    try {
+      const ticketTier = await prisma.ticketTier.create({
+        data,
+      });
+      return ticketTier;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export async function getEventTicketTiers(eventId: string) {
+  return await prisma.ticketTier.findMany({
+    where: {
+      eventId: eventId,
+    },
+    include: {
+      role: true
+    }
+  });
+}

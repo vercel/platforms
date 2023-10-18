@@ -13,24 +13,24 @@ generator client {
 }
 
 model User {
-  id                 String               @id @default(cuid())
-  name               String?
+  id            String         @id @default(cuid())
+  name          String?
   // if you are using Github OAuth, you can get rid of the username attribute (that is for Twitter OAuth)
-  username           String?
-  gh_username        String?
-  eth_address        String?
-  ens_name           String?
-  email              String?              @unique
-  emailVerified      DateTime?
-  image              String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  accounts           Account[]
-  sessions           Session[]
-  posts              Post[]
-  userRoles          UserRole[]
-  tickets            Ticket[] // Add this line
-  applicationAnswers ApplicationAnswers[]
+  username      String?
+  gh_username   String?
+  eth_address   String?
+  ens_name      String?
+  email         String?        @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  posts         Post[]
+  userRoles     UserRole[]
+  tickets       Ticket[] // Add this line
+  formResponse  FormResponse[]
 }
 
 model Account {
@@ -128,8 +128,8 @@ model Event {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   organizationId String
   eventRole      EventRole[]
-  TicketTier     TicketTier[]
-  Ticket         Ticket[]
+  ticketTier     TicketTier[]
+  ticket         Ticket[]
 }
 
 model OrganizationRole {
@@ -151,16 +151,19 @@ model EventRole {
 }
 
 model Role {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
+  id           String  @id @default(cuid())
+  name         String
+  description  String?
+  image        String?
+  requiresForm Boolean @default(false) // Add this line
 
   userRoles        UserRole[]
   rolePermissions  RolePermission[]
   organizationRole OrganizationRole[]
   eventRole        EventRole[]
-  TicketTier       TicketTier[]
-  Application      Application[]
+  ticketTier       TicketTier[]
+  formId           String?
+  form             Form?              @relation(fields: [formId], references: [id])
 }
 
 model RolePermission {
@@ -219,59 +222,62 @@ model Ticket {
 }
 
 model TicketTier {
-  id      String @id @default(cuid())
-  name    String
-  eventId String
-  roleId  String
-
-  quantity Int
-  price    Int // Price of the ticket in smallest unit of currency
-  currency String // Currency of the price
-  tickets  Ticket[]
-  event    Event    @relation(fields: [eventId], references: [id])
-  role     Role     @relation(fields: [roleId], references: [id])
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  eventId     String
+  roleId      String
+  issued      Int      @default(0)
+  quantity    Int
+  price       Int // Price of the ticket in smallest unit of currency
+  currency    String // Currency of the price
+  tickets     Ticket[]
+  event       Event    @relation(fields: [eventId], references: [id])
+  role        Role     @relation(fields: [roleId], references: [id])
+  formId      String?
+  form        Form?    @relation(fields: [formId], references: [id])
 
   @@index([eventId])
 }
 
-model Application {
-  id                 String               @id @default(cuid())
+model Form {
+  id           String         @id @default(cuid())
   // You are applying for this role, at this event, for this time span.
-  roleId             String
-  eventId            String
-  validFrom          DateTime
-  validTo            DateTime
-  role               Role                 @relation(fields: [roleId], references: [id])
-  questions          Question[]
-  applicationAnswers ApplicationAnswers[]
+  eventId      String
+  validFrom    DateTime
+  validTo      DateTime
+  questions    Question[]
+  formResponse FormResponse[]
+  role         Role[]
+  ticketTier   TicketTier[]
 }
 
 model Question {
-  id            String      @id @default(cuid())
-  text          String
-  type          String // 'text', 'dropdown', 'multi-select', etc.
-  options       Json? // JSON for storing options
-  applicationId String
-  application   Application @relation(fields: [applicationId], references: [id])
-  answers       Answer[]
+  id      String   @id @default(cuid())
+  text    String
+  type    String // 'text', 'dropdown', 'multi-select', etc.
+  options Json? // JSON for storing options
+  formId  String
+  form    Form     @relation(fields: [formId], references: [id])
+  answers Answer[]
 }
 
 model Answer {
-  id         String              @id @default(cuid())
+  id         String        @id @default(cuid())
   value      Json // JSON for storing the answer value
   questionId String
-  question   Question            @relation(fields: [questionId], references: [id])
-  answers    ApplicationAnswers? @relation(fields: [answersId], references: [id])
+  question   Question      @relation(fields: [questionId], references: [id])
+  answers    FormResponse? @relation(fields: [answersId], references: [id])
   answersId  String?
 }
 
-model ApplicationAnswers {
-  id            String      @id @default(cuid())
-  userId        String
-  applicationId String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  user          User        @relation(fields: [userId], references: [id])
-  application   Application @relation(fields: [applicationId], references: [id])
-  answers       Answer[]
+model FormResponse {
+  id        String   @id @default(cuid())
+  userId    String
+  formId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  form      Form     @relation(fields: [formId], references: [id])
+  answers   Answer[]
 }

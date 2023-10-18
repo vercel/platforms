@@ -6,15 +6,10 @@ import {
   BarChart3,
   Edit3,
   Ticket,
-  Globe,
-  Layout,
   LayoutDashboard,
-  Megaphone,
   Menu,
   Newspaper,
   Settings,
-  FileCode,
-  Github,
   Users,
   Users2,
 } from "lucide-react";
@@ -124,6 +119,11 @@ export default function Drawer({ children }: { children: ReactNode }) {
           name: "Event Roles",
           href: `/city/${subdomain}/events/${path}/roles`,
           icon: <Users width={18} />,
+        },
+        {
+          name: "Event Tickets",
+          href: `/city/${subdomain}/events/${path}/tickets`,
+          icon: <Ticket width={18} />,
         },
         {
           name: "Settings",
@@ -250,7 +250,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
         } fixed z-10 flex h-full w-full flex-col justify-between border-r border-brand-gray200 bg-brand-gray50 p-4 transition-all dark:border-brand-gray700 dark:bg-brand-gray900 sm:w-60 sm:translate-x-0`}
       >
         <div className="grid gap-2">
-          <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">
+          {/* <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">
             <a
               href="app.localhost:3000"
               target="_blank"
@@ -283,7 +283,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 className="dark:scale-110 dark:rounded-full dark:border dark:border-brand-gray400"
               />
             </Link>
-          </div>
+          </div> */}
           <div className="grid gap-1">
             {tabs.map(({ name, href, isActive, icon }) => (
               <Link

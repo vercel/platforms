@@ -235,7 +235,7 @@ export function withOrganizationAuth(action: any) {
 
 export function withEventAuth(action: any) {
   return async (
-    formData: FormData | null,
+    formData: any | null,
     context: { params: { subdomain: string; path: string } },
     key: string | null,
   ) => {

@@ -2,7 +2,7 @@ import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Event from "@/components/event";
-import { getEventRolesAndUsers } from "@/lib/actions";
+import { getEventRolesAndUsers, getEventTicketTiers } from "@/lib/actions";
 
 export default async function EventPage({
   params,
@@ -29,5 +29,7 @@ export default async function EventPage({
 
   const rolesAndUsers = await getEventRolesAndUsers(event.id);
 
-  return <Event event={event} rolesAndUsers={rolesAndUsers} />;
+  const ticketTiers = await getEventTicketTiers(event.id);
+
+  return <Event event={event} rolesAndUsers={rolesAndUsers} ticketTiers={ticketTiers} />;
 }
