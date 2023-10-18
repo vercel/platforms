@@ -15,6 +15,7 @@ import {
   Settings,
   FileCode,
   Github,
+  Users,
   Users2,
 } from "lucide-react";
 import {
@@ -66,7 +67,10 @@ import Image from "next/image";
 
 export default function Drawer({ children }: { children: ReactNode }) {
   const segments = useSelectedLayoutSegments();
-  const { subdomain, path } = useParams() as { subdomain?: string, path?: string };
+  const { subdomain, path } = useParams() as {
+    subdomain?: string;
+    path?: string;
+  };
 
   const [organizationSubdomain, setOrganizationSubdomain] = useState<
     string | undefined
@@ -81,7 +85,13 @@ export default function Drawer({ children }: { children: ReactNode }) {
   }, [segments, subdomain]);
 
   const tabs = useMemo(() => {
-    if (segments?.[2] === "events" && subdomain && path && segments?.[4] === "settings") {
+    // Event Settings
+    if (
+      segments?.[2] === "events" &&
+      subdomain &&
+      path &&
+      segments?.[4] === "settings"
+    ) {
       return [
         {
           name: "Back",
@@ -89,19 +99,31 @@ export default function Drawer({ children }: { children: ReactNode }) {
           icon: <ArrowLeft width={18} />,
         },
         {
+          name: "Event Roles",
+          href: `/city/${subdomain}/events/${path}/roles`,
+          icon: <Users width={18} />,
+        },
+        {
           name: "Settings",
           href: `/city/${subdomain}/events/${path}/settings`,
           isActive: segments.includes("settings"),
           icon: <Settings width={18} />,
         },
-      ]
+      ];
     }
-    if (segments?.[2] === "events" && subdomain && segments?.[3]) {
+    // Event drawer
+    if (segments?.[2] === "events" && subdomain && path) {
       return [
         {
-          name: "Back",
+          name:
+            "Back to " + subdomain.charAt(0).toUpperCase() + subdomain.slice(1),
           href: `/city/${subdomain}`,
           icon: <ArrowLeft width={18} />,
+        },
+        {
+          name: "Event Roles",
+          href: `/city/${subdomain}/events/${path}/roles`,
+          icon: <Users width={18} />,
         },
         {
           name: "Settings",
@@ -109,7 +131,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
           isActive: segments.includes("settings"),
           icon: <Settings width={18} />,
         },
-      ]
+      ];
     }
     if (segments[0] === "city" && subdomain) {
       return [
@@ -198,7 +220,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
         icon: <Settings width={18} />,
       },
     ];
-  }, [segments, subdomain, organizationSubdomain]);
+  }, [segments, subdomain, path, organizationSubdomain]);
 
   const [showSidebar, setShowSidebar] = useState(false);
 

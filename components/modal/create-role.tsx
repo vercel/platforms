@@ -1,70 +1,63 @@
 "use client";
 
 import { toast } from "sonner";
-import { createOrganization } from "@/lib/actions";
-import { useRouter } from "next/navigation";
+import { createEventRole } from "@/lib/actions";
+import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
-import { cn } from "@/lib/utils";
-import LoadingDots from "@/components/icons/loading-dots";
 import { useModal } from "./provider";
 import va from "@vercel/analytics";
-import { useEffect, useState } from "react";
-import { Organization } from "@prisma/client";
-import PrimaryButton from "../primary-button";
+import { useState } from "react";
+import { Organization, Role } from "@prisma/client";
 import FormButton from "./form-button";
 
-export default function CreateOrganizationModal() {
+export default function CreateRoleModal() {
   const router = useRouter();
   const modal = useModal();
+  const { subdomain, path } = useParams() as {
+    subdomain: string;
+    path: string;
+  };
 
   const [data, setData] = useState({
     name: "",
-    subdomain: "",
     description: "",
   });
-
-  useEffect(() => {
-    setData((prev) => ({
-      ...prev,
-      subdomain: prev.name
-        .toLowerCase()
-        .trim()
-        .replace(/[\W_]+/g, "-"),
-    }));
-  }, [data.name]);
 
   return (
     <form
       action={async (data: FormData) =>
-        createOrganization(data).then((res: Organization | { error: string }) => {
-          if ('error' in res && res.error) {
-            toast.error(res.error);
-          } else {
-            va.track("Created City");
-            const { id, subdomain } = res as Organization;
-            router.refresh();
-            router.push(`/city/${subdomain}`);
-            modal?.hide();
-            toast.success(`Successfully created City!`);
-          }
-        })
+        createEventRole(data, { params: { subdomain, path } }, null).then(
+          (res: Role | { error: string }) => {
+            if ("error" in res && res.error) {
+              toast.error(res.error);
+            } else {
+              va.track("Created Role");
+              const { id, subdomain } = res as Organization;
+              router.refresh();
+              modal?.hide();
+              toast.success(`Successfully created City!`);
+            }
+          },
+        )
       }
       className="w-full rounded-md bg-brand-gray200/80 backdrop-blur-lg  dark:bg-brand-gray900/80 md:max-w-md md:border md:border-brand-gray200 md:shadow dark:md:border-brand-gray700"
     >
       <div className="relative flex flex-col space-y-4 p-5 md:p-10">
-        <h2 className="font-cal text-2xl dark:text-brand-gray100">Create a new city</h2>
+        <h2 className="font-cal text-2xl dark:text-brand-gray100">
+          Create a new Role
+        </h2>
 
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="name"
-            className="text-sm font-medium text-brand-gray500 dark:text-brand-gray400"
+            className="text-brand-gray500 text-sm font-medium dark:text-brand-gray400"
           >
-            City Name
+            Role Name
           </label>
           <input
             name="name"
             type="text"
-            placeholder="My Awesome City"
+            placeholder="Speaker"
             autoFocus
             value={data.name}
             onChange={(e) => setData({ ...data, name: e.target.value })}
@@ -74,10 +67,10 @@ export default function CreateOrganizationModal() {
           />
         </div>
 
-        <div className="flex flex-col space-y-2">
+        {/* <div className="flex flex-col space-y-2">
           <label
             htmlFor="subdomain"
-            className="text-sm font-medium text-brand-gray500"
+            className="text-brand-gray500 text-sm font-medium"
           >
             Subdomain
           </label>
@@ -94,16 +87,16 @@ export default function CreateOrganizationModal() {
               required
               className="w-full rounded-l-lg border border-brand-gray700 bg-brand-gray200 px-4 py-2 text-sm text-brand-gray900 placeholder:text-brand-gray700 focus:border-brand-gray900 focus:outline-none focus:ring-brand-gray900 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-brand-gray100 dark:placeholder-brand-gray700 dark:focus:ring-brand-gray100"
             />
-            <div className="flex items-center rounded-r-lg border border-l-0 border-brand-gray700 font-medium text-brand-gray100 bg-brand-gray800 px-3 text-sm dark:border-brand-gray600 dark:bg-brand-gray800 dark:text-brand-gray400">
+            <div className="flex items-center rounded-r-lg border border-l-0 border-brand-gray700 bg-brand-gray800 px-3 text-sm font-medium text-brand-gray100 dark:border-brand-gray600 dark:bg-brand-gray800 dark:text-brand-gray400">
               .{process.env.NEXT_PUBLIC_ROOT_DOMAIN}
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="description"
-            className="text-sm font-medium text-brand-gray500"
+            className="text-brand-gray500 text-sm font-medium"
           >
             Description
           </label>
@@ -119,9 +112,8 @@ export default function CreateOrganizationModal() {
         </div>
       </div>
       <div className="flex items-center justify-end rounded-b-lg border-t border-brand-gray700 bg-brand-gray200 p-3 dark:border-brand-gray700 dark:bg-brand-gray800 md:px-10">
-        <FormButton text={"Create Organization"} />
+        <FormButton text={"Create Role"} />
       </div>
     </form>
   );
 }
-

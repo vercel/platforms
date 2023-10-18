@@ -22,9 +22,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { User } from "@prisma/client";
-import { selectUsername } from "@/lib/profile";
-
 
 export function HostMembers() {
   <Card>

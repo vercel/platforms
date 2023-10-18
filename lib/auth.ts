@@ -196,7 +196,7 @@ export function getSession() {
 export function withOrganizationAuth(action: any) {
   return async (
     formData: FormData | null,
-    context: { params: { subdomain: string; path: string } },
+    context: { params: { subdomain: string } },
     key: string | null,
   ) => {
     const session = await getSession();
@@ -276,6 +276,77 @@ export function withEventAuth(action: any) {
         error: "Not authorized",
       };
     }
+
+    return action(formData, data, key);
+  };
+}
+
+export function withEventRoleAuth(action: any) {
+  return async (
+    formData: FormData | null,
+    context: { params: { subdomain: string; path: string; roleId: string } },
+    key: string | null,
+  ) => {
+    const session = await getSession();
+    if (!session) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const event = await prisma.event.findFirst({
+      where: {
+        organization: {
+          subdomain: context.params.subdomain,
+        },
+        path: context.params.path,
+      },
+      include: {
+        organization: true,
+      },
+    });
+    if (!event) {
+      return {
+        error: "Event not found",
+      };
+    }
+    //   const rolesAndUsers = await getEventRoles(event.id);
+    const eventRole = await prisma.eventRole.findUnique({
+      where: {
+        roleId_eventId: {
+          roleId: context.params.roleId,
+          eventId: event.id,
+        },
+      },
+      include: {
+        role: true,
+      },
+    });
+
+    console.log(event);
+
+    if (!eventRole?.role) {
+      return {
+        error: "Role not found",
+      };
+    }
+
+    const userIsEventHost = await userHasEventRole(
+      session.user.id,
+      event.id,
+      "Host",
+    );
+
+    if (!userIsEventHost) {
+      return {
+        error: "Not authorized",
+      };
+    }
+
+    const data = {
+      role: eventRole.role,
+      event,
+      organization: event.organization,
+    };
 
     return action(formData, data, key);
   };

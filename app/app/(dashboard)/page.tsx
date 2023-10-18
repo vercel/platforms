@@ -20,11 +20,11 @@ export default function Overview() {
           <OverviewStats />
         </div>
 
-        <Suspense fallback={<div className="h-[720px] w-[720px] col-span-2" />}>
+        {/* <Suspense fallback={<div className="h-[720px] w-[720px] col-span-2" />}>
           <div className="col-span-2 space-x-6">
             <Globe size={720} backgroundColor="#F8F6F1" />
           </div>
-        </Suspense>
+        </Suspense> */}
       </div>
 
       <div className="flex flex-col space-y-6">

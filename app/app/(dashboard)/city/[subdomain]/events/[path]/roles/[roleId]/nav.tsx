@@ -4,19 +4,19 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useParams, useSelectedLayoutSegment } from "next/navigation";
 
-export default function EventSettingsNav() {
-  const { subdomain, path } = useParams() as { subdomain: string, path: string };
+export default function RoleNav() {
+  const { subdomain, path, roleId } = useParams() as { subdomain: string, path: string, roleId?: string };
   const segment = useSelectedLayoutSegment();
 
   const navItems = [
     {
       name: "General",
-      href: `/city/${subdomain}/events/${path}/settings`,
+      href: `/city/${subdomain}/events/${path}/roles/${roleId}`,
       segment: null,
     },
     {
-      name: "Tickets",
-      href: `/city/${subdomain}/events/${path}/settings/tickets`,
+      name: "Ticketing",
+      href: `/city/${subdomain}/events/${path}/roles/${roleId}/tickets`,
       segment: "tickets",
     },
     // {

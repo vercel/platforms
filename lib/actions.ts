@@ -2,9 +2,14 @@
 
 import prisma from "@/lib/prisma";
 import mongoClient from "@/lib/tripsha/db-connect";
-import { Event, Post, Organization } from "@prisma/client";
+import { Event, Post, Organization, Role } from "@prisma/client";
 import { revalidateTag } from "next/cache";
-import { withPostAuth, withOrganizationAuth, withEventAuth } from "./auth";
+import {
+  withPostAuth,
+  withOrganizationAuth,
+  withEventAuth,
+  withEventRoleAuth,
+} from "./auth";
 import { getSession } from "@/lib/auth";
 import {
   addDomainToVercel,
@@ -689,37 +694,104 @@ export const editUser = async (
   }
 };
 
-// export const createRole = withOrganizationAuth(
-//   async (formData: FormData, organization: Organization) => {
-//     const session = await getSession();
-//     if (!session?.user.id) {
-//       return {
-//         error: "Not authenticated",
-//       };
-//     }
-//     const name = formData.get("name") as string;
-//     const description = formData.get("description") as string;
+export const createEventRole = withEventAuth(
+  async (formData: FormData, event: Event & { organization: Organization }) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
 
-//     try {
-//       const role = await prisma.role.create({
-//         data: {
-//           name,
-//           description,
-//           organization: {
-//             connect: {
-//               id: organization.id,
-//             },
-//           },
-//         },
-//       });
-//       return role;
-//     } catch (error: any) {
-//       return {
-//         error: error.message,
-//       };
-//     }
-//   },
-// );
+    try {
+      const role = await prisma.role.create({
+        data: {
+          name,
+          description,
+        },
+      });
+
+      await prisma.eventRole.create({
+        data: {
+          eventId: event.id,
+          roleId: role.id,
+        },
+      });
+
+      return role;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export const updateEventRole = withEventRoleAuth(
+  async (
+    formData: FormData,
+    data: { role: Role; event: Event; organization: Organization },
+  ) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+
+    try {
+      const role = await prisma.role.update({
+        where: {
+          id: data.role.id,
+        },
+        data: {
+          name,
+          description,
+        },
+      });
+
+      return role;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export const deleteEventRole = withEventRoleAuth(
+  async (
+    _: FormData,
+    data: { role: Role; event: Event; organization: Organization },
+  ) => {
+    try {
+      const response = await prisma.$transaction([
+        prisma.eventRole.delete({
+          where: {
+            roleId_eventId: {
+              eventId: data.event.id,
+              roleId: data.role.id,
+            },
+          },
+        }),
+        prisma.role.delete({
+          where: {
+            id: data.role.id,
+          },
+        }),
+      ]);
+      return response;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
 
 // export const updateRole = withOrganizationAuth(
 //   async (formData: FormData, organization: Organization, roleId: string) => {
@@ -788,9 +860,41 @@ export async function getUsersWithRoleInOrganization(subdomain: string) {
     },
   });
 
-  return users.map(user => ({
+  return users.map((user) => ({
     ...user,
-    roles: user.userRoles.map(userRole => userRole.role),
+    roles: user.userRoles.map((userRole) => userRole.role),
+  }));
+}
+
+export async function getUsersWithRoleInEvent(eventPath: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            eventRole: {
+              some: {
+                event: {
+                  path: eventPath,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    include: {
+      userRoles: {
+        include: {
+          role: true,
+        },
+      },
+    },
+  });
+
+  return users.map((user) => ({
+    ...user,
+    roles: user.userRoles.map((userRole) => userRole.role),
   }));
 }
 
@@ -879,7 +983,9 @@ export const updateEvent = withEventAuth(
         `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${event.path}-metadata`,
       );
       event.organization.customDomain &&
-        (await revalidateTag(`${event.organization.customDomain}/${event.path}-metadata`));
+        (await revalidateTag(
+          `${event.organization.customDomain}/${event.path}-metadata`,
+        ));
 
       return response;
     } catch (error: any) {
