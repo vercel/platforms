@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 // import { getPostData } from "@/lib/fetchers";
 // import { placeholderBlurhash, toDateString } from "@/lib/utils";
 import Event from "@/components/event";
-import { getEventData, getEventRolesAndUsers } from "@/lib/actions";
+import { getEventData, getEventRolesAndUsers, getEventTicketTiers } from "@/lib/actions";
 
 export async function generateMetadata({
   params,
@@ -53,6 +53,7 @@ export default async function SiteEventPage({
   }
 
   const rolesAndUsers = await getEventRolesAndUsers(event.id);
+  const ticketTiers = await getEventTicketTiers(event.id);
 
-  return <Event event={event} rolesAndUsers={rolesAndUsers} />;
+  return <Event event={event} rolesAndUsers={rolesAndUsers} ticketTiers={ticketTiers} />;
 }

@@ -12,6 +12,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        warmGray: {
+          50: "#fbfaf8",
+          100: "#F8F6F2",
+          200: "#F2EDE5",
+          300: "#ECE5D8",
+          400: "#9C9485",
+          600: "#706A5F",
+          700: "#59544C",
+          800: "#433F39",
+          900: "#2C2A26",
+          950: "#1A1916",
+        },
         brand: {
           primary: "#00FFEA",
           secondary: "#FF8000",
