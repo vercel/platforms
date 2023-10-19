@@ -2,7 +2,16 @@
 
 import prisma from "@/lib/prisma";
 import mongoClient from "@/lib/tripsha/db-connect";
-import { Event, Post, Organization, Role } from "@prisma/client";
+import {
+  Event,
+  Post,
+  Organization,
+  Role,
+  Form,
+  Question,
+  Prisma,
+  QuestionType,
+} from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
   withPostAuth,
@@ -24,6 +33,7 @@ import { getBlurDataURL } from "@/lib/utils";
 import supabase from "./supabase";
 import { CreatTicketTierFormSchema } from "./schema";
 import { z } from "zod";
+import { JSONValue } from "ai";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -1005,7 +1015,10 @@ export const updateEvent = withEventAuth(
 );
 
 export const createTicketTier = withEventAuth(
-  async (data: z.infer<typeof CreatTicketTierFormSchema>, event: Event & { organization: Organization }) => {
+  async (
+    data: z.infer<typeof CreatTicketTierFormSchema>,
+    event: Event & { organization: Organization },
+  ) => {
     const session = await getSession();
     if (!session?.user.id) {
       return {
@@ -1016,8 +1029,8 @@ export const createTicketTier = withEventAuth(
     const result = CreatTicketTierFormSchema.safeParse(data);
     if (!result.success) {
       return {
-        error: result.error.formErrors.fieldErrors
-      }
+        error: result.error.formErrors.fieldErrors,
+      };
     }
 
     try {
@@ -1039,13 +1052,13 @@ export async function getEventTicketTiers(eventId: string) {
       eventId: eventId,
     },
     include: {
-      role: true
-    }
+      role: true,
+    },
   });
 }
 
 export const createEventForm = withEventAuth(
-  async (_: any,  event: Event & { organization: Organization }) => {
+  async (_: any, event: Event & { organization: Organization }) => {
     const session = await getSession();
     if (!session?.user.id) {
       return {
@@ -1061,9 +1074,87 @@ export const createEventForm = withEventAuth(
       include: {
         organization: true,
         event: true,
-      }
+      },
     });
 
     return response;
   },
 );
+
+type FormAndContext = Form & {
+  organization: Organization;
+  event: Event | null;
+  questions: Question[];
+  role: Role[];
+};
+
+// Update Form
+export async function updateFormName(id: string, name: string) {
+  const form = await prisma.form.update({
+    where: { id },
+    data: {
+      name,
+    },
+  });
+  return form;
+}
+
+// Delete Form
+export async function deleteForm(id: string) {
+  const form = await prisma.form.delete({
+    where: { id },
+  });
+  return form;
+}
+
+export type QuestionDataInputUpdate = { id: string, text?: string; type?: QuestionType; options?: Prisma.InputJsonValue, order: number };
+export type QuestionDataInputCreate = { formId: string, text: string; type: QuestionType; options?: Prisma.InputJsonValue };
+
+// Create Question
+export async function createQuestion(data: QuestionDataInputCreate) {
+
+  const count = await prisma.question.count({
+    where: { formId: data.formId },
+  });
+  
+  const question = await prisma.question.create({
+    data: {
+      ...data,
+      order: count
+    },
+  });
+  return question;
+}
+
+// Update Question
+export async function updateQuestion(
+  id: string,
+  data: QuestionDataInputUpdate,
+) {
+  const question = await prisma.question.update({
+    where: { id },
+    data,
+  });
+  return question;
+}
+
+// Delete Question
+export async function deleteQuestion(id: string) {
+  const question = await prisma.question.delete({
+    where: { id },
+  });
+  return question;
+}
+
+export async function batchUpdateQuestionOrder(questions: Question[]) {
+  // Prepare batch update operations
+  const updateOperations = questions.map((item) =>
+    prisma.question.update({
+      where: { id: item.id },
+      data: { order: item.order },
+    })
+  );
+
+  // Execute all updates in a transaction
+  await prisma.$transaction(updateOperations);
+}

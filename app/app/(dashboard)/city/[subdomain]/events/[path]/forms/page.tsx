@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import PageHeader from "@/components/page-header";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
-import EventForms from "@/components/forms"; // Adjust this import
+import EventForms from "@/components/event-forms"; // Adjust this import
 import CreateEventFormButton from "@/components/create-event-form-button";
 
 export default async function EventFormsPage({
@@ -31,8 +31,6 @@ export default async function EventFormsPage({
   if (!event) {
     return notFound();
   }
-
-  console.log('prisma', prisma)
 
   const forms = await prisma.form.findMany({
     where: {

@@ -53,7 +53,7 @@ import Image from "next/image";
 //         viewBox="0 0 76 76"
 //         fill="none"
 //         xmlns="http://www.w3.org/2000/svg"
-//         className="py-1 text-black dark:text-white"
+//         className="py-1 text-brand-gray700 dark:text-white"
 //       >
 //         <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="currentColor" />
 //       </svg>
@@ -263,7 +263,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
       <div
         className={`transform ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
-        } fixed z-10 flex h-full w-full flex-col justify-between border-r border-brand-gray200 bg-brand-gray50 p-4 transition-all dark:border-brand-gray700 dark:bg-brand-gray900 sm:w-60 sm:translate-x-0`}
+        } fixed z-10 flex h-full w-full flex-col justify-between border-r text-brand-gray800 border-brand-gray400/50 bg-brand-gray200 p-4 transition-all dark:border-brand-gray700 dark:bg-brand-gray900 sm:w-60 sm:translate-x-0`}
       >
         <div className="grid gap-2">
           {/* <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">
@@ -278,7 +278,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 viewBox="0 0 76 65"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-black dark:text-white"
+                className="text-brand-gray700 dark:text-white"
               >
                 <path
                   d="M37.5274 0L75.0548 65H0L37.5274 0Z"
@@ -307,9 +307,9 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 href={href}
                 className={`flex items-center space-x-3 ${
                   isActive
-                    ? "bg-brand-gray200 text-black dark:bg-brand-gray700"
+                    ? "bg-brand-gray400/20 text-brand-gray700 dark:bg-brand-gray700"
                     : ""
-                } rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray200 active:bg-brand-gray300 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800`}
+                } rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray300 active:bg-brand-gray400/20 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800`}
               >
                 {icon}
                 <span className="text-sm font-medium">{name}</span>

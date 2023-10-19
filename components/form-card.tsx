@@ -29,7 +29,7 @@ export default function FormCard({
   const formImage = getPlaceholderImage(form);
   return (
     <Link
-      href={`/form/${form.id}`}
+      href={`/city/${organization.subdomain}/events/${event?.path}/forms/${form.id}`}
       className="flex flex-col overflow-hidden rounded-lg"
     >
       <div className="relative rounded-lg border border-brand-gray200 pb-5 shadow-md transition-all hover:shadow-xl dark:border-brand-gray700 dark:hover:border-white">
@@ -46,7 +46,7 @@ export default function FormCard({
         ) : null}
         <div className="border-t border-brand-gray200 p-4 dark:border-brand-gray700">
           <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide dark:text-white">
-            {form.id}
+            {form.name}
           </h3>
           <p className="text-brand-gray500 mt-2 line-clamp-1 text-sm font-normal leading-snug dark:text-brand-gray400">
             {questions.map((question) => (
