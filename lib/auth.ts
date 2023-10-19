@@ -11,10 +11,18 @@ import { SiweMessage } from "siwe";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
 import { userHasEventRole, userHasOrgRole } from "./actions";
+import { NextRequest } from "next/server";
+import { headers } from "next/headers";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
-export const authOptions = (): NextAuthOptions => {
+export const authOptions = (req?: NextRequest): NextAuthOptions => {
+  const host = req?.headers.get("host");
+  const allHeaders = headers();
+  const xForwardedHost = allHeaders.get('x-forwarded-host')
+  const hostname = host || xForwardedHost ||  process.env.NEXTAUTH_URL
+  console.log({ hostname, host, xForwardedHost })
+
   return {
     providers: [
       // passwordless / magic link
@@ -50,13 +58,14 @@ export const authOptions = (): NextAuthOptions => {
             if (!process.env.NEXTAUTH_URL) {
               throw new Error("NEXTAUTH_URL is not set");
             }
+
             const siwe = new SiweMessage(
               JSON.parse(credentials?.message || "{}"),
             );
-            const nextAuthUrl = new URL(process.env.NEXTAUTH_URL);
+            // const nextAuthUrl = new URL(process.env.NEXTAUTH_URL);
 
-            console.log('nextAuthUrl: ', nextAuthUrl)
-            const nonce = await getCsrfToken({ req });
+            // console.log('nextAuthUrl: ', nextAuthUrl)
+            const nonce = await getCsrfToken();
 
             console.log("nonce", nonce);
             // if (siwe.nonce !== nonce) {
@@ -65,7 +74,7 @@ export const authOptions = (): NextAuthOptions => {
 
             const result = await siwe.verify({
               signature: credentials?.signature || "",
-              domain: nextAuthUrl.host,
+              domain: hostname,
               // nonce: nonce,
             });
             console.log("result", result);
@@ -156,9 +165,7 @@ export const authOptions = (): NextAuthOptions => {
           sameorganization: "lax",
           path: "/",
           // When working on localhost, the cookie domain must be omitted entirely (https://stackoverflow.com/a/1188145)
-          domain: VERCEL_DEPLOYMENT
-            ? `.${new URL(process.env.NEXTAUTH_URL as string).host}`
-            : undefined,
+          domain: hostname?.includes("localhost:3000") ? undefined : hostname,
           secure: VERCEL_DEPLOYMENT,
         },
       },

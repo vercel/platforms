@@ -54,6 +54,7 @@ function Siwe({ redirect = true, callbackUrl = "/" }) {
     if (!isConnected) {
       connect()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

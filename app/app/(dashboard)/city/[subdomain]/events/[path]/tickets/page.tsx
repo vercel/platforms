@@ -42,6 +42,13 @@ export default async function EventTicketsPage({
   });
   const roles = eventRoles.map((eventRole) => eventRole.role);
 
+  const forms = await prisma.form.findMany({
+    where: {
+      organizationId: event.organizationId,
+      eventId: event.id,
+    }
+  })
+
   const ticketTiers = await prisma.ticketTier.findMany({
     where: {
       eventId: event.id,
@@ -60,6 +67,7 @@ export default async function EventTicketsPage({
             <CreateTicketModal
               roles={roles}
               event={event}
+              forms={forms}
               organization={event.organization}
             />
           </OpenModalButton>

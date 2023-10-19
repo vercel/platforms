@@ -1107,7 +1107,7 @@ export async function deleteForm(id: string) {
   return form;
 }
 
-export type QuestionDataInputUpdate = { id: string, text?: string; type?: QuestionType; options?: Prisma.InputJsonValue, order: number };
+export type QuestionDataInputUpdate = { id: string, text?: string; type?: QuestionType; options?: Prisma.InputJsonValue, order?: number };
 export type QuestionDataInputCreate = { formId: string, text: string; type: QuestionType; options?: Prisma.InputJsonValue };
 
 // Create Question

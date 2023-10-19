@@ -18,7 +18,7 @@ export default function CreatePostButton() {
           const post = await createPost(null, { params: { subdomain } }, null);
           va.track("Created Post");
           router.refresh();
-          router.push(`/${subdomain}/docs/${post.id}`);
+          router.push(`/city/${subdomain}/docs/${post.id}`);
         })
       }
       loading={isPending}

@@ -26,21 +26,22 @@ import { Input } from "../ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "./provider";
-import { Event, Organization, Role } from "@prisma/client";
+import { Event, Form as ForaForm, Organization, Role } from "@prisma/client";
 import { CreatTicketTierFormSchema } from "@/lib/schema";
 import { createTicketTier } from "@/lib/actions";
 
 export default function CreateTicketModal({
   roles,
   event,
+  forms,
   organization,
 }: {
   roles: Role[];
   event: Event;
+  forms: ForaForm[];
   organization: Organization;
 }) {
   const form = useForm<z.infer<typeof CreatTicketTierFormSchema>>({
-    // @ts-expect-error
     resolver: zodResolver(CreatTicketTierFormSchema),
     defaultValues: {
       eventId: event.id,
@@ -57,7 +58,11 @@ export default function CreateTicketModal({
 
   async function onSubmit(data: z.infer<typeof CreatTicketTierFormSchema>) {
     console.log("SUBMIT");
-    const result = await createTicketTier(data, { params: { subdomain, path } }, "");
+    const result = await createTicketTier(
+      data,
+      { params: { subdomain, path } },
+      "",
+    );
     router.refresh();
     toast({
       title: "You submitted the following values:",
@@ -99,11 +104,45 @@ export default function CreateTicketModal({
                 </SelectContent>
               </Select>
               <FormDescription>
-                Click here to manage Event Roles{" "}
+               
                 <Link
                   href={`/city/${organization.subdomain}/events/${event.path}/roles`}
                 >
-                  email settings
+                   Click here to create and manage Event Roles
+                </Link>
+                .
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="formId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Application</FormLabel>
+              <Select onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select an application Form" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {forms.map((form) => {
+                    return (
+                      <SelectItem key={form.id} value={form.id}>
+                        {form.name}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                <Link
+                  href={`/city/${organization.subdomain}/events/${event.path}/forms`}
+                >
+                  Click here to build and manage Application Forms
                 </Link>
                 .
               </FormDescription>

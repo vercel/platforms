@@ -22,6 +22,8 @@ import {
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { getOrganizationFromPostId } from "@/lib/actions";
 import Image from "next/image";
+import DrawerPaper from "./drawer-paper";
+import DrawerLink from "./drawer-link";
 
 // const externalLinks = [
 //   {
@@ -63,9 +65,10 @@ import Image from "next/image";
 
 export default function Drawer({ children }: { children: ReactNode }) {
   const segments = useSelectedLayoutSegments();
-  const { subdomain, path } = useParams() as {
+  const { subdomain, path, formId } = useParams() as {
     subdomain?: string;
     path?: string;
+    formId?: string
   };
 
   const [organizationSubdomain, setOrganizationSubdomain] = useState<
@@ -81,6 +84,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
   }, [segments, subdomain]);
 
   const tabs = useMemo(() => {
+
     // Event Settings
     if (
       segments?.[2] === "events" &&
@@ -238,6 +242,8 @@ export default function Drawer({ children }: { children: ReactNode }) {
     ];
   }, [segments, subdomain, path, organizationSubdomain]);
 
+  
+
   const [showSidebar, setShowSidebar] = useState(false);
 
   const pathname = usePathname();
@@ -246,6 +252,13 @@ export default function Drawer({ children }: { children: ReactNode }) {
     // hide sidebar on path change
     setShowSidebar(false);
   }, [pathname]);
+
+
+  if (
+    formId
+  ) {
+    return null;
+  }
 
   return (
     <>
@@ -260,11 +273,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
       >
         <Menu width={20} />
       </button>
-      <div
-        className={`transform ${
-          showSidebar ? "translate-x-0" : "-translate-x-full"
-        } fixed z-10 flex h-full w-full flex-col justify-between border-r text-brand-gray800 border-brand-gray400/50 bg-brand-gray200 p-4 transition-all dark:border-brand-gray700 dark:bg-brand-gray900 sm:w-60 sm:translate-x-0`}
-      >
+      <DrawerPaper showSidebar={showSidebar}>
         <div className="grid gap-2">
           {/* <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">
             <a
@@ -302,18 +311,13 @@ export default function Drawer({ children }: { children: ReactNode }) {
           </div> */}
           <div className="grid gap-1">
             {tabs.map(({ name, href, isActive, icon }) => (
-              <Link
+              <DrawerLink
                 key={name}
+                name={name}
                 href={href}
-                className={`flex items-center space-x-3 ${
-                  isActive
-                    ? "bg-brand-gray400/20 text-brand-gray700 dark:bg-brand-gray700"
-                    : ""
-                } rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray300 active:bg-brand-gray400/20 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800`}
-              >
-                {icon}
-                <span className="text-sm font-medium">{name}</span>
-              </Link>
+                icon={icon}
+                isActive={isActive ? true : false}
+              />
             ))}
           </div>
         </div>
@@ -338,7 +342,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
           <div className="my-2 border-t border-brand-gray200 dark:border-brand-gray700" />
           {children}
         </div>
-      </div>
+      </DrawerPaper>
     </>
   );
 }

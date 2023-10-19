@@ -3,13 +3,13 @@ import NextAuth from "next-auth";
 import type { NextRequest, NextResponse } from "next/server";
 
 const handler = (async (req: NextRequest, ctx: { params: any}) => {
-  const host = req.headers.get("host");
-  //that worked for me
-  process.env.NEXTAUTH_URL = /localhost/.test(host || "")
-    ? `http://${host}`
-    : host as string;
+//   const host = req.headers.get("host");
+//   //that worked for me
+//   process.env.NEXTAUTH_URL = /localhost/.test(host || "")
+//     ? `http://${host}`
+//     : host as string;
 
-  return NextAuth(authOptions())(req, ctx);
+  return await NextAuth(authOptions(req))(req, ctx);
 //   console.log('response: ', response)
 });
 
