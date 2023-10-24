@@ -15,16 +15,25 @@ import { Types } from "mongoose";
 const ZUCONNECT_TRIP_ID = "64ff3a6eb4b6950008dee4f8";
 
 const selectTicketName = (booking: any) => booking?.rooms?.[0]?.variant?.name;
+const selectOptions = (booking: any) =>
+  booking?.addOns?.length > 0
+    ? booking?.addOns?.map(
+        (addon: { variant: { id: string; name: string } }) => ({
+          id: addon.variant.id,
+          name: addon.variant.name,
+        }),
+      )
+    : undefined;
 
 export async function GET(
   request: Request,
-  { params }: { params?: { id: string, key: string } },
+  { params }: { params?: { id: string; key: string } },
 ) {
   if (!params?.id) {
     return NextResponse.json("Trip ID is required", { status: 400 });
   }
   const { searchParams } = new URL(request.url);
-  console.log('searchParams', searchParams, searchParams.get('key'))
+  console.log("searchParams", searchParams, searchParams.get("key"));
   const apiKey = searchParams.get("key") || params.key;
 
   if (apiKey !== process.env.TRIPSHA_API_KEY) {
@@ -59,6 +68,7 @@ export async function GET(
   const tickets = bookings.map((booking) => {
     return {
       id: booking._id,
+      options: selectOptions(booking),
       ticketName: selectTicketName(booking),
       email: booking?.memberDetails?.email,
       first: booking?.memberDetails?.firstName,
