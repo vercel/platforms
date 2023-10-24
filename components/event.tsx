@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import {
   convertNameToTwoLetters,
   getTwoLetterPlaceholder,
-  selectUsername,
+  getUsername,
 } from "@/lib/profile";
 import {
   Card,
@@ -41,7 +41,7 @@ export function HostUser({ user }: { user: User }) {
       </Avatar>
       <div>
         <p className="text-sm font-medium leading-none">{user.name}</p>
-        <p className="text-muted-foreground text-sm">{selectUsername(user)}</p>
+        <p className="text-muted-foreground text-sm">{getUsername(user)}</p>
       </div>
     </div>
   );

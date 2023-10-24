@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 
-export const selectUsername = (user: User) => {
+export const getUsername = (user: Partial<User>) => {
   if (user?.username) return user.username;
   if (user?.gh_username) return user.gh_username;
   if (user?.ens_name) return user.ens_name;
@@ -33,14 +33,14 @@ export function convertNameToTwoLetters(name: string) {
   return initials.toUpperCase();
 }
 
-export const getTwoLetterPlaceholder = (user: User) => {
+export const getTwoLetterPlaceholder = (user: Partial<User>) => {
   if (user.name) {
     return shortenString(convertNameToTwoLetters(user.name), 2, 0);
   }
   if (user?.eth_address) {
     return shortenString(convertNameToTwoLetters(user.eth_address), 2, 0);
   }
-  const username = selectUsername(user);
+  const username = getUsername(user);
   if (username) {
     return shortenString(username, 2, 0);
   }

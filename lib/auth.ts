@@ -127,6 +127,7 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
               }
 
               return {
+                ...account.user,
                 id: account.user.id,
               };
             }
@@ -178,6 +179,7 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
         return token;
       },
       session: async ({ session, token }) => {
+        console.log('session', session, 'token', token)
         session.user = {
           ...session.user,
           // @ts-expect-error
@@ -199,6 +201,8 @@ export function getSession() {
       username: string;
       email: string;
       image: string;
+      eth_address?: string;
+      ens_name?: string;
     };
   } | null>;
 }

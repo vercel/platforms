@@ -3,7 +3,6 @@
 import { toast } from "sonner";
 import { createEventRole } from "@/lib/actions";
 import { useParams, useRouter } from "next/navigation";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { useModal } from "./provider";
 import va from "@vercel/analytics";
 import { useState } from "react";
@@ -32,7 +31,6 @@ export default function CreateRoleModal() {
               toast.error(res.error);
             } else {
               va.track("Created Role");
-              const { id, subdomain } = res as Organization;
               router.refresh();
               modal?.hide();
               toast.success(`Successfully created City!`);

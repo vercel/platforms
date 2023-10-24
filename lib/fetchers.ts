@@ -10,18 +10,18 @@ export async function getSiteData(domain: string) {
     ? cleanDomain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
     : null;
 
-  return await unstable_cache(
-    async () => {
+  // return await unstable_cache(
+    // async () => {
       return prisma.organization.findUnique({
         where: subdomain ? { subdomain } : { customDomain: domain },
       });
-    },
-    [`${cleanDomain}-metadata`],
-    {
-      revalidate: 900,
-      tags: [`${cleanDomain}-metadata`],
-    },
-  )();
+    // },
+    // [`${cleanDomain}-metadata`],
+    // {
+    //   revalidate: 900,
+    //   tags: [`${cleanDomain}-metadata`],
+    // },
+  // )();
 }
 
 export async function getPostsForOrganization(domain: string) {
