@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import OrganizationSettingsNav from "./nav";
 import { userHasOrgRole } from "@/lib/actions";
 
-export default async function SiteAnalyticsLayout({
+export default async function SiteSettingsLayout({
   params,
   children,
 }: {

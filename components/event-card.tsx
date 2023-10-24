@@ -9,11 +9,11 @@ export default function EventCard({
 }: {
   event: Event & { organization: Organization };
 }) {
-  const url = `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/events/${event.id}`;
+  const url = `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/events/${event.path}`;
   return (
     <div className="relative rounded-lg border border-brand-gray200 pb-10 shadow-md transition-all hover:shadow-xl dark:border-brand-gray700 dark:hover:border-white">
       <Link
-        href={`/city/${event.organization.subdomain}/events/${event.id}`}
+        href={`/city/${event.organization.subdomain}/events/${event.path}`}
         className="flex flex-col overflow-hidden rounded-lg"
       >
         <BlurImage

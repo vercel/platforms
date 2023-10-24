@@ -1,16 +1,17 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
-import { Toaster } from "sonner";
+import { Toaster as OldToaster } from "sonner";
 import { ModalProvider } from "@/components/modal/provider";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { mainnet, polygon, optimism, arbitrum } from "@wagmi/core/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { Toaster } from "@/components/ui/toaster"
 
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
-import { InjectedConnector } from "wagmi/connectors/injected";
+// import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
+// import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+// import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
@@ -51,8 +52,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiConfig config={config}>
       <SessionProvider>
-        <Toaster className="dark:hidden" />
-        <Toaster theme="dark" className="hidden dark:block" />
+        <OldToaster className="dark:hidden" />
+        <OldToaster theme="dark" className="hidden dark:block" />
+        <Toaster />
         <ModalProvider>{children}</ModalProvider>
       </SessionProvider>
     </WagmiConfig>

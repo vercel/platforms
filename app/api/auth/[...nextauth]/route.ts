@@ -1,6 +1,16 @@
 import { authOptions } from "@/lib/auth";
 import NextAuth from "next-auth";
+import type { NextRequest, NextResponse } from "next/server";
 
-const handler = NextAuth(authOptions);
+const handler = (async (req: NextRequest, ctx: { params: any}) => {
+//   const host = req.headers.get("host");
+//   //that worked for me
+//   process.env.NEXTAUTH_URL = /localhost/.test(host || "")
+//     ? `http://${host}`
+//     : host as string;
+
+  return await NextAuth(authOptions(req))(req, ctx);
+//   console.log('response: ', response)
+});
 
 export { handler as GET, handler as POST };

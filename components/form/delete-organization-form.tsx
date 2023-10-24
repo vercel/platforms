@@ -8,14 +8,18 @@ import { toast } from "sonner";
 import { deleteOrganization } from "@/lib/actions";
 import va from "@vercel/analytics";
 
-export default function DeleteOrganizationForm({ organizationName }: { organizationName: string }) {
+export default function DeleteOrganizationForm({
+  organizationName,
+}: {
+  organizationName: string;
+}) {
   const { subdomain } = useParams() as { subdomain: string };
   const router = useRouter();
   return (
     <form
       action={async (data: FormData) =>
         window.confirm("Are you sure you want to delete your city?") &&
-        deleteOrganization(data, subdomain, "delete")
+        deleteOrganization(data, { params: { subdomain } }, "delete")
           .then(async (res) => {
             if (res.error) {
               toast.error(res.error);
@@ -23,7 +27,7 @@ export default function DeleteOrganizationForm({ organizationName }: { organizat
               va.track("Deleted City");
               router.refresh();
               router.push("/cities");
-              toast.success(`Successfully deleted city!`);
+              toast.success(`Successfully deleted role!`);
             }
           })
           .catch((err: Error) => toast.error(err.message))
@@ -32,7 +36,7 @@ export default function DeleteOrganizationForm({ organizationName }: { organizat
     >
       <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
         <h2 className="font-cal text-xl dark:text-brand-gray50">Delete City</h2>
-        <p className="text-sm text-brand-gray500 dark:text-brand-gray400">
+        <p className="text-brand-gray500 text-sm dark:text-brand-gray400">
           Deletes your city and everything associated with it. Type in the name
           of your city <b>{organizationName}</b> to confirm.
         </p>
@@ -43,12 +47,12 @@ export default function DeleteOrganizationForm({ organizationName }: { organizat
           required
           pattern={organizationName}
           placeholder={organizationName}
-          className="w-full max-w-md rounded-md border border-brand-gray300 text-sm text-brand-gray900 placeholder-brand-gray400 focus:border-brand-gray500 focus:outline-none focus:ring-brand-gray500 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-brand-gray50 dark:placeholder-brand-gray700"
+          className="focus:border-brand-gray500 focus:ring-brand-gray500 w-full max-w-md rounded-md border border-brand-gray300 text-sm text-brand-gray900 placeholder-brand-gray400 focus:outline-none dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-brand-gray50 dark:placeholder-brand-gray700"
         />
       </div>
 
       <div className="flex flex-col items-center justify-center space-y-2 rounded-b-lg border-t border-brand-gray200 bg-brand-gray50 p-3 dark:border-brand-gray700 dark:bg-brand-gray800 sm:flex-row sm:justify-between sm:space-y-0 sm:px-10">
-        <p className="text-center text-sm text-brand-gray500 dark:text-brand-gray400">
+        <p className="text-brand-gray500 text-center text-sm dark:text-brand-gray400">
           This action is irreversible. Please proceed with caution.
         </p>
         <div className="w-32">

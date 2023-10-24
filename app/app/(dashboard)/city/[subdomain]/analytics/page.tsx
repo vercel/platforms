@@ -17,7 +17,7 @@ export default async function SiteAnalytics({
       subdomain: params.subdomain,
     },
   });
-  if (!data || data.userId !== session.user.id) {
+  if (!data) {
     notFound();
   }
 

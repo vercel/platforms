@@ -13,22 +13,24 @@ generator client {
 }
 
 model User {
-  id            String     @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
   // if you are using Github OAuth, you can get rid of the username attribute (that is for Twitter OAuth)
   username      String?
   gh_username   String?
   eth_address   String?
   ens_name      String?
-  email         String?    @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
   userRoles     UserRole[]
+  tickets       Ticket[] // Add this line
+  formResponse  FormResponse[]
 }
 
 model Account {
@@ -112,6 +114,7 @@ model Organization {
   events        Event[]
   roles         OrganizationRole[] // Add this line
   apiKeys       ApiKey[]
+  form          Form[]
 }
 
 model Event {
@@ -126,6 +129,9 @@ model Event {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   organizationId String
   eventRole      EventRole[]
+  ticketTier     TicketTier[]
+  ticket         Ticket[]
+  form           Form[]
 }
 
 model OrganizationRole {
@@ -147,14 +153,19 @@ model EventRole {
 }
 
 model Role {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
+  id           String  @id @default(cuid())
+  name         String
+  description  String?
+  image        String?
+  requiresForm Boolean @default(false) // Add this line
 
   userRoles        UserRole[]
   rolePermissions  RolePermission[]
   organizationRole OrganizationRole[]
   eventRole        EventRole[]
+  ticketTier       TicketTier[]
+  formId           String?
+  form             Form?              @relation(fields: [formId], references: [id])
 }
 
 model RolePermission {
@@ -194,4 +205,94 @@ model ApiKey {
   updatedAt      DateTime     @updatedAt
 
   @@index([organizationId])
+}
+
+model Ticket {
+  id      String @id @default(cuid())
+  userId  String
+  tierId  String
+  eventId String
+  roleId  String
+
+  validFrom DateTime
+  validTo   DateTime
+  user      User       @relation(fields: [userId], references: [id])
+  tier      TicketTier @relation(fields: [tierId], references: [id])
+  event     Event      @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, tierId])
+}
+
+model TicketTier {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  eventId     String
+  roleId      String
+  issued      Int      @default(0)
+  quantity    Int
+  price       Int // Price of the ticket in smallest unit of currency
+  currency    String // Currency of the price
+  tickets     Ticket[]
+  event       Event    @relation(fields: [eventId], references: [id])
+  role        Role     @relation(fields: [roleId], references: [id])
+  formId      String?
+  form        Form?    @relation(fields: [formId], references: [id])
+
+  @@index([eventId])
+}
+
+model Form {
+  id             String         @id @default(cuid())
+  name           String         @default("My Form")
+  // You are applying for this role, at this event, for this time span.
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String
+  event          Event?         @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  eventId        String?
+  image          String?
+  questions      Question[]
+  formResponse   FormResponse[]
+  role           Role[]
+  ticketTier     TicketTier[]
+}
+
+model Question {
+  id       String       @id @default(cuid())
+  text     String
+  required Boolean      @default(true)
+  type     QuestionType // 'text', 'dropdown', 'multi-select', etc.
+  options  Json? // JSON for storing options
+  formId   String
+  form     Form         @relation(fields: [formId], references: [id])
+  answers  Answer[]
+  order    Int
+}
+
+enum QuestionType {
+  SHORT_TEXT
+  LONG_TEXT
+  SELECT
+  MULTI_SELECT
+  BOOLEAN
+}
+
+model Answer {
+  id         String        @id @default(cuid())
+  value      Json // JSON for storing the answer value
+  questionId String
+  question   Question      @relation(fields: [questionId], references: [id])
+  answers    FormResponse? @relation(fields: [answersId], references: [id])
+  answersId  String?
+}
+
+model FormResponse {
+  id        String   @id @default(cuid())
+  userId    String
+  formId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  form      Form     @relation(fields: [formId], references: [id])
+  answers   Answer[]
 }

@@ -5,11 +5,13 @@ import { useAccount, useConnect, useNetwork, useSignMessage } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { useEffect, useState } from "react";
 import { EthereumLogo } from "@/components/icons/ethereum-eth-logo";
+import { useRouter } from "next/navigation";
 
 function Siwe({ redirect = true, callbackUrl = "/" }) {
+  const router = useRouter();
   const { signMessageAsync } = useSignMessage();
   const { chain } = useNetwork();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, } = useAccount();
   const { connect } = useConnect({
     connector: new InjectedConnector(),
   });
@@ -36,21 +38,24 @@ function Siwe({ redirect = true, callbackUrl = "/" }) {
         callbackUrl,
       });
 
-      // if (response?.ok) {
-      //   redirect(callbackUrl);
-      // }
+      console.log('response: ', response)
+      if (response?.ok) {
+        router.replace(callbackUrl)
+        // router(callbackUrl);
+      }
     } catch (error) {
       window.alert(error);
     }
   };
 
   // auto connect
-  // useEffect(() => {
-  //   console.log(isConnected);
-  //   if (isConnected && !session) {
-  //     handleLogin();
-  //   }
-  // }, [isConnected]);
+  useEffect(() => {
+    console.log(isConnected);
+    if (!isConnected) {
+      connect()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <button

@@ -10,6 +10,7 @@ import { useModal } from "./provider";
 import va from "@vercel/analytics";
 import { useEffect, useState } from "react";
 import { Organization } from "@prisma/client";
+import FormButton from "./form-button";
 
 export default function CreateEventModal({
   organization,
@@ -47,18 +48,18 @@ export default function CreateEventModal({
           if (res.error) {
             toast.error(res.error);
           } else {
-            va.track("Created Site");
-            const { id } = res;
+            va.track("Created Event");
+            const { path } = res;
             router.refresh();
-            router.push(`/city/${organization.subdomain}/events/${id}`);
+            router.push(`/city/${organization.subdomain}/events/${path}`);
             modal?.hide();
-            toast.success(`Successfully created City!`);
+            toast.success(`Successfully created Event!`);
           }
         })
       }
       className="w-full rounded-md bg-white dark:bg-brand-gray900 md:max-w-md md:border md:border-brand-gray200 md:shadow dark:md:border-brand-gray700"
     >
-      <div className="relative flex flex-col space-y-4 p-5 m.d:p-10">
+      <div className="m.d:p-10 relative flex flex-col space-y-4 p-5">
         <h2 className="font-cal text-2xl dark:text-white">
           Create a new event
         </h2>
@@ -68,7 +69,7 @@ export default function CreateEventModal({
             htmlFor="name"
             className="text-brand-gray500 text-sm font-medium dark:text-brand-gray400"
           >
-            Site Name
+            Event Name
           </label>
           <input
             name="name"
@@ -86,7 +87,7 @@ export default function CreateEventModal({
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="path"
-            className="text-sm font-medium text-brand-gray500"
+            className="text-brand-gray500 text-sm font-medium"
           >
             SEO Optimized Path
           </label>
@@ -128,24 +129,8 @@ export default function CreateEventModal({
         </div>
       </div>
       <div className="flex items-center justify-end rounded-b-lg border-t border-brand-gray200 bg-brand-gray50 p-3 dark:border-brand-gray700 dark:bg-brand-gray800 md:px-10">
-        <CreateEventFormButton />
+        <FormButton text={"Create Event"} />
       </div>
     </form>
-  );
-}
-function CreateEventFormButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      className={cn(
-        "flex h-10 w-full items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
-        pending
-          ? "cursor-not-allowed border-brand-gray200 bg-brand-gray100 text-brand-gray400 dark:border-brand-gray700 dark:bg-brand-gray800 dark:text-brand-gray300"
-          : "border-brand-gray900 bg-brand-gray900 text-white hover:bg-white hover:text-brand-gray900 dark:border-brand-gray700 dark:hover:border-brand-gray200 dark:hover:bg-brand-gray900 dark:hover:text-white dark:active:bg-brand-gray800",
-      )}
-      disabled={pending}
-    >
-      {pending ? <LoadingDots color="#808080" /> : <p>Create Event</p>}
-    </button>
   );
 }

@@ -2,9 +2,23 @@
 
 import prisma from "@/lib/prisma";
 import mongoClient from "@/lib/tripsha/db-connect";
-import { Post, Organization } from "@prisma/client";
+import {
+  Event,
+  Post,
+  Organization,
+  Role,
+  Form,
+  Question,
+  Prisma,
+  QuestionType,
+} from "@prisma/client";
 import { revalidateTag } from "next/cache";
-import { withPostAuth, withOrganizationAuth } from "./auth";
+import {
+  withPostAuth,
+  withOrganizationAuth,
+  withEventAuth,
+  withEventRoleAuth,
+} from "./auth";
 import { getSession } from "@/lib/auth";
 import {
   addDomainToVercel,
@@ -17,6 +31,9 @@ import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
 import supabase from "./supabase";
+import { CreatTicketTierFormSchema } from "./schema";
+import { z } from "zod";
+import { JSONValue } from "ai";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -117,6 +134,24 @@ export const createOrganization = async (formData: FormData) => {
   }
 };
 
+export async function userOrgRoles(userId: string, organizationId: string) {
+  return await prisma.userRole.findMany({
+    where: {
+      userId: userId,
+      role: {
+        organizationRole: {
+          some: {
+            organizationId: organizationId,
+          },
+        },
+      },
+    },
+    include: {
+      role: true,
+    },
+  });
+}
+
 export async function userHasOrgRole(
   userId: string,
   organizationId: string,
@@ -139,6 +174,37 @@ export async function userHasOrgRole(
   });
 
   return userRoles.length > 0;
+}
+
+export async function getUserEventRoles(userId: string, eventId: string) {
+  const userRoles = await prisma.userRole.findMany({
+    where: {
+      userId: userId,
+      role: {
+        eventRole: {
+          some: {
+            eventId: eventId,
+          },
+        },
+      },
+    },
+    include: {
+      role: true,
+    },
+  });
+
+  return userRoles;
+}
+
+export async function userHasEventRole(
+  userId: string,
+  eventId: string,
+  role: string,
+) {
+  const userEventRoles = await getUserEventRoles(userId, eventId);
+  const hasRole =
+    userEventRoles.findIndex((eventRole) => eventRole.role.name === role) > -1;
+  return hasRole;
 }
 
 export const createEvent = async (input: {
@@ -228,6 +294,30 @@ export const createEvent = async (input: {
   }
 };
 
+export async function getOrganizationData(domain: string) {
+  return await prisma.organization.findFirst({
+    where: {
+      // Assuming domain can be either subdomain or customDomain
+      OR: [{ subdomain: domain }, { customDomain: domain }],
+    },
+  });
+}
+
+export async function getEventData(path: string, domain: string) {
+  return await prisma.event.findFirst({
+    where: {
+      path: path,
+      organization: {
+        // Assuming domain can be either subdomain or customDomain
+        OR: [{ subdomain: domain }, { customDomain: domain }],
+      },
+    },
+    include: {
+      organization: true,
+    },
+  });
+}
+
 export const updateOrganization = withOrganizationAuth(
   async (formData: FormData, organization: Organization, key: string) => {
     const value = formData.get(key) as string;
@@ -307,8 +397,7 @@ export const updateOrganization = withOrganizationAuth(
       } else if (key === "image" || key === "logo") {
         if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
           return {
-            error:
-              "Missing SUPABASE_URL or SUPABASE_ANON_KEY token.",
+            error: "Missing SUPABASE_URL or SUPABASE_ANON_KEY token.",
           };
         }
 
@@ -331,8 +420,7 @@ export const updateOrganization = withOrganizationAuth(
         }
         const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/media/${data.path}`;
 
-        const blurhash =
-          key === "image" ? await getBlurDataURL(url) : null;
+        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
         response = await prisma.organization.update({
           where: {
@@ -618,37 +706,104 @@ export const editUser = async (
   }
 };
 
-// export const createRole = withOrganizationAuth(
-//   async (formData: FormData, organization: Organization) => {
-//     const session = await getSession();
-//     if (!session?.user.id) {
-//       return {
-//         error: "Not authenticated",
-//       };
-//     }
-//     const name = formData.get("name") as string;
-//     const description = formData.get("description") as string;
+export const createEventRole = withEventAuth(
+  async (formData: FormData, event: Event & { organization: Organization }) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
 
-//     try {
-//       const role = await prisma.role.create({
-//         data: {
-//           name,
-//           description,
-//           organization: {
-//             connect: {
-//               id: organization.id,
-//             },
-//           },
-//         },
-//       });
-//       return role;
-//     } catch (error: any) {
-//       return {
-//         error: error.message,
-//       };
-//     }
-//   },
-// );
+    try {
+      const role = await prisma.role.create({
+        data: {
+          name,
+          description,
+        },
+      });
+
+      await prisma.eventRole.create({
+        data: {
+          eventId: event.id,
+          roleId: role.id,
+        },
+      });
+
+      return role;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export const updateEventRole = withEventRoleAuth(
+  async (
+    formData: FormData,
+    data: { role: Role; event: Event; organization: Organization },
+  ) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+
+    try {
+      const role = await prisma.role.update({
+        where: {
+          id: data.role.id,
+        },
+        data: {
+          name,
+          description,
+        },
+      });
+
+      return role;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export const deleteEventRole = withEventRoleAuth(
+  async (
+    _: FormData,
+    data: { role: Role; event: Event; organization: Organization },
+  ) => {
+    try {
+      const response = await prisma.$transaction([
+        prisma.eventRole.delete({
+          where: {
+            roleId_eventId: {
+              eventId: data.event.id,
+              roleId: data.role.id,
+            },
+          },
+        }),
+        prisma.role.delete({
+          where: {
+            id: data.role.id,
+          },
+        }),
+      ]);
+      return response;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
 
 // export const updateRole = withOrganizationAuth(
 //   async (formData: FormData, organization: Organization, roleId: string) => {
@@ -692,7 +847,7 @@ export const editUser = async (
 // );
 
 export async function getUsersWithRoleInOrganization(subdomain: string) {
-  return await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: {
       userRoles: {
         some: {
@@ -711,15 +866,295 @@ export async function getUsersWithRoleInOrganization(subdomain: string) {
     include: {
       userRoles: {
         include: {
+          role: true,
+        },
+      },
+    },
+  });
+
+  return users.map((user) => ({
+    ...user,
+    roles: user.userRoles.map((userRole) => userRole.role),
+  }));
+}
+
+export async function getUsersWithRoleInEvent(eventPath: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
           role: {
-            include: {
-              organizationRole: true,
+            eventRole: {
+              some: {
+                event: {
+                  path: eventPath,
+                },
+              },
             },
           },
         },
       },
     },
+    include: {
+      userRoles: {
+        include: {
+          role: true,
+        },
+      },
+    },
+  });
+
+  return users.map((user) => ({
+    ...user,
+    roles: user.userRoles.map((userRole) => userRole.role),
+  }));
+}
+
+export async function getEventRolesAndUsers(eventId: string) {
+  return await prisma.userRole.findMany({
+    where: {
+      role: {
+        eventRole: {
+          some: {
+            eventId: eventId,
+          },
+        },
+      },
+    },
+    include: {
+      user: true,
+      role: true,
+    },
   });
 }
 
-export async function getBookings() {}
+export const updateEvent = withEventAuth(
+  async (
+    formData: FormData,
+    event: Event & { organization: Organization },
+    key: string,
+  ) => {
+    const value = formData.get(key) as string;
+
+    try {
+      let response;
+
+      if (key === "image" || key === "logo") {
+        if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+          return {
+            error: "Missing SUPABASE_URL or SUPABASE_ANON_KEY token.",
+          };
+        }
+
+        const file = formData.get(key) as File;
+        const filename = `${nanoid()}.${file.type.split("/")[1]}`;
+
+        const { data, error } = await supabase.storage
+          .from("media")
+          .upload(`/public/${filename}`, file);
+
+        console.log({ data, error });
+        // const { url } = await put(filename, file, {
+        //   access: "public",
+        // });
+
+        if (error || !data?.path) {
+          return {
+            error: "Failed to upload image.",
+          };
+        }
+        const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/media/${data.path}`;
+
+        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
+
+        response = await prisma.event.update({
+          where: {
+            id: event.id,
+          },
+          data: {
+            [key]: url,
+            ...(blurhash && { imageBlurhash: blurhash }),
+          },
+        });
+      } else {
+        response = await prisma.event.update({
+          where: {
+            id: event.id,
+          },
+          data: {
+            [key]: value,
+          },
+        });
+      }
+      console.log(
+        "Updated Organization data! Revalidating tags: ",
+        `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+        `${event.organization.customDomain}-metadata`,
+      );
+      await revalidateTag(
+        `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${event.path}-metadata`,
+      );
+      event.organization.customDomain &&
+        (await revalidateTag(
+          `${event.organization.customDomain}/${event.path}-metadata`,
+        ));
+
+      return response;
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        return {
+          error: `This ${key} is already taken`,
+        };
+      } else {
+        return {
+          error: error.message,
+        };
+      }
+    }
+  },
+);
+
+export const createTicketTier = withEventAuth(
+  async (
+    data: z.infer<typeof CreatTicketTierFormSchema>,
+    event: Event & { organization: Organization },
+  ) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const result = CreatTicketTierFormSchema.safeParse(data);
+    if (!result.success) {
+      return {
+        error: result.error.formErrors.fieldErrors,
+      };
+    }
+
+    try {
+      const ticketTier = await prisma.ticketTier.create({
+        data,
+      });
+      return ticketTier;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export async function getEventTicketTiers(eventId: string) {
+  return await prisma.ticketTier.findMany({
+    where: {
+      eventId: eventId,
+    },
+    include: {
+      role: true,
+    },
+  });
+}
+
+export const createEventForm = withEventAuth(
+  async (_: any, event: Event & { organization: Organization }) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const response = await prisma.form.create({
+      data: {
+        organizationId: event.organization.id,
+        eventId: event.id,
+      },
+      include: {
+        organization: true,
+        event: true,
+      },
+    });
+
+    return response;
+  },
+);
+
+type FormAndContext = Form & {
+  organization: Organization;
+  event: Event | null;
+  questions: Question[];
+  role: Role[];
+};
+
+// Update Form
+export async function updateFormName(id: string, name: string) {
+  const form = await prisma.form.update({
+    where: { id },
+    data: {
+      name,
+    },
+  });
+  return form;
+}
+
+// Delete Form
+export async function deleteForm(id: string) {
+  const form = await prisma.form.delete({
+    where: { id },
+  });
+  return form;
+}
+
+export type QuestionDataInputUpdate = { id: string, text?: string; type?: QuestionType; options?: Prisma.InputJsonValue, order?: number };
+export type QuestionDataInputCreate = { formId: string, text: string; type: QuestionType; options?: Prisma.InputJsonValue };
+
+// Create Question
+export async function createQuestion(data: QuestionDataInputCreate) {
+
+  const count = await prisma.question.count({
+    where: { formId: data.formId },
+  });
+  
+  const question = await prisma.question.create({
+    data: {
+      ...data,
+      order: count
+    },
+  });
+  return question;
+}
+
+// Update Question
+export async function updateQuestion(
+  id: string,
+  data: QuestionDataInputUpdate,
+) {
+  const question = await prisma.question.update({
+    where: { id },
+    data,
+  });
+  return question;
+}
+
+// Delete Question
+export async function deleteQuestion(id: string) {
+  const question = await prisma.question.delete({
+    where: { id },
+  });
+  return question;
+}
+
+export async function batchUpdateQuestionOrder(questions: Question[]) {
+  // Prepare batch update operations
+  const updateOperations = questions.map((item) =>
+    prisma.question.update({
+      where: { id: item.id },
+      data: { order: item.order },
+    })
+  );
+
+  // Execute all updates in a transaction
+  await prisma.$transaction(updateOperations);
+}

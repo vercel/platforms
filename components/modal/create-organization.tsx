@@ -10,6 +10,8 @@ import { useModal } from "./provider";
 import va from "@vercel/analytics";
 import { useEffect, useState } from "react";
 import { Organization } from "@prisma/client";
+import PrimaryButton from "../primary-button";
+import FormButton from "./form-button";
 
 export default function CreateOrganizationModal() {
   const router = useRouter();
@@ -117,24 +119,9 @@ export default function CreateOrganizationModal() {
         </div>
       </div>
       <div className="flex items-center justify-end rounded-b-lg border-t border-brand-gray700 bg-brand-gray200 p-3 dark:border-brand-gray700 dark:bg-brand-gray800 md:px-10">
-        <CreateOrganizationFormButton />
+        <FormButton text={"Create Organization"} />
       </div>
     </form>
   );
 }
-function CreateOrganizationFormButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      className={cn(
-        "flex h-10 w-full items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none",
-        pending
-          ? "cursor-not-allowed border-brand-gray700 bg-brand-gray100 text-brand-gray400 dark:border-brand-gray700 dark:bg-brand-gray800 dark:text-brand-gray300"
-          : "border-brand-gray900 bg-brand-gray900 text-brand-gray100 hover:bg-brand-gray100 hover:text-brand-gray900 dark:border-brand-gray700 dark:hover:border-brand-gray200 dark:hover:bg-brand-gray900 dark:hover:text-brand-gray100 dark:active:bg-brand-gray800",
-      )}
-      disabled={pending}
-    >
-      {pending ? <LoadingDots color="#808080" /> : <p>Create City</p>}
-    </button>
-  );
-}
+

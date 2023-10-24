@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import CityDrawer from "@/components/city-drawer";
 import Profile from "@/components/profile";
 import SiteNav from "@/components/site-nav";
+import { cn } from "@/lib/utils";
 
 const ConnectEthButton = dynamic(
   () => import("@/components/connect-eth-button"),
@@ -118,14 +119,10 @@ export default async function SiteLayout({
   }
 
   return (
-    <div className={fontMapper[data.font]}>
+    <div className={cn(fontMapper[data.font], "min-h-screen")}>
       <SiteNav params={params} />
-      <CityDrawer>
 
-      </CityDrawer>
-      <div className="sm:w-60 h-60" />
-
-      <div className="min-h-screen sm:pl-60">{children}</div>
+      {children}
     </div>
   );
 }

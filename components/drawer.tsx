@@ -6,16 +6,13 @@ import {
   BarChart3,
   Edit3,
   Ticket,
-  Globe,
-  Layout,
   LayoutDashboard,
-  Megaphone,
   Menu,
   Newspaper,
   Settings,
-  FileCode,
-  Github,
+  Users,
   Users2,
+  ClipboardSignature
 } from "lucide-react";
 import {
   useParams,
@@ -25,6 +22,8 @@ import {
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { getOrganizationFromPostId } from "@/lib/actions";
 import Image from "next/image";
+import DrawerPaper from "./drawer-paper";
+import DrawerLink from "./drawer-link";
 
 // const externalLinks = [
 //   {
@@ -56,7 +55,7 @@ import Image from "next/image";
 //         viewBox="0 0 76 76"
 //         fill="none"
 //         xmlns="http://www.w3.org/2000/svg"
-//         className="py-1 text-black dark:text-white"
+//         className="py-1 text-brand-gray700 dark:text-white"
 //       >
 //         <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="currentColor" />
 //       </svg>
@@ -66,7 +65,11 @@ import Image from "next/image";
 
 export default function Drawer({ children }: { children: ReactNode }) {
   const segments = useSelectedLayoutSegments();
-  const { subdomain } = useParams() as { subdomain?: string };
+  const { subdomain, path, formId } = useParams() as {
+    subdomain?: string;
+    path?: string;
+    formId?: string
+  };
 
   const [organizationSubdomain, setOrganizationSubdomain] = useState<
     string | undefined
@@ -81,6 +84,75 @@ export default function Drawer({ children }: { children: ReactNode }) {
   }, [segments, subdomain]);
 
   const tabs = useMemo(() => {
+
+    // Event Settings
+    if (
+      segments?.[2] === "events" &&
+      subdomain &&
+      path &&
+      segments?.[4] === "settings"
+    ) {
+      return [
+        {
+          name: "Back",
+          href: `/city/${subdomain}/events/${path}`,
+          icon: <ArrowLeft width={18} />,
+        },
+        {
+          name: "Event Roles",
+          href: `/city/${subdomain}/events/${path}/roles`,
+          icon: <Users width={18} />,
+        },
+        {
+          name: "Event Tickets",
+          href: `/city/${subdomain}/events/${path}/tickets`,
+          icon: <Ticket width={18} />,
+        },
+        {
+          name: "Event Forms",
+          href: `/city/${subdomain}/events/${path}/forms`,
+          icon: <ClipboardSignature width={18} />,
+        },
+        {
+          name: "Settings",
+          href: `/city/${subdomain}/events/${path}/settings`,
+          isActive: segments.includes("settings"),
+          icon: <Settings width={18} />,
+        },
+      ];
+    }
+    // Event drawer
+    if (segments?.[2] === "events" && subdomain && path) {
+      return [
+        {
+          name:
+            "Back to " + subdomain.charAt(0).toUpperCase() + subdomain.slice(1),
+          href: `/city/${subdomain}`,
+          icon: <ArrowLeft width={18} />,
+        },
+        {
+          name: "Event Roles",
+          href: `/city/${subdomain}/events/${path}/roles`,
+          icon: <Users width={18} />,
+        },
+        {
+          name: "Event Tickets",
+          href: `/city/${subdomain}/events/${path}/tickets`,
+          icon: <Ticket width={18} />,
+        },
+        {
+          name: "Event Forms",
+          href: `/city/${subdomain}/events/${path}/forms`,
+          icon: <ClipboardSignature width={18} />,
+        },
+        {
+          name: "Settings",
+          href: `/city/${subdomain}/events/${segments[3]}/settings`,
+          isActive: segments.includes("settings"),
+          icon: <Settings width={18} />,
+        },
+      ];
+    }
     if (segments[0] === "city" && subdomain) {
       return [
         {
@@ -168,7 +240,9 @@ export default function Drawer({ children }: { children: ReactNode }) {
         icon: <Settings width={18} />,
       },
     ];
-  }, [segments, subdomain, organizationSubdomain]);
+  }, [segments, subdomain, path, organizationSubdomain]);
+
+  
 
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -178,6 +252,13 @@ export default function Drawer({ children }: { children: ReactNode }) {
     // hide sidebar on path change
     setShowSidebar(false);
   }, [pathname]);
+
+
+  if (
+    formId
+  ) {
+    return null;
+  }
 
   return (
     <>
@@ -192,13 +273,9 @@ export default function Drawer({ children }: { children: ReactNode }) {
       >
         <Menu width={20} />
       </button>
-      <div
-        className={`transform ${
-          showSidebar ? "translate-x-0" : "-translate-x-full"
-        } fixed z-10 flex h-full w-full flex-col justify-between border-r border-brand-gray200 bg-brand-gray50 p-4 transition-all dark:border-brand-gray700 dark:bg-brand-gray900 sm:w-60 sm:translate-x-0`}
-      >
+      <DrawerPaper showSidebar={showSidebar}>
         <div className="grid gap-2">
-          <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">
+          {/* <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">
             <a
               href="app.localhost:3000"
               target="_blank"
@@ -210,7 +287,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 viewBox="0 0 76 65"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-black dark:text-white"
+                className="text-brand-gray700 dark:text-white"
               >
                 <path
                   d="M37.5274 0L75.0548 65H0L37.5274 0Z"
@@ -231,21 +308,16 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 className="dark:scale-110 dark:rounded-full dark:border dark:border-brand-gray400"
               />
             </Link>
-          </div>
+          </div> */}
           <div className="grid gap-1">
             {tabs.map(({ name, href, isActive, icon }) => (
-              <Link
+              <DrawerLink
                 key={name}
+                name={name}
                 href={href}
-                className={`flex items-center space-x-3 ${
-                  isActive
-                    ? "bg-brand-gray200 text-black dark:bg-brand-gray700"
-                    : ""
-                } rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray200 active:bg-brand-gray300 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800`}
-              >
-                {icon}
-                <span className="text-sm font-medium">{name}</span>
-              </Link>
+                icon={icon}
+                isActive={isActive ? true : false}
+              />
             ))}
           </div>
         </div>
@@ -270,7 +342,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
           <div className="my-2 border-t border-brand-gray200 dark:border-brand-gray700" />
           {children}
         </div>
-      </div>
+      </DrawerPaper>
     </>
   );
 }
