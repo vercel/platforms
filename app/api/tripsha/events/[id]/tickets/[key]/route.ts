@@ -11,6 +11,7 @@ import dbConnect from "@/lib/tripsha/db-connect";
 // import { getSession } from "@/lib/auth";
 // import prisma from "@/lib/prisma";
 import { Types } from "mongoose";
+import { headers } from "next/headers";
 
 const ZUCONNECT_TRIP_ID = "64ff3a6eb4b6950008dee4f8";
 
@@ -25,6 +26,10 @@ const selectOptions = (booking: any) =>
       )
     : undefined;
 
+// Force there to be no caching
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(
   request: Request,
   { params }: { params?: { id: string; key: string } },
@@ -33,7 +38,7 @@ export async function GET(
     return NextResponse.json("Trip ID is required", { status: 400 });
   }
   const { searchParams } = new URL(request.url);
-  console.log("searchParams", searchParams, searchParams.get("key"));
+  const allHeaders = headers();
   const apiKey = searchParams.get("key") || params.key;
 
   if (apiKey !== process.env.TRIPSHA_API_KEY) {
