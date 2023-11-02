@@ -11,10 +11,6 @@ export default async function Events({
   organizationId: string;
   limit?: number;
 }) {
-  const session = await getSession();
-  if (!session) {
-    redirect("/login");
-  }
   const events = await prisma.event.findMany({
     where: {
       organizationId: organizationId,

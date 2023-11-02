@@ -4,9 +4,6 @@ import OverviewStats from "@/components/overview-stats";
 import Posts from "@/components/posts";
 import Link from "next/link";
 import PlacholderCard from "@/components/placeholder-card";
-import OverviewSitesCTA from "@/components/overview-sites-cta";
-import dynamic from "next/dynamic";
-const Globe = dynamic(() => import("@/components/globe"), { ssr: false });
 // import Globe from '@/components/globe'
 
 export default function Overview() {
@@ -20,11 +17,6 @@ export default function Overview() {
           <OverviewStats />
         </div>
 
-        {/* <Suspense fallback={<div className="h-[720px] w-[720px] col-span-2" />}>
-          <div className="col-span-2 space-x-6">
-            <Globe size={720} backgroundColor="#F8F6F1" />
-          </div>
-        </Suspense> */}
       </div>
 
       <div className="flex flex-col space-y-6">
@@ -32,9 +24,6 @@ export default function Overview() {
           <h1 className="font-serif font-light text-3xl dark:text-white">
             My Cities
           </h1>
-          <Suspense fallback={null}>
-            <OverviewSitesCTA />
-          </Suspense>
         </div>
         <Suspense
           fallback={

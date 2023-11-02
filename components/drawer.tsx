@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 import {
   ArrowLeft,
   BarChart3,
@@ -12,7 +12,7 @@ import {
   Settings,
   Users,
   Users2,
-  ClipboardSignature
+  ClipboardSignature,
 } from "lucide-react";
 import {
   useParams,
@@ -20,10 +20,17 @@ import {
   useSelectedLayoutSegments,
 } from "next/navigation";
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { getOrganizationFromPostId } from "@/lib/actions";
-import Image from "next/image";
+import {
+  getOrganizationFromPostId,
+  getUsersOrganizations,
+} from "@/lib/actions";
+// import Image from "next/image";
 import DrawerPaper from "./drawer-paper";
 import DrawerLink from "./drawer-link";
+// import CitySwitcher from "./city-switcher";
+import { useSession } from "next-auth/react";
+import { SessionUser } from "@/lib/auth";
+import { Organization, Role } from "@prisma/client";
 
 // const externalLinks = [
 //   {
@@ -63,17 +70,24 @@ import DrawerLink from "./drawer-link";
 //   },
 // ];
 
+export type UsersUniqueOrgsWithRolesRecord = Record<string, {
+  organization: Organization;
+  roles: Role[];
+}>
+
 export default function Drawer({ children }: { children: ReactNode }) {
   const segments = useSelectedLayoutSegments();
   const { subdomain, path, formId } = useParams() as {
     subdomain?: string;
     path?: string;
-    formId?: string
+    formId?: string;
   };
 
   const [organizationSubdomain, setOrganizationSubdomain] = useState<
     string | undefined
   >();
+
+  const [usersOrgs, setUsersOrgs] = useState<UsersUniqueOrgsWithRolesRecord | null>(null);
 
   useEffect(() => {
     if (segments[0] === "post" && subdomain) {
@@ -83,8 +97,19 @@ export default function Drawer({ children }: { children: ReactNode }) {
     }
   }, [segments, subdomain]);
 
-  const tabs = useMemo(() => {
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (session?.user) {
+      const user = session.user as SessionUser;
 
+      getUsersOrganizations(user.id).then((userOrgs) => {
+        console.log("userOrgs: ", userOrgs);
+        setUsersOrgs(userOrgs);
+      });
+    }
+  }, [session?.user]);
+
+  const tabs = useMemo(() => {
     // Event Settings
     if (
       segments?.[2] === "events" &&
@@ -156,9 +181,10 @@ export default function Drawer({ children }: { children: ReactNode }) {
     if (segments[0] === "city" && subdomain) {
       return [
         {
-          name: "Back to My Cities",
-          href: "/cities",
-          icon: <ArrowLeft width={18} />,
+          name: "Overview",
+          href: "/city/" + subdomain,
+          isActive: segments.length === 2,
+          icon: <LayoutDashboard width={18} />,
         },
         {
           name: "People",
@@ -242,8 +268,6 @@ export default function Drawer({ children }: { children: ReactNode }) {
     ];
   }, [segments, subdomain, path, organizationSubdomain]);
 
-  
-
   const [showSidebar, setShowSidebar] = useState(false);
 
   const pathname = usePathname();
@@ -253,10 +277,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
     setShowSidebar(false);
   }, [pathname]);
 
-
-  if (
-    formId
-  ) {
+  if (formId) {
     return null;
   }
 
@@ -310,6 +331,8 @@ export default function Drawer({ children }: { children: ReactNode }) {
             </Link>
           </div> */}
           <div className="grid gap-1">
+            {/* {usersOrgs && <CitySwitcher usersOrgs={usersOrgs} />} */}
+
             {tabs.map(({ name, href, isActive, icon }) => (
               <DrawerLink
                 key={name}

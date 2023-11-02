@@ -20,8 +20,6 @@ export default async function DocsPage({
     },
   });
 
-  console.log("City: ", data);
-
   if (!data) {
     notFound();
   }
@@ -50,7 +48,7 @@ export default async function DocsPage({
         </div>
         <CreatePostButton />
       </div>
-      <Posts organizationId={params.subdomain} />
+      <Posts organizationId={data.id} />
     </>
   );
 }

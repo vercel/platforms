@@ -19,9 +19,9 @@ const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 export const authOptions = (req?: NextRequest): NextAuthOptions => {
   const host = req?.headers.get("host");
   const allHeaders = headers();
-  const xForwardedHost = allHeaders.get('x-forwarded-host')
-  const hostname = host || xForwardedHost ||  process.env.NEXTAUTH_URL
-  console.log({ hostname, host, xForwardedHost })
+  const xForwardedHost = allHeaders.get("x-forwarded-host");
+  const hostname = host || xForwardedHost || process.env.NEXTAUTH_URL;
+  console.log({ hostname, host, xForwardedHost });
 
   return {
     providers: [
@@ -179,7 +179,7 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
         return token;
       },
       session: async ({ session, token }) => {
-        console.log('session', session, 'token', token)
+        console.log("session", session, "token", token);
         session.user = {
           ...session.user,
           // @ts-expect-error
@@ -189,21 +189,33 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
         };
         return session;
       },
+      async redirect({ url, baseUrl }) {
+        console.log(url, baseUrl)
+        // DEFAULT BEHAVIOR BEGIN
+        // Allows relative callback URLs
+        if (url.startsWith("/")) return `${baseUrl}${url}`;
+        // Allows callback URLs on the same origin
+        else if (new URL(url).origin === baseUrl) return url;
+        return baseUrl;
+        // DEFAULT BEHAVIOR END
+      },
     },
   };
 };
 
+export type SessionUser = {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  image: string;
+  eth_address?: string;
+  ens_name?: string;
+};
+
 export function getSession() {
   return getServerSession(authOptions()) as Promise<{
-    user: {
-      id: string;
-      name: string;
-      username: string;
-      email: string;
-      image: string;
-      eth_address?: string;
-      ens_name?: string;
-    };
+    user: SessionUser;
   } | null>;
 }
 

@@ -68,11 +68,6 @@ export default function CityDrawer({ children }: { children: ReactNode }) {
     if (segments[0] === "city" && subdomain) {
       return [
         {
-          name: "Back to My Cities",
-          href: "/cities",
-          icon: <ArrowLeft width={18} />,
-        },
-        {
           name: "Posts",
           href: `/city/${subdomain}`,
           isActive: segments.length === 2,
