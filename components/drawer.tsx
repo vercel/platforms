@@ -13,6 +13,7 @@ import {
   Users,
   Users2,
   ClipboardSignature,
+  BedSingle,
 } from "lucide-react";
 import {
   useParams,
@@ -192,11 +193,18 @@ export default function Drawer({ children }: { children: ReactNode }) {
           isActive: segments.includes("people"),
           icon: <Users2 width={18} />,
         },
+        
         {
           name: "Events",
           href: `/city/${subdomain}/events`,
           isActive: segments.includes("events"),
           icon: <Ticket width={18} />,
+        },
+        {
+          name: "Housing",
+          href: `/city/${subdomain}/housing`,
+          isActive: segments.includes("housing"),
+          icon: <BedSingle width={18} />,
         },
         {
           name: "Docs",

@@ -18,29 +18,6 @@ function DynamicForm({ form }: { form: (Form & { questions: Question[] }) }) {
                 <input name={question.id} type="text" required={question.required} />
               </div>
             );
-          case 'SELECT':
-            return (
-              <div key={question.id}>
-                <label>{question.text}</label>
-                <select required={question.required}>
-                  {question?.options?.map((option, i) => (
-                    <option key={i} value={option}>{option}</option>
-                  ))}
-                </select>
-              </div>
-            );
-          case 'MULTI_SELECT':
-            return (
-              <div key={question.id}>
-                <label>{question.text}</label>
-                {question?.options?.map((option, i) => (
-                  <div key={i}>
-                    <input  type="checkbox" id={`option${i}`} name={option} value={option} />
-                    <label htmlFor={`option${i}`}>{option}</label>
-                  </div>
-                ))}
-              </div>
-            );
           case 'BOOLEAN':
             return (
               <div key={question.id}>

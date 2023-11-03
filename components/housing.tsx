@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import EventCard from "./event-card";
 import Image from "next/image";
 
-export default async function Events({
+export default async function Housing({
   organizationId,
   limit,
 }: {
@@ -21,8 +21,6 @@ export default async function Events({
     },
     ...(limit ? { take: limit } : {}),
   });
-
-  console.log('events: ', events);
 
   return events.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

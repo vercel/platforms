@@ -26,6 +26,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/themes": "^2.0.0",
     "@react-three/fiber": "^8.15.8",
+    "@sendgrid/mail": "^7.7.0",
     "@supabase/supabase-js": "^2.38.1",
     "@tanstack/react-table": "^8.10.6",
     "@tiptap/core": "^2.0.3",
