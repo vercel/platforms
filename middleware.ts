@@ -17,13 +17,11 @@ export const config = {
 export default async function middleware(req: NextRequest) {
   console.log("Middleware function started");
   const url = req.nextUrl;
-  console.log(`URL: ${url}`);
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
   const hostname = req.headers
     .get("host")!
     .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
-  console.log(`Hostname: ${hostname}`);
 
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = url.pathname;

@@ -56,6 +56,7 @@ import PaperDoc from "@/components/paper-doc";
 import locales from "@/locales/en-US/translations.json";
 import { useDebouncedCallback } from "use-debounce";
 import DrawerLink from "@/components/drawer-link";
+import FormTitle from "@/components/form-title";
 
 type FormAndContext = Form & {
   organization: Organization;
@@ -254,10 +255,9 @@ export default function EventFormsPage({
         </DrawerPaper>
       </div>
       <div className="flex flex-col space-y-6">
-        <PaperDoc className="">
+        <PaperDoc>
           <div className="flex items-center justify-between">
-            <h1
-              className="p-1 font-serif text-3xl dark:text-white"
+            <FormTitle
               onMouseEnter={() => setIsEditing(true)}
               onMouseLeave={() => {
                 setIsEditing(false);
@@ -279,7 +279,7 @@ export default function EventFormsPage({
               ) : (
                 formName
               )}
-            </h1>
+            </FormTitle>
           </div>
 
           <div>

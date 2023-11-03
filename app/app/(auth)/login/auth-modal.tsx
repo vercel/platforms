@@ -42,13 +42,13 @@ export default function AuthModal() {
         </p>
       </div>
       <div className="mx-auto mt-4 w-full">
-        {/* {steps[state] === 'email' && <EmailForm onSubmit={onEmailSubmit} loading={loading} />} */}
+        {steps[state] === 'email' && <EmailForm onSubmit={onEmailSubmit} loading={loading} />}
         {/* {steps[state] === 'verify' && <div>verify</div>} */}
-        {steps[state] === "email" && (
+        {/* {steps[state] === "ethereum" && (
           <div className="mx-6">
             <Siwe />
           </div>
-        )}
+        )} */}
         {/* <Siwe /> */}
         {/* <Suspense
           fallback={

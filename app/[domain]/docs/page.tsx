@@ -28,8 +28,6 @@ export default async function DocsPage({
     },
   });
 
-  console.log("City: ", data);
-
   if (!data) {
     notFound();
   }
@@ -53,7 +51,7 @@ export default async function DocsPage({
             rel="noreferrer"
             className="truncate rounded-md bg-brand-gray100 px-2 py-1 text-sm font-medium text-brand-gray600 transition-colors hover:bg-brand-gray200 dark:bg-brand-gray800 dark:text-brand-gray400 dark:hover:bg-brand-gray700"
           >
-            {url} ↗
+            {url} {"↗"}
           </a>
         </div>
         <CreatePostButton />

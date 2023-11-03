@@ -1,7 +1,6 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import mongoClient from "@/lib/tripsha/db-connect";
 import {
   Event,
   Post,
@@ -1107,20 +1106,30 @@ export async function deleteForm(id: string) {
   return form;
 }
 
-export type QuestionDataInputUpdate = { id: string, text?: string; type?: QuestionType; options?: Prisma.InputJsonValue, order?: number };
-export type QuestionDataInputCreate = { formId: string, text: string; type: QuestionType; options?: Prisma.InputJsonValue };
+export type QuestionDataInputUpdate = {
+  id: string;
+  text?: string;
+  type?: QuestionType;
+  options?: Prisma.InputJsonValue;
+  order?: number;
+};
+export type QuestionDataInputCreate = {
+  formId: string;
+  text: string;
+  type: QuestionType;
+  options?: Prisma.InputJsonValue;
+};
 
 // Create Question
 export async function createQuestion(data: QuestionDataInputCreate) {
-
   const count = await prisma.question.count({
     where: { formId: data.formId },
   });
-  
+
   const question = await prisma.question.create({
     data: {
       ...data,
-      order: count
+      order: count,
     },
   });
   return question;
@@ -1152,9 +1161,118 @@ export async function batchUpdateQuestionOrder(questions: Question[]) {
     prisma.question.update({
       where: { id: item.id },
       data: { order: item.order },
-    })
+    }),
   );
 
   // Execute all updates in a transaction
   await prisma.$transaction(updateOperations);
+}
+
+export const submitFormResponse = async (
+  formData: FormData,
+  formId: string,
+) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const entries = formData.entries();
+
+  // Parse the form data to get the answers
+  const answers = Array.from(formData.entries()).map(([key, value]) => ({
+    questionId: key,
+    value: value.toString(),
+  }));
+
+  try {
+    const formResponse = await prisma.formResponse.create({
+      data: {
+        userId: session.user.id,
+        formId,
+      },
+    });
+    // Start a transaction to ensure all database operations succeed or fail together
+    const questions = await prisma.$transaction([
+      // Create the FormResponse
+
+      // Create the Answers
+      ...answers.map((answer) =>
+        prisma.answer.create({
+          data: {
+            ...answer,
+            answersId: formResponse.id, // assuming this is the correct way to link the answer to the form response
+          },
+        }),
+      ),
+    ]);
+    return { ...formResponse, questions };
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
+export const getUsersOrganizations = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      userRoles: {
+        include: {
+          role: {
+            include: {
+              organizationRole: {
+                include: {
+                  organization: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  // Extract organizations and roles from userRoles
+  const organizationsAndRoles = user.userRoles.flatMap((userRole) =>
+    userRole.role.organizationRole.map((orgRole) => ({
+      organization: orgRole.organization,
+      role: userRole.role,
+    })),
+  );
+
+  // Remove duplicates and maintain roles
+  const organizationMap: Record<
+    string,
+    { organization: Organization; roles: Role[] }
+  > = {};
+  for (const orgAndRole of organizationsAndRoles) {
+    const { organization, role } = orgAndRole;
+    if (organizationMap[organization.id]) {
+      organizationMap[organization.id].roles.push(role);
+    } else {
+      organizationMap[organization.id] = { organization, roles: [role] };
+    }
+  }
+  return organizationMap;
+};
+
+export async function getLatestEventForOrganization(organizationId: string) {
+  const event = await prisma.event.findFirst({
+    where: {
+      organizationId: organizationId,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  return event;
 }

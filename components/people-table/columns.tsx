@@ -65,13 +65,16 @@ export const columns: ColumnDef<UserAndRoles>[] = [
     header: "Wallet",
     cell: ({ row }) => {
       const address = row.getValue("eth_address") as string;
+      if (!address) {
+        return null;
+      }
       return (
         <div className="flex items-center">
           <a
             href={`https://etherscan.io/address/${address}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline underline-offset-1"
+            className="underline-offset-1 hover:underline"
           >
             <span>{shortenString(address, 6, 6)}</span>
             <span className="ml-1.5">↗️</span>

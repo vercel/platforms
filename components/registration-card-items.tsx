@@ -1,6 +1,6 @@
 import { TicketTier, Role, Organization, Event } from "@prisma/client";
-import { Card } from "@tremor/react";
-import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import RegistrationCardLink from "./registration-card-link";
 
 type RegistrationCardItemProps = {
   ticketTier: TicketTier & { role: Role };
@@ -11,9 +11,8 @@ export function RegistrationCardItems({
   ticketTier,
   event,
 }: RegistrationCardItemProps) {
-
   return (
-    <Link href={`/${event.path}/apply/${ticketTier.id}`} key={ticketTier.id}>
+    <RegistrationCardLink eventPath={event.path} ticketTierId={ticketTier.id} key={ticketTier.id}>
       <Card className="hover:border-white">
         <h3 className="font-bold">{ticketTier.name}</h3>
         <p>{ticketTier.description}</p>
@@ -24,6 +23,6 @@ export function RegistrationCardItems({
           Price: {ticketTier.price} {ticketTier.currency}
         </p>
       </Card>
-    </Link>
+    </RegistrationCardLink>
   );
 }

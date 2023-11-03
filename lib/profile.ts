@@ -12,6 +12,9 @@ export const shortenString = (
   startLength: number,
   endLength: number,
 ) => {
+  if (!str || str.length === 0) {
+    return "";
+  }
   if (str.length <= startLength + endLength) {
     return str;
   }

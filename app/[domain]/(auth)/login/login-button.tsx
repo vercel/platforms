@@ -27,8 +27,8 @@ export default function LoginButton() {
       }}
       className={`${
         loading
-          ? "cursor-not-allowed bg-warmGray-50 dark:bg-brand-gray800"
-          : "bg-warmGray-50 hover:bg-warmGray-50 active:bg-brand-gray100 dark:bg-brand-gray900 dark:hover:border-white dark:hover:bg-black"
+          ? "cursor-not-allowed bg-brand-gray50 dark:bg-brand-gray800"
+          : "bg-white hover:bg-brand-gray50 active:bg-brand-gray100 bg-brand-gray900 dark:hover:border-white dark:hover:bg-black"
       } group my-2 flex h-10 w-full items-center justify-center space-x-2 rounded-md border border-brand-gray200 transition-colors duration-75 focus:outline-none dark:border-brand-gray700`}
     >
       {loading ? (
