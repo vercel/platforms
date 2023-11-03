@@ -33,7 +33,7 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
           port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587,
           auth: {
             user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
+            pass: process.env.SENDGRID_API_KEY,
           },
         },
         from: process.env.SMTP_FROM,
