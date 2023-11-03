@@ -1,25 +1,11 @@
-import Image from "next/image";
-import Link from "next/link";
 import { ReactNode, Suspense } from "react";
-import prisma from "@/lib/prisma";
-import CTA from "@/components/cta";
-import ReportAbuse from "@/components/report-abuse";
+
 import { notFound, redirect } from "next/navigation";
 import { getSiteData } from "@/lib/fetchers";
 import { fontMapper } from "@/styles/fonts";
 import { Metadata } from "next";
-import dynamic from "next/dynamic";
-import CityDrawer from "@/components/city-drawer";
-import Profile from "@/components/profile";
 import SiteNav from "@/components/site-nav";
 import { cn } from "@/lib/utils";
-
-const ConnectEthButton = dynamic(
-  () => import("@/components/connect-eth-button"),
-  {
-    ssr: false,
-  },
-);
 
 export async function generateMetadata({
   params,
@@ -63,36 +49,36 @@ export async function generateMetadata({
   };
 }
 
-export async function generateStaticParams() {
-  const [subdomains, customDomains] = await Promise.all([
-    prisma.organization.findMany({
-      select: {
-        subdomain: true,
-      },
-    }),
-    prisma.organization.findMany({
-      where: {
-        NOT: {
-          customDomain: null,
-        },
-      },
-      select: {
-        customDomain: true,
-      },
-    }),
-  ]);
+// export async function generateStaticParams() {
+//   const [subdomains, customDomains] = await Promise.all([
+//     prisma.organization.findMany({
+//       select: {
+//         subdomain: true,
+//       },
+//     }),
+//     prisma.organization.findMany({
+//       where: {
+//         NOT: {
+//           customDomain: null,
+//         },
+//       },
+//       select: {
+//         customDomain: true,
+//       },
+//     }),
+//   ]);
 
-  const allPaths = [
-    ...subdomains.map(({ subdomain }) => subdomain),
-    ...customDomains.map(({ customDomain }) => customDomain),
-  ].filter((path) => path) as Array<string>;
+//   const allPaths = [
+//     ...subdomains.map(({ subdomain }) => subdomain),
+//     ...customDomains.map(({ customDomain }) => customDomain),
+//   ].filter((path) => path) as Array<string>;
 
-  return allPaths.map((domain) => ({
-    params: {
-      domain,
-    },
-  }));
-}
+//   return allPaths.map((domain) => ({
+//     params: {
+//       domain,
+//     },
+//   }));
+// }
 
 export default async function SiteLayout({
   params,
