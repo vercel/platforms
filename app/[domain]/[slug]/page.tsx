@@ -52,8 +52,7 @@ export default async function SiteEventPage({
     notFound();
   }
 
-  const rolesAndUsers = await getEventRolesAndUsers(event.id);
-  const ticketTiers = await getEventTicketTiers(event.id);
+  const [rolesAndUsers, ticketTiers] = await Promise.all([getEventRolesAndUsers(event.id), getEventTicketTiers(event.id)]);
 
   return <Event event={event} rolesAndUsers={rolesAndUsers} ticketTiers={ticketTiers} />;
 }

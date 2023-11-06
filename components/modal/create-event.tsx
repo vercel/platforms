@@ -57,7 +57,7 @@ export default function CreateEventModal({
           }
         })
       }
-      className="w-full rounded-md bg-white dark:bg-brand-gray900 md:max-w-md md:border md:border-brand-gray200 md:shadow dark:md:border-brand-gray700"
+      className="w-full rounded-md bg-white dark:bg-gray-900 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
     >
       <div className="m.d:p-10 relative flex flex-col space-y-4 p-5">
         <h2 className="font-cal text-2xl dark:text-white">
@@ -67,7 +67,7 @@ export default function CreateEventModal({
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="name"
-            className="text-brand-gray500 text-sm font-medium dark:text-brand-gray400"
+            className="text-gray-500 text-sm font-medium dark:text-gray-400"
           >
             Event Name
           </label>
@@ -80,19 +80,19 @@ export default function CreateEventModal({
             onChange={(e) => setData({ ...data, name: e.target.value })}
             maxLength={32}
             required
-            className="w-full rounded-md border border-brand-gray200 bg-brand-gray50 px-4 py-2 text-sm text-brand-gray900 placeholder:text-brand-gray400 focus:border-brand-gray900 focus:outline-none focus:ring-brand-gray900 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-white dark:placeholder-brand-gray700 dark:focus:ring-white"
+            className="w-full rounded-md border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700 dark:focus:ring-white"
           />
         </div>
 
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="path"
-            className="text-brand-gray500 text-sm font-medium"
+            className="text-gray-500 text-sm font-medium"
           >
             SEO Optimized Path
           </label>
           <div className="flex w-full max-w-md">
-            <div className="flex items-center rounded-r-lg border border-l-0 border-brand-gray200 bg-brand-gray100 px-3 text-sm dark:border-brand-gray600 dark:bg-brand-gray800 dark:text-brand-gray400">
+            <div className="flex items-center rounded-r-lg border border-l-0 border-gray-200 bg-gray-100 px-3 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
               {organization.subdomain}.{process.env.NEXT_PUBLIC_ROOT_DOMAIN}/
             </div>
             <input
@@ -105,7 +105,7 @@ export default function CreateEventModal({
               pattern="[a-zA-Z0-9\-]+" // only allow lowercase letters, numbers, and dashes
               maxLength={32}
               required
-              className="w-full rounded-l-lg border border-brand-gray200 bg-brand-gray50 px-4 py-2 text-sm text-brand-gray900 placeholder:text-brand-gray400 focus:border-brand-gray900 focus:outline-none focus:ring-brand-gray900 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-white dark:placeholder-brand-gray700 dark:focus:ring-white"
+              className="w-full rounded-l-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700 dark:focus:ring-white"
             />
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function CreateEventModal({
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="description"
-            className="text-brand-gray500 text-sm font-medium"
+            className="text-gray-500 text-sm font-medium"
           >
             Description
           </label>
@@ -124,11 +124,11 @@ export default function CreateEventModal({
             onChange={(e) => setData({ ...data, description: e.target.value })}
             maxLength={140}
             rows={3}
-            className="w-full rounded-md border border-brand-gray200 bg-brand-gray50 px-4 py-2 text-sm text-brand-gray900 placeholder:text-brand-gray400 focus:border-brand-gray900  focus:outline-none focus:ring-brand-gray900 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-white dark:placeholder-brand-gray700 dark:focus:ring-white"
+            className="w-full rounded-md border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900  focus:outline-none focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700 dark:focus:ring-white"
           />
         </div>
       </div>
-      <div className="flex items-center justify-end rounded-b-lg border-t border-brand-gray200 bg-brand-gray50 p-3 dark:border-brand-gray700 dark:bg-brand-gray800 md:px-10">
+      <div className="flex items-center justify-end rounded-b-lg border-t border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800 md:px-10">
         <FormButton text={"Create Event"} />
       </div>
     </form>

@@ -12,7 +12,7 @@ export default function PostCard({
   const url = `${data.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`;
 
   return (
-    <div className="relative rounded-lg border border-brand-gray200 pb-10 shadow-md transition-all hover:shadow-xl dark:border-brand-gray700 dark:hover:border-white">
+    <div className="relative rounded-lg border border-gray-200 pb-10 shadow-md transition-all hover:shadow-xl dark:border-gray-700 dark:hover:border-white">
       <Link
         href={`/post/${data.id}`}
         className="flex flex-col overflow-hidden rounded-lg"
@@ -28,16 +28,16 @@ export default function PostCard({
             blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
           />
           {!data.published && (
-            <span className="absolute bottom-2 right-2 rounded-md border border-brand-gray200 bg-white px-3 py-0.5 text-sm font-medium text-brand-gray600 shadow-md">
+            <span className="absolute bottom-2 right-2 rounded-md border border-gray-200 bg-white px-3 py-0.5 text-sm font-medium text-gray-600 shadow-md">
               Draft
             </span>
           )}
         </div>
-        <div className="border-t border-brand-gray200 p-4 dark:border-brand-gray700">
+        <div className="border-t border-gray-200 p-4 dark:border-gray-700">
           <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide dark:text-white dark:text-white">
             {data.title}
           </h3>
-          <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-brand-gray500 dark:text-brand-gray400">
+          <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-gray-500 dark:text-gray-400">
             {data.description}
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function PostCard({
           }
           target="_blank"
           rel="noreferrer"
-          className="truncate rounded-md bg-brand-gray100 px-2 py-1 text-sm font-medium text-brand-gray600 transition-colors hover:bg-brand-gray200 dark:bg-brand-gray800 dark:text-brand-gray400 dark:hover:bg-brand-gray700"
+          className="truncate rounded-md bg-gray-100 px-2 py-1 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
         >
           {url} ↗
         </a>

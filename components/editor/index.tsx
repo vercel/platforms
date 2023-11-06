@@ -16,7 +16,9 @@ import { cn } from "@/lib/utils";
 import LoadingDots from "../icons/loading-dots";
 import { ExternalLink } from "lucide-react";
 
-type PostWithSite = Post & { organization: { subdomain: string | null } | null };
+type PostWithSite = Post & {
+  organization: { subdomain: string | null } | null;
+};
 
 export default function Editor({ post }: { post: PostWithSite }) {
   let [isPendingSaving, startTransitionSaving] = useTransition();
@@ -175,19 +177,19 @@ export default function Editor({ post }: { post: PostWithSite }) {
   }, [editor, post, hydrated]);
 
   return (
-    <div className="relative min-h-[500px] w-full max-w-screen-lg bg-brand-gray50 border-brand-gray200 p-12 px-8 dark:border-brand-gray700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
+    <div className="relative min-h-[500px] w-full max-w-screen-lg border-gray-200 bg-gray-50 p-12 px-8 dark:border-gray-700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
       <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
         {data.published && (
           <a
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center space-x-1 text-sm text-brand-gray400 hover:text-brand-gray500"
+            className="hover:text-gray-500 flex items-center space-x-1 text-sm text-gray-400"
           >
             <ExternalLink className="h-4 w-4" />
           </a>
         )}
-        <div className="rounded-lg bg-brand-50 px-2 py-1 text-sm text-brand-gray400 dark:bg-brand-gray800 dark:text-brand-gray500">
+        <div className="bg-brand-50 dark:text-gray-500 rounded-lg px-2 py-1 text-sm text-gray-400 dark:bg-gray-800">
           {isPendingSaving ? "Saving..." : "Saved"}
         </div>
         <button
@@ -196,23 +198,25 @@ export default function Editor({ post }: { post: PostWithSite }) {
             console.log(data.published, typeof data.published);
             formData.append("published", String(!data.published));
             startTransitionPublishing(async () => {
-              await updatePostMetadata(formData, post.id, "published").then(
-                () => {
-                  toast.success(
-                    `Successfully ${
-                      data.published ? "unpublished" : "published"
-                    } your post.`,
-                  );
-                  setData((prev) => ({ ...prev, published: !prev.published }));
-                },
-              );
+              await updatePostMetadata(
+                formData,
+                { params: { id: post.id } },
+                "published",
+              ).then(() => {
+                toast.success(
+                  `Successfully ${
+                    data.published ? "unpublished" : "published"
+                  } your post.`,
+                );
+                setData((prev) => ({ ...prev, published: !prev.published }));
+              });
             });
           }}
           className={cn(
             "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
             isPendingPublishing
-              ? "cursor-not-allowed border-brand-gray200 bg-brand-50 text-brand-gray400 dark:border-brand-gray700 dark:bg-brand-gray800 dark:text-brand-gray300"
-              : "border border-black bg-black text-brand-gray100 hover:bg-brand-gray50 hover:text-black active:bg-brand-50 dark:border-brand-gray700 dark:hover:border-brand-gray200 dark:hover:bg-black dark:hover:text-brand-gray100 dark:active:bg-brand-gray800",
+              ? "bg-brand-50 cursor-not-allowed border-gray-200 text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+              : "active:bg-brand-50 border border-black bg-black text-gray-100 hover:bg-gray-50 hover:text-black dark:border-gray-700 dark:hover:border-gray-200 dark:hover:bg-black dark:hover:text-gray-100 dark:active:bg-gray-800",
           )}
           disabled={isPendingPublishing}
         >
@@ -223,20 +227,20 @@ export default function Editor({ post }: { post: PostWithSite }) {
           )}
         </button>
       </div>
-      <div className="mb-5 flex flex-col space-y-3 border-b border-brand-gray200 pb-5 dark:border-brand-gray700">
+      <div className="mb-5 flex flex-col space-y-3 border-b border-gray-200 pb-5 dark:border-gray-700">
         <input
           type="text"
           placeholder="Title"
           defaultValue={post?.title || ""}
           autoFocus
           onChange={(e) => setData({ ...data, title: e.target.value })}
-          className="bg-brand-gray50 text-brand-gray800 dark:placeholder-text-600 border-none px-0 font-cal text-3xl placeholder:text-brand-gray400 focus:outline-none focus:ring-0 dark:bg-brand-gray900 dark:text-brand-gray100"
+          className="dark:placeholder-text-600 border-none bg-gray-50 px-0 font-cal text-3xl text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-0 dark:bg-gray-900 dark:text-gray-100"
         />
         <TextareaAutosize
           placeholder="Description"
           defaultValue={post?.description || ""}
           onChange={(e) => setData({ ...data, description: e.target.value })}
-          className="bg-brand-gray50 text-brand-gray800 dark:placeholder-text-600 w-full resize-none border-none px-0 placeholder:text-brand-gray400 focus:outline-none focus:ring-0 dark:bg-brand-gray900 dark:text-brand-gray100"
+          className="dark:placeholder-text-600 w-full resize-none border-none bg-gray-50 px-0 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-0 dark:bg-gray-900 dark:text-gray-100"
         />
       </div>
       {editor && <EditorBubbleMenu editor={editor} />}

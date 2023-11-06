@@ -21,6 +21,7 @@ export default async function EventForms({
     <div className="grid  grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
       {forms.map((form) => (
         <FormCard
+          href={`/city/${organization.subdomain}/events/${event?.path}/forms/${form.id}`}
           key={form.id}
           form={form}
           questions={form.questions}
@@ -39,7 +40,7 @@ export default async function EventForms({
         width={400}
         height={400}
       />
-      <p className="text-brand-gray500 text-lg">
+      <p className="text-gray-500 text-lg">
         You have not created any Forms yet.
       </p>
     </div>

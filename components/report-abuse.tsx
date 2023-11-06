@@ -34,13 +34,13 @@ export default function ReportAbuse() {
               "Successfully reported abuse – thank you for helping us keep the internet safe!",
             );
           }}
-          className="absolute bottom-20 right-2 flex w-96 flex-col space-y-6 rounded-lg border border-brand-gray200 bg-white p-8 shadow-lg animate-in slide-in-from-bottom-5"
+          className="absolute bottom-20 right-2 flex w-96 flex-col space-y-6 rounded-lg border border-gray-200 bg-white p-8 shadow-lg animate-in slide-in-from-bottom-5"
         >
           <div>
-            <h2 className="font-cal text-xl leading-7 text-brand-gray900">
+            <h2 className="font-cal text-xl leading-7 text-gray-900">
               Report Abuse
             </h2>
-            <p className="mt-2 text-sm leading-6 text-brand-gray600">
+            <p className="mt-2 text-sm leading-6 text-gray-600">
               Found a city with abusive content? Let us know!
             </p>
           </div>
@@ -48,7 +48,7 @@ export default function ReportAbuse() {
           <div>
             <label
               htmlFor="domain"
-              className="block text-sm font-medium leading-6 text-brand-gray900"
+              className="block text-sm font-medium leading-6 text-gray-900"
             >
               URL to report
             </label>
@@ -59,7 +59,7 @@ export default function ReportAbuse() {
                 id="url"
                 readOnly
                 value={url}
-                className="block w-full cursor-not-allowed rounded-md border border-brand-gray200 bg-brand-gray100 py-1.5 text-brand-gray900 shadow-sm ring-0 focus:outline-none sm:text-sm sm:leading-6"
+                className="block w-full cursor-not-allowed rounded-md border border-gray-200 bg-gray-100 py-1.5 text-gray-900 shadow-sm ring-0 focus:outline-none sm:text-sm sm:leading-6"
               />
             </div>
           </div>
@@ -78,7 +78,7 @@ function SubmitButton() {
       className={cn(
         "h flex h-8 w-full items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none sm:h-10",
         pending
-          ? "cursor-not-allowed border-brand-gray200 bg-brand-gray100 text-brand-gray400"
+          ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
           : "border-black bg-black text-white hover:bg-white hover:text-black",
       )}
       disabled={pending}

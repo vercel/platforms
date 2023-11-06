@@ -79,7 +79,7 @@ export default function CreateTicketModal({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full rounded-md bg-brand-gray200/80 backdrop-blur-lg  dark:bg-brand-gray900/80 md:max-w-md md:border md:border-brand-gray200 md:shadow dark:md:border-brand-gray700"
+        className="w-full rounded-md bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
       >
         <FormField
           control={form.control}

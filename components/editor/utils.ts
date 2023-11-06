@@ -51,6 +51,7 @@ export const handleImageUpload = (
 
           // No blob store configured
         } else if (res.status === 401) {
+          console.log('res: ', res)
           const reader = new FileReader();
           reader.onload = (e) => {
             insertImage(e.target?.result as string);

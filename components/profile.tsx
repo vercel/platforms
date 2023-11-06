@@ -14,7 +14,7 @@ export default async function Profile() {
     <div className="flex w-full items-center justify-between">
       <Link
         href="/settings"
-        className="flex w-full flex-1 items-center space-x-3 rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray200 active:bg-brand-gray300 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800"
+        className="flex w-full flex-1 items-center space-x-3 rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-gray-200 active:bg-gray-300 dark:text-white dark:hover:bg-gray-700 dark:active:bg-gray-800"
       >
         <Image
           src={

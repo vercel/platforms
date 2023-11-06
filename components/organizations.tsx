@@ -46,7 +46,7 @@ export default async function Organizations({ limit }: { limit?: number }) {
         width={400}
         height={400}
       />
-      <p className="text-lg text-brand-gray500">
+      <p className="text-lg text-gray-500">
         You do not have any cities yet. Create one to get started.
       </p>
     </div>

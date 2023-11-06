@@ -39,7 +39,7 @@ export default async function Events({
         width={400}
         height={400}
       />
-      <p className="text-lg text-brand-gray500">
+      <p className="text-lg text-gray-500">
         You have not hosted an event yet. Create one to get started.
       </p>
     </div>

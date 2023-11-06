@@ -11,14 +11,14 @@ const Globe = dynamic(() => import("./globe"), { ssr: false });
 const LandingPage = () => {
   return (
     <>
-      <div className="min-w-screen flex min-h-screen flex-col bg-brand-gray900 pt-[6rem]">
+      <div className="min-w-screen flex min-h-screen flex-col bg-gray-900 pt-[6rem]">
         <div className="flex w-full flex-col items-center justify-center p-6 md:p-8 lg:p-10">
-          <h1 className="text-center font-serif text-3xl font-extralight leading-snug text-brand-gray200 md:text-5xl lg:text-5xl">
+          <h1 className="text-center font-serif text-3xl font-extralight leading-snug text-gray-200 md:text-5xl lg:text-5xl">
             <span>Crowdfund, run, and grow</span>
             <br />
             <span>your startup city.</span>
           </h1>
-          <p className="lg:text-md mt-4 font-sans text-lg leading-normal text-brand-gray200 md:mt-6 md:text-xl lg:mt-8">
+          <p className="lg:text-md mt-4 font-sans text-lg leading-normal text-gray-200 md:mt-6 md:text-xl lg:mt-8">
             <span>
               Fora is an open source suite of tools for startup city builders.
             </span>
@@ -37,7 +37,7 @@ const LandingPage = () => {
           <Suspense>
             <>
               <Globe />
-              {/* <ChevronDown className="mx-auto h-8 w-8 stroke-warmGray-200" /> */}
+              {/* <ChevronDown className="mx-auto h-8 w-8 stroke-gray-200" /> */}
             </>
           </Suspense>
         </div>

@@ -590,6 +590,7 @@ export const updatePostMetadata = withPostAuth(
     },
     key: string,
   ) => {
+    console.log('post: ', post);
     const value = formData.get(key) as string;
 
     try {
@@ -1098,6 +1099,16 @@ export async function updateFormName(id: string, name: string) {
   return form;
 }
 
+// Update Form
+export type UpdateFormInput = { name?: string, published?: boolean};
+export async function updateForm(id: string, data: UpdateFormInput) {
+  const form = await prisma.form.update({
+    where: { id },
+    data: data,
+  });
+  return form;
+}
+
 // Delete Form
 export async function deleteForm(id: string) {
   const form = await prisma.form.delete({
@@ -1112,7 +1123,9 @@ export type QuestionDataInputUpdate = {
   type?: QuestionType;
   options?: Prisma.InputJsonValue;
   order?: number;
+  required?: boolean;
 };
+
 export type QuestionDataInputCreate = {
   formId: string;
   text: string;

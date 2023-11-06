@@ -8,7 +8,6 @@ export default async function Sitemap() {
       .get("host")
       ?.replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) ??
     "vercel.pub";
-    console.log(`Sitemap Domain: ${domain}`);
 
   const posts = await getPostsForOrganization(domain);
 

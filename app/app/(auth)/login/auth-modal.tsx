@@ -29,13 +29,13 @@ export default function AuthModal() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[420px] rounded-2xl border border-brand-gray200 bg-brand-gray50/95 dark:bg-brand-gray900/50 py-10 shadow-md backdrop-blur-xl dark:border-brand-gray700">
+    <div className="mx-auto w-full max-w-[420px] rounded-2xl border border-gray-200 bg-gray-50/95 dark:bg-gray-900/50 py-10 shadow-md backdrop-blur-xl dark:border-gray-700">
       <div className="mx-6">
-        <h1 className="mt-2 font-serif text-2xl font-light dark:text-brand-gray50 md:text-3xl">
+        <h1 className="mt-2 font-serif text-2xl font-light dark:text-gray-50 md:text-3xl">
           {steps[state] === "email" && "It's time to build new cities"}
           {steps[state] === "verify" && "We sent you an email"}
         </h1>
-        <p className="mt-3 text-sm font-medium text-brand-gray600 dark:text-brand-gray100">
+        <p className="mt-3 text-sm font-medium text-gray-600 dark:text-gray-100">
           {steps[state] === "email" && "Sign in or Sign up below."}
           {steps[state] === "verify" &&
             "Click the link in the email we sent you to continue."}
@@ -44,7 +44,7 @@ export default function AuthModal() {
       <div className="mx-auto mt-4 w-full">
         {steps[state] === 'email' && <EmailForm onSubmit={onEmailSubmit} loading={loading} />}
         {/* {steps[state] === 'verify' && <div>verify</div>} */}
-        {/* {steps[state] === "ethereum" && (
+        {/* {steps[state] === "email" && (
           <div className="mx-6">
             <Siwe />
           </div>
@@ -52,14 +52,14 @@ export default function AuthModal() {
         {/* <Siwe /> */}
         {/* <Suspense
           fallback={
-            <div className="my-2 h-10 w-full rounded-md border border-brand-gray200 bg-brand-gray100 dark:border-brand-gray700 dark:bg-brand-gray800" />
+            <div className="my-2 h-10 w-full rounded-md border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800" />
           }
         >
           <LoginButton />
         </Suspense>
         <Suspense
           fallback={
-            <div className="my-2 h-10 w-full rounded-md border border-brand-gray200 bg-brand-gray100 dark:border-brand-gray700 dark:bg-brand-gray800" />
+            <div className="my-2 h-10 w-full rounded-md border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800" />
           }
         >
           <Siwe />

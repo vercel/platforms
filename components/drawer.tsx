@@ -30,7 +30,6 @@ import DrawerPaper from "./drawer-paper";
 import DrawerLink from "./drawer-link";
 // import CitySwitcher from "./city-switcher";
 import { useSession } from "next-auth/react";
-import { SessionUser } from "@/lib/auth";
 import { Organization, Role } from "@prisma/client";
 
 // const externalLinks = [
@@ -63,7 +62,7 @@ import { Organization, Role } from "@prisma/client";
 //         viewBox="0 0 76 76"
 //         fill="none"
 //         xmlns="http://www.w3.org/2000/svg"
-//         className="py-1 text-brand-gray700 dark:text-white"
+//         className="py-1 text-gray-700 dark:text-white"
 //       >
 //         <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="currentColor" />
 //       </svg>
@@ -71,10 +70,13 @@ import { Organization, Role } from "@prisma/client";
 //   },
 // ];
 
-export type UsersUniqueOrgsWithRolesRecord = Record<string, {
-  organization: Organization;
-  roles: Role[];
-}>
+export type UsersUniqueOrgsWithRolesRecord = Record<
+  string,
+  {
+    organization: Organization;
+    roles: Role[];
+  }
+>;
 
 export default function Drawer({ children }: { children: ReactNode }) {
   const segments = useSelectedLayoutSegments();
@@ -88,7 +90,8 @@ export default function Drawer({ children }: { children: ReactNode }) {
     string | undefined
   >();
 
-  const [usersOrgs, setUsersOrgs] = useState<UsersUniqueOrgsWithRolesRecord | null>(null);
+  const [usersOrgs, setUsersOrgs] =
+    useState<UsersUniqueOrgsWithRolesRecord | null>(null);
 
   useEffect(() => {
     if (segments[0] === "post" && subdomain) {
@@ -101,9 +104,11 @@ export default function Drawer({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
   useEffect(() => {
     if (session?.user) {
-      const user = session.user as SessionUser;
+      const user = session.user;
 
-      getUsersOrganizations(user.id).then((userOrgs) => {
+      // @ts-expect-error
+      getUsersOrganizations(user.id)
+      .then((userOrgs) => {
         console.log("userOrgs: ", userOrgs);
         setUsersOrgs(userOrgs);
       });
@@ -193,7 +198,6 @@ export default function Drawer({ children }: { children: ReactNode }) {
           isActive: segments.includes("people"),
           icon: <Users2 width={18} />,
         },
-        
         {
           name: "Events",
           href: `/city/${subdomain}/events`,
@@ -205,6 +209,12 @@ export default function Drawer({ children }: { children: ReactNode }) {
           href: `/city/${subdomain}/housing`,
           isActive: segments.includes("housing"),
           icon: <BedSingle width={18} />,
+        },
+        {
+          name: "Forms",
+          href: `/city/${subdomain}/forms`,
+          isActive: segments.includes("forms"),
+          icon: <ClipboardSignature width={18} />,
         },
         {
           name: "Docs",
@@ -309,14 +319,14 @@ export default function Drawer({ children }: { children: ReactNode }) {
               href="app.localhost:3000"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg p-1.5 hover:bg-brand-gray200 dark:hover:bg-brand-gray700"
+              className="rounded-lg p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               <svg
                 width="26"
                 viewBox="0 0 76 65"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-brand-gray700 dark:text-white"
+                className="text-gray-700 dark:text-white"
               >
                 <path
                   d="M37.5274 0L75.0548 65H0L37.5274 0Z"
@@ -324,17 +334,17 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 />
               </svg>
             </a>
-            <div className="dark:border-brand-gray500 h-6 rotate-[30deg] border-l border-brand-gray400" />
+            <div className="dark:border-gray-500 h-6 rotate-[30deg] border-l border-gray-400" />
             <Link
               href="/"
-              className="rounded-lg p-2 hover:bg-brand-gray200 dark:hover:bg-brand-gray700"
+              className="rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               <Image
                 src="/logo.png"
                 width={24}
                 height={24}
                 alt="Logo"
-                className="dark:scale-110 dark:rounded-full dark:border dark:border-brand-gray400"
+                className="dark:scale-110 dark:rounded-full dark:border dark:border-gray-400"
               />
             </Link>
           </div> */}
@@ -360,7 +370,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray200 active:bg-brand-gray300 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800"
+                className="flex items-center justify-between rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-gray-200 active:bg-gray-300 dark:text-white dark:hover:bg-gray-700 dark:active:bg-gray-800"
               >
                 <div className="flex items-center space-x-3">
                   {icon}
@@ -370,7 +380,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
               </a>
             ))}
           </div> */}
-          <div className="my-2 border-t border-brand-gray200 dark:border-brand-gray700" />
+          <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
           {children}
         </div>
       </DrawerPaper>

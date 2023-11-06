@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import {
   Form,
@@ -9,7 +9,7 @@ import {
   Role,
   QuestionType,
 } from "@prisma/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition, useLayoutEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
   updateFormName,
@@ -19,6 +19,8 @@ import {
   QuestionDataInputCreate,
   QuestionDataInputUpdate,
   batchUpdateQuestionOrder,
+  updateForm,
+  UpdateFormInput,
 } from "@/lib/actions";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
@@ -38,6 +40,7 @@ import {
   Check,
   ChevronDown,
   ArrowLeft,
+  ExternalLink,
 } from "lucide-react";
 import {
   Select,
@@ -46,8 +49,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FormLabel } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+
 import { Textarea } from "@/components/ui/textarea";
 import { MultiSelect } from "@/components/ui/multiselect";
 import DrawerPaper from "@/components/drawer-paper";
@@ -57,6 +61,12 @@ import locales from "@/locales/en-US/translations.json";
 import { useDebouncedCallback } from "use-debounce";
 import DrawerLink from "@/components/drawer-link";
 import FormTitle from "@/components/form-title";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import LoadingDots from "@/components/icons/loading-dots";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { QuestionSettingsForm } from "./question-settings-form";
 
 type FormAndContext = Form & {
   organization: Organization;
@@ -66,7 +76,7 @@ type FormAndContext = Form & {
 };
 const questionTypes = Object.values(QuestionType);
 
-export default function EventFormsPage({
+export default function FormBuilder({
   session,
   form,
 }: {
@@ -84,11 +94,16 @@ export default function EventFormsPage({
   const [isEditing, setIsEditing] = useState(false);
   const [formName, setFormName] = useState("");
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [isPendingSaving, setIsPendingSaving] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
+  let [isPendingPublishing, startTransitionPublishing] = useTransition();
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [selectedQuestionType, setSelectedQuestionType] =
     useState<QuestionType>(QuestionType.SHORT_TEXT);
-
-  const router = useRouter();
 
   useEffect(() => {
     setFormName(form.name);
@@ -102,6 +117,12 @@ export default function EventFormsPage({
     }
   };
 
+  const handleUpdate = async (input: UpdateFormInput) => {
+    if (form.name !== input.name || form.published !== input.published) {
+      updateForm(form.id, input);
+    }
+  };
+
   const handleCreateQuestion = async (data: QuestionDataInputCreate) => {
     const newQuestion = await createQuestion(data);
     setQuestions([...questions, newQuestion]);
@@ -111,11 +132,14 @@ export default function EventFormsPage({
     id: string,
     data: QuestionDataInputUpdate,
   ) => {
+    setIsPendingSaving(true);
     const updatedQuestion = await updateQuestion(id, data);
+    toast.success("Successfully updated question");
     const updatedQuestions = questions.map((q) =>
       q.id === updatedQuestion.id ? updatedQuestion : q,
     );
     setQuestions(updatedQuestions);
+    setIsPendingSaving(false);
   };
 
   const handleDeleteQuestion = async (id: string) => {
@@ -160,6 +184,14 @@ export default function EventFormsPage({
     // }
   };
 
+  const block = searchParams.get("block");
+
+  useEffect(() => {
+    if (!block && questions?.[0]) {
+      router.push(`${pathname}?block=${questions?.[0].id}`);
+    }
+  }, [block, pathname, questions, router]);
+
   const handleUpdateQuestionText = (newQ: Question, text: string) => {
     const nextQuestions = questions.map((q) =>
       q.id === newQ.id ? { ...q, text } : q,
@@ -176,8 +208,12 @@ export default function EventFormsPage({
     { trailing: true },
   );
 
+  const selectedQuestion = questions.find(
+    ({ id }) => id === searchParams.get("block"),
+  );
+
   return (
-    <>
+    <div className="flex flex-1 flex-row text-gray-800 dark:text-gray-200">
       <div className="absolute bottom-0 left-0 top-0">
         <DrawerPaper showSidebar={false} className="px-0">
           <div className="flex flex-col">
@@ -188,7 +224,9 @@ export default function EventFormsPage({
               isActive={false}
             />
             <div className="flex items-center justify-between py-4 pl-4 pr-3">
-              <h6 className="font-semibold">Content</h6>
+              <h6 className="font-semibold text-gray-800 dark:text-gray-200">
+                Content
+              </h6>
               <Popover>
                 <PopoverTrigger>
                   {
@@ -223,7 +261,15 @@ export default function EventFormsPage({
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className="flex h-14 w-full items-center justify-between py-4 pl-4 pr-2 hover:bg-brand-gray400/50"
+                            className={cn(
+                              "flex h-14 w-full items-center justify-between py-4 pl-4 pr-2 text-gray-800 hover:bg-gray-250 dark:text-gray-200 dark:hover:bg-gray-750",
+                              selectedQuestion && selectedQuestion.id === q.id
+                                ? "bg-gray-300 dark:bg-gray-850"
+                                : "",
+                            )}
+                            onClick={() => {
+                              router.push(`${pathname}?block=${q.id}`);
+                            }}
                           >
                             <QuestionBadge q={q} />
                             <p className="ml-3 flex flex-1 text-xs">{q.text}</p>
@@ -254,8 +300,8 @@ export default function EventFormsPage({
           </div>
         </DrawerPaper>
       </div>
-      <div className="flex flex-col space-y-6">
-        <PaperDoc>
+      <div className="flex flex-1 flex-col space-y-6 xl:pr-60 w-full relative">
+        <PaperDoc className="mx-auto w-full max-w-4xl">
           <div className="flex items-center justify-between">
             <FormTitle
               onMouseEnter={() => setIsEditing(true)}
@@ -280,6 +326,53 @@ export default function EventFormsPage({
                 formName
               )}
             </FormTitle>
+            <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
+              {form.published && (
+                <a
+                  href={``}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-1 text-sm text-gray-400 hover:text-gray-500"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              )}
+              <div className="bg-brand-50 rounded-lg px-2 py-1 text-sm text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                {isPendingSaving ? "Saving..." : "Saved"}
+              </div>
+              <button
+                onClick={() => {
+                  startTransitionPublishing(async () => {
+                    await handleUpdate({ published: !form.published }).then(
+                      () => {
+                        toast.success(
+                          `Successfully ${
+                            form.published ? "unpublished" : "published"
+                          } your post.`,
+                        );
+                        // setData((prev) => ({
+                        //   ...prev,
+                        //   published: !prev.published,
+                        // }));
+                      },
+                    );
+                  });
+                }}
+                className={cn(
+                  "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
+                  isPendingPublishing
+                    ? "bg-brand-50 cursor-not-allowed border-gray-200 text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                    : "active:bg-brand-50 border border-black bg-black text-gray-100 hover:bg-gray-50 hover:text-black dark:border-gray-700 dark:hover:border-gray-200 dark:hover:bg-black dark:hover:text-gray-100 dark:active:bg-gray-800",
+                )}
+                disabled={isPendingPublishing}
+              >
+                {isPendingPublishing ? (
+                  <LoadingDots />
+                ) : (
+                  <p>{form.published ? "Unpublish" : "Publish"}</p>
+                )}
+              </button>
+            </div>
           </div>
 
           <div>
@@ -294,9 +387,46 @@ export default function EventFormsPage({
           </div>
         </PaperDoc>
       </div>
-    </>
+      <RightDrawer
+        form={form}
+        questions={questions}
+        selectedQuestion={selectedQuestion}
+        handleUpdateQuestion={handleUpdateQuestion}
+      />
+    </div>
   );
 }
+
+const RightDrawer = ({
+  questions,
+  selectedQuestion,
+  form,
+  handleUpdateQuestion,
+}: {
+  questions: Question[];
+  selectedQuestion?: Question;
+  form: Form;
+  handleUpdateQuestion: (
+    id: string,
+    data: QuestionDataInputUpdate,
+  ) => Promise<void>;
+}) => {
+  if (!selectedQuestion) {
+    return null;
+  }
+
+  return (
+    <DrawerPaper
+      showSidebar={true}
+      className="fixed bottom-0 right-0 top-0 hidden border-l pl-6 xl:flex xl:w-60"
+    >
+      <QuestionSettingsForm
+        question={selectedQuestion}
+        handleUpdateQuestion={handleUpdateQuestion}
+      />
+    </DrawerPaper>
+  );
+};
 
 type EditableQuestionProps = {
   q: Question;
@@ -343,13 +473,15 @@ const EditableQuestion = ({
         ) : q.text.length > 0 ? (
           q.text
         ) : (
-          <span className="text-md text-brand-gray400">
+          <span className="text-md text-gray-400">
             {locales.QUESTION_PLACEHODLER_TEXT}
           </span>
         )}
+        {q.required && <span>*</span>}
       </span>
 
       {mapQuestionTypeToInput(q.type, () => null)}
+      {q.type === QuestionType.DATE_RANGE}
     </div>
   );
 };
@@ -366,9 +498,9 @@ const QuestionBadge = ({ q }: { q: Question }) => {
 const questionTypeToBadgeIcon = (type: QuestionType) => {
   switch (type) {
     case QuestionType.SHORT_TEXT:
-      return <ShortTextIcon className="h-6 fill-white" />;
+      return <ShortTextIcon className="h-6 " />;
     case QuestionType.LONG_TEXT:
-      return <LongTextIcon className="h-6 fill-white" />;
+      return <LongTextIcon className="h-6 " />;
     case QuestionType.SELECT:
       return <ChevronDown className="h-6 w-4" />;
     case QuestionType.MULTI_SELECT:
@@ -376,7 +508,7 @@ const questionTypeToBadgeIcon = (type: QuestionType) => {
     case QuestionType.BOOLEAN:
       return "Yes/No";
     default:
-      return <ShortTextIcon className="h-6 fill-white" />;
+      return <ShortTextIcon className="h-6" />;
   }
 };
 

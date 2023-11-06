@@ -41,7 +41,7 @@ export default async function OrganizationPosts({
         width={400}
         height={400}
       />
-      <p className="text-lg text-brand-gray500">
+      <p className="text-lg text-gray-500">
         You do not have any posts yet. Create one to get started.
       </p>
     </div>

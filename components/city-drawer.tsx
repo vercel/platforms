@@ -175,7 +175,7 @@ export default function CityDrawer({ children }: { children: ReactNode }) {
       <div
         className={`transform ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
-        } fixed z-10 flex h-full w-full flex-col justify-between border-r border-brand-gray200 bg-brand-gray100/50 p-4 transition-all dark:border-brand-gray700 dark:bg-brand-gray800/50 sm:w-60 sm:translate-x-0`}
+        } fixed z-10 flex h-full w-full flex-col justify-between border-r border-gray-200 bg-gray-100/50 p-4 transition-all dark:border-gray-700 dark:bg-gray-800/50 sm:w-60 sm:translate-x-0`}
       >
         <div className="grid gap-2">
           <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">
@@ -183,7 +183,7 @@ export default function CityDrawer({ children }: { children: ReactNode }) {
               href="app.localhost:3000"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg p-1.5 hover:bg-brand-gray200 dark:hover:bg-brand-gray700"
+              className="rounded-lg p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               <svg
                 width="26"
@@ -198,17 +198,17 @@ export default function CityDrawer({ children }: { children: ReactNode }) {
                 />
               </svg>
             </a>
-            <div className="h-6 rotate-[30deg] border-l border-brand-gray400 dark:border-brand-gray500" />
+            <div className="h-6 rotate-[30deg] border-l border-gray-400 dark:border-gray-500" />
             <Link
               href="/"
-              className="rounded-lg p-2 hover:bg-brand-gray200 dark:hover:bg-brand-gray700"
+              className="rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               <Image
                 src="/logo.png"
                 width={24}
                 height={24}
                 alt="Logo"
-                className="dark:scale-110 dark:rounded-full dark:border dark:border-brand-gray400"
+                className="dark:scale-110 dark:rounded-full dark:border dark:border-gray-400"
               />
             </Link>
           </div>
@@ -218,8 +218,8 @@ export default function CityDrawer({ children }: { children: ReactNode }) {
                 key={name}
                 href={href}
                 className={`flex items-center space-x-3 ${
-                  isActive ? "bg-brand-gray200 text-black dark:bg-brand-gray700" : ""
-                } rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray200 active:bg-brand-gray300 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800`}
+                  isActive ? "bg-gray-200 text-black dark:bg-gray-700" : ""
+                } rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-gray-200 active:bg-gray-300 dark:text-white dark:hover:bg-gray-700 dark:active:bg-gray-800`}
               >
                 {icon}
                 <span className="text-sm font-medium">{name}</span>
@@ -235,7 +235,7 @@ export default function CityDrawer({ children }: { children: ReactNode }) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-brand-gray200 active:bg-brand-gray300 dark:text-white dark:hover:bg-brand-gray700 dark:active:bg-brand-gray800"
+                className="flex items-center justify-between rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-gray-200 active:bg-gray-300 dark:text-white dark:hover:bg-gray-700 dark:active:bg-gray-800"
               >
                 <div className="flex items-center space-x-3">
                   {icon}
@@ -245,7 +245,7 @@ export default function CityDrawer({ children }: { children: ReactNode }) {
               </a>
             ))}
           </div> */}
-          <div className="my-2 border-t border-brand-gray200 dark:border-brand-gray700" />
+          <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
           {children}
         </div>
       </div>

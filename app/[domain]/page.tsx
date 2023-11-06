@@ -21,7 +21,7 @@ export default async function SiteHomePage({
 
   return (
     <>
-      <div className="relative w-full rounded-lg pb-5 transition-all dark:border-brand-gray700 dark:hover:border-white lg:max-h-[80%]">
+      <div className="relative w-full rounded-lg pb-5 transition-all dark:border-gray-700 dark:hover:border-white lg:max-h-[80%]">
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/2 p-12">
             <h1 className="text-4xl font-serif">{sitedata.header}</h1>
