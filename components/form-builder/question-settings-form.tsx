@@ -15,12 +15,20 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
-import { Form as FormType, Question } from "@prisma/client";
+import { Form as FormType, Question, QuestionType } from "@prisma/client";
 import { QuestionDataInputUpdate } from "@/lib/actions";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { JsonArray, JsonObject } from "@prisma/client/runtime/library";
+import { DatePicker } from "./date-picker";
+import { Textarea } from "../ui/textarea";
 
 const QuestionSettingsSchema = z.object({
   required: z.boolean().default(false).optional(),
+  fromDate: z.string().optional(),
+  toDate: z.string().optional(),
+  min: z.string().optional(),
+  max: z.string().optional(),
+  variants: z.string().optional(),
 });
 
 export function QuestionSettingsForm({
@@ -35,17 +43,37 @@ export function QuestionSettingsForm({
 }) {
   const form = useForm<z.infer<typeof QuestionSettingsSchema>>({
     resolver: zodResolver(QuestionSettingsSchema),
-    defaultValues: {
-      required: false,
-    },
   });
 
   useEffect(() => {
-    form?.setValue('required', question.required);
-  }, [form, question])
+    form?.reset();
+    form?.setValue("required", question?.required || undefined);
+    form?.setValue("fromDate", question?.fromDate?.toISOString() || undefined);
+    form?.setValue("toDate", question?.toDate?.toISOString() || undefined);
+    const variants = question?.variants
+      ? (question?.variants as {
+          [name: string]: string;
+        }[])
+      : undefined;
+    const variantStr =
+      variants?.map((variant) => variant.name).join("\n") ?? "";
+
+    console.log("variantStr: ", variantStr);
+    form?.setValue("variants", variantStr);
+  }, [form, question]);
 
   async function onSubmit(data: z.infer<typeof QuestionSettingsSchema>) {
-    handleUpdateQuestion(question.id, { id: question.id, ...data });
+    const variants = data.variants
+      ? data.variants
+          .split("\n")
+          .map((variant) => ({ name: variant, value: variant }))
+      : undefined;
+
+    handleUpdateQuestion(question.id, {
+      id: question.id,
+      ...data,
+      variants,
+    });
   }
 
   return (
@@ -79,6 +107,101 @@ export function QuestionSettingsForm({
                 </FormItem>
               )}
             />
+            {(question.type === QuestionType.SELECT ||
+              question.type === QuestionType.MULTI_SELECT ||
+              question.type === QuestionType.DROPDOWN) && (
+              <FormField
+                control={form.control}
+                name="variants"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col items-center justify-between space-x-1 rounded-lg py-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Variants</FormLabel>
+                      <FormDescription>
+                        Add variants for the select, separated by a new line.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        className="h-20 w-full rounded border p-2"
+                        placeholder="Enter variants..."
+                      />
+                    </FormControl>
+                    <Button type="submit" className="mt-2">
+                      Save Variants
+                    </Button>
+                  </FormItem>
+                )}
+              />
+            )}
+            {(question.type === QuestionType.DATE_RANGE ||
+              question.type === QuestionType.DATE) && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="fromDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col items-center justify-between space-x-1 rounded-lg py-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>From Date Range</FormLabel>
+                        <FormDescription>
+                          Set the range of dates that can be selected.
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <DatePicker
+                          date={
+                            field?.value ? new Date(field?.value) : undefined
+                          }
+                          onSelect={(date) => {
+                            if (date) {
+                              field.onChange(date.toISOString());
+                              onSubmit({ fromDate: date.toISOString() });
+                            } else {
+                              field.onChange(date);
+                              onSubmit({ fromDate: date });
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="toDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col items-center justify-between space-x-1 rounded-lg py-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>To Date Range</FormLabel>
+                        <FormDescription>
+                          Set the range of dates that can be selected.
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <DatePicker
+                          date={
+                            field?.value ? new Date(field?.value) : undefined
+                          }
+                          onSelect={(date) => {
+                            // setToDate(date);
+                            if (date) {
+                              field.onChange(date.toISOString());
+                              onSubmit({ toDate: date.toISOString() });
+                            } else {
+                              field.onChange(date);
+                              onSubmit({ toDate: date });
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
             {/* <FormField
                 control={form.control}
                 name="security_emails"

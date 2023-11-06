@@ -73,6 +73,7 @@
     "openai-edge": "^1.2.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
+    "react-day-picker": "^8.9.1",
     "react-dom": "^18.2.0",
     "react-globe.gl": "^2.24.3",
     "react-hook-form": "^7.47.0",

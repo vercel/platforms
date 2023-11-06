@@ -41,6 +41,8 @@ import {
   ChevronDown,
   ArrowLeft,
   ExternalLink,
+  CalendarRange,
+  Calendar,
 } from "lucide-react";
 import {
   Select,
@@ -67,6 +69,9 @@ import LoadingDots from "@/components/icons/loading-dots";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { QuestionSettingsForm } from "./question-settings-form";
+import { DateRangePicker } from "./date-range-picker";
+import { DatePicker } from "./date-picker";
+import YesNoIcon from "./svgs/yes-no";
 
 type FormAndContext = Form & {
   organization: Organization;
@@ -134,7 +139,6 @@ export default function FormBuilder({
   ) => {
     setIsPendingSaving(true);
     const updatedQuestion = await updateQuestion(id, data);
-    toast.success("Successfully updated question");
     const updatedQuestions = questions.map((q) =>
       q.id === updatedQuestion.id ? updatedQuestion : q,
     );
@@ -236,17 +240,19 @@ export default function FormBuilder({
                   }
                 </PopoverTrigger>
                 <PopoverContent sideOffset={10}>
-                  {questionTypes.map((type) => {
-                    return (
-                      <Button
-                        key={type}
-                        value={type}
-                        onClick={() => handleCreateNewQuestion(type)}
-                      >
-                        {questionTypeToDisplayText(type)}
-                      </Button>
-                    );
-                  })}
+                  <div className="space-x-3 space-y-2">
+                    {questionTypes.map((type) => {
+                      return (
+                        <Button
+                          key={type}
+                          value={type}
+                          onClick={() => handleCreateNewQuestion(type)}
+                        >
+                          {questionTypeToDisplayText(type)}
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </PopoverContent>
               </Popover>
             </div>
@@ -300,7 +306,7 @@ export default function FormBuilder({
           </div>
         </DrawerPaper>
       </div>
-      <div className="flex flex-1 flex-col space-y-6 xl:pr-60 w-full relative">
+      <div className="relative flex w-full flex-1 flex-col space-y-6 xl:pr-60">
         <PaperDoc className="mx-auto w-full max-w-4xl">
           <div className="flex items-center justify-between">
             <FormTitle
@@ -453,9 +459,7 @@ const EditableQuestion = ({
       <span
         onMouseEnter={() => setIsEditing(true)}
         onMouseLeave={() => {
-          console.log("");
           setIsEditing(false);
-          // handleUpdateQuestionText(questionText);
         }}
       >
         {isEditing ? (
@@ -477,10 +481,10 @@ const EditableQuestion = ({
             {locales.QUESTION_PLACEHODLER_TEXT}
           </span>
         )}
-        {q.required && <span>*</span>}
       </span>
+      {q.required && <span>*</span>}
 
-      {mapQuestionTypeToInput(q.type, () => null)}
+      {mapQuestionTypeToInput(q)}
       {q.type === QuestionType.DATE_RANGE}
     </div>
   );
@@ -498,17 +502,21 @@ const QuestionBadge = ({ q }: { q: Question }) => {
 const questionTypeToBadgeIcon = (type: QuestionType) => {
   switch (type) {
     case QuestionType.SHORT_TEXT:
-      return <ShortTextIcon className="h-6 " />;
+      return <ShortTextIcon className="h-6 fill-gray-100" />;
     case QuestionType.LONG_TEXT:
-      return <LongTextIcon className="h-6 " />;
+      return <LongTextIcon className="h-6 fill-gray-100" />;
     case QuestionType.SELECT:
-      return <ChevronDown className="h-6 w-4" />;
+      return <ChevronDown className="h-6 w-4 " />;
     case QuestionType.MULTI_SELECT:
       return <Check className="h-6 w-4" />;
     case QuestionType.BOOLEAN:
-      return "Yes/No";
+      return <YesNoIcon className="h-6 w-4 fill-gray-100" />;
+    case QuestionType.DATE:
+      return <Calendar className="h-6 w-4" />;
+    case QuestionType.DATE_RANGE:
+      return <CalendarRange className="h-6 w-4" />;
     default:
-      return <ShortTextIcon className="h-6" />;
+      return null;
   }
 };
 
@@ -519,21 +527,26 @@ const questionTypeToDisplayText = (type: QuestionType) => {
     case QuestionType.LONG_TEXT:
       return "Long Text";
     case QuestionType.SELECT:
+    case QuestionType.DROPDOWN:
       return "Dropdown";
     case QuestionType.MULTI_SELECT:
       return "Multiple Choice";
     case QuestionType.BOOLEAN:
       return "Yes/No";
+    case QuestionType.DATE:
+      return "Date";
+    case QuestionType.DATE_RANGE:
+      return "Date Range";
     default:
       return type;
   }
 };
 
 const mapQuestionTypeToInput = (
-  type: QuestionType,
+  q: Question,
   handleChange: (value: any) => void,
 ) => {
-  switch (type) {
+  switch (q.type) {
     case QuestionType.SHORT_TEXT:
       return <Input type="text" />;
     case QuestionType.LONG_TEXT:
@@ -545,26 +558,33 @@ const mapQuestionTypeToInput = (
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent>
-            {questionTypes.map((type) => {
-              return (
-                <SelectItem key={type} value={type}>
-                  {questionTypeToDisplayText(type)}
-                </SelectItem>
-              );
-            })}
+            {q?.variants
+              ? q.variants.map((variant) => {
+                  console.log("variant: ", variant);
+                  return (
+                    <SelectItem key={variant?.name} value={variant?.value}>
+                      {variant?.name}
+                    </SelectItem>
+                  );
+                })
+              : null}
           </SelectContent>
         </Select>
       );
-    case QuestionType.MULTI_SELECT:
-      return (
-        <MultiSelect
-          onChange={handleChange}
-          selected={[]}
-          options={[
-            { label: "Multi Select", value: QuestionType.MULTI_SELECT },
-          ]}
-        />
-      );
+    // case QuestionType.MULTI_SELECT:
+    //   return (
+    //     <MultiSelect
+    //       onChange={handleChange}
+    //       selected={[]}
+    //       options={[
+    //         { label: "Multi Select", value: QuestionType.MULTI_SELECT },
+    //       ]}
+    //     />
+    //   );
+    case QuestionType.DATE:
+      return <DatePicker />;
+    case QuestionType.DATE_RANGE:
+      return <DateRangePicker />;
     case QuestionType.BOOLEAN:
       return <Checkbox />;
     default:

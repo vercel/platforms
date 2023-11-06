@@ -33,6 +33,7 @@ import supabase from "./supabase";
 import { CreatTicketTierFormSchema } from "./schema";
 import { z } from "zod";
 import { JSONValue } from "ai";
+import { JsonObject } from "@prisma/client/runtime/library";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -1124,6 +1125,7 @@ export type QuestionDataInputUpdate = {
   options?: Prisma.InputJsonValue;
   order?: number;
   required?: boolean;
+  variants?: Prisma.JsonArray
 };
 
 export type QuestionDataInputCreate = {

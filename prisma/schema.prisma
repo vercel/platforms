@@ -260,11 +260,15 @@ model Form {
 
 model Question {
   id          String       @id @default(cuid())
+  type        QuestionType // 'text', 'dropdown', 'multi-select', etc.
   text        String
   description String?
   required    Boolean      @default(false)
-  type        QuestionType // 'text', 'dropdown', 'multi-select', etc.
-  options     Json? // JSON for storing options
+  fromDate    DateTime?
+  toDate      DateTime?
+  min         Int?
+  max         Int?
+  variants    Json? // JSON for storing options
   formId      String
   form        Form         @relation(fields: [formId], references: [id])
   answers     Answer[]
@@ -277,6 +281,8 @@ enum QuestionType {
   SELECT
   MULTI_SELECT
   DROPDOWN
+  DATE
+  DATE_RANGE
   BOOLEAN
 }
 
