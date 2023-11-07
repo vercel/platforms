@@ -9,24 +9,27 @@ export default async function DocsPage({
 }: {
   params: { domain: string };
 }) {
-  const session = await getSession();
-  if (!session) {
-    redirect("/login");
-  }
+  const domain = params.domain.replace("%3A", ":");
+  console.log("domain: ", domain);
+  // const session = await getSession();
+  // if (!session) {
+  //   redirect("/login");
+  // }
   const data = await prisma.organization.findFirst({
     where: {
-      subdomain: params.domain,
       // id: params.id,
-      // OR: [
-      //   {
-      //     subdomain: params.domain,
-      //   },
-      //   {
-      //     customDomain: params.domain,
-      //   },
-      // ],
+      OR: [
+        {
+          subdomain: domain,
+        },
+        {
+          customDomain: domain,
+        },
+      ],
     },
   });
+
+  console.log('data: ', data)
 
   if (!data) {
     notFound();
@@ -49,7 +52,7 @@ export default async function DocsPage({
             }
             target="_blank"
             rel="noreferrer"
-            className="truncate rounded-md bg-brand-gray100 px-2 py-1 text-sm font-medium text-brand-gray600 transition-colors hover:bg-brand-gray200 dark:bg-brand-gray800 dark:text-brand-gray400 dark:hover:bg-brand-gray700"
+            className="truncate rounded-md bg-gray-100 px-2 py-1 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
           >
             {url} {"↗"}
           </a>

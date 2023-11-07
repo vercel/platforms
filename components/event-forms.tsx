@@ -14,7 +14,11 @@ export default async function EventForms({
 }: {
   organization: Organization;
   event?: Event;
-  forms: (Form & { questions: Question[], role: Role[] })[];
+  forms: (Form & {
+    questions: Question[];
+    role: Role[];
+    formResponse: { id: string }[];
+  })[];
   limit?: number;
 }) {
   return forms.length > 0 ? (
@@ -39,7 +43,7 @@ export default async function EventForms({
         width={400}
         height={400}
       />
-      <p className="text-brand-gray500 text-lg">
+      <p className="text-lg text-gray-500">
         You have not created any Forms yet.
       </p>
     </div>

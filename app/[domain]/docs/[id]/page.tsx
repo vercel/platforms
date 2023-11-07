@@ -5,9 +5,7 @@ import Editor from "@/components/editor";
 
 export default async function PostPage({ params }: { params: { id: string } }) {
   const session = await getSession();
-  if (!session) {
-    redirect("/login");
-  }
+
   const data = await prisma.post.findUnique({
     where: {
       id: params.id,
@@ -20,7 +18,12 @@ export default async function PostPage({ params }: { params: { id: string } }) {
       },
     },
   });
-  if (!data || data.userId !== session.user.id) {
+
+  if (!data) {
+    notFound();
+  }
+
+  if (!data.published) {
     notFound();
   }
 

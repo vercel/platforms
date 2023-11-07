@@ -340,20 +340,20 @@ const CommandList = ({
     <div
       id="slash-command"
       ref={commandListContainer}
-      className="z-50 h-auto max-h-[330px] w-72 overflow-y-auto scroll-smooth rounded-md border border-brand-gray200 bg-white px-1 py-2 shadow-md transition-all dark:border-brand-gray700 bg-brand-gray900"
+      className="z-50 h-auto max-h-[330px] w-72 overflow-y-auto scroll-smooth rounded-md border border-gray-200 bg-white px-1 py-2 shadow-md transition-all dark:border-gray-700 bg-gray-900"
     >
       {items.map((item: CommandItemProps, index: number) => {
         return (
           <button
-            className={`flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm text-brand-gray900 hover:bg-brand-gray100 dark:text-white dark:hover:bg-brand-gray800 ${
+            className={`flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800 ${
               index === selectedIndex
-                ? "bg-brand-gray100 text-brand-gray900 dark:bg-brand-gray800 dark:text-white"
+                ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
                 : ""
             }`}
             key={index}
             onClick={() => selectItem(index)}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-md border border-brand-gray200 bg-white dark:border-brand-gray700 bg-brand-gray900">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border border-gray-200 bg-white dark:border-gray-700 bg-gray-900">
               {item.title === "Continue writing" && isLoading ? (
                 <LoadingCircle />
               ) : (
@@ -362,7 +362,7 @@ const CommandList = ({
             </div>
             <div>
               <p className="font-medium">{item.title}</p>
-              <p className="text-xs text-brand-gray500">{item.description}</p>
+              <p className="text-xs text-gray-500">{item.description}</p>
             </div>
           </button>
         );

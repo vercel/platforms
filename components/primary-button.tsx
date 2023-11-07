@@ -19,8 +19,8 @@ export default function PrimaryButton({
       className={cn(
         "flex h-8 w-36 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none sm:h-9",
         loading
-          ? "cursor-not-allowed border-brand-gray200 bg-brand-gray100 text-brand-gray400 dark:border-brand-gray700 dark:bg-brand-gray800 dark:text-brand-gray300"
-          : "border border-brand-gray900 bg-brand-gray900 text-white hover:bg-white hover:text-brand-gray900 active:bg-brand-gray100 dark:border-brand-gray700 dark:hover:border-brand-gray200 dark:hover:bg-brand-gray900 dark:hover:text-white dark:active:bg-brand-gray800",
+          ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+          : "border border-gray-900 bg-gray-900 text-white hover:bg-white hover:text-gray-900 active:bg-gray-100 dark:border-gray-700 dark:hover:border-gray-200 dark:hover:bg-gray-900 dark:hover:text-white dark:active:bg-gray-800",
         className,
       )}
       disabled={loading}

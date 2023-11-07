@@ -32,11 +32,11 @@ export default function DeleteOrganizationForm({
           })
           .catch((err: Error) => toast.error(err.message))
       }
-      className="rounded-lg border border-red-600 bg-brand-gray50 dark:bg-brand-gray900"
+      className="rounded-lg border border-red-600 bg-gray-50 dark:bg-gray-900"
     >
       <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
-        <h2 className="font-cal text-xl dark:text-brand-gray50">Delete City</h2>
-        <p className="text-brand-gray500 text-sm dark:text-brand-gray400">
+        <h2 className="font-cal text-xl dark:text-gray-50">Delete City</h2>
+        <p className="text-gray-500 text-sm dark:text-gray-400">
           Deletes your city and everything associated with it. Type in the name
           of your city <b>{organizationName}</b> to confirm.
         </p>
@@ -47,12 +47,12 @@ export default function DeleteOrganizationForm({
           required
           pattern={organizationName}
           placeholder={organizationName}
-          className="focus:border-brand-gray500 focus:ring-brand-gray500 w-full max-w-md rounded-md border border-brand-gray300 text-sm text-brand-gray900 placeholder-brand-gray400 focus:outline-none dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-brand-gray50 dark:placeholder-brand-gray700"
+          className="focus:border-gray-500 focus:ring-gray-500 w-full max-w-md rounded-md border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-gray-50 dark:placeholder-gray-700"
         />
       </div>
 
-      <div className="flex flex-col items-center justify-center space-y-2 rounded-b-lg border-t border-brand-gray200 bg-brand-gray50 p-3 dark:border-brand-gray700 dark:bg-brand-gray800 sm:flex-row sm:justify-between sm:space-y-0 sm:px-10">
-        <p className="text-brand-gray500 text-center text-sm dark:text-brand-gray400">
+      <div className="flex flex-col items-center justify-center space-y-2 rounded-b-lg border-t border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800 sm:flex-row sm:justify-between sm:space-y-0 sm:px-10">
+        <p className="text-gray-500 text-center text-sm dark:text-gray-400">
           This action is irreversible. Please proceed with caution.
         </p>
         <div className="w-32">
@@ -70,8 +70,8 @@ function FormButton() {
       className={cn(
         "flex h-8 w-32 items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none sm:h-10",
         pending
-          ? "cursor-not-allowed border-brand-gray200 bg-brand-gray100 text-brand-gray400 dark:border-brand-gray700 dark:bg-brand-gray800 dark:text-brand-gray300"
-          : "border-red-600 bg-red-600 text-brand-gray50 hover:bg-brand-gray50 hover:text-red-600 dark:hover:bg-transparent",
+          ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+          : "border-red-600 bg-red-600 text-gray-50 hover:bg-gray-50 hover:text-red-600 dark:hover:bg-transparent",
       )}
       disabled={pending}
     >

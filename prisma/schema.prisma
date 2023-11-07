@@ -245,6 +245,7 @@ model TicketTier {
 model Form {
   id             String         @id @default(cuid())
   name           String         @default("My Form")
+  published      Boolean        @default(false)
   // You are applying for this role, at this event, for this time span.
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   organizationId String
@@ -258,15 +259,20 @@ model Form {
 }
 
 model Question {
-  id       String       @id @default(cuid())
-  text     String
-  required Boolean      @default(true)
-  type     QuestionType // 'text', 'dropdown', 'multi-select', etc.
-  options  Json? // JSON for storing options
-  formId   String
-  form     Form         @relation(fields: [formId], references: [id])
-  answers  Answer[]
-  order    Int
+  id          String       @id @default(cuid())
+  type        QuestionType // 'text', 'dropdown', 'multi-select', etc.
+  text        String
+  description String?
+  required    Boolean      @default(false)
+  fromDate    DateTime?
+  toDate      DateTime?
+  min         Int?
+  max         Int?
+  variants    Json? // JSON for storing options
+  formId      String
+  form        Form         @relation(fields: [formId], references: [id])
+  answers     Answer[]
+  order       Int
 }
 
 enum QuestionType {
@@ -274,6 +280,9 @@ enum QuestionType {
   LONG_TEXT
   SELECT
   MULTI_SELECT
+  DROPDOWN
+  DATE
+  DATE_RANGE
   BOOLEAN
 }
 

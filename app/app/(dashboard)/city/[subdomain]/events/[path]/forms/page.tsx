@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import PageHeader from "@/components/page-header";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
-import EventForms from "@/components/event-forms"; // Adjust this import
+import EventForms from "@/components/event-forms";
 import CreateEventFormButton from "@/components/create-event-form-button";
 
 export default async function EventFormsPage({
@@ -36,9 +36,20 @@ export default async function EventFormsPage({
     where: {
       eventId: event.id,
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      published: true,
+      organizationId: true,
+      eventId: true,
+      image: true,
       questions: true,
-      role: true
+      role: true,
+      formResponse: {
+        select: {
+          id: true
+        }
+      }
     }
   });
 

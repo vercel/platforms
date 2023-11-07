@@ -46,7 +46,7 @@ export default function RoleCard({
       href={`/city/${event.organization.subdomain}/events/${event.path}/roles/${role.id}`}
       className="flex flex-col overflow-hidden rounded-lg"
     >
-      <div className="relative rounded-lg border border-brand-gray200 pb-5 shadow-md transition-all hover:shadow-xl dark:border-brand-gray700 dark:hover:border-white">
+      <div className="relative rounded-lg border border-gray-200 pb-5 shadow-md transition-all hover:shadow-xl dark:border-gray-700 dark:hover:border-white">
         {roleImage ? (
           <div className="w-full">
             <AspectRatio ratio={1 / 1}>
@@ -58,11 +58,11 @@ export default function RoleCard({
             </AspectRatio>
           </div>
         ) : null}
-        <div className="border-t border-brand-gray200 p-4 dark:border-brand-gray700">
+        <div className="border-t border-gray-200 p-4 dark:border-gray-700">
           <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide dark:text-white">
             {role.name}
           </h3>
-          <p className="text-brand-gray500 mt-2 line-clamp-1 text-sm font-normal leading-snug dark:text-brand-gray400">
+          <p className="text-gray-500 mt-2 line-clamp-1 text-sm font-normal leading-snug dark:text-gray-400">
             {role.description}
           </p>
         </div>

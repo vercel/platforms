@@ -32,19 +32,19 @@ export const TiptapExtensions = [
     },
     blockquote: {
       HTMLAttributes: {
-        class: "border-l-4 border-brand-gray700",
+        class: "border-l-4 border-gray-700",
       },
     },
     codeBlock: {
       HTMLAttributes: {
         class:
-          "rounded-sm bg-brand-gray100 p-5 font-mono font-medium text-brand-gray800",
+          "rounded-sm bg-gray-100 p-5 font-mono font-medium text-gray-800",
       },
     },
     code: {
       HTMLAttributes: {
         class:
-          "rounded-md bg-brand-gray200 px-1.5 py-1 font-mono font-medium text-black",
+          "rounded-md bg-gray-200 px-1.5 py-1 font-mono font-medium text-black",
         spellcheck: "false",
       },
     },
@@ -78,19 +78,19 @@ export const TiptapExtensions = [
     },
   }).configure({
     HTMLAttributes: {
-      class: "mt-4 mb-6 border-t border-brand-gray300",
+      class: "mt-4 mb-6 border-t border-gray-300",
     },
   }),
   TiptapLink.configure({
     HTMLAttributes: {
       class:
-        "text-brand-gray400 underline underline-offset-[3px] hover:text-brand-gray600 transition-colors cursor-pointer",
+        "text-gray-400 underline underline-offset-[3px] hover:text-gray-600 transition-colors cursor-pointer",
     },
   }),
   TiptapImage.configure({
     allowBase64: true,
     HTMLAttributes: {
-      class: "rounded-lg border border-brand-gray200",
+      class: "rounded-lg border border-gray-200",
     },
   }),
   Placeholder.configure({

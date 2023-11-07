@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <Profile />
         </Suspense>
       </Drawer>
-      <div className="min-h-screen dark:bg-brand-gray900 sm:pl-60">{children}</div>
+      <div className="min-h-screen dark:bg-gray-900 sm:pl-60">{children}</div>
     </div>
   );
 }

@@ -22,7 +22,6 @@ export default async function Events({
     ...(limit ? { take: limit } : {}),
   });
 
-  console.log('events: ', events);
 
   return events.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -39,7 +38,7 @@ export default async function Events({
         width={400}
         height={400}
       />
-      <p className="text-lg text-brand-gray500">
+      <p className="text-lg text-gray-500">
         You have not hosted an event yet. Create one to get started.
       </p>
     </div>

@@ -18,7 +18,7 @@ export default function NotFoundCity() {
         height={400}
         className="hidden dark:block"
       />
-      <p className="text-lg text-brand-gray500 dark:text-brand-gray400">
+      <p className="text-lg text-gray-500 dark:text-gray-400">
         City does not exist, or you do not have permission to view it
       </p>
     </div>

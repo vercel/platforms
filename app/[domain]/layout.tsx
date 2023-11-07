@@ -88,7 +88,6 @@ export default async function SiteLayout({
   children: ReactNode;
 }) {
   const domain = params.domain.replace("%3A", ":");
-  console.log("SiteLayout domain: ", domain);
   const data = await getSiteData(domain);
 
   if (!data) {

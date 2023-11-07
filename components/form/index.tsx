@@ -60,11 +60,11 @@ export default function Form({
           }
         });
       }}
-      className="rounded-lg border border-brand-gray200 bg-brand-gray50 dark:border-brand-gray700 dark:bg-brand-gray900"
+      className="rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900"
     >
       <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
         <h2 className="font-cal text-xl dark:text-white">{title}</h2>
-        <p className="text-sm text-brand-gray500 dark:text-brand-gray400">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {description}
         </p>
         {inputAttrs.name === "image" || inputAttrs.name === "logo" ? (
@@ -73,11 +73,11 @@ export default function Form({
             name={inputAttrs.name}
           />
         ) : inputAttrs.name === "font" ? (
-          <div className="flex max-w-sm items-center overflow-hidden rounded-lg border border-brand-gray600">
+          <div className="flex max-w-sm items-center overflow-hidden rounded-lg border border-gray-600">
             <select
               name="font"
               defaultValue={inputAttrs.defaultValue}
-              className="w-full rounded-none border-none bg-brand-gray50 px-4 py-2 text-sm font-medium text-brand-gray700 focus:outline-none focus:ring-black dark:bg-brand-gray900 dark:text-brand-gray200 dark:focus:ring-white"
+              className="w-full rounded-none border-none bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-black dark:bg-gray-900 dark:text-gray-200 dark:focus:ring-white"
             >
               <option value="font-cal">Cal Sans</option>
               <option value="font-lora">Lora</option>
@@ -89,9 +89,9 @@ export default function Form({
             <input
               {...inputAttrs}
               required
-              className="z-10 flex-1 rounded-l-md border border-brand-gray300 text-sm text-brand-gray900 placeholder-brand-gray400 focus:border-brand-gray500 focus:outline-none focus:ring-brand-gray500 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-white dark:placeholder-brand-gray700"
+              className="z-10 flex-1 rounded-l-md border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:outline-none focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700"
             />
-            <div className="flex items-center rounded-r-md border border-l-0 border-brand-gray300 bg-brand-gray100 px-3 text-sm dark:border-brand-gray600 dark:bg-brand-gray800 dark:text-brand-gray400">
+            <div className="flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-100 px-3 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
               {process.env.NEXT_PUBLIC_ROOT_DOMAIN}
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function Form({
           <div className="relative flex w-full max-w-md">
             <input
               {...inputAttrs}
-              className="z-10 flex-1 rounded-md border border-brand-gray300 text-sm text-brand-gray900 placeholder-brand-gray400 focus:border-brand-gray500 focus:outline-none focus:ring-brand-gray500 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-white dark:placeholder-brand-gray700"
+              className="z-10 flex-1 rounded-md border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:outline-none focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700"
             />
             {inputAttrs.defaultValue && (
               <div className="absolute right-3 z-10 flex h-full items-center">
@@ -112,21 +112,21 @@ export default function Form({
             {...inputAttrs}
             rows={3}
             required
-            className="w-full max-w-xl rounded-md border border-brand-gray300 text-sm text-brand-gray900 placeholder-brand-gray400 focus:border-brand-gray500 focus:outline-none focus:ring-brand-gray500 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-white dark:placeholder-brand-gray700"
+            className="w-full max-w-xl rounded-md border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:outline-none focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700"
           />
         ) : (
           <input
             {...inputAttrs}
             required
-            className="w-full max-w-md rounded-md border border-brand-gray300 text-sm text-brand-gray900 placeholder-brand-gray400 focus:border-brand-gray500 focus:outline-none focus:ring-brand-gray500 dark:border-brand-gray600 dark:bg-brand-gray900 dark:text-white dark:placeholder-brand-gray700"
+            className="w-full max-w-md rounded-md border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:outline-none focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700"
           />
         )}
       </div>
       {inputAttrs.name === "customDomain" && inputAttrs.defaultValue && (
         <DomainConfiguration domain={inputAttrs.defaultValue} />
       )}
-      <div className="flex flex-col items-center justify-center space-y-2 rounded-b-lg border-t border-brand-gray200 bg-brand-gray50 p-3 dark:border-brand-gray700 dark:bg-brand-gray800 sm:flex-row sm:justify-between sm:space-y-0 sm:px-10">
-        <p className="text-sm text-brand-gray500 dark:text-brand-gray400">{helpText}</p>
+      <div className="flex flex-col items-center justify-center space-y-2 rounded-b-lg border-t border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800 sm:flex-row sm:justify-between sm:space-y-0 sm:px-10">
+        <p className="text-sm text-gray-500 dark:text-gray-400">{helpText}</p>
         <FormButton />
       </div>
     </form>
@@ -140,8 +140,8 @@ function FormButton() {
       className={cn(
         "flex h-8 w-32 items-center justify-center space-x-2 rounded-md border text-sm transition-all focus:outline-none sm:h-10",
         pending
-          ? "cursor-not-allowed border-brand-gray200 bg-brand-gray100 text-brand-gray400 dark:border-brand-gray700 dark:bg-brand-gray800 dark:text-brand-gray300"
-          : "border-black bg-brand-gray800 text-white hover:bg-brand-gray50 hover:text-black dark:border-brand-gray700 dark:hover:border-brand-gray200 dark:hover:bg-brand-gray800 dark:hover:text-white dark:active:bg-brand-gray800",
+          ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+          : "border-black bg-gray-800 text-white hover:bg-gray-50 hover:text-black dark:border-gray-700 dark:hover:border-gray-200 dark:hover:bg-gray-800 dark:hover:text-white dark:active:bg-gray-800",
       )}
       disabled={pending}
     >

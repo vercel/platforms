@@ -1,5 +1,5 @@
-import AuthModal from "./auth-modal";
+import AuthModal from "@/components/auth-modal";
 
-export default function LoginPage() {
+export default function SiteAuthModal() {
   return <AuthModal />;
 }

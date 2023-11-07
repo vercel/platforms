@@ -27,7 +27,7 @@ export default function CityOverviewStats() {
 
   return (
     <div className="grid grid-cols-2 gap-6 lg:grid-cols-3 xl:grid-cols-3">
-      <Card className="bg-brand-gray100 dark:!bg-brand-gray900">
+      <Card className="bg-gray-100 dark:!bg-gray-900">
         <Text>Total Backers</Text>
         <Flex
           className="space-x-3 truncate"
@@ -63,7 +63,7 @@ export default function CityOverviewStats() {
           showLegend={false}
         />
       </Card>
-      <Card className="bg-brand-gray100 dark:!bg-brand-gray900">
+      <Card className="bg-gray-100 dark:!bg-gray-900">
         <Text>Treasury Value</Text>
         <Flex
           className="space-x-3 truncate"
@@ -102,7 +102,7 @@ export default function CityOverviewStats() {
         />
       </Card>
 
-      <Card className="bg-brand-gray100 dark:!bg-brand-gray900">
+      <Card className="bg-gray-100 dark:!bg-gray-900">
         <Text>Total Visitors</Text>
         <Flex
           className="space-x-3 truncate"

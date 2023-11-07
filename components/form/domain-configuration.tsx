@@ -39,7 +39,7 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
     null;
 
   return (
-    <div className="border-t border-brand-gray200 px-10 pb-5 pt-7 dark:border-brand-gray700">
+    <div className="border-t border-gray-200 px-10 pb-5 pt-7 dark:border-gray-700">
       <div className="mb-4 flex items-center space-x-2">
         {status === "Pending Verification" ? (
           <AlertCircle
@@ -63,7 +63,7 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
             <InlineSnippet>{domainJson.apexName}</InlineSnippet> to prove
             ownership of <InlineSnippet>{domainJson.name}</InlineSnippet>:
           </p>
-          <div className="my-5 flex items-start justify-start space-x-10 rounded-md bg-brand-gray50 p-2 dark:bg-brand-gray800 dark:text-white">
+          <div className="my-5 flex items-start justify-start space-x-10 rounded-md bg-gray-50 p-2 dark:bg-gray-800 dark:text-white">
             <div>
               <p className="text-sm font-bold">Type</p>
               <p className="mt-2 font-mono text-sm">{txtVerification.type}</p>
@@ -86,7 +86,7 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
               </p>
             </div>
           </div>
-          <p className="text-sm dark:text-brand-gray400">
+          <p className="text-sm dark:text-gray-400">
             Warning: if you are using this domain for another site, setting this
             TXT record will transfer domain ownership away from that site and
             break it. Please exercise caution when setting this record.
@@ -105,7 +105,7 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
               className={`${
                 recordType == "A"
                   ? "border-black text-black dark:border-white dark:text-white"
-                  : "border-white text-brand-gray400 dark:border-black dark:text-brand-gray600"
+                  : "border-white text-gray-400 dark:border-black dark:text-gray-600"
               } ease border-b-2 pb-1 text-sm transition-all duration-150`}
             >
               A Record{!subdomain && " (recommended)"}
@@ -116,7 +116,7 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
               className={`${
                 recordType == "CNAME"
                   ? "border-black text-black dark:border-white dark:text-white"
-                  : "border-white text-brand-gray400 dark:border-black dark:text-brand-gray600"
+                  : "border-white text-gray-400 dark:border-black dark:text-gray-600"
               } ease border-b-2 pb-1 text-sm transition-all duration-150`}
             >
               CNAME Record{subdomain && " (recommended)"}
@@ -132,7 +132,7 @@ export default function DomainConfiguration({ domain }: { domain: string }) {
               ), set the following {recordType} record on your DNS provider to
               continue:
             </p>
-            <div className="flex items-center justify-start space-x-10 rounded-md bg-brand-gray50 p-2 dark:bg-brand-gray800 dark:text-white">
+            <div className="flex items-center justify-start space-x-10 rounded-md bg-gray-50 p-2 dark:bg-gray-800 dark:text-white">
               <div>
                 <p className="text-sm font-bold">Type</p>
                 <p className="mt-2 font-mono text-sm">{recordType}</p>

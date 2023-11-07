@@ -21,7 +21,7 @@ export default function OverviewStats() {
 
   return (
     <div className="grid gap-6 sm:grid-cols-2">
-      <Card className="bg-brand-gray100 dark:!bg-brand-gray900">
+      <Card className="bg-gray-100 dark:!bg-gray-900">
         <Text>Annual Income</Text>
         <Flex
           className="space-x-3 truncate"
@@ -53,7 +53,7 @@ export default function OverviewStats() {
         />
       </Card>
 
-      <Card className="bg-brand-gray100 dark:!bg-brand-gray900">
+      <Card className="bg-gray-100 dark:!bg-gray-900">
         <Text>Sq Meters</Text>
         <Flex
           className="space-x-3 truncate"

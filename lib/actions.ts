@@ -33,6 +33,7 @@ import supabase from "./supabase";
 import { CreatTicketTierFormSchema } from "./schema";
 import { z } from "zod";
 import { JSONValue } from "ai";
+import { JsonObject } from "@prisma/client/runtime/library";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -590,6 +591,7 @@ export const updatePostMetadata = withPostAuth(
     },
     key: string,
   ) => {
+    console.log('post: ', post);
     const value = formData.get(key) as string;
 
     try {
@@ -1098,6 +1100,16 @@ export async function updateFormName(id: string, name: string) {
   return form;
 }
 
+// Update Form
+export type UpdateFormInput = { name?: string, published?: boolean};
+export async function updateForm(id: string, data: UpdateFormInput) {
+  const form = await prisma.form.update({
+    where: { id },
+    data: data,
+  });
+  return form;
+}
+
 // Delete Form
 export async function deleteForm(id: string) {
   const form = await prisma.form.delete({
@@ -1112,7 +1124,10 @@ export type QuestionDataInputUpdate = {
   type?: QuestionType;
   options?: Prisma.InputJsonValue;
   order?: number;
+  required?: boolean;
+  variants?: Prisma.JsonArray
 };
+
 export type QuestionDataInputCreate = {
   formId: string;
   text: string;
@@ -1169,8 +1184,8 @@ export async function batchUpdateQuestionOrder(questions: Question[]) {
 }
 
 export const submitFormResponse = async (
-  formData: FormData,
   formId: string,
+  answers: { questionId: string, value: any }[]
 ) => {
   const session = await getSession();
   if (!session?.user.id) {
@@ -1179,13 +1194,7 @@ export const submitFormResponse = async (
     };
   }
 
-  const entries = formData.entries();
-
-  // Parse the form data to get the answers
-  const answers = Array.from(formData.entries()).map(([key, value]) => ({
-    questionId: key,
-    value: value.toString(),
-  }));
+  // const entries = formData.entries();
 
   try {
     const formResponse = await prisma.formResponse.create({

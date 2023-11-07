@@ -2,6 +2,15 @@ import { Form, Organization, Question, Role, Event } from "@prisma/client";
 import Link from "next/link";
 import { AspectRatio } from "./ui/aspect-ratio";
 import Image from "next/image";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Separator } from "./ui/separator";
 
 const getPlaceholderImage = (form: Form) => {
   // @ts-ignore
@@ -20,7 +29,11 @@ export default function FormCard({
   organization,
   event,
 }: {
-  form: Form;
+  form: Form & {
+    questions: Question[];
+    role: Role[];
+    formResponse: { id: string }[];
+  };
   role?: Role[];
   questions: Question[];
   organization: Organization;
@@ -28,36 +41,35 @@ export default function FormCard({
 }) {
   const formImage = getPlaceholderImage(form);
   return (
-    <Link
-      href={`/city/${organization.subdomain}/events/${event?.path}/forms/${form.id}`}
-      className="flex flex-col overflow-hidden rounded-lg"
-    >
-      <div className="relative rounded-lg border border-brand-gray200 pb-5 shadow-md transition-all hover:shadow-xl dark:border-brand-gray700 dark:hover:border-white">
-        {formImage ? (
-          <div className="w-full">
-            <AspectRatio ratio={1 / 1}>
-              <Image
-                src={formImage}
-                alt={`${form.id} card image`}
-                layout="fill"
-              />
-            </AspectRatio>
-          </div>
-        ) : null}
-        <div className="border-t border-brand-gray200 p-4 dark:border-brand-gray700">
-          <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide dark:text-white">
-            {form.name}
-          </h3>
-          <p className="text-brand-gray500 mt-2 line-clamp-1 text-sm font-normal leading-snug dark:text-brand-gray400">
-            {questions.map((question) => (
-              <div key={question.id}>
-                <h4>{question.text}</h4>
-                <p>{question.type}</p>
-              </div>
-            ))}
-          </p>
+    <Card className="overflow-hidden">
+      <Link href={`/city/${organization.subdomain}/forms/${form.id}`}>
+        <div className="h-40 bg-gray-50 p-6 dark:bg-gray-700">
+          <CardTitle>{form.name}</CardTitle>
+
+          {formImage ? (
+            <div className="w-full">
+              <AspectRatio ratio={1 / 1}>
+                <Image
+                  src={formImage}
+                  alt={`${form.id} card image`}
+                  layout="fill"
+                />
+              </AspectRatio>
+            </div>
+          ) : null}
         </div>
-      </div>
-    </Link>
+      </Link>
+
+      <Separator />
+      <Link href={`/city/${organization.subdomain}/forms/${form.id}/results`}>
+        <CardFooter className="bg-gray-50">
+          <span className="mt-2">
+            {form.formResponse?.length === 0
+              ? "No responses"
+              : `${form.formResponse?.length.toString()} response`}
+          </span>
+        </CardFooter>
+      </Link>
+    </Card>
   );
 }

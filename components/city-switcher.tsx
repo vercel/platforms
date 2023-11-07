@@ -105,7 +105,7 @@ export default function CitySwitcher({
             aria-expanded={open}
             aria-label="Select a city"
             className={cn(
-              "w-full justify-between px-2 dark:text-warmGray-300 focus-visible:ring-warmGray-500",
+              "w-full justify-between px-2 dark:text-gray-300 focus-visible:ring-gray-500",
               className,
             )}
           >
@@ -122,7 +122,7 @@ export default function CitySwitcher({
               </AvatarFallback>
             </Avatar>
             <span className="ml-3">{selectedOrganization?.name}</span>
-            <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-warmGray-300 opacity-50" />
+            <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-300 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">

@@ -34,7 +34,7 @@ function centroid(poly) {
   return c;
 }
 
-const warmGray = {
+const warm = {
   50: "#fbfaf8",
   100: "#F8F6F2",
   200: "#F2EDE5",
@@ -49,7 +49,7 @@ const warmGray = {
 
 const World = ({
   size,
-  backgroundColor = warmGray[800] + "00",
+  backgroundColor = warm[800] + "00",
 }: {
   size?: number;
   backgroundColor?: string;
@@ -124,7 +124,7 @@ const World = ({
     : window.innerWidth * 0.6;
 
   const getPointColor = (d: CityData) =>
-    d.upcoming ? "#00FFEA" : warmGray[200];
+    d.upcoming ? "#00FFEA" : warm[200];
 
   const onPointClick = (city: CityData) =>
     window.open(`https://en.wikipedia.org/wiki/${city.name}`, "_blank");
@@ -149,7 +149,7 @@ const World = ({
         hexPolygonsData={countries.features}
         hexPolygonResolution={3}
         hexPolygonMargin={0.5}
-        hexPolygonColor={() => warmGray[200]}
+        hexPolygonColor={() => warm[200]}
         pointLat="lat"
         pointLng="lon"
         atmosphereColor="#00FFEA"
