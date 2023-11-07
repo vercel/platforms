@@ -15,7 +15,7 @@ export default function DeletePostForm({ postName }: { postName: string }) {
     <form
       action={async (data: FormData) =>
         window.confirm("Are you sure you want to delete your post?") &&
-        deletePost(data, id, "delete").then((res) => {
+        deletePost(data, { params: { id } }, "delete").then((res) => {
           if (res.error) {
             toast.error(res.error);
           } else {
@@ -41,7 +41,7 @@ export default function DeletePostForm({ postName }: { postName: string }) {
           required
           pattern={postName}
           placeholder={postName}
-          className="w-full max-w-md rounded-md border border-gray-300 text-sm text-gray-900 placeholder-gray-300 focus:border-gray-500 focus:outline-none focus:ring-gray-500 dark:border-gray-600 bg-gray-900 dark:text-white dark:placeholder-gray-700"
+          className="w-full max-w-md rounded-md border border-gray-300 bg-gray-900 text-sm text-gray-900 placeholder-gray-300 focus:border-gray-500 focus:outline-none focus:ring-gray-500 dark:border-gray-600 dark:text-white dark:placeholder-gray-700"
         />
       </div>
 

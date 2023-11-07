@@ -86,7 +86,7 @@ export default function FormResponseDataTable({
     return row;
   });
   return (
-    <div className="p-6">
+    <div className="md:p-8 bg-gray-100">
       <DataTable columns={columns} data={data} />
     </div>
   );

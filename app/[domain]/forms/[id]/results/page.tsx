@@ -3,7 +3,6 @@
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import DataTable from "@/components/form-response-table/data-table";
 import FormResponseDataTable from "@/components/form-response-table/form-response-data-table";
 
 export default async function FormResultsPage({
@@ -24,12 +23,6 @@ export default async function FormResultsPage({
       form: true,
     },
   });
-
-  console.log('questions: ', questions);
-//   const qMap: { [key: string]: (typeof questions)[0] } = {};
-//   questions.forEach((q) => {
-//     qMap[q.id] = q;
-//   });
 
   const formResponses = await prisma.formResponse.findMany({
     where: {

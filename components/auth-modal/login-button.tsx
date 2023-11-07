@@ -28,7 +28,7 @@ export default function LoginButton() {
       className={`${
         loading
           ? "cursor-not-allowed bg-gray-50 dark:bg-gray-800"
-          : "bg-white hover:bg-gray-50 active:bg-gray-100 bg-gray-900 dark:hover:border-white dark:hover:bg-black"
+          : "bg-gray-900 bg-white hover:bg-gray-50 active:bg-gray-100 dark:hover:border-white dark:hover:bg-black"
       } group my-2 flex h-10 w-full items-center justify-center space-x-2 rounded-md border border-gray-200 transition-colors duration-75 focus:outline-none dark:border-gray-700`}
     >
       {loading ? (

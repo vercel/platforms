@@ -1,4 +1,4 @@
-import AuthModal from "./auth-modal";
+import AuthModal from "@/components/auth-modal";
 
 export default function LoginPage() {
   return <AuthModal />;

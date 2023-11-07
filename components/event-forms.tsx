@@ -14,14 +14,17 @@ export default async function EventForms({
 }: {
   organization: Organization;
   event?: Event;
-  forms: (Form & { questions: Question[], role: Role[] })[];
+  forms: (Form & {
+    questions: Question[];
+    role: Role[];
+    formResponse: { id: string }[];
+  })[];
   limit?: number;
 }) {
   return forms.length > 0 ? (
     <div className="grid  grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
       {forms.map((form) => (
         <FormCard
-          href={`/city/${organization.subdomain}/events/${event?.path}/forms/${form.id}`}
           key={form.id}
           form={form}
           questions={form.questions}
@@ -40,7 +43,7 @@ export default async function EventForms({
         width={400}
         height={400}
       />
-      <p className="text-gray-500 text-lg">
+      <p className="text-lg text-gray-500">
         You have not created any Forms yet.
       </p>
     </div>

@@ -1,4 +1,4 @@
-import LoginButton from "@/app/app/(auth)/login/login-button";
+import LoginButton from "@/components/auth-modal/login-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {

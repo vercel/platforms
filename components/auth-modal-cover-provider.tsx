@@ -1,5 +1,5 @@
-import AuthModal from "@/app/app/(auth)/login/auth-modal";
 import { ReactNode } from "react";
+import AuthModal from "./auth-modal";
 
 const AuthModalProvider = ({
   children,
@@ -12,8 +12,8 @@ const AuthModalProvider = ({
     <>
       {children}
       {show && (
-        <div className="fixed top-10 left-0 right-0 bottom-0 inset-0 flex items-center justify-center backdrop-blur-sm">
-            <AuthModal />
+        <div className="fixed inset-0 bottom-0 left-0 right-0 top-10 flex items-center justify-center backdrop-blur-sm">
+          <AuthModal />
         </div>
       )}
     </>
