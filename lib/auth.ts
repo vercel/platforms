@@ -19,9 +19,9 @@ const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 export const authOptions = (req?: NextRequest): NextAuthOptions => {
   const host = req?.headers.get("host");
   const allHeaders = headers();
-  const xForwardedHost = allHeaders.get('x-forwarded-host')
-  const hostname = host || xForwardedHost ||  process.env.NEXTAUTH_URL
-  console.log({ hostname, host, xForwardedHost })
+  const xForwardedHost = allHeaders.get("x-forwarded-host");
+  const hostname = host || xForwardedHost || process.env.NEXTAUTH_URL;
+  console.log({ hostname, host, xForwardedHost });
 
   return {
     providers: [
@@ -33,7 +33,7 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
           port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587,
           auth: {
             user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
+            pass: process.env.SMTP_PASSWORD || process.env.SENDGRID_API_KEY,
           },
         },
         from: process.env.SMTP_FROM,
@@ -179,7 +179,7 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
         return token;
       },
       session: async ({ session, token }) => {
-        console.log('session', session, 'token', token)
+        console.log("session", session, "token", token);
         session.user = {
           ...session.user,
           // @ts-expect-error

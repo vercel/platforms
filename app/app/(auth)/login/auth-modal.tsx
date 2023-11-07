@@ -6,7 +6,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 const steps = ["email", "verify", "siwe"];
-export default function AuthModal() {
+export default function AuthModal({ callbackUrl, redirect = false }: { callbackUrl?: string, redirect?: boolean }) {
   // const params = useParams();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
@@ -22,7 +22,7 @@ export default function AuthModal() {
     e.preventDefault();
     setLoading(true);
     const email = (e.target as HTMLFormElement).email.value;
-    const response = await signIn("email", { email: email, redirect: false });
+    const response = await signIn("email", { email: email, callbackUrl, redirect });
     if (response?.ok) {
       nextStep();
     }

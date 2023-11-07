@@ -192,7 +192,7 @@ export default function FormBuilder({
 
   useEffect(() => {
     if (!block && questions?.[0]) {
-      router.push(`${pathname}?block=${questions?.[0].id}`);
+      router.replace(`${pathname}?block=${questions?.[0].id}`);
     }
   }, [block, pathname, questions, router]);
 
@@ -274,7 +274,7 @@ export default function FormBuilder({
                                 : "",
                             )}
                             onClick={() => {
-                              router.push(`${pathname}?block=${q.id}`);
+                              router.replace(`${pathname}?block=${q.id}`);
                             }}
                           >
                             <QuestionBadge q={q} />
@@ -544,7 +544,6 @@ const questionTypeToDisplayText = (type: QuestionType) => {
 
 const mapQuestionTypeToInput = (
   q: Question,
-  handleChange: (value: any) => void,
 ) => {
   switch (q.type) {
     case QuestionType.SHORT_TEXT:
@@ -558,16 +557,18 @@ const mapQuestionTypeToInput = (
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent>
-            {q?.variants
-              ? q.variants.map((variant) => {
-                  console.log("variant: ", variant);
-                  return (
-                    <SelectItem key={variant?.name} value={variant?.value}>
-                      {variant?.name}
-                    </SelectItem>
-                  );
-                })
-              : null}
+            {(() => {
+              const variants = q?.variants as { name: string; value: string }[] || undefined;
+              return variants?.map((variant: { name: string; value: string }) => {
+                    console.log("variant: ", variant);
+                    return (
+                      <SelectItem key={variant?.name} value={variant?.value}>
+                        {variant?.name}
+                      </SelectItem>
+                    );
+                  })
+                ?? undefined;
+            })()}
           </SelectContent>
         </Select>
       );

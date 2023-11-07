@@ -30,12 +30,23 @@ export default async function EventFormsPage({
     where: {
       organizationId: organization.id,
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      published: true,
+      organizationId: true,
+      eventId: true,
+      image: true,
       questions: true,
-      role: true
+      role: true,
+      formResponse: {
+        select: {
+          id: true
+        }
+      }
     }
   });
-
+  
   return (
     <div className="flex flex-col space-y-6">
       <PageHeader

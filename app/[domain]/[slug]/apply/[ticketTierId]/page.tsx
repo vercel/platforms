@@ -9,7 +9,6 @@ import {
   Ticket,
   Question,
 } from "@prisma/client";
-import { redirect } from "next/navigation";
 import notFound from "../../not-found";
 import FormTitle from "@/components/form-title";
 import DynamicForm from "../dynamic-form";

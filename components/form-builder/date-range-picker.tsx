@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { addDays, format } from "date-fns";
-import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
+import { DateRange, DayPickerRangeProps } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -14,14 +14,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function DateRangePicker({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
-  });
+export type DateRangePickerProps = {
+  date?: DateRange;
+  mode?: ["mode"];
+} & Omit<DayPickerRangeProps, "mode">;
 
+export function DateRangePicker({
+  date,
+  className,
+  ...props
+}: DateRangePickerProps) {
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
@@ -52,11 +54,11 @@ export function DateRangePicker({
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             initialFocus
-            mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            {...props}
             numberOfMonths={2}
+            mode="range"
           />
         </PopoverContent>
       </Popover>

@@ -58,7 +58,6 @@ export function QuestionSettingsForm({
     const variantStr =
       variants?.map((variant) => variant.name).join("\n") ?? "";
 
-    console.log("variantStr: ", variantStr);
     form?.setValue("variants", variantStr);
   }, [form, question]);
 

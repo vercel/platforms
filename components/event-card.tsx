@@ -6,14 +6,16 @@ import Link from "next/link";
 
 export default function EventCard({
   event,
+  href,
 }: {
   event: Event & { organization: Organization };
+  href?: string;
 }) {
   const url = `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/events/${event.path}`;
   return (
     <div className="relative rounded-lg border border-gray-200 pb-10 shadow-md transition-all hover:shadow-xl dark:border-gray-700 dark:hover:border-white">
       <Link
-        href={`/city/${event.organization.subdomain}/events/${event.path}`}
+        href={href || `/city/${event.organization.subdomain}/events/${event.path}`}
         className="flex flex-col overflow-hidden rounded-lg"
       >
         <BlurImage

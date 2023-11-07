@@ -22,7 +22,6 @@ export default async function Events({
     ...(limit ? { take: limit } : {}),
   });
 
-  console.log('events: ', events);
 
   return events.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

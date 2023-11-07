@@ -1,5 +1,3 @@
-import AuthModal from "./auth-modal";
+import AuthModal from "@/app/app/(auth)/login/auth-modal";
 
-export default function LoginPage() {
-  return <AuthModal />;
-}
+export default AuthModal
