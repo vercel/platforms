@@ -1,12 +1,10 @@
-
 import PaperDoc from "@/components/paper-doc";
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import notFound from "../../[slug]/not-found";
 import FormTitle from "@/components/form-title";
 import DynamicForm from "../../[slug]/apply/dynamic-form";
-import AuthModal from "../../(auth)/login/page";
-import AuthModalProvider from "./auth-modal-provider";
+import AuthModalCoverProvider from "@/components/auth-modal-cover-provider";
 
 export default async function FormPage({
   params,
@@ -34,7 +32,7 @@ export default async function FormPage({
   }
 
   return (
-    <AuthModalProvider show={!session}>
+    <AuthModalCoverProvider show={!session}>
       <div className="flex flex-col space-y-6">
         <div className="flex flex-col space-y-6">
           <PaperDoc className="mx-auto">
@@ -43,6 +41,6 @@ export default async function FormPage({
           </PaperDoc>
         </div>
       </div>
-    </AuthModalProvider>
+    </AuthModalCoverProvider>
   );
 }

@@ -1184,8 +1184,8 @@ export async function batchUpdateQuestionOrder(questions: Question[]) {
 }
 
 export const submitFormResponse = async (
-  formData: FormData,
   formId: string,
+  answers: { questionId: string, value: any }[]
 ) => {
   const session = await getSession();
   if (!session?.user.id) {
@@ -1194,13 +1194,7 @@ export const submitFormResponse = async (
     };
   }
 
-  const entries = formData.entries();
-
-  // Parse the form data to get the answers
-  const answers = Array.from(formData.entries()).map(([key, value]) => ({
-    questionId: key,
-    value: value.toString(),
-  }));
+  // const entries = formData.entries();
 
   try {
     const formResponse = await prisma.formResponse.create({

@@ -1,6 +1,6 @@
 "use client";
 import { Form, Question, QuestionType } from "@prisma/client";
-import React from "react";
+import { useMemo } from "react";
 import {
   Form as CustomForm,
   FormControl,
@@ -27,8 +27,10 @@ import {
 import { DatePicker } from "@/components/form-builder/date-picker";
 import { DateRangePicker } from "@/components/form-builder/date-range-picker";
 import { submitFormResponse } from "@/lib/actions";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-function createDynamicSchema(orderedQuestions: Question[]) {
+export function createDynamicSchema(orderedQuestions: Question[]) {
   const schema: Record<string, any> = {};
 
   orderedQuestions.forEach((question) => {
@@ -46,8 +48,8 @@ function createDynamicSchema(orderedQuestions: Question[]) {
         break;
       case QuestionType.DATE:
         schema[question.id] = question.required
-          ? z.string()
-          : z.string().optional();
+          ? z.date()
+          : z.date().optional();
         break;
       case QuestionType.DATE_RANGE:
         schema[question.id] = question.required
@@ -64,6 +66,10 @@ function createDynamicSchema(orderedQuestions: Question[]) {
         break;
       case QuestionType.DROPDOWN:
       case QuestionType.SELECT:
+        schema[question.id] = question.required
+          ? z.string()
+          : z.string().optional();
+        break;
       case QuestionType.MULTI_SELECT:
         schema[question.id] = question.required
           ? z.array(z.string())
@@ -74,37 +80,49 @@ function createDynamicSchema(orderedQuestions: Question[]) {
 
   return z.object(schema);
 }
+
 export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
-  const DynamicSchema = createDynamicSchema(props.form.questions);
+  const orderedQuestions = useMemo(
+    () => props.form.questions.sort((q1, q2) => q1.order - q2.order),
+    [props.form.questions],
+  );
+  const DynamicSchema = useMemo(
+    () => createDynamicSchema(orderedQuestions),
+    [orderedQuestions],
+  );
 
   const form = useForm<z.infer<typeof DynamicSchema>>({
-    resolver: zodResolver(createDynamicSchema(props.form.questions)),
+    resolver: zodResolver(createDynamicSchema(orderedQuestions)),
   });
+  const router = useRouter();
 
   async function onSubmit(data: z.infer<typeof DynamicSchema>) {
-    // const variants = data.variants
-    //   ? data.variants
-    //       .split("\n")
-    //       .map((variant) => ({ name: variant, value: variant }))
-    //   : undefined;
-    // submitFormResponse();
-  }
+    const formattedData = Object.entries(data).map(([questionId, value]) => ({
+      questionId,
+      value,
+    }));
 
-  const orderedQuestions = props.form.questions.sort(
-    (q1, q2) => q1.order - q2.order,
-  );
+    const response = await submitFormResponse(props.form.id, formattedData);
+    if ("error" in response) {
+      // TODO:// handle this error
+      toast.error(response.error);
+      return;
+    }
+    if ("id" in response) {
+      toast.success("Succesfully submitted response to " + props.form.name);
+      router.push(`/responses/` + response.id);
+    }
+  }
 
   return (
     <CustomForm {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-6"
-      >
-        {orderedQuestions.map((question, index) => {
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+        {orderedQuestions.map((question) => {
           switch (question.type) {
             case QuestionType.SHORT_TEXT:
               return (
                 <FormField
+                  key={question.id}
                   control={form.control}
                   name={question.id}
                   render={({ field }) => (
@@ -120,6 +138,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
             case QuestionType.LONG_TEXT:
               return (
                 <FormField
+                  key={question.id}
                   control={form.control}
                   name={question.id}
                   render={({ field }) => (
@@ -135,6 +154,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
             case QuestionType.BOOLEAN:
               return (
                 <FormField
+                  key={question.id}
                   control={form.control}
                   name={question.id}
                   render={({ field }) => (
@@ -143,6 +163,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                       <FormControl>
                         <Checkbox
                           {...field}
+                          value={field.value}
                           onCheckedChange={(value) =>
                             form.setValue(question.id, value)
                           }
@@ -154,9 +175,9 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
               );
             case QuestionType.DROPDOWN:
             case QuestionType.SELECT:
-            case QuestionType.MULTI_SELECT:
               return (
                 <FormField
+                  key={question.id}
                   control={form.control}
                   name={question.id}
                   render={({ field }) => (
@@ -164,10 +185,11 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                       <FormLabel>{question.text}</FormLabel>
                       <FormControl>
                         <Select
-                          value={field.value}
-                          onValueChange={(value) =>
-                            form.setValue(question.id, value)
-                          }
+                          onValueChange={(value) => {
+                            console.log("value: ", value);
+                            field.onChange(value);
+                          }}
+                          defaultValue={field.value}
                         >
                           <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Select an option" />
@@ -185,13 +207,12 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                                     name: string;
                                     value: string;
                                   }) => {
-                                    console.log("variant: ", variant);
                                     return (
                                       <SelectItem
-                                        key={variant?.name}
-                                        value={variant?.value}
+                                        key={variant.value}
+                                        value={variant.value}
                                       >
-                                        {variant?.name}
+                                        {variant.value}
                                       </SelectItem>
                                     );
                                   },
@@ -208,6 +229,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
             case QuestionType.DATE:
               return (
                 <FormField
+                  key={question.id}
                   control={form.control}
                   name={question.id}
                   render={({ field }) => (
@@ -219,7 +241,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                             field?.value ? new Date(field.value) : undefined
                           }
                           onSelect={(date) => {
-                            form.setValue(question.id, date?.toISOString());
+                            form.setValue(question.id, date);
                           }}
                           fromDate={
                             question.fromDate ? question.fromDate : undefined
@@ -234,6 +256,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
             case QuestionType.DATE_RANGE:
               return (
                 <FormField
+                  key={question.id}
                   control={form.control}
                   name={question.id}
                   render={({ field }) => (
@@ -271,7 +294,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
               return null;
           }
         })}
-        <Button>Submit</Button>
+        <Button type="submit">Submit</Button>
       </form>
     </CustomForm>
   );

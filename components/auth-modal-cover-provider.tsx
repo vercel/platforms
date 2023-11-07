@@ -1,5 +1,5 @@
+import AuthModal from "@/app/app/(auth)/login/auth-modal";
 import { ReactNode } from "react";
-import AuthModal from "../../(auth)/login/page";
 
 const AuthModalProvider = ({
   children,
