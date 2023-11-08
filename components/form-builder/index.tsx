@@ -241,17 +241,23 @@ export default function FormBuilder({
                 </PopoverTrigger>
                 <PopoverContent sideOffset={10}>
                   <div className="space-x-3 space-y-2">
-                    {questionTypes.map((type) => {
-                      return (
-                        <Button
-                          key={type}
-                          value={type}
-                          onClick={() => handleCreateNewQuestion(type)}
-                        >
-                          {questionTypeToDisplayText(type)}
-                        </Button>
-                      );
-                    })}
+                    {questionTypes
+                      .filter(
+                        (type) =>
+                          type !== QuestionType.MULTI_SELECT &&
+                          type !== QuestionType.SELECT,
+                      )
+                      .map((type) => {
+                        return (
+                          <Button
+                            key={type}
+                            value={type}
+                            onClick={() => handleCreateNewQuestion(type)}
+                          >
+                            {questionTypeToDisplayText(type)}
+                          </Button>
+                        );
+                      })}
                   </div>
                 </PopoverContent>
               </Popover>
@@ -507,8 +513,8 @@ const questionTypeToBadgeIcon = (type: QuestionType) => {
       return <LongTextIcon className="h-6 fill-gray-100" />;
     case QuestionType.SELECT:
       return <ChevronDown className="h-6 w-4 " />;
-    case QuestionType.MULTI_SELECT:
-      return <Check className="h-6 w-4" />;
+    // case QuestionType.MULTI_SELECT:
+    //   return <Check className="h-6 w-4" />;
     case QuestionType.BOOLEAN:
       return <YesNoIcon className="h-6 w-4 fill-gray-100" />;
     case QuestionType.DATE:
@@ -529,8 +535,8 @@ const questionTypeToDisplayText = (type: QuestionType) => {
     case QuestionType.SELECT:
     case QuestionType.DROPDOWN:
       return "Dropdown";
-    case QuestionType.MULTI_SELECT:
-      return "Multiple Choice";
+    // case QuestionType.MULTI_SELECT:
+    //   return "Multiple Choice";
     case QuestionType.BOOLEAN:
       return "Yes/No";
     case QuestionType.DATE:
@@ -542,15 +548,14 @@ const questionTypeToDisplayText = (type: QuestionType) => {
   }
 };
 
-const mapQuestionTypeToInput = (
-  q: Question,
-) => {
+const mapQuestionTypeToInput = (q: Question) => {
   switch (q.type) {
     case QuestionType.SHORT_TEXT:
       return <Input type="text" />;
     case QuestionType.LONG_TEXT:
       return <Textarea />;
     case QuestionType.SELECT:
+    case QuestionType.DROPDOWN:
       return (
         <Select>
           <SelectTrigger className="w-[180px]">
@@ -558,16 +563,18 @@ const mapQuestionTypeToInput = (
           </SelectTrigger>
           <SelectContent>
             {(() => {
-              const variants = q?.variants as { name: string; value: string }[] || undefined;
-              return variants?.map((variant: { name: string; value: string }) => {
-                    console.log("variant: ", variant);
-                    return (
-                      <SelectItem key={variant?.name} value={variant?.value}>
-                        {variant?.name}
-                      </SelectItem>
-                    );
-                  })
-                ?? undefined;
+              const variants =
+                (q?.variants as { name: string; value: string }[]) || undefined;
+              return (
+                variants?.map((variant: { name: string; value: string }) => {
+                  console.log("variant: ", variant);
+                  return (
+                    <SelectItem key={variant?.name} value={variant?.value}>
+                      {variant?.name}
+                    </SelectItem>
+                  );
+                }) ?? undefined
+              );
             })()}
           </SelectContent>
         </Select>

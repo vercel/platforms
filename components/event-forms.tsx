@@ -2,7 +2,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
-import notFound from "@/app/app/(dashboard)/post/[id]/not-found";
+import notFound from "@/app/app/(dashboard)/docs/[id]/not-found";
 import FormCard from "./form-card"; // Assuming you have a FormCard component
 import { Event, Organization, Role, Form, Question } from "@prisma/client";
 

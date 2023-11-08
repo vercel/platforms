@@ -246,13 +246,13 @@ export default function Drawer({ children }: { children: ReactNode }) {
         },
         {
           name: "Editor",
-          href: `/post/${subdomain}`,
+          href: `/docs/${subdomain}`,
           isActive: segments.length === 2,
           icon: <Edit3 width={18} />,
         },
         {
           name: "Settings",
-          href: `/post/${subdomain}/settings`,
+          href: `/docs/${subdomain}/settings`,
           isActive: segments.includes("settings"),
           icon: <Settings width={18} />,
         },
