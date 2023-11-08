@@ -304,4 +304,6 @@ model FormResponse {
   user      User     @relation(fields: [userId], references: [id])
   form      Form     @relation(fields: [formId], references: [id])
   answers   Answer[]
+
+  @@unique([userId, formId])
 }

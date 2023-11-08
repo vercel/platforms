@@ -44,11 +44,11 @@ export default function AuthModal({ callbackUrl, redirect = false }: { callbackU
       <div className="mx-auto mt-4 w-full">
         {steps[state] === 'email' && <EmailForm onSubmit={onEmailSubmit} loading={loading} />}
         {/* {steps[state] === 'verify' && <div>verify</div>} */}
-        {/* {steps[state] === "email" && (
+        {steps[state] === "email" && (
           <div className="mx-6">
             <Siwe />
           </div>
-        )} */}
+        )}
         {/* <Siwe /> */}
         {/* <Suspense
           fallback={
