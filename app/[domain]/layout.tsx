@@ -106,7 +106,6 @@ export default async function SiteLayout({
   return (
     <div className={cn(fontMapper[data.font], "min-h-screen")}>
       <SiteNav params={params} />
-
       {children}
     </div>
   );

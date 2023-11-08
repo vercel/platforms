@@ -22,7 +22,7 @@ export default async function SiteNav({
 
   return (
     <>
-      <nav className="ease fixed left-0 right-0 top-0 z-30 flex h-16  border-b dark:border-b-0 bg-gray-100/50 backdrop-blur-xl transition-all duration-150 dark:border-gray-700 dark:bg-gray-900/60">
+      <nav className="ease fixed left-0 right-0 top-0 z-30 flex h-16  dark:border-b-0 bg-gray-100/50 backdrop-blur-xl transition-all duration-150 dark:border-gray-700 dark:bg-gray-900/60">
         <div className="flex h-full max-w-screen-xl items-center justify-center space-x-5 px-10 sm:px-12">
           <Link href="/" className="flex items-center justify-center">
             <div className="relative h-8 w-8">

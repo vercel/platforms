@@ -2,7 +2,11 @@ import { notFound } from "next/navigation";
 // import { getPostData } from "@/lib/fetchers";
 // import { placeholderBlurhash, toDateString } from "@/lib/utils";
 import Event from "@/components/event";
-import { getEventData, getEventRolesAndUsers, getEventTicketTiers } from "@/lib/actions";
+import {
+  getEventData,
+  getEventRolesAndUsers,
+  getEventTicketTiers,
+} from "@/lib/actions";
 
 export async function generateMetadata({
   params,
@@ -28,7 +32,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: name,
       description,
-      creator: "@vercel",
+      creator: event.organization.name,
     },
   };
 }
@@ -52,7 +56,18 @@ export default async function SiteEventPage({
     notFound();
   }
 
-  const [rolesAndUsers, ticketTiers] = await Promise.all([getEventRolesAndUsers(event.id), getEventTicketTiers(event.id)]);
+  const [rolesAndUsers, ticketTiers] = await Promise.all([
+    getEventRolesAndUsers(event.id),
+    getEventTicketTiers(event.id),
+  ]);
 
-  return <Event event={event} rolesAndUsers={rolesAndUsers} ticketTiers={ticketTiers} />;
+  return (
+    <div className="px-4 pt-4 pb-20">
+      <Event
+        event={event}
+        rolesAndUsers={rolesAndUsers}
+        ticketTiers={ticketTiers}
+      />
+    </div>
+  );
 }

@@ -6,6 +6,9 @@ import Image from "next/image";
 import Events from "@/components/events";
 import prisma from "@/lib/prisma";
 import EventCard from "@/components/event-card";
+import Link from "next/link";
+import BlurImage from "@/components/blur-image";
+import { placeholderBlurhash } from "@/lib/utils";
 
 export default async function SiteHomePage({
   params,
@@ -36,11 +39,11 @@ export default async function SiteHomePage({
 
   return (
     <>
-      <div className="relative w-full rounded-lg pb-5 transition-all dark:border-gray-700 dark:hover:border-white lg:max-h-[80%]">
-        <div className="flex flex-col md:flex-row">
-          <div className="p-12 md:w-1/2">
-            <h1 className="font-serif text-4xl">{sitedata.header}</h1>
-            <p className="font-serif text-4xl">{sitedata.description}</p>
+      <div className="relative w-full rounded-lg transition-all dark:border-gray-700 dark:hover:border-white">
+        <div className="flex max-h-[90vh] flex-col md:flex-row lg:max-h-[80vh] lg:p-12">
+          <div className="p-12 pr-6 md:w-1/2">
+            <h1 className= "text-4xl lg:text-5xl xl:text-6xl font-semibold">{sitedata.header}</h1>
+            <p className="mt-4 text-xl">{sitedata.description}</p>
           </div>
           <div className="w-full md:w-1/2">
             <div className="p-12">
@@ -57,10 +60,38 @@ export default async function SiteHomePage({
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {events.map((event) => (
-            <EventCard href={`/${event.path}`} key={event.id} event={event} />
-          ))}
+
+        <div className="bg-gray-900 p-8 lg:p-12">
+          <h2 className="mb-8 text-3xl text-gray-300">
+            Upcoming Pop Ups
+          </h2>
+          <div className="dark grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {events.map((event) => (
+              <Link
+                key={event.id}
+                href={`/${event.path}`}
+                className="flex flex-col overflow-hidden rounded-lg border bg-gray-850 border-gray-750"
+              >
+                <BlurImage
+                  alt={event.name ?? "Card thumbnail"}
+                  width={500}
+                  height={400}
+                  className="h-44 object-cover"
+                  src={event.image ?? "/placeholder.png"}
+                  placeholder="blur"
+                  blurDataURL={event.imageBlurhash ?? placeholderBlurhash}
+                />
+                <div className="border-t  border-gray-800 p-4">
+                  <h3 className="my-0 truncate text-xl font-bold tracking-wide text-gray-200">
+                    {event.name}
+                  </h3>
+                  <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug  text-gray-400">
+                    {event.description}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </>
