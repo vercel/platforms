@@ -34,13 +34,13 @@ model Account {
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String?
+  refresh_token            String? @db.Text
   refresh_token_expires_in Int?
-  access_token             String?
+  access_token             String? @db.Text
   expires_at               Int?
   token_type               String?
   scope                    String?
-  id_token                 String?
+  id_token                 String? @db.Text
   session_state            String?
   oauth_token_secret       String?
   oauth_token              String?
