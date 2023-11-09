@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { truncate } from "@/lib/utils";
-import { ImageResponse } from "next/server";
+import { ImageResponse } from "next/og";
 import { sql } from "@vercel/postgres";
 
 export const runtime = "edge";
