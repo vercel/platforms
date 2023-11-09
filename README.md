@@ -35,6 +35,7 @@ https://github.com/vercel/platforms/assets/28986134/bd370257-0c27-4cf5-8a56-2858
 5. **Custom styles**: Custom fonts, 404 pages, favicons, sitemaps for each site via the [Next.js file-based Metadata API](https://nextjs.org/docs/app/api-reference/file-conventions/metadata)
 6. **Dynamic OG Cards**: Each blog post comes with a dynamic OG image powered by [@vercel/og](https://vercel.com/docs/concepts/functions/edge-functions/og-image-generation)
 7. **Dark Mode**: For a better user experience at night
+8. **Multi-tenant Preview URLs**: Preview changes to your client sites using [Vercel Preview URLs](https://vercel.com/docs/deployments/generated-urls). [Learn more](https://vercel.com/guides/nextjs-multi-tenant-application#3.-multi-tenant-preview-urls).
 
 <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://images.ctfassets.net/e5382hct74si/k7XpXIE0rDsHCAYvkKhff/ff44c07588068d8fefa334cd6a318c8a/CleanShot_2023-07-05_at_08.39.02.png">
@@ -83,7 +84,7 @@ These are content-heavy platforms (blogs) with simple, standardized page layouts
 > “With Vercel, we spend less time managing our infrastructure and more time delivering value to our users.” — Sandeep Panda, Co-founder, Hashnode
 
 1. [Hashnode](https://hashnode.com)
-2. [Mirror.xyz](https://mirror.xyz/)
+2. [Mintlify](https://mintlify.com/)
 3. [Read.cv](https://read.cv/)
 
 ### 2. Website & e-commerce store builders
@@ -104,7 +105,7 @@ With Vercel and Next.js, platforms like [Instatus](https://instatus.com) are abl
 
 1. [Instatus](https://instatus.com/)
 2. [Cal.com](https://cal.com/)
-3. [Dub](https://dub.sh/)
+3. [Dub](https://dub.co/)
 
 ## Built on open source
 
