@@ -13,7 +13,7 @@ import { Row } from "@tanstack/react-table";
 import format from "date-fns/format";
 
 function formatCalendarDay(time: string) {
-    return format(new Date(time), 'MM/dd/yy')
+  return format(new Date(time), "MM/dd/yy");
 }
 
 function formatAnswer(q: Question, a?: Answer) {
@@ -24,11 +24,12 @@ function formatAnswer(q: Question, a?: Answer) {
     case QuestionType.SHORT_TEXT:
     case QuestionType.LONG_TEXT:
     case QuestionType.SELECT:
+    case QuestionType.DROPDOWN:
       return a.value?.toString();
     case QuestionType.BOOLEAN:
       return a.value ? "Yes" : "No";
     case QuestionType.DATE:
-      return <div>{formatCalendarDay(a.value as string)}</div>
+      return <div>{formatCalendarDay(a.value as string)}</div>;
     case QuestionType.DATE_RANGE: {
       const dateRange = a.value as unknown as { to: string; from: string };
       return (
@@ -86,7 +87,7 @@ export default function FormResponseDataTable({
     return row;
   });
   return (
-    <div className="md:p-8 bg-gray-100">
+    <div className="bg-gray-100 md:p-8">
       <DataTable columns={columns} data={data} />
     </div>
   );

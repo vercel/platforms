@@ -40,15 +40,23 @@ export default async function SiteHomePage({
   return (
     <>
       <div className="relative w-full rounded-lg transition-all dark:border-gray-700 dark:hover:border-white">
-        <div className="flex max-h-[90vh] flex-col md:flex-row lg:max-h-[80vh] lg:p-12">
-          <div className="p-12 pr-6 md:w-1/2">
-            <h1 className= "text-4xl lg:text-5xl xl:text-6xl font-semibold">{sitedata.header}</h1>
+        <div className="flex max-h-[90vh] flex-col md:flex-row lg:max-h-[90vh] lg:p-12">
+          <div className="p-10 md:w-1/2 xl:px-20">
+            <h1 className="text-3xl font-serif font-semibold lg:text-5xl xl:text-6xl">
+              {sitedata.header}
+            </h1>
             <p className="mt-4 text-xl">{sitedata.description}</p>
           </div>
           <div className="w-full md:w-1/2">
-            <div className="p-12">
+            <div className="overflow-hidden p-10 xl:px-20">
               {sitedata.image ? (
-                <AspectRatio ratio={1 / 1}>
+                <AspectRatio
+                  ratio={
+                    sitedata?.imageAspectRatio
+                      ? Number.parseFloat(sitedata?.imageAspectRatio)
+                      : 1 / 1
+                  }
+                >
                   <Image
                     src={sitedata.image}
                     alt={`${sitedata?.name} Hero Image` ?? "Hero Image"}
@@ -62,15 +70,13 @@ export default async function SiteHomePage({
         </div>
 
         <div className="bg-gray-900 p-8 lg:p-12">
-          <h2 className="mb-8 text-3xl text-gray-300">
-            Upcoming Pop Ups
-          </h2>
+          <h2 className="mb-8 text-3xl text-gray-300">Upcoming Pop Ups</h2>
           <div className="dark grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {events.map((event) => (
               <Link
                 key={event.id}
                 href={`/${event.path}`}
-                className="flex flex-col overflow-hidden rounded-lg border bg-gray-850 border-gray-750"
+                className="flex flex-col overflow-hidden rounded-lg border border-gray-750 bg-gray-850"
               >
                 <BlurImage
                   alt={event.name ?? "Card thumbnail"}

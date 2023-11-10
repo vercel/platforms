@@ -4,7 +4,7 @@ import PageHeader from "@/components/page-header";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
 import EventForms from "@/components/event-forms";
-import CreateEventFormButton from "@/components/create-event-form-button";
+import CreateEventFormButton from "@/components/create-form-button";
 
 export default async function EventFormsPage({
   params,
@@ -44,6 +44,8 @@ export default async function EventFormsPage({
       eventId: true,
       image: true,
       questions: true,
+      endingTitle: true,
+      endingDescription: true,
       role: true,
       formResponse: {
         select: {

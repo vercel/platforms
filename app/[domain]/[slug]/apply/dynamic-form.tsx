@@ -81,6 +81,14 @@ export function createDynamicSchema(orderedQuestions: Question[]) {
   return z.object(schema);
 }
 
+export const DynamicFormLabel = ({ children }: { children: string }) => {
+  return <FormLabel className="text-lg font-semibold">{children}</FormLabel>;
+};
+
+export const DynamicFormDesc = ({ children }: { children: string }) => {
+  return <p className="text-md text-gray-300 dark:text-gray-700">{children}</p>;
+};
+
 export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
   const orderedQuestions = useMemo(
     () => props.form.questions.sort((q1, q2) => q1.order - q2.order),
@@ -109,14 +117,14 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
       return;
     }
     if ("id" in response) {
-      toast.success("Succesfully submitted response to " + props.form.name);
-      router.push(`/responses/` + response.id);
+      toast.success("Succesfully submitted respons: " + props.form.name);
+      router.push("/");
     }
   }
 
   return (
     <CustomForm {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
         {orderedQuestions.map((question) => {
           switch (question.type) {
             case QuestionType.SHORT_TEXT:
@@ -127,7 +135,13 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                   name={question.id}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{question.text}</FormLabel>
+                      <DynamicFormLabel>{question.text}</DynamicFormLabel>
+                      <span>{question.required ? "*" : ""}</span>
+                      {question.description ? (
+                        <DynamicFormDesc>
+                          {question.description}
+                        </DynamicFormDesc>
+                      ) : null}
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -143,7 +157,14 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                   name={question.id}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{question.text}</FormLabel>
+                      <DynamicFormLabel>{question.text}</DynamicFormLabel>
+                      <span>{question.required ? "*" : ""}</span>
+                      {question.description ? (
+                        <DynamicFormDesc>
+                          {question.description}
+                        </DynamicFormDesc>
+                      ) : null}
+
                       <FormControl>
                         <Textarea {...field} />
                       </FormControl>
@@ -159,16 +180,28 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                   name={question.id}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{question.text}</FormLabel>
-                      <FormControl>
-                        <Checkbox
-                          {...field}
-                          value={field.value}
-                          onCheckedChange={(value) =>
-                            form.setValue(question.id, value)
-                          }
-                        />
-                      </FormControl>
+                      <DynamicFormLabel>{question.text}</DynamicFormLabel>
+                      <span>{question.required ? "*" : ""}</span>
+                      {question.description ? (
+                        <DynamicFormDesc>
+                          {question.description}
+                        </DynamicFormDesc>
+                      ) : null}
+
+                      <br />
+                      <div className="flex items-center">
+                        <FormControl>
+                          <Checkbox
+                            className="ml-1"
+                            {...field}
+                            value={field.value}
+                            onCheckedChange={(value) =>
+                              form.setValue(question.id, value)
+                            }
+                          ></Checkbox>
+                        </FormControl>
+                        <span className="mb-0.5 ml-1.5">Yes</span>
+                      </div>
                     </FormItem>
                   )}
                 />
@@ -182,7 +215,14 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                   name={question.id}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{question.text}</FormLabel>
+                      <DynamicFormLabel>{question.text}</DynamicFormLabel>
+                      <span>{question.required ? "*" : ""}</span>
+                      {question.description ? (
+                        <DynamicFormDesc>
+                          {question.description}
+                        </DynamicFormDesc>
+                      ) : null}
+
                       <FormControl>
                         <Select
                           onValueChange={(value) => {
@@ -234,7 +274,14 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                   name={question.id}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{question.text}</FormLabel>
+                      <DynamicFormLabel>{question.text}</DynamicFormLabel>
+                      <span>{question.required ? "*" : ""}</span>
+                      {question.description ? (
+                        <DynamicFormDesc>
+                          {question.description}
+                        </DynamicFormDesc>
+                      ) : null}
+
                       <FormControl>
                         <DatePicker
                           date={
@@ -261,7 +308,14 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                   name={question.id}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{question.text}</FormLabel>
+                      <DynamicFormLabel>{question.text}</DynamicFormLabel>
+                      <span>{question.required ? "*" : ""}</span>
+                      {question.description ? (
+                        <DynamicFormDesc>
+                          {question.description}
+                        </DynamicFormDesc>
+                      ) : null}
+
                       <FormControl>
                         <DateRangePicker
                           date={{

@@ -26,7 +26,6 @@ export default async function FormPage({
     },
   });
 
-  console.log("form: ", form);
   if (!form) {
     return notFound();
   }

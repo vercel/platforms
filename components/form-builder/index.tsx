@@ -1,5 +1,10 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
 import {
   Form,
@@ -52,10 +57,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-
 import { Textarea } from "@/components/ui/textarea";
-import { MultiSelect } from "@/components/ui/multiselect";
 import DrawerPaper from "@/components/drawer-paper";
 import { Badge } from "@/components/ui/badge";
 import PaperDoc from "@/components/paper-doc";
@@ -106,6 +108,7 @@ export default function FormBuilder({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { subdomain } = useParams() as { subdomain: string };
 
   const [selectedQuestionType, setSelectedQuestionType] =
     useState<QuestionType>(QuestionType.SHORT_TEXT);
@@ -204,6 +207,17 @@ export default function FormBuilder({
     handleUpdateQuestionThrottled(newQ.id, { id: newQ.id, text: text });
   };
 
+  const handleUpdateQuestionDsc = (newQ: Question, description: string) => {
+    const nextQuestions = questions.map((q) =>
+      q.id === newQ.id ? { ...q, description } : q,
+    );
+    setQuestions(nextQuestions);
+    handleUpdateQuestionThrottled(newQ.id, {
+      id: newQ.id,
+      description: description,
+    });
+  };
+
   const handleUpdateQuestionThrottled = useDebouncedCallback(
     (id, data) => {
       return updateQuestion(id, data);
@@ -227,6 +241,7 @@ export default function FormBuilder({
               icon={<ArrowLeft width={18} />}
               isActive={false}
             />
+
             <div className="flex items-center justify-between py-4 pl-4 pr-3">
               <h6 className="font-semibold text-gray-800 dark:text-gray-200">
                 Content
@@ -239,20 +254,33 @@ export default function FormBuilder({
                     </Button>
                   }
                 </PopoverTrigger>
-                <PopoverContent sideOffset={10}>
-                  <div className="space-x-3 space-y-2">
-                    {questionTypes.map((type) => {
+                <PopoverContent
+                  sideOffset={10}
+                  className=" space-y-4 bg-gray-50/50 backdrop-blur-sm dark:bg-gray-750"
+                >
+                  {questionTypes
+                    .filter(
+                      (type) =>
+                        type !== QuestionType.MULTI_SELECT &&
+                        type !== QuestionType.SELECT,
+                    )
+                    .map((type) => {
                       return (
                         <Button
                           key={type}
                           value={type}
                           onClick={() => handleCreateNewQuestion(type)}
+                          className="flex w-36 justify-start"
                         >
-                          {questionTypeToDisplayText(type)}
+                          <span className="pr-4">
+                            {questionTypeToBadgeIcon(type)}
+                          </span>
+                          <span className="pr-1">
+                            {questionTypeToDisplayText(type)}
+                          </span>
                         </Button>
                       );
                     })}
-                  </div>
                 </PopoverContent>
               </Popover>
             </div>
@@ -335,18 +363,22 @@ export default function FormBuilder({
             <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
               {form.published && (
                 <a
-                  href={``}
+                  href={`https://${subdomain}.fora.co/forms/${form.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-1 text-sm text-gray-400 hover:text-gray-500"
+                  className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-500"
                 >
+                  <span className="flex items-center">
+                    <span className="hidden md:block">{`${subdomain}.fora.co/forms/`}</span>
+                    <span>{`${form.id}`}</span>
+                  </span>
                   <ExternalLink className="h-4 w-4" />
                 </a>
               )}
               <div className="bg-brand-50 rounded-lg px-2 py-1 text-sm text-gray-400 dark:bg-gray-800 dark:text-gray-500">
                 {isPendingSaving ? "Saving..." : "Saved"}
               </div>
-              <button
+              <Button
                 onClick={() => {
                   startTransitionPublishing(async () => {
                     await handleUpdate({ published: !form.published }).then(
@@ -377,7 +409,7 @@ export default function FormBuilder({
                 ) : (
                   <p>{form.published ? "Unpublish" : "Publish"}</p>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -388,6 +420,7 @@ export default function FormBuilder({
                 q={q}
                 handleUpdateQuestion={handleUpdateQuestion}
                 handleUpdateQuestionText={handleUpdateQuestionText}
+                handleUpdateQuestionDsc={handleUpdateQuestionDsc}
               />
             ))}
           </div>
@@ -438,14 +471,18 @@ type EditableQuestionProps = {
   q: Question;
   handleUpdateQuestion: (id: string, data: any) => void;
   handleUpdateQuestionText: (q: Question, text: string) => void;
+  handleUpdateQuestionDsc: (q: Question, description: string) => void;
 };
 
 const EditableQuestion = ({
   q,
   handleUpdateQuestion,
   handleUpdateQuestionText,
+  handleUpdateQuestionDsc,
 }: EditableQuestionProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingDsc, setIsEditingDsc] = useState(false);
+
   // const [questionText, setQuestionText] = useState(q.text);
 
   // const handleUpdateQuestionText = (text: string) => {
@@ -456,33 +493,62 @@ const EditableQuestion = ({
 
   return (
     <div className="my-8">
-      <span
+      <div
         onMouseEnter={() => setIsEditing(true)}
         onMouseLeave={() => {
           setIsEditing(false);
         }}
+        className="flex"
       >
-        {isEditing ? (
+        <div className="text-lg font-semibold ">
+          {isEditing ? (
+            <Input
+              className="m-0 h-auto border-0 p-0 focus:border-b"
+              placeholder={locales.QUESTION_PLACEHODLER_TEXT}
+              type="ghost"
+              value={q.text}
+              onChange={(e) => handleUpdateQuestionText(q, e.target.value)}
+              onBlur={() => {
+                setIsEditing(false);
+
+                // handleUpdateQuestionText(questionText);
+              }}
+            />
+          ) : q.text.length > 0 ? (
+            <span>{q.text}</span>
+          ) : (
+            <span className="text-md text-gray-400 dark:text-gray-600">
+              {locales.QUESTION_PLACEHODLER_TEXT}
+            </span>
+          )}
+        </div>
+        <span className="ml-1">{q.required && <span>*</span>} <span className="text-gray-400 dark:text-gray-600">{'(required)'}</span></span>
+      </div>
+      <div
+        onMouseEnter={() => setIsEditingDsc(true)}
+        onMouseLeave={() => {
+          setIsEditingDsc(false);
+        }}
+      >
+        {isEditingDsc ? (
           <Input
             className="text-md m-0 h-auto border-0 p-0 focus:border-b"
-            placeholder={locales.QUESTION_PLACEHODLER_TEXT}
-            value={q.text}
-            onChange={(e) => handleUpdateQuestionText(q, e.target.value)}
+            type="ghost"
+            placeholder={"Optional description"}
+            value={q.description ? q.description : undefined}
+            onChange={(e) => handleUpdateQuestionDsc(q, e.target.value)}
             onBlur={() => {
-              setIsEditing(false);
-
-              // handleUpdateQuestionText(questionText);
+              setIsEditingDsc(false);
             }}
           />
-        ) : q.text.length > 0 ? (
-          q.text
+        ) : q?.description && q.description?.length > 0 ? (
+          q.description
         ) : (
-          <span className="text-md text-gray-400">
-            {locales.QUESTION_PLACEHODLER_TEXT}
+          <span className="text-md text-gray-400 dark:text-gray-600">
+            {"Optional description"}
           </span>
         )}
-      </span>
-      {q.required && <span>*</span>}
+      </div>
 
       {mapQuestionTypeToInput(q)}
       {q.type === QuestionType.DATE_RANGE}
@@ -493,7 +559,7 @@ const EditableQuestion = ({
 const QuestionBadge = ({ q }: { q: Question }) => {
   return (
     <Badge className="h-6 gap-x-3 px-1.5">
-      {questionTypeToBadgeIcon(q.type)}
+      <span>{questionTypeToBadgeIcon(q.type)}</span>
       <span className="ml-1">{q.order + 1}</span>
     </Badge>
   );
@@ -502,17 +568,20 @@ const QuestionBadge = ({ q }: { q: Question }) => {
 const questionTypeToBadgeIcon = (type: QuestionType) => {
   switch (type) {
     case QuestionType.SHORT_TEXT:
-      return <ShortTextIcon className="h-6 fill-gray-100" />;
+      return <ShortTextIcon className="h-6 fill-gray-150 dark:fill-gray-800" />;
     case QuestionType.LONG_TEXT:
-      return <LongTextIcon className="h-6 fill-gray-100" />;
+      return <LongTextIcon className="h-6 fill-gray-150 dark:fill-gray-800" />;
     case QuestionType.SELECT:
+    case QuestionType.DROPDOWN:
       return <ChevronDown className="h-6 w-4 " />;
-    case QuestionType.MULTI_SELECT:
-      return <Check className="h-6 w-4" />;
+    // case QuestionType.MULTI_SELECT:
+    //   return <Check className="h-6 w-4" />;
     case QuestionType.BOOLEAN:
-      return <YesNoIcon className="h-6 w-4 fill-gray-100" />;
+      return <YesNoIcon className="h-6 w-4 fill-gray-150 dark:fill-gray-800" />;
     case QuestionType.DATE:
-      return <Calendar className="h-6 w-4" />;
+      return (
+        <Calendar className="h-6 w-4 stroke-gray-150 dark:stroke-gray-800" />
+      );
     case QuestionType.DATE_RANGE:
       return <CalendarRange className="h-6 w-4" />;
     default:
@@ -529,8 +598,8 @@ const questionTypeToDisplayText = (type: QuestionType) => {
     case QuestionType.SELECT:
     case QuestionType.DROPDOWN:
       return "Dropdown";
-    case QuestionType.MULTI_SELECT:
-      return "Multiple Choice";
+    // case QuestionType.MULTI_SELECT:
+    //   return "Multiple Choice";
     case QuestionType.BOOLEAN:
       return "Yes/No";
     case QuestionType.DATE:
@@ -542,15 +611,14 @@ const questionTypeToDisplayText = (type: QuestionType) => {
   }
 };
 
-const mapQuestionTypeToInput = (
-  q: Question,
-) => {
+const mapQuestionTypeToInput = (q: Question) => {
   switch (q.type) {
     case QuestionType.SHORT_TEXT:
       return <Input type="text" />;
     case QuestionType.LONG_TEXT:
       return <Textarea />;
     case QuestionType.SELECT:
+    case QuestionType.DROPDOWN:
       return (
         <Select>
           <SelectTrigger className="w-[180px]">
@@ -558,16 +626,17 @@ const mapQuestionTypeToInput = (
           </SelectTrigger>
           <SelectContent>
             {(() => {
-              const variants = q?.variants as { name: string; value: string }[] || undefined;
-              return variants?.map((variant: { name: string; value: string }) => {
-                    console.log("variant: ", variant);
-                    return (
-                      <SelectItem key={variant?.name} value={variant?.value}>
-                        {variant?.name}
-                      </SelectItem>
-                    );
-                  })
-                ?? undefined;
+              const variants =
+                (q?.variants as { name: string; value: string }[]) || undefined;
+              return (
+                variants?.map((variant: { name: string; value: string }) => {
+                  return (
+                    <SelectItem key={variant?.name} value={variant?.value}>
+                      {variant?.name}
+                    </SelectItem>
+                  );
+                }) ?? undefined
+              );
             })()}
           </SelectContent>
         </Select>

@@ -1,7 +1,7 @@
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, random } from "@/lib/utils";
 import { Post, Organization } from "@prisma/client";
-import { BarChart, ExternalLink } from "lucide-react";
+// import { BarChart, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 export default function PostCard({
@@ -14,7 +14,7 @@ export default function PostCard({
   return (
     <div className="relative rounded-lg border border-gray-200 pb-10 shadow-md transition-all hover:shadow-xl dark:border-gray-700 dark:hover:border-white">
       <Link
-        href={`/post/${data.id}`}
+        href={`/docs/${data.id}`}
         className="flex flex-col overflow-hidden rounded-lg"
       >
         <div className="relative h-44 overflow-hidden">
