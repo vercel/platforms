@@ -18,28 +18,30 @@ export async function generateMetadata({
     return null;
   }
   const {
-    name: title,
+    name,
+    title,
     description,
     image,
     logo,
   } = data as {
     name: string;
+    title?: string;
     description: string;
     image: string;
     logo: string;
   };
 
   return {
-    title,
+    title: title || name,
     description,
     openGraph: {
-      title,
+      title: title || name,
       description,
       images: [image],
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: title || name,
       description,
       images: [image],
       creator: "@vercel",

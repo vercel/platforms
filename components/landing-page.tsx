@@ -2,8 +2,7 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import PrimaryOutlineButton from "./primary-outline-button";
 import Link from "next/link";
-// import { ChevronDown } from "lucide-react";
-// import HowItWorks from "./how-it-works";
+
 
 const Globe = dynamic(() => import("./globe"), { ssr: false });
 // const ThreeGlobe = dynamic(() => import("./three-globe/index"), { ssr: false });
@@ -28,9 +27,9 @@ const LandingPage = () => {
             </span> */}
           </p>
           <div className="mb-8 mt-8">
-            <Link href={`${process.env.NEXTAUTH_URL}/login`}>
+            {/* <Link href={`${process.env.NEXTAUTH_URL}/login`}>
               <PrimaryOutlineButton>Start your city</PrimaryOutlineButton>
-            </Link>
+            </Link> */}
           </div>
         </div>
         <div className="flex w-full flex-col items-center overflow-hidden min-h-[900px]">

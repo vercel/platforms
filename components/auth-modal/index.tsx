@@ -46,7 +46,7 @@ export default function AuthModal({
           {steps[state] === "verify" && "We sent you an email"}
         </h1>
         <p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-200">
-          {steps[state] === "email" && "Sign in or Sign up below."}
+          {steps[state] === "email" && "Enter your email to continue."}
           {steps[state] === "verify" &&
             "Click the link in the email we sent you to continue."}
         </p>

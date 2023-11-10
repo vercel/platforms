@@ -589,7 +589,7 @@ export const updatePostMetadata = withPostAuth(
     },
     key: string,
   ) => {
-    console.log('post: ', post);
+    console.log("post: ", post);
     const value = formData.get(key) as string;
 
     try {
@@ -865,7 +865,19 @@ export async function getUsersWithRoleInOrganization(subdomain: string) {
     include: {
       userRoles: {
         include: {
-          role: true,
+          role: {
+            include: {
+              organizationRole: {
+                include: {
+                  organization: {
+                    select: {
+                      subdomain: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -873,7 +885,13 @@ export async function getUsersWithRoleInOrganization(subdomain: string) {
 
   return users.map((user) => ({
     ...user,
-    roles: user.userRoles.map((userRole) => userRole.role),
+    roles: user.userRoles
+      .filter((userRole) =>
+        userRole.role.organizationRole.some(
+          (orgRole) => orgRole.organization.subdomain === subdomain,
+        ),
+      )
+      .map((userRole) => userRole.role),
   }));
 }
 
@@ -1057,7 +1075,7 @@ export async function getEventTicketTiers(eventId: string) {
 }
 
 export const createForm = withOrganizationAuth(
-  async (_: any, organization: Organization ) => {
+  async (_: any, organization: Organization) => {
     const session = await getSession();
     if (!session?.user.id) {
       return {
@@ -1077,7 +1095,6 @@ export const createForm = withOrganizationAuth(
     return response;
   },
 );
-
 
 export const createEventForm = withEventAuth(
   async (_: any, event: Event & { organization: Organization }) => {
@@ -1122,7 +1139,7 @@ export async function updateFormName(id: string, name: string) {
 }
 
 // Update Form
-export type UpdateFormInput = { name?: string, published?: boolean};
+export type UpdateFormInput = { name?: string; published?: boolean };
 export async function updateForm(id: string, data: UpdateFormInput) {
   const form = await prisma.form.update({
     where: { id },
@@ -1146,7 +1163,7 @@ export type QuestionDataInputUpdate = {
   options?: Prisma.InputJsonValue;
   order?: number;
   required?: boolean;
-  variants?: Prisma.JsonArray
+  variants?: Prisma.JsonArray;
 };
 
 export type QuestionDataInputCreate = {
@@ -1206,7 +1223,7 @@ export async function batchUpdateQuestionOrder(questions: Question[]) {
 
 export const submitFormResponse = async (
   formId: string,
-  answers: { questionId: string, value: any }[]
+  answers: { questionId: string; value: any }[],
 ) => {
   const session = await getSession();
   if (!session?.user.id) {
@@ -1300,7 +1317,7 @@ export async function getLatestEventForOrganization(organizationId: string) {
       organizationId: organizationId,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 

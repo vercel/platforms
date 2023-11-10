@@ -207,6 +207,17 @@ export default function FormBuilder({
     handleUpdateQuestionThrottled(newQ.id, { id: newQ.id, text: text });
   };
 
+  const handleUpdateQuestionDsc = (newQ: Question, description: string) => {
+    const nextQuestions = questions.map((q) =>
+      q.id === newQ.id ? { ...q, description } : q,
+    );
+    setQuestions(nextQuestions);
+    handleUpdateQuestionThrottled(newQ.id, {
+      id: newQ.id,
+      description: description,
+    });
+  };
+
   const handleUpdateQuestionThrottled = useDebouncedCallback(
     (id, data) => {
       return updateQuestion(id, data);
@@ -409,6 +420,7 @@ export default function FormBuilder({
                 q={q}
                 handleUpdateQuestion={handleUpdateQuestion}
                 handleUpdateQuestionText={handleUpdateQuestionText}
+                handleUpdateQuestionDsc={handleUpdateQuestionDsc}
               />
             ))}
           </div>
@@ -459,14 +471,18 @@ type EditableQuestionProps = {
   q: Question;
   handleUpdateQuestion: (id: string, data: any) => void;
   handleUpdateQuestionText: (q: Question, text: string) => void;
+  handleUpdateQuestionDsc: (q: Question, description: string) => void;
 };
 
 const EditableQuestion = ({
   q,
   handleUpdateQuestion,
   handleUpdateQuestionText,
+  handleUpdateQuestionDsc,
 }: EditableQuestionProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingDsc, setIsEditingDsc] = useState(false);
+
   // const [questionText, setQuestionText] = useState(q.text);
 
   // const handleUpdateQuestionText = (text: string) => {
@@ -477,33 +493,62 @@ const EditableQuestion = ({
 
   return (
     <div className="my-8">
-      <span
+      <div
         onMouseEnter={() => setIsEditing(true)}
         onMouseLeave={() => {
           setIsEditing(false);
         }}
+        className="flex"
       >
-        {isEditing ? (
+        <div className="text-lg font-semibold ">
+          {isEditing ? (
+            <Input
+              className="m-0 h-auto border-0 p-0 focus:border-b"
+              placeholder={locales.QUESTION_PLACEHODLER_TEXT}
+              type="ghost"
+              value={q.text}
+              onChange={(e) => handleUpdateQuestionText(q, e.target.value)}
+              onBlur={() => {
+                setIsEditing(false);
+
+                // handleUpdateQuestionText(questionText);
+              }}
+            />
+          ) : q.text.length > 0 ? (
+            <span>{q.text}</span>
+          ) : (
+            <span className="text-md text-gray-400 dark:text-gray-600">
+              {locales.QUESTION_PLACEHODLER_TEXT}
+            </span>
+          )}
+        </div>
+        <span className="ml-1">{q.required && <span>*</span>} <span className="text-gray-400 dark:text-gray-600">{'(required)'}</span></span>
+      </div>
+      <div
+        onMouseEnter={() => setIsEditingDsc(true)}
+        onMouseLeave={() => {
+          setIsEditingDsc(false);
+        }}
+      >
+        {isEditingDsc ? (
           <Input
             className="text-md m-0 h-auto border-0 p-0 focus:border-b"
-            placeholder={locales.QUESTION_PLACEHODLER_TEXT}
-            value={q.text}
-            onChange={(e) => handleUpdateQuestionText(q, e.target.value)}
+            type="ghost"
+            placeholder={"Optional description"}
+            value={q.description ? q.description : undefined}
+            onChange={(e) => handleUpdateQuestionDsc(q, e.target.value)}
             onBlur={() => {
-              setIsEditing(false);
-
-              // handleUpdateQuestionText(questionText);
+              setIsEditingDsc(false);
             }}
           />
-        ) : q.text.length > 0 ? (
-          q.text
+        ) : q?.description && q.description?.length > 0 ? (
+          q.description
         ) : (
-          <span className="text-md text-gray-400">
-            {locales.QUESTION_PLACEHODLER_TEXT}
+          <span className="text-md text-gray-400 dark:text-gray-600">
+            {"Optional description"}
           </span>
         )}
-      </span>
-      {q.required && <span>*</span>}
+      </div>
 
       {mapQuestionTypeToInput(q)}
       {q.type === QuestionType.DATE_RANGE}

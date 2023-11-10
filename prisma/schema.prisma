@@ -244,19 +244,21 @@ model TicketTier {
 }
 
 model Form {
-  id             String         @id @default(cuid())
-  name           String         @default("My Form")
-  published      Boolean        @default(false)
+  id                String         @id @default(cuid())
+  name              String         @default("My Form")
+  published         Boolean        @default(false)
   // You are applying for this role, at this event, for this time span.
-  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  organizationId String
-  event          Event?         @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  eventId        String?
-  image          String?
-  questions      Question[]
-  formResponse   FormResponse[]
-  role           Role[]
-  ticketTier     TicketTier[]
+  organization      Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId    String
+  event             Event?         @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  eventId           String?
+  image             String?
+  endingTitle       String?        @default("Thank you for your submission!")
+  endingDescription String?        @default("We have received your response and will process it shortly.")
+  questions         Question[]
+  formResponse      FormResponse[]
+  role              Role[]
+  ticketTier        TicketTier[]
 }
 
 model Question {

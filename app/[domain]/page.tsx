@@ -41,19 +41,19 @@ export default async function SiteHomePage({
     <>
       <div className="relative w-full rounded-lg transition-all dark:border-gray-700 dark:hover:border-white">
         <div className="flex max-h-[90vh] flex-col md:flex-row lg:max-h-[90vh] lg:p-12">
-          <div className="p-12 pr-6 md:w-1/2">
-            <h1 className="text-4xl font-semibold lg:text-5xl xl:text-6xl">
+          <div className="p-10 md:w-1/2 xl:px-20">
+            <h1 className="text-3xl font-serif font-semibold lg:text-5xl xl:text-6xl">
               {sitedata.header}
             </h1>
             <p className="mt-4 text-xl">{sitedata.description}</p>
           </div>
           <div className="w-full md:w-1/2">
-            <div className="overflow-hidden p-12">
+            <div className="overflow-hidden p-10 xl:px-20">
               {sitedata.image ? (
                 <AspectRatio
                   ratio={
-                    sitedata?.imageAspectRato
-                      ? Number.parseFloat(sitedata?.imageAspectRato)
+                    sitedata?.imageAspectRatio
+                      ? Number.parseFloat(sitedata?.imageAspectRatio)
                       : 1 / 1
                   }
                 >

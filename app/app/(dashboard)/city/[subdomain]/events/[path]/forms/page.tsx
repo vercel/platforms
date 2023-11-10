@@ -44,6 +44,8 @@ export default async function EventFormsPage({
       eventId: true,
       image: true,
       questions: true,
+      endingTitle: true,
+      endingDescription: true,
       role: true,
       formResponse: {
         select: {

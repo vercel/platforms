@@ -7,7 +7,7 @@ import FormBuilder from "@/components/form-builder";
 export default async function EventFormsPage({
   params,
 }: {
-  params: { path: string; subdomain: string; formId: string };
+  params: { path: string; subdomain: string; id: string };
 }) {
   const session = await getSession();
   if (!session) {
@@ -16,7 +16,7 @@ export default async function EventFormsPage({
 
   const form = await prisma.form.findUnique({
     where: {
-      id: params.formId,
+      id: params.id,
     },
     include: {
       event: true,
