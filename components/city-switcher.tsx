@@ -4,6 +4,7 @@ import * as React from "react";
 import {
   CaretSortIcon,
   CheckIcon,
+  PlusCircledIcon,
 } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
@@ -160,7 +161,7 @@ export default function CitySwitcher({
                 ))}
               </CommandGroup>
             </CommandList>
-            {/* <CommandSeparator />
+            <CommandSeparator />
             <CommandList>
               <CommandGroup>
                 <DialogTrigger asChild>
@@ -175,7 +176,7 @@ export default function CitySwitcher({
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>
-            </CommandList> */}
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
