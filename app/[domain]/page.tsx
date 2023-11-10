@@ -52,9 +52,7 @@ export default async function SiteHomePage({
               {sitedata.image ? (
                 <AspectRatio
                   ratio={
-                    sitedata?.imageAspectRatio
-                      ? Number.parseFloat(sitedata?.imageAspectRatio)
-                      : 1 / 1
+                    1/1
                   }
                 >
                   <Image
