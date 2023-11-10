@@ -1,7 +1,7 @@
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, random } from "@/lib/utils";
 import { Post, Organization } from "@prisma/client";
-import { BarChart, ExternalLink } from "lucide-react";
+// import { BarChart, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 export default function PostCard({

@@ -1056,6 +1056,29 @@ export async function getEventTicketTiers(eventId: string) {
   });
 }
 
+export const createForm = withOrganizationAuth(
+  async (_: any, organization: Organization ) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const response = await prisma.form.create({
+      data: {
+        organizationId: organization.id,
+      },
+      include: {
+        organization: true,
+      },
+    });
+
+    return response;
+  },
+);
+
+
 export const createEventForm = withEventAuth(
   async (_: any, event: Event & { organization: Organization }) => {
     const session = await getSession();

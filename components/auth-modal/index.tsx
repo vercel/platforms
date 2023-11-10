@@ -39,7 +39,7 @@ export default function AuthModal({
   };
 
   return (
-    <div className="mx-auto w-full max-w-[420px] rounded-md border border-gray-400 bg-gray-350/80  p-2 py-6 shadow backdrop-blur-lg dark:border-gray-700 dark:bg-gray-900/80 md:max-w-md md:border">
+    <div className="mx-auto w-full max-w-[420px] rounded-md border border-gray-200 bg-gray-50/80  p-2 py-6 shadow backdrop-blur-lg dark:border-gray-700 dark:bg-gray-900/80 md:max-w-md md:border">
       <div className="mx-6">
         <h1 className="mt-2 font-serif text-2xl font-light dark:text-gray-50 md:text-3xl">
           {steps[state] === "email" && "It's time to build new cities"}
@@ -56,11 +56,11 @@ export default function AuthModal({
           <EmailForm onSubmit={onEmailSubmit} loading={loading} />
         )}
         {/* {steps[state] === 'verify' && <div>verify</div>} */}
-        {steps[state] === "email" && (
+        {/* {steps[state] === "email" && (
           <div className="mx-6">
             <Siwe />
           </div>
-        )}
+        )} */}
         {/* <Siwe /> */}
         {/* <Suspense
           fallback={

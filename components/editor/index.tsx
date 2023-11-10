@@ -15,6 +15,7 @@ import { updatePost, updatePostMetadata } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import LoadingDots from "../icons/loading-dots";
 import { ExternalLink } from "lucide-react";
+import { Button } from "../ui/button";
 
 type PostWithSite = Post & {
   organization: { subdomain: string | null } | null;
@@ -192,7 +193,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
         <div className="bg-brand-50 dark:text-gray-500 rounded-lg px-2 py-1 text-sm text-gray-400 dark:bg-gray-800">
           {isPendingSaving ? "Saving..." : "Saved"}
         </div>
-        <button
+        <Button
           onClick={() => {
             const formData = new FormData();
             console.log(data.published, typeof data.published);
@@ -225,7 +226,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
           ) : (
             <p>{data.published ? "Unpublish" : "Publish"}</p>
           )}
-        </button>
+        </Button>
       </div>
       <div className="mb-5 flex flex-col space-y-3 border-b border-gray-200 pb-5 dark:border-gray-700">
         <input

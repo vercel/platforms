@@ -1,5 +1,10 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
 import {
   Form,
@@ -52,10 +57,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-
 import { Textarea } from "@/components/ui/textarea";
-import { MultiSelect } from "@/components/ui/multiselect";
 import DrawerPaper from "@/components/drawer-paper";
 import { Badge } from "@/components/ui/badge";
 import PaperDoc from "@/components/paper-doc";
@@ -106,6 +108,7 @@ export default function FormBuilder({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { subdomain } = useParams() as { subdomain: string };
 
   const [selectedQuestionType, setSelectedQuestionType] =
     useState<QuestionType>(QuestionType.SHORT_TEXT);
@@ -227,6 +230,7 @@ export default function FormBuilder({
               icon={<ArrowLeft width={18} />}
               isActive={false}
             />
+
             <div className="flex items-center justify-between py-4 pl-4 pr-3">
               <h6 className="font-semibold text-gray-800 dark:text-gray-200">
                 Content
@@ -239,26 +243,33 @@ export default function FormBuilder({
                     </Button>
                   }
                 </PopoverTrigger>
-                <PopoverContent sideOffset={10}>
-                  <div className="space-x-3 space-y-2">
-                    {questionTypes
-                      .filter(
-                        (type) =>
-                          type !== QuestionType.MULTI_SELECT &&
-                          type !== QuestionType.SELECT,
-                      )
-                      .map((type) => {
-                        return (
-                          <Button
-                            key={type}
-                            value={type}
-                            onClick={() => handleCreateNewQuestion(type)}
-                          >
+                <PopoverContent
+                  sideOffset={10}
+                  className=" space-y-4 bg-gray-50/50 backdrop-blur-sm dark:bg-gray-750"
+                >
+                  {questionTypes
+                    .filter(
+                      (type) =>
+                        type !== QuestionType.MULTI_SELECT &&
+                        type !== QuestionType.SELECT,
+                    )
+                    .map((type) => {
+                      return (
+                        <Button
+                          key={type}
+                          value={type}
+                          onClick={() => handleCreateNewQuestion(type)}
+                          className="flex w-36 justify-start"
+                        >
+                          <span className="pr-4">
+                            {questionTypeToBadgeIcon(type)}
+                          </span>
+                          <span className="pr-1">
                             {questionTypeToDisplayText(type)}
-                          </Button>
-                        );
-                      })}
-                  </div>
+                          </span>
+                        </Button>
+                      );
+                    })}
                 </PopoverContent>
               </Popover>
             </div>
@@ -341,18 +352,22 @@ export default function FormBuilder({
             <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
               {form.published && (
                 <a
-                  href={``}
+                  href={`https://${subdomain}.fora.co/forms/${form.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-1 text-sm text-gray-400 hover:text-gray-500"
+                  className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-500"
                 >
+                  <span className="flex items-center">
+                    <span className="hidden md:block">{`${subdomain}.fora.co/forms/`}</span>
+                    <span>{`${form.id}`}</span>
+                  </span>
                   <ExternalLink className="h-4 w-4" />
                 </a>
               )}
               <div className="bg-brand-50 rounded-lg px-2 py-1 text-sm text-gray-400 dark:bg-gray-800 dark:text-gray-500">
                 {isPendingSaving ? "Saving..." : "Saved"}
               </div>
-              <button
+              <Button
                 onClick={() => {
                   startTransitionPublishing(async () => {
                     await handleUpdate({ published: !form.published }).then(
@@ -383,7 +398,7 @@ export default function FormBuilder({
                 ) : (
                   <p>{form.published ? "Unpublish" : "Publish"}</p>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -499,7 +514,7 @@ const EditableQuestion = ({
 const QuestionBadge = ({ q }: { q: Question }) => {
   return (
     <Badge className="h-6 gap-x-3 px-1.5">
-      {questionTypeToBadgeIcon(q.type)}
+      <span>{questionTypeToBadgeIcon(q.type)}</span>
       <span className="ml-1">{q.order + 1}</span>
     </Badge>
   );
@@ -508,17 +523,20 @@ const QuestionBadge = ({ q }: { q: Question }) => {
 const questionTypeToBadgeIcon = (type: QuestionType) => {
   switch (type) {
     case QuestionType.SHORT_TEXT:
-      return <ShortTextIcon className="h-6 fill-gray-100" />;
+      return <ShortTextIcon className="h-6 fill-gray-150 dark:fill-gray-800" />;
     case QuestionType.LONG_TEXT:
-      return <LongTextIcon className="h-6 fill-gray-100" />;
+      return <LongTextIcon className="h-6 fill-gray-150 dark:fill-gray-800" />;
     case QuestionType.SELECT:
+    case QuestionType.DROPDOWN:
       return <ChevronDown className="h-6 w-4 " />;
     // case QuestionType.MULTI_SELECT:
     //   return <Check className="h-6 w-4" />;
     case QuestionType.BOOLEAN:
-      return <YesNoIcon className="h-6 w-4 fill-gray-100" />;
+      return <YesNoIcon className="h-6 w-4 fill-gray-150 dark:fill-gray-800" />;
     case QuestionType.DATE:
-      return <Calendar className="h-6 w-4" />;
+      return (
+        <Calendar className="h-6 w-4 stroke-gray-150 dark:stroke-gray-800" />
+      );
     case QuestionType.DATE_RANGE:
       return <CalendarRange className="h-6 w-4" />;
     default:
@@ -567,7 +585,6 @@ const mapQuestionTypeToInput = (q: Question) => {
                 (q?.variants as { name: string; value: string }[]) || undefined;
               return (
                 variants?.map((variant: { name: string; value: string }) => {
-                  console.log("variant: ", variant);
                   return (
                     <SelectItem key={variant?.name} value={variant?.value}>
                       {variant?.name}

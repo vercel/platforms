@@ -340,7 +340,7 @@ const CommandList = ({
     <div
       id="slash-command"
       ref={commandListContainer}
-      className="z-50 h-auto max-h-[330px] w-72 overflow-y-auto scroll-smooth rounded-md border border-gray-200 bg-white px-1 py-2 shadow-md transition-all dark:border-gray-700 bg-gray-900"
+      className="z-50 h-auto max-h-[330px] w-72 overflow-y-auto scroll-smooth rounded-md border border-gray-200 bg-gray-50 px-1 py-2 shadow-md transition-all dark:border-gray-700 dark:bg-gray-900"
     >
       {items.map((item: CommandItemProps, index: number) => {
         return (
@@ -353,7 +353,7 @@ const CommandList = ({
             key={index}
             onClick={() => selectItem(index)}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-md border border-gray-200 bg-white dark:border-gray-700 bg-gray-900">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
               {item.title === "Continue writing" && isLoading ? (
                 <LoadingCircle />
               ) : (

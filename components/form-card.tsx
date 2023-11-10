@@ -43,7 +43,7 @@ export default function FormCard({
   return (
     <Card className="overflow-hidden">
       <Link href={`/city/${organization.subdomain}/forms/${form.id}`}>
-        <div className="h-40 bg-gray-50 p-6 dark:bg-gray-700">
+        <div className="h-40  p-6">
           <CardTitle>{form.name}</CardTitle>
 
           {formImage ? (
@@ -62,8 +62,8 @@ export default function FormCard({
 
       <Separator />
       <Link href={`/city/${organization.subdomain}/forms/${form.id}/results`}>
-        <CardFooter className="bg-gray-50">
-          <span className="mt-2">
+        <CardFooter className="bg-gray-50 dark:bg-gray-900 py-4">
+          <span>
             {form.formResponse?.length === 0
               ? "No responses"
               : `${form.formResponse?.length.toString()} response`}

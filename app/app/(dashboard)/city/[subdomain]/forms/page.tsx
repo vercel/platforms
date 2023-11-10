@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import PageHeader from "@/components/page-header";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
-import CreateEventFormButton from "@/components/create-event-form-button";
+import CreateEventFormButton from "@/components/create-form-button";
 import OrgForms from "@/components/org-forms";
 
 export default async function EventFormsPage({
