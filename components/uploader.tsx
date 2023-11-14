@@ -51,7 +51,7 @@ export default function Uploader() {
           body: file,
         }).then(async (res) => {
           if (res.status === 200) {
-            const { url } = (await res.json());
+            const { url } = await res.json();
             toast(
               <div className="relative">
                 <div className="p-2">
