@@ -3,7 +3,6 @@
 import { useState, useCallback, useMemo, ChangeEvent } from "react";
 import { toast } from "sonner";
 import LoadingDots from "@/components/icons/loading-dots";
-import { BlobResult } from "@vercel/blob";
 
 export default function Uploader() {
   const [data, setData] = useState<{
@@ -52,7 +51,7 @@ export default function Uploader() {
           body: file,
         }).then(async (res) => {
           if (res.status === 200) {
-            const { url } = (await res.json()) as BlobResult;
+            const { url } = await res.json();
             toast(
               <div className="relative">
                 <div className="p-2">
