@@ -6,7 +6,7 @@ import { ModalProvider } from "@/components/modal/provider";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { mainnet, polygon, optimism, arbitrum } from "@wagmi/core/chains";
 import { publicProvider } from "wagmi/providers/public";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 
 // import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 // import { InjectedConnector } from "wagmi/connectors/injected";
@@ -17,7 +17,7 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
 const { chains, publicClient } = configureChains(
   [mainnet, polygon, optimism, arbitrum],
-  [publicProvider()]
+  [publicProvider()],
 );
 
 // Set up wagmi config
@@ -52,8 +52,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiConfig config={config}>
       <SessionProvider>
-        <OldToaster className="dark:hidden" />
-        <OldToaster theme="dark" className="hidden dark:block" />
+        <OldToaster position="top-right" className="dark:hidden" />
+        <OldToaster
+          position="top-right"
+          theme="dark"
+          className="hidden dark:block"
+        />
         <Toaster />
         <ModalProvider>{children}</ModalProvider>
       </SessionProvider>

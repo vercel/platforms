@@ -40,7 +40,6 @@ export default function RoleCard({
   event: Event & { organization: Organization };
 }) {
   const roleImage = getPlaceholderImage(role);
-  console.log("roleImage: ", roleImage);
   return (
     <Link
       href={`/city/${event.organization.subdomain}/events/${event.path}/roles/${role.id}`}

@@ -64,7 +64,6 @@ export default function FormResponseDataTable({
         // }).format(amount)
 
         const answer = row.getValue(question.id) as Answer;
-        console.log("answer: ", answer);
         return (
           <div className="flex flex-wrap space-x-1">
             {formatAnswer(question, answer)}
@@ -72,6 +71,7 @@ export default function FormResponseDataTable({
         );
       },
     }));
+
 
   // Generate data dynamically based on the form responses
   const data = formResponses.map((formResponse) => {

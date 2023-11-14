@@ -10,7 +10,6 @@ export default async function DocsPage({
   params: { domain: string };
 }) {
   const domain = params.domain.replace("%3A", ":");
-  console.log("domain: ", domain);
   // const session = await getSession();
   // if (!session) {
   //   redirect("/login");
@@ -28,8 +27,6 @@ export default async function DocsPage({
       ],
     },
   });
-
-  console.log('data: ', data)
 
   if (!data) {
     notFound();

@@ -410,7 +410,6 @@ export const updateOrganization = withOrganizationAuth(
           .from("media")
           .upload(`/public/${filename}`, file);
 
-        console.log({ data, error });
         // const { url } = await put(filename, file, {
         //   access: "public",
         // });
@@ -593,7 +592,6 @@ export const updatePostMetadata = withPostAuth(
     },
     key: string,
   ) => {
-    console.log("post: ", post);
     const value = formData.get(key) as string;
 
     try {
@@ -974,7 +972,6 @@ export const updateEvent = withEventAuth(
           .from("media")
           .upload(`/public/${filename}`, file);
 
-        console.log({ data, error });
         // const { url } = await put(filename, file, {
         //   access: "public",
         // });

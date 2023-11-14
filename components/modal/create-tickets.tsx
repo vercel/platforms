@@ -57,7 +57,6 @@ export default function CreateTicketModal({
   };
 
   async function onSubmit(data: z.infer<typeof CreatTicketTierFormSchema>) {
-    console.log("SUBMIT");
     const result = await createTicketTier(
       data,
       { params: { subdomain, path } },

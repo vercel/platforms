@@ -38,7 +38,6 @@ function Siwe({ redirect = true, callbackUrl = "/" }) {
         callbackUrl,
       });
 
-      console.log('response: ', response)
       if (response?.ok) {
         router.replace(callbackUrl)
         // router(callbackUrl);
@@ -50,7 +49,6 @@ function Siwe({ redirect = true, callbackUrl = "/" }) {
 
   // auto connect
   useEffect(() => {
-    console.log(isConnected);
     if (!isConnected) {
       connect()
     }

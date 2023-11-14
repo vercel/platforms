@@ -14,8 +14,6 @@ export default async function CitySettingsIndex({
     },
   });
 
-  console.log("CitySettingsIndex", data);
-
   return (
     <div className="flex flex-col space-y-6">
       <Form

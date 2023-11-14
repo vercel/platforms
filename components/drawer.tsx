@@ -109,7 +109,6 @@ export default function Drawer({ children }: { children: ReactNode }) {
       // @ts-expect-error
       getUsersOrganizations(user.id)
       .then((userOrgs) => {
-        console.log("userOrgs: ", userOrgs);
         setUsersOrgs(userOrgs);
       });
     }

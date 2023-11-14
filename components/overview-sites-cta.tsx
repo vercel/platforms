@@ -21,8 +21,6 @@ export default async function OverviewSitesCTA() {
 
   const organizations = await prisma.organization.findMany();
 
-  console.log("organizations: ", organizations);
-
   return organizations.length > 0 ? (
     <Link
       href="/cities"
