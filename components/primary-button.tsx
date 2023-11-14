@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import LoadingDots from "@/components/icons/loading-dots";
+import { Button } from "./ui/button";
 
 export type PrimaryButtonProps =
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -15,7 +16,7 @@ export default function PrimaryButton({
   ...rest
 }: PrimaryButtonProps) {
   return (
-    <button
+    <Button
       className={cn(
         "flex h-8 w-36 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none sm:h-9",
         loading
@@ -27,6 +28,6 @@ export default function PrimaryButton({
       {...rest}
     >
       {loading ? <LoadingDots color="#808080" /> : children}
-    </button>
+    </Button>
   );
 }

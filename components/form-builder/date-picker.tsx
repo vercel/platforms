@@ -21,7 +21,6 @@ export type DatePickerProps = {
 
 export function DatePicker({
   date,
-  onSelect,
   mode,
   ...props
 }: DatePickerProps) {
@@ -43,8 +42,6 @@ export function DatePicker({
         <Calendar
           mode="single"
           selected={date}
-          onSelect={onSelect}
-          initialFocus
           {...props}
         />
       </PopoverContent>

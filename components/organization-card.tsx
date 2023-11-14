@@ -25,7 +25,7 @@ export default function OrganizationCard({ data }: { data: Organization }) {
           <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide text-gray-800 dark:text-gray-200">
             {data.name}
           </h3>
-          <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-gray-500 dark:text-gray-400">
+          <p className="mt-2 line-clamp-2 text-sm font-normal leading-snug text-gray-700 dark:text-gray-400">
             {data.description}
           </p>
         </div>

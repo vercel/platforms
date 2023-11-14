@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useModal } from "./provider";
 import va from "@vercel/analytics";
 import { useState } from "react";
-import { Organization, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import FormButton from "./form-button";
 
 export default function CreateRoleModal() {
@@ -100,7 +100,6 @@ export default function CreateRoleModal() {
           </label>
           <textarea
             name="description"
-            placeholder="Description about why my city is so awesome"
             value={data.description}
             onChange={(e) => setData({ ...data, description: e.target.value })}
             maxLength={140}

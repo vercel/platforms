@@ -26,6 +26,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RegistrationCardItems } from "./registration-card-items";
+import { ExternalLink } from "lucide-react";
 
 type RolesAndUsers = {
   user: User;
@@ -40,8 +41,8 @@ export function HostUser({ user }: { user: User }) {
         <AvatarFallback>{getTwoLetterPlaceholder(user)}</AvatarFallback>
       </Avatar>
       <div>
-        <p className="text-sm font-medium leading-none">{user.name}</p>
-        <p className="text-muted-foreground text-sm">{getUsername(user)}</p>
+        <p className="text-md font-semibold leading-none">{user.name}</p>
+        {/* <p className="text-muted-foreground text-sm">{getUsername(user)}</p> */}
       </div>
     </div>
   );
@@ -51,10 +52,10 @@ export function HostsCard({ hostUsers }: { hostUsers: RolesAndUsers[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Event Hosts</CardTitle>
-        <CardDescription>
+        <CardTitle>Hosts</CardTitle>
+        {/* <CardDescription>
           Invite your team members to collaborate.
-        </CardDescription>
+        </CardDescription> */}
       </CardHeader>
       <CardContent className="grid gap-6">
         {hostUsers.map((hostUser) => (
@@ -83,18 +84,37 @@ type RegistrationCardProps = {
   event: Event & { organization: Organization };
 };
 
+const VITALIA_2024_EVENT = "clox3yiay0000smfnfdan6b1h";
+
 export function RegistrationCard({
   ticketTiers,
   event,
 }: RegistrationCardProps) {
+  const TitleCopy = (() => {
+    // TODO:// Remove hardcoded event id
+    if (event.id === VITALIA_2024_EVENT) {
+      return <Link href="https://luma.com/vitalia" className="hover:underline">Register on Luma ↗</Link>;
+    }
+
+    if (!ticketTiers || !(ticketTiers.length > 0)) {
+      return "Registration options are not yet public";
+    }
+
+    return "Registration Options";
+  })();
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Registration Options</CardTitle>
+        <CardTitle>{TitleCopy}</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {ticketTiers.map((ticketTier) => (
-          <RegistrationCardItems key={ticketTier.id} ticketTier={ticketTier} event={event} />
+          <RegistrationCardItems
+            key={ticketTier.id}
+            ticketTier={ticketTier}
+            event={event}
+          />
         ))}
       </CardContent>
     </Card>
@@ -137,7 +157,7 @@ export default function Event({
   return (
     <div className="flex flex-col items-center">
       <div className="mx-auto flex w-full max-w-[960px] flex-col space-y-6">
-        <Card className="w-full">
+        <Card className="w-full overflow-hidden">
           <div className="flex flex-col">
             <div className="w-full">
               <AspectRatio ratio={2 / 1}>
