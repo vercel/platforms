@@ -30,7 +30,7 @@ export function convertNameToTwoLetters(name: string) {
   if (splitName.length > 1) {
     initials = splitName[0][0] + splitName[1][0];
   } else {
-    initials = splitName[0].substring(0, 2);
+    initials = splitName[0].substring(0, 1);
   }
 
   return initials.toUpperCase();

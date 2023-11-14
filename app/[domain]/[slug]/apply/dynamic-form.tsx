@@ -86,7 +86,7 @@ export const DynamicFormLabel = ({ children }: { children: string }) => {
 };
 
 export const DynamicFormDesc = ({ children }: { children: string }) => {
-  return <p className="text-md text-gray-300 dark:text-gray-700">{children}</p>;
+  return <p className="text-md text-gray-750 dark:text-gray-300">{children}</p>;
 };
 
 export function DynamicForm(props: { form: Form & { questions: Question[] } }) {

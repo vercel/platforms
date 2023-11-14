@@ -50,7 +50,7 @@ export default function Modal({
                 <motion.div
                   ref={desktopModalRef}
                   key="desktop-modal"
-                  className="fixed inset-0 z-40 hidden min-h-screen items-center justify-center md:flex"
+                  className="fixed inset-0 z-20 hidden min-h-screen items-center justify-center md:flex"
                   initial={{ scale: 0.95 }}
                   animate={{ scale: 1 }}
                   exit={{ scale: 0.95 }}
@@ -65,7 +65,7 @@ export default function Modal({
               </FocusTrap>
               <motion.div
                 key="desktop-backdrop"
-                className="fixed inset-0 z-30 bg-gray-100 bg-opacity-10 backdrop-blur"
+                className="fixed inset-0 z-10 bg-gray-100 bg-opacity-10 backdrop-blur"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

@@ -9,7 +9,7 @@ export default function PostCard({
 }: {
   data: Post & { organization: Organization | null };
 }) {
-  const url = `${data.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`;
+  const url = `${data.organization?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/docs/${data.slug}`;
 
   return (
     <div className="relative rounded-lg border border-gray-200 pb-10 shadow-md transition-all hover:shadow-xl dark:border-gray-700 dark:hover:border-white">
@@ -34,7 +34,7 @@ export default function PostCard({
           )}
         </div>
         <div className="border-t border-gray-200 p-4 dark:border-gray-700">
-          <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide dark:text-white dark:text-white">
+          <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide  dark:text-white">
             {data.title}
           </h3>
           <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-gray-500 dark:text-gray-400">
@@ -47,7 +47,7 @@ export default function PostCard({
           href={
             process.env.NEXT_PUBLIC_VERCEL_ENV
               ? `https://${url}`
-              : `http://${data.organization?.subdomain}.localhost:3000/${data.slug}`
+              : `http://${data.organization?.subdomain}.localhost:3000/docs/${data.slug}`
           }
           target="_blank"
           rel="noreferrer"

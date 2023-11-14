@@ -5,6 +5,8 @@ import OpenModalButton from "@/components/open-modal-button";
 import CreateEventModal from "@/components/modal/create-event";
 import prisma from "@/lib/prisma";
 import NotFoundSite from "../not-found";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function AllEvents({
   params,
@@ -28,9 +30,9 @@ export default async function AllEvents({
           <h1 className="font-cal text-3xl font-bold dark:text-white">
             {organization.name} Events
           </h1>
-          <OpenModalButton text="Create Event">
-            <CreateEventModal organization={organization} />
-          </OpenModalButton>
+          <Link href={`/city/${params.subdomain}/events/create`}>
+            <Button>Create Event</Button>
+          </Link>
         </div>
         <Suspense
           fallback={

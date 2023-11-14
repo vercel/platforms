@@ -210,6 +210,8 @@ export const createEvent = async (input: {
   description: string;
   organizationId: string;
   path: string;
+  startingAt: Date;
+  endingAt: Date;
 }) => {
   const session = await getSession();
   if (!session?.user.id) {
@@ -222,14 +224,14 @@ export const createEvent = async (input: {
   const description = input.description;
   const organizationId = input.organizationId;
   const path = input.path;
+  const startingAt = input.startingAt;
+  const endingAt = input.endingAt;
 
   const hasAdminRole = await userHasOrgRole(
     session.user.id,
     organizationId,
     "Admin",
   );
-
-  console.log("has admin role: ", hasAdminRole);
 
   try {
     const [event, role] = await prisma.$transaction([
@@ -238,6 +240,8 @@ export const createEvent = async (input: {
           name,
           description,
           path,
+          startingAt,
+          endingAt,
           organization: {
             connect: {
               id: organizationId,
