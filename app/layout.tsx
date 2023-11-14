@@ -5,11 +5,11 @@ import { Providers } from "./providers";
 import { Metadata } from "next";
 import { cn } from "@/lib/utils";
 
-const title =
-  "Tools for startup cities";
+const title = "Fora - Tools for startup cities";
 const description =
-  "Open source multi chain";
-const image = "https://vercel.pub/thumbnail.png";
+  "Fora is an open source suite of tools for startup city builders.";
+const image =
+  "https://ooybxjivdvmpbxtwunrr.supabase.co/storage/v1/object/public/media/public/fora-globe";
 
 export const metadata: Metadata = {
   title,
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: [image],
     creator: "@vercel",
   },
-  metadataBase: new URL("https://vercel.pub"),
+  metadataBase: new URL("https://fora.co"),
 };
 
 export default function RootLayout({
@@ -43,7 +43,7 @@ export default function RootLayout({
           avenirNext.variable,
           cal.variable,
           inter.variable,
-          'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-default'
+          "bg-gray-100 font-default text-gray-900 dark:bg-gray-900 dark:text-gray-100",
         )}
       >
         <Providers>
