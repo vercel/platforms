@@ -2,9 +2,6 @@
  * @type {import('next').NextConfig}
  */
 module.exports = {
-  experimental: {
-    serverActions: true,
-  },
   images: {
     domains: [
       "public.blob.vercel-storage.com",
@@ -18,5 +15,4 @@ module.exports = {
       "illustrations.popsy.co",
     ],
   },
-  reactStrictMode: false,
 };
