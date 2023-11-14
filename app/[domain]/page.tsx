@@ -69,7 +69,7 @@ export default async function SiteHomePage({
   );
 }
 
-export function UpcomingOrgEventsSection({
+function UpcomingOrgEventsSection({
   events,
 }: {
   events: (Event & { organization: Organization })[];
