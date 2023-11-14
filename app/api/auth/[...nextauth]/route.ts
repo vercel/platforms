@@ -10,7 +10,6 @@ const handler = (async (req: NextRequest, ctx: { params: any}) => {
 //     : host as string;
 
   return await NextAuth(authOptions(req))(req, ctx);
-//   console.log('response: ', response)
 });
 
 export { handler as GET, handler as POST };

@@ -174,8 +174,6 @@ export default function CreateEventModal({
             <DatePicker
               date={data.startingAtDate}
               onSelect={(date) => {
-                console.log("firing with date: ", date);
-
                 setData((prev) => ({ ...prev, startingAtDate: date }));
               }}
             />
@@ -193,7 +191,6 @@ export default function CreateEventModal({
             <DatePicker
               date={data.endingAtDate}
               onSelect={(date) => {
-                console.log("firing with date: ", date);
                 setData((prev) => ({ ...prev, endingAtDate: date }));
               }}
             />

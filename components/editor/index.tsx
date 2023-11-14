@@ -196,7 +196,6 @@ export default function Editor({ post }: { post: PostWithSite }) {
         <Button
           onClick={() => {
             const formData = new FormData();
-            console.log(data.published, typeof data.published);
             formData.append("published", String(!data.published));
             startTransitionPublishing(async () => {
               await updatePostMetadata(

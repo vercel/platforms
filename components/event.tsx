@@ -93,7 +93,7 @@ export function RegistrationCard({
   const TitleCopy = (() => {
     // TODO:// Remove hardcoded event id
     if (event.id === VITALIA_2024_EVENT) {
-      return <Link href="https://luma.com/vitalia" className="hover:underline">Register on Luma ↗</Link>;
+      return <Link href="https://lu.ma/vitalia" className="hover:underline">Register Externally↗</Link>;
     }
 
     if (!ticketTiers || !(ticketTiers.length > 0)) {

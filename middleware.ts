@@ -25,10 +25,6 @@ export default async function middleware(req: NextRequest) {
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = url.pathname;
   const searchParams = url.searchParams;
-  console.log(`Path: ${path}`);
-  console.log(`searchParams: ${searchParams}`);
-  console.log(`searchParams type: ${typeof searchParams}`);
-
   // rewrites for app pages
   if (
     hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` ||

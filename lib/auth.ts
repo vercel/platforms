@@ -64,10 +64,8 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
             );
             // const nextAuthUrl = new URL(process.env.NEXTAUTH_URL);
 
-            // console.log('nextAuthUrl: ', nextAuthUrl)
             const nonce = await getCsrfToken();
 
-            console.log("nonce", nonce);
             // if (siwe.nonce !== nonce) {
             //   return null;
             // }
@@ -77,7 +75,6 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
               domain: hostname,
               // nonce: nonce,
             });
-            console.log("result", result);
             if (result.success) {
               // Check if account already exists
               let account = await prisma.account.findFirst({
@@ -89,7 +86,6 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
                 },
               });
 
-              console.log("account", account);
 
               // If account does not exist, create a new account and user
               if (!account) {
@@ -121,7 +117,6 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
                   console.log("error", error);
                 }
               }
-              console.log("account", account);
               if (!account?.user) {
                 return null;
               }
@@ -179,7 +174,6 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
         return token;
       },
       session: async ({ session, token }) => {
-        console.log("session", session, "token", token);
         session.user = {
           ...session.user,
           // @ts-expect-error
@@ -271,7 +265,6 @@ export function withEventAuth(action: any) {
       },
     });
 
-    console.log(data);
 
     if (!data?.organization) {
       return {
@@ -335,8 +328,6 @@ export function withEventRoleAuth(action: any) {
         role: true,
       },
     });
-
-    console.log(event);
 
     if (!eventRole?.role) {
       return {

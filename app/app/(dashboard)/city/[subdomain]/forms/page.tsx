@@ -44,7 +44,7 @@ export default async function EventFormsPage({
       formResponse: {
         select: {
           id: true
-        }
+        },
       }
     }
   });

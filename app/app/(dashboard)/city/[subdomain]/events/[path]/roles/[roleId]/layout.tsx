@@ -27,8 +27,6 @@ export default async function EventSettingsLayout({
     },
   });
 
-  console.log("Event Settings", event);
-
   if (!event) {
     notFound();
   }

@@ -11,7 +11,6 @@ export async function GET(
   request: Request,
   context: { params: { id: string } },
 ) {
-  console.log("HIT");
   try {
     const event = await tryGetEvent(context.params.id);
     const roles = await prisma.eventRole.findMany({

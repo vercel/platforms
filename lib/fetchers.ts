@@ -5,7 +5,6 @@ import { replaceTweets } from "@/lib/remark-plugins";
 
 export async function getSiteData(domain: string) {
   const cleanDomain = domain.replace('%3A', ':');
-  console.log(`getSiteData Domain: ${cleanDomain}`);
   const subdomain = cleanDomain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
     ? cleanDomain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
     : null;

@@ -117,7 +117,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
       return;
     }
     if ("id" in response) {
-      toast.success("Succesfully submitted respons: " + props.form.name);
+      toast.success("Succesfully submitted response: " + props.form.name);
       router.push("/");
     }
   }
@@ -226,7 +226,6 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                       <FormControl>
                         <Select
                           onValueChange={(value) => {
-                            console.log("value: ", value);
                             field.onChange(value);
                           }}
                           defaultValue={field.value}
