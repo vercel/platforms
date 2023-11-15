@@ -1,10 +1,17 @@
 import PaperDoc from "@/components/paper-doc";
-import { getSession } from "@/lib/auth";
+import { SessionData, getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import notFound from "../../[slug]/not-found";
 import FormTitle from "@/components/form-title";
 import DynamicForm from "../../[slug]/apply/dynamic-form";
 import AuthModalCoverProvider from "@/components/auth-modal-cover-provider";
+import {
+  Answer,
+  Form,
+  FormResponse,
+  Organization,
+  Question,
+} from "@prisma/client";
 
 export default async function FormPage({
   params,
@@ -16,15 +23,26 @@ export default async function FormPage({
   //   redirect("/login");
   // }
 
-  const form = await prisma.form.findUnique({
-    where: {
-      id: params.id,
-    },
-    include: {
-      organization: true,
-      questions: true,
-    },
-  });
+  const [form, formResponse] = await Promise.all([
+    prisma.form.findUnique({
+      where: {
+        id: params.id,
+      },
+      include: {
+        organization: true,
+        questions: true,
+      },
+    }),
+    prisma.formResponse.findFirst({
+      where: {
+        formId: params.id,
+        userId: session?.user.id,
+      },
+      include: {
+        answers: true,
+      },
+    }),
+  ]);
 
   if (!form) {
     return notFound();
@@ -34,12 +52,33 @@ export default async function FormPage({
     <AuthModalCoverProvider show={!session}>
       <div className="flex flex-col space-y-6">
         <div className="flex flex-col space-y-6">
-          <PaperDoc className="mx-auto">
-            <FormTitle>{form.name}</FormTitle>
-            <DynamicForm form={form} />
-          </PaperDoc>
+          {formResponse ? (
+            <PaperDoc className="mx-auto">
+              <FormSubmission formResponse={formResponse} form={form} />
+            </PaperDoc>
+          ) : (
+            <PaperDoc className="mx-auto">
+              <FormTitle>{form.name}</FormTitle>
+              <DynamicForm form={form} />
+            </PaperDoc>
+          )}
         </div>
       </div>
     </AuthModalCoverProvider>
+  );
+}
+
+function FormSubmission({
+  form,
+  formResponse,
+}: {
+  form: Form & { questions: Question[]; organization: Organization };
+  formResponse: FormResponse & { answers: Answer[] };
+}) {
+  return (
+    <>
+      <FormTitle>{form.endingTitle}</FormTitle>
+      <p>{form.endingDescription}</p>
+    </>
   );
 }
