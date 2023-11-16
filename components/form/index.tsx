@@ -64,7 +64,7 @@ export default function Form({
     >
       <div className="relative flex flex-col space-y-4 p-5 sm:p-10">
         <h2 className="font-cal text-xl dark:text-white">{title}</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-700 dark:text-gray-400">
           {description}
         </p>
         {inputAttrs.name === "image" || inputAttrs.name === "logo" ? (
@@ -126,7 +126,7 @@ export default function Form({
         <DomainConfiguration domain={inputAttrs.defaultValue} />
       )}
       <div className="flex flex-col items-center justify-center space-y-2 rounded-b-lg border-t border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800 sm:flex-row sm:justify-between sm:space-y-0 sm:px-10">
-        <p className="text-sm text-gray-500 dark:text-gray-400">{helpText}</p>
+        <p className="text-sm text-gray-700 dark:text-gray-400">{helpText}</p>
         <FormButton />
       </div>
     </form>

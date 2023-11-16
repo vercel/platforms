@@ -3,12 +3,13 @@ import Organizations from "@/components/organizations";
 import PlacholderCard from "@/components/placeholder-card";
 import CreateOrganizationButton from "@/components/create-organization-button";
 import CreateOrganizationModal from "@/components/modal/create-organization";
-import FeaturedContent from "@/components/featured-content";
+import NextFeaturedEvent from "@/components/next-featured-event";
 
 export default function Overview() {
   return (
     <>
-      <FeaturedContent />
+      <div className="h-6 md:h-6" />
+      <NextFeaturedEvent />
       <div className="max-w-screen-3xl flex flex-col space-y-12">
         <div className="flex flex-col space-y-6 p-8">
           <div className="flex items-center justify-between">

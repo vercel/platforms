@@ -117,8 +117,8 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
       return;
     }
     if ("id" in response) {
-      toast.success("Succesfully submitted response: " + props.form.name);
-      router.push("/");
+      toast.success("Successfully submitted respone to " + props.form.name);
+      router.refresh();
     }
   }
 

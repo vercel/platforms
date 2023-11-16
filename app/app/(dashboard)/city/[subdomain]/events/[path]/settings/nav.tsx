@@ -14,11 +14,6 @@ export default function EventSettingsNav() {
       href: `/city/${subdomain}/events/${path}/settings`,
       segment: null,
     },
-    {
-      name: "Tickets",
-      href: `/city/${subdomain}/events/${path}/settings/tickets`,
-      segment: "tickets",
-    },
     // {
     //   name: "Appearance",
     //   href: `/city/${subdomain}/events/${path}/settings/appearance`,

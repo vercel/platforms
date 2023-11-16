@@ -86,7 +86,6 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
                 },
               });
 
-
               // If account does not exist, create a new account and user
               if (!account) {
                 const user = await prisma.user.create({
@@ -187,18 +186,20 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
   };
 };
 
+export type SessionData = {
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    image: string;
+    eth_address?: string;
+    ens_name?: string;
+  };
+};
+
 export function getSession() {
-  return getServerSession(authOptions()) as Promise<{
-    user: {
-      id: string;
-      name: string;
-      username: string;
-      email: string;
-      image: string;
-      eth_address?: string;
-      ens_name?: string;
-    };
-  } | null>;
+  return getServerSession(authOptions()) as Promise<SessionData | null>;
 }
 
 export function withOrganizationAuth(action: any) {
@@ -264,7 +265,6 @@ export function withEventAuth(action: any) {
         organization: true,
       },
     });
-
 
     if (!data?.organization) {
       return {
@@ -387,4 +387,3 @@ export function withPostAuth(action: any) {
     return action(formData, post, key);
   };
 }
-
