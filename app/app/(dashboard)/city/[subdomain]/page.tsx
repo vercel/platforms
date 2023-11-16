@@ -32,14 +32,6 @@ export default async function SitePosts({
       <div className="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
         <div className="col-span-1 flex flex-col space-y-6">
           <h1 className="font-serif text-3xl font-light dark:text-white">
-            Overview
-          </h1>
-          <CityOverviewStats />
-        </div>
-      </div>
-      <div className="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
-        <div className="col-span-1 flex flex-col space-y-6">
-          <h1 className="font-serif text-3xl font-light dark:text-white">
             Last edited
           </h1>
           <Posts organizationId={data.id} />

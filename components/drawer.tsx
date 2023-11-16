@@ -14,6 +14,7 @@ import {
   Users2,
   ClipboardSignature,
   BedSingle,
+  Home,
 } from "lucide-react";
 import {
   useParams,
@@ -259,10 +260,10 @@ export default function Drawer({ children }: { children: ReactNode }) {
     }
     return [
       {
-        name: "Overview",
+        name: "Home",
         href: "/",
         isActive: segments.length === 0,
-        icon: <LayoutDashboard width={18} />,
+        icon: <Home width={18} />,
       },
       // {
       //   name: "Events",
@@ -276,12 +277,12 @@ export default function Drawer({ children }: { children: ReactNode }) {
       //   isActive: segments[0] === "sites",
       //   icon: <Globe width={18} />,
       // },
-      {
-        name: "Settings",
-        href: "/settings",
-        isActive: segments[0] === "settings",
-        icon: <Settings width={18} />,
-      },
+      // {
+      //   name: "Settings",
+      //   href: "/settings",
+      //   isActive: segments[0] === "settings",
+      //   icon: <Settings width={18} />,
+      // },
     ];
   }, [segments, subdomain, path, organizationSubdomain]);
 

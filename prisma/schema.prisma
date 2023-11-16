@@ -127,6 +127,7 @@ model Event {
   imageBlurhash  String?      @db.Text
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  isFeatured     Boolean      @default(false)
   startingAt     DateTime?
   endingAt       DateTime?
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
