@@ -1454,6 +1454,14 @@ export const createAccommodationUnit = withOrganizationAuth(
     const accommodationUnit = await prisma.accommodationUnit.create({
       data: {
         ...result.data,
+        rooms: {
+          create: result.data.rooms.map(room => ({
+            ...room,
+            beds: {
+              create: room.beds
+            }
+          }))
+        }
       },
     });
 

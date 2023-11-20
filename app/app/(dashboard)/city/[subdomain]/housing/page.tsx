@@ -1,8 +1,5 @@
-import DashboardHeader from "@/components/dashboard-header";
 import prisma from "@/lib/prisma";
 import NotFoundCity from "../not-found";
-import { Card } from "@/components/ui/card";
-import PrimaryButton from "@/components/primary-button";
 import PropertiesCards from "@/components/properties-cards";
 
 export default async function HousingPageCard({
@@ -17,7 +14,15 @@ export default async function HousingPageCard({
     include: {
       places: {
         include: {
-          accommodationUnit: true
+          accommodationUnit: {
+            include: {
+              rooms: {
+                include: {
+                  beds: true
+                }
+              }
+            }
+          }
         }
       },
     },

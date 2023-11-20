@@ -1,7 +1,7 @@
 "use client";
 import { Card } from "@/components/ui/card";
 import PrimaryButton from "@/components/primary-button";
-import { AccommodationUnit, Place } from "@prisma/client";
+import { AccommodationUnit, Place, Room, Bed } from "@prisma/client";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import Uploader from "./form/uploader";
@@ -12,7 +12,11 @@ import CreateAccomodationUnitForm from "./form/create-accommodation-unit-form";
 export default function PropertiesCards({
   properties,
 }: {
-  properties: (Place & { accommodationUnit: AccommodationUnit[] })[];
+  properties: (Place & {
+    accommodationUnit: (AccommodationUnit & {
+      rooms: (Room & { beds: Bed[] })[];
+    })[];
+  })[];
 }) {
   const modal = useModal();
   return (
@@ -20,30 +24,33 @@ export default function PropertiesCards({
       {properties.map((property) => {
         return (
           <div key={property.id}>
-            <h4 className="mb-4 text-2xl font-medium">{property.name}</h4>
-            <Card>
-              <div className="mx-3 my-1">
-                <div className="h-[9rem] w-[16rem] overflow-hidden rounded-xl">
-                  <Uploader name="image" defaultValue={""} />
-                </div>
-              </div>
+            <div className="flex justify-between">
+              <h4 className="mb-4 text-2xl font-medium">{property.name}</h4>
               <Button
-                variant="outline"
-                size="icon"
                 onClick={() => {
                   modal?.show(<CreateAccomodationUnitForm place={property} />);
                 }}
               >
-                <Plus className="h-4 w-4" onClick={() => {}} />
+                <Plus className="h-4 w-4" />
+                Add Unit
               </Button>
-              {property.accommodationUnit.map((unit) => {
-                return (
-                  <div className="flex" key={unit.id}>
-                    <div>{unit.beds}</div>
-                    <div>{unit.rooms}</div>
-                  </div>
-                );
-              })}
+            </div>
+            <Card>
+              <div>
+                {property.accommodationUnit.map((unit) => {
+                  const totalBeds = unit.rooms.reduce(
+                    (acc, room) => acc + room.beds.length,
+                    0,
+                  );
+
+                  return (
+                    <div className="flex" key={unit.id}>
+                      <div>Rooms: {unit.rooms.length}</div>
+                      <div>Beds: {totalBeds}</div>
+                    </div>
+                  );
+                })}
+              </div>
             </Card>
           </div>
         );

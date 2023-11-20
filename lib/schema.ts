@@ -146,13 +146,25 @@ export const UpdatePlaceSchema = z.object({
   mapboxPlaceId: z.string().optional(),
 });
 
+export const BedType = z.enum(["SINGLE", "DOUBLE", "QUEEN", "KING"]);
+
+export const CreateBedSchema = z.object({
+  type: BedType,
+});
+
+export const CreateRoomSchema = z.object({
+  capacity: z.number().int().optional(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  beds: z.array(CreateBedSchema),
+});
+
 export const CreateAccommodationUnitSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
   description: z.string().optional(),
   type: z.string().min(1, { message: "Type is required." }),
   capacity: z.coerce.number().int().nonnegative(),
-  rooms: z.coerce.number().int().nonnegative().optional(),
-  beds: z.coerce.number().int().nonnegative().optional(),
+  rooms: z.array(CreateRoomSchema),
   placeId: z.string().min(1, { message: "Place ID is required." }),
   parentId: z.string().optional(),
 });
