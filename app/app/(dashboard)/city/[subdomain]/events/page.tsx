@@ -30,9 +30,11 @@ export default async function AllEvents({
           <h1 className="font-cal text-3xl font-bold dark:text-white">
             {organization.name} Events
           </h1>
-          <Link href={`/city/${params.subdomain}/events/create`}>
-            <Button>Create Event</Button>
-          </Link>
+          <Button asChild>
+            <Link href={`/city/${params.subdomain}/events/create`}>
+              Create Event
+            </Link>
+          </Button>
         </div>
         <Suspense
           fallback={
