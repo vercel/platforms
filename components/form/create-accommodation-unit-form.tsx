@@ -39,6 +39,9 @@ import {
 } from "../ui/select";
 import FormTitle from "../form-title";
 import { useModal } from "../modal/provider";
+import { DateRangePicker } from "../form-builder/date-range-picker";
+import { Button } from "../ui/button";
+import { calcAccommodationUnitCapacity } from "@/lib/utils";
 
 export default function CreateAccomodationUnitForm({
   place,
@@ -86,7 +89,6 @@ export default function CreateAccomodationUnitForm({
         title: "Successfully updated a Property",
       });
       router.refresh();
-      modal?.hide();
     } catch (error) {
     } finally {
       setLoading(false);
@@ -97,25 +99,8 @@ export default function CreateAccomodationUnitForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-h-[80vh] w-full space-y-6 overflow-y-scroll rounded-md bg-gray-200/80 px-6 py-6  backdrop-blur-lg dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
+        className="w-full space-y-4 py-6"
       >
-        <FormTitle>Add Accommodation</FormTitle>
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormLabel>Type</FormLabel>
-              <FormDescription>
-                A grouping of similar accommodation types on the property:
-                Double Deluxe, Suite, Studio.
-              </FormDescription>
-              <Input {...field} value={field.value || ""} />
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="name"
@@ -128,31 +113,6 @@ export default function CreateAccomodationUnitForm({
             </FormItem>
           )}
         />
-        {roomFields.map((item, index) => (
-          <>
-            <RoomField
-              key={item.id}
-              formControl={form.control}
-              roomIndex={index}
-            />
-            <button type="button" onClick={() => removeRoom(index)}>
-              Remove Room
-            </button>
-          </>
-        ))}
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            appendRoom({
-              name: "Room " + roomFields.length + 1,
-              beds: [{ type: "SINGLE" }],
-            });
-          }}
-        >
-          Add Room
-        </button>
         <FormField
           control={form.control}
           name="description"
@@ -164,6 +124,87 @@ export default function CreateAccomodationUnitForm({
             </FormItem>
           )}
         />
+
+        <div className="flex flex-col">
+          <div className="flex justify-between">
+            <FormLabel>{"Unit Capacity"}</FormLabel>
+            {calcAccommodationUnitCapacity(form.watch("rooms") || [])}
+          </div>
+          {roomFields.map((item, index) => (
+            <>
+              <RoomField
+                key={item.id}
+                formControl={form.control}
+                roomIndex={index}
+              />
+              <Button
+                variant={"ghost"}
+                type="button"
+                onClick={() => removeRoom(index)}
+              >
+                Remove Room
+              </Button>
+            </>
+          ))}
+          <Button
+            type="button"
+            variant={"ghost"}
+            onClick={(e) => {
+              e.preventDefault();
+              appendRoom({
+                name: "Room " + (roomFields.length + 1),
+                beds: [{ type: "SINGLE" }],
+              });
+            }}
+          >
+            Add Room
+          </Button>
+        </div>
+
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormLabel>Type</FormLabel>
+              <FormDescription>
+                Use to group similar accommodation units and make duplicates,
+                i.e., Deluxe, Suites, Studios.
+              </FormDescription>
+              <Input {...field} value={field.value || ""} />
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={"availability"}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Available From</FormLabel>
+              <FormControl>
+                <DateRangePicker
+                  date={{
+                    from: field?.value?.startDate,
+                    to: field?.value?.endDate,
+                  }}
+                  onSelect={(date) => {
+                    console.log("date: ", date);
+                    form.setValue("availability", {
+                      // @ts-expect-error
+                      startDate: date?.from ? new Date(date.from) : undefined,
+                      // @ts-expect-error
+                      endDate: date?.to ? new Date(date.to) : undefined,
+                    });
+                  }} 
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <div className="py-3">
           <PrimaryButton loading={loading} type="submit">
             Submit
@@ -231,14 +272,22 @@ function RoomField({ formControl, roomIndex }: RoomFieldProps) {
               </FormItem>
             )}
           />
-          <button type="button" onClick={() => removeBed(bedIndex)}>
+          <Button
+            variant={"ghost"}
+            type="button"
+            onClick={() => removeBed(bedIndex)}
+          >
             Remove Bed
-          </button>
+          </Button>
         </div>
       ))}
-      <button type="button" onClick={() => appendBed({ type: "SINGLE" })}>
+      <Button
+        variant={"ghost"}
+        type="button"
+        onClick={() => appendBed({ type: "SINGLE" })}
+      >
         Add Bed
-      </button>
+      </Button>
     </div>
   );
 }

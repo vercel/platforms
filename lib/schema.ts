@@ -159,6 +159,11 @@ export const CreateRoomSchema = z.object({
   beds: z.array(CreateBedSchema),
 });
 
+export const CreateAvailabilitySchema = z.object({
+  startDate: z.date(),
+  endDate: z.date(),
+});
+
 export const CreateAccommodationUnitSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
   description: z.string().optional(),
@@ -167,4 +172,5 @@ export const CreateAccommodationUnitSchema = z.object({
   rooms: z.array(CreateRoomSchema),
   placeId: z.string().min(1, { message: "Place ID is required." }),
   parentId: z.string().optional(),
+  availability: CreateAvailabilitySchema,
 });

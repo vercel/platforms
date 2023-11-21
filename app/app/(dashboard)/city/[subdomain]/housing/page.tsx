@@ -20,7 +20,8 @@ export default async function HousingPageCard({
                 include: {
                   beds: true
                 }
-              }
+              },
+              availability: true,
             }
           }
         }

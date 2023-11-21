@@ -21,6 +21,7 @@ import { createPlace } from "@/lib/actions";
 import { Feature, Point, Polygon } from "geojson";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import PrimaryButton from "../primary-button";
+import { GeocodeInput } from "../geocode-input";
 
 export default function CreatePlaceModal({
   geoJSON,
@@ -56,7 +57,6 @@ export default function CreatePlaceModal({
     router.refresh();
     toast({
       title: "Successfully created a new Property",
-     
     });
     modal?.hide();
   }
@@ -65,20 +65,23 @@ export default function CreatePlaceModal({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full rounded-md bg-gray-200/80 px-6 py-6 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
+        className="w-full space-y-6 rounded-md bg-gray-200/80 px-6 py-6 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
       >
-        {/* <GeocodeInput /> */}
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Place Name</FormLabel>
+              <FormLabel>Property Name</FormLabel>
               <Input {...field} />
               <FormMessage />
             </FormItem>
           )}
         />
+        <div>
+          <FormLabel>Address</FormLabel>
+          <GeocodeInput />
+        </div>
         <PrimaryButton loading={pending} type="submit">
           Submit
         </PrimaryButton>

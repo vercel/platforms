@@ -11,6 +11,8 @@ import {
   Prisma,
   QuestionType,
   Place,
+  Room,
+  Bed,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -29,7 +31,11 @@ import {
 } from "@/lib/domains";
 import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
-import { getBlurDataURL } from "@/lib/utils";
+import {
+  calcAccommodationUnitCapacity,
+  calcRoomCapacity,
+  getBlurDataURL,
+} from "@/lib/utils";
 import supabase from "./supabase";
 import {
   CreatTicketTierFormSchema,
@@ -1450,18 +1456,31 @@ export const createAccommodationUnit = withOrganizationAuth(
       throw new Error("Invalid data");
     }
 
+    // Calculate capacity based on bed size
+    const capacity = calcAccommodationUnitCapacity(result.data.rooms);
+
     // If the data is valid, use it to create an accommodation unit
     const accommodationUnit = await prisma.accommodationUnit.create({
       data: {
         ...result.data,
+        capacity,
         rooms: {
-          create: result.data.rooms.map(room => ({
+          create: result.data.rooms.map((room) => ({
             ...room,
+            capacity: calcRoomCapacity(room),
             beds: {
-              create: room.beds
-            }
-          }))
-        }
+              create: room.beds,
+            },
+          })),
+        },
+        availability: {
+          create: [
+            {
+              startDate: result.data.availability.startDate,
+              endDate: result.data.availability.endDate,
+            },
+          ],
+        },
       },
     });
 
