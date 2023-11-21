@@ -10,6 +10,9 @@ import {
   Question,
   Prisma,
   QuestionType,
+  Place,
+  Room,
+  Bed,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -28,10 +31,19 @@ import {
 } from "@/lib/domains";
 import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
-import { getBlurDataURL } from "@/lib/utils";
+import {
+  calcAccommodationUnitCapacity,
+  calcRoomCapacity,
+  getBlurDataURL,
+} from "@/lib/utils";
 import supabase from "./supabase";
-import { CreatTicketTierFormSchema } from "./schema";
+import {
+  CreatTicketTierFormSchema,
+  CreateAccommodationUnitSchema,
+  CreatePlaceSchema,
+} from "./schema";
 import { z } from "zod";
+import { geocode, reverseGeocode } from "./gis";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -1324,3 +1336,154 @@ export async function getLatestEventForOrganization(organizationId: string) {
 
   return event;
 }
+
+export const createPlace = withOrganizationAuth(
+  async (data: any, organization: Organization) => {
+    // Validate the data against the schema
+    const result = CreatePlaceSchema.safeParse(data);
+
+    // If the data is not valid, throw an error or return a response
+    if (!result.success) {
+      throw new Error("Invalid data");
+    }
+
+    // If the data is valid, use it to create a place
+    const place = await prisma.place.create({
+      data: {
+        ...result.data,
+        organizationId: organization.id,
+      },
+    });
+
+    return place;
+  },
+);
+
+export const upsertPlace = withOrganizationAuth(
+  async (data: Place, organization: Organization) => {
+    // Validate the data against the schema
+    const result = CreatePlaceSchema.safeParse(data);
+
+    // If the data is not valid, throw an error or return a response
+    if (!result.success) {
+      throw new Error("Invalid data");
+    }
+
+    // If the data is valid, use it to create a place
+    const place = await prisma.place.upsert({
+      where: {
+        id: data.id,
+      },
+      create: {
+        ...result.data,
+        organizationId: organization.id,
+      },
+      update: {
+        ...result.data,
+        organizationId: organization.id,
+      },
+    });
+
+    return place;
+  },
+);
+
+export const deletePlace = withOrganizationAuth(
+  async (id: string, organization: Organization) => {
+    console.log("id: ", id);
+    // Delete the place with the provided ID
+    const place = await prisma.place.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return place;
+  },
+);
+
+export async function reverseGeocodeAction({
+  lat,
+  lng,
+}: {
+  lat: number;
+  lng: number;
+}) {
+  try {
+    const results = await reverseGeocode(
+      { lat, lng },
+      process.env.GOOGLE_MAPS_API as string,
+    );
+    return results;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return {
+        error: error.message,
+      };
+    }
+    return {
+      error: "An unknown error occurred.",
+    };
+  }
+}
+
+export async function geocodeAction(address: string) {
+  try {
+    const results = await geocode(
+      address,
+      process.env.GOOGLE_MAPS_API as string,
+    );
+    return results;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return {
+        error: error.message,
+      };
+    }
+    return {
+      error: "An unknown error occurred.",
+    };
+  }
+}
+
+export const createAccommodationUnit = withOrganizationAuth(
+  async (data: any) => {
+    // Validate the data against the schema
+    const result = CreateAccommodationUnitSchema.safeParse(data);
+
+    // If the data is not valid, throw an error or return a response
+    if (!result.success) {
+      throw new Error("Invalid data");
+    }
+
+    // Calculate capacity based on bed size
+    const capacity = calcAccommodationUnitCapacity(result.data.rooms);
+
+    // If the data is valid, use it to create an accommodation unit
+    const accommodationUnit = await prisma.accommodationUnit.create({
+      data: {
+        ...result.data,
+        capacity,
+        rooms: {
+          create: result.data.rooms.map((room) => ({
+            ...room,
+            capacity: calcRoomCapacity(room),
+            beds: {
+              create: room.beds,
+            },
+          })),
+        },
+        availability: {
+          create: [
+            {
+              startDate: result.data.availability.startDate,
+              endDate: result.data.availability.endDate,
+            },
+          ],
+        },
+      },
+    });
+
+    return accommodationUnit;
+  },
+);

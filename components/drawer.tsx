@@ -103,6 +103,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
   }, [segments, subdomain]);
 
   const { data: session } = useSession();
+
   useEffect(() => {
     if (session?.user) {
       const user = session.user;
@@ -295,6 +296,8 @@ export default function Drawer({ children }: { children: ReactNode }) {
     setShowSidebar(false);
   }, [pathname]);
 
+
+  // completely hide
   if (formId) {
     return null;
   }

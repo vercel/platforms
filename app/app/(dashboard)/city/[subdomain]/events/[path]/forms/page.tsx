@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/dashboard-header";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
 import EventForms from "@/components/event-forms";

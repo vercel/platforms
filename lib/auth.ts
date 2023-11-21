@@ -204,7 +204,7 @@ export function getSession() {
 
 export function withOrganizationAuth(action: any) {
   return async (
-    formData: FormData | null,
+    input: any,
     context: { params: { subdomain: string } },
     key: string | null,
   ) => {
@@ -238,7 +238,7 @@ export function withOrganizationAuth(action: any) {
       };
     }
 
-    return action(formData, organization, key);
+    return action(input, organization, key);
   };
 }
 

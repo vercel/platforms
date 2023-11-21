@@ -29,8 +29,10 @@ model User {
   sessions      Session[]
   posts         Post[]
   userRoles     UserRole[]
-  tickets       Ticket[] // Add this line
+  tickets       Ticket[]
   formResponse  FormResponse[]
+  bookings      Booking[]
+  Place         Place[]
 }
 
 model Account {
@@ -116,6 +118,7 @@ model Organization {
   roles            OrganizationRole[] // Add this line
   apiKeys          ApiKey[]
   form             Form[]
+  places           Place[]
 }
 
 model Event {
@@ -312,4 +315,91 @@ model FormResponse {
   answers   Answer[]
 
   @@unique([userId, formId])
+}
+
+model Place {
+  id                String              @id @default(cuid())
+  name              String?
+  description       String?
+  type              String?
+  address           Json?
+  googleAddress     Json?
+  mapboxAddress     Json?
+  latitude          Float?
+  longitude         Float?
+  geoJSON           Json?
+  googlePlaceId     String?
+  mapboxPlaceId     String?
+  organizationId    String? // nullable if a place can exist without an organization
+  organization      Organization?       @relation(fields: [organizationId], references: [id])
+  userId            String? // nullable if a place can exist without a user
+  user              User?               @relation(fields: [userId], references: [id])
+  media             Media[]
+  accommodationUnit AccommodationUnit[]
+}
+
+model Media {
+  id       String  @id @default(cuid())
+  uri      String
+  blurhash String?
+  placeId  String? // nullable if a place can exist without a user
+  place    Place?  @relation(fields: [placeId], references: [id])
+}
+
+model AccommodationUnit {
+  id           String                      @id @default(cuid())
+  name         String
+  description  String?
+  type         String
+  capacity     Int?
+  placeId      String
+  place        Place                       @relation(fields: [placeId], references: [id])
+  parentId     String?
+  parent       AccommodationUnit?          @relation("AccommodationUnitsToAccommodationUnit", fields: [parentId], references: [id])
+  children     AccommodationUnit[]         @relation("AccommodationUnitsToAccommodationUnit")
+  availability AccommodationAvailability[]
+  bookings     Booking[]
+  rooms        Room[]
+}
+
+model Room {
+  id                  String            @id @default(cuid())
+  capacity            Int?
+  name                String?
+  description         String?
+  accommodationUnitId String
+  accommodationUnit   AccommodationUnit @relation(fields: [accommodationUnitId], references: [id])
+  beds                Bed[]
+}
+
+model Bed {
+  id     String  @id @default(cuid())
+  type   BedType
+  roomId String
+  room   Room    @relation(fields: [roomId], references: [id])
+}
+
+enum BedType {
+  SINGLE
+  DOUBLE
+  QUEEN
+  KING
+}
+
+model AccommodationAvailability {
+  id                  String            @id @default(cuid())
+  startDate           DateTime
+  endDate             DateTime
+  accommodationUnitId String
+  accommodationUnit   AccommodationUnit @relation(fields: [accommodationUnitId], references: [id])
+}
+
+model Booking {
+  id                  String            @id @default(cuid())
+  startDate           DateTime
+  endDate             DateTime
+  userId              String
+  user                User              @relation(fields: [userId], references: [id])
+  accommodationUnitId String
+  accommodationUnit   AccommodationUnit @relation(fields: [accommodationUnitId], references: [id])
 }

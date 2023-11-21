@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import EventRoles from "@/components/event-roles";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/dashboard-header";
 import OpenModalButton from "@/components/open-modal-button";
 import CreateRoleModal from "@/components/modal/create-role";
 import prisma from "@/lib/prisma";

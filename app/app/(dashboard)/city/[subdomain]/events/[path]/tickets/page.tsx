@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/dashboard-header";
 import OpenModalButton from "@/components/open-modal-button";
 import CreateTicketModal from "@/components/modal/create-tickets";
 import prisma from "@/lib/prisma";

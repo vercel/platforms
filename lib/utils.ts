@@ -1,3 +1,4 @@
+import { Bed } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -57,3 +58,20 @@ export const toDateString = (date: Date) => {
 export const random = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
+
+type RoomWithBedsType = {
+  beds: { type: Bed["type"] }[];
+};
+
+export const calcRoomCapacity = (roomWithBedsType: RoomWithBedsType) =>
+  roomWithBedsType.beds.reduce((total, bed) => {
+    if (bed.type === "QUEEN" || bed.type === "KING") {
+      return total + 2;
+    } else {
+      return total + 1;
+    }
+  }, 0);
+
+export function calcAccommodationUnitCapacity(rooms: RoomWithBedsType[]) {
+  return rooms.reduce((total, room) => total + calcRoomCapacity(room), 0);
+}
