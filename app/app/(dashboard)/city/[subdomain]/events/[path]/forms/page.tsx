@@ -49,19 +49,17 @@ export default async function EventFormsPage({
       role: true,
       formResponse: {
         select: {
-          id: true
-        }
-      }
-    }
+          id: true,
+        },
+      },
+    },
   });
 
   return (
     <div className="flex flex-col space-y-6">
       <PageHeader
         title="Event Forms"
-        ActionButton={
-          <CreateEventFormButton />
-        }
+        ActionButton={<CreateEventFormButton />}
       />
       <EventForms
         organization={event.organization}
