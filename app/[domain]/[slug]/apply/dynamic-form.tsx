@@ -136,7 +136,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                   render={({ field }) => (
                     <FormItem>
                       <DynamicFormLabel>{question.text}</DynamicFormLabel>
-                      <span>{question.required ? "*" : ""}</span>
+                      <span>{question.required ? " *" : ""}</span>
                       {question.description ? (
                         <DynamicFormDesc>
                           {question.description}

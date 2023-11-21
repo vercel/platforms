@@ -293,6 +293,7 @@ enum QuestionType {
   DATE
   DATE_RANGE
   BOOLEAN
+  LINK
 }
 
 model Answer {
@@ -302,6 +303,8 @@ model Answer {
   question   Question      @relation(fields: [questionId], references: [id])
   answers    FormResponse? @relation(fields: [answersId], references: [id])
   answersId  String?
+
+  @@unique([questionId, answersId])
 }
 
 model FormResponse {

@@ -1248,10 +1248,22 @@ export const submitFormResponse = async (
   // const entries = formData.entries();
 
   try {
-    const formResponse = await prisma.formResponse.create({
-      data: {
+    const formResponse = await prisma.formResponse.upsert({
+      where: {
+        userId_formId: {
+          userId: session.user.id,
+          formId,
+        },
+      },
+      update: {},
+      create: {
         userId: session.user.id,
         formId,
+      },
+      include: {
+        answers: {
+          include: {},
+        },
       },
     });
     // Start a transaction to ensure all database operations succeed or fail together
@@ -1260,10 +1272,20 @@ export const submitFormResponse = async (
 
       // Create the Answers
       ...answers.map((answer) =>
-        prisma.answer.create({
-          data: {
+        prisma.answer.upsert({
+          where: {
+            questionId_answersId: {
+              questionId: answer.questionId,
+              answersId: formResponse.id,
+            },
+          },
+          update: {
             ...answer,
-            answersId: formResponse.id, // assuming this is the correct way to link the answer to the form response
+            answersId: formResponse.id,
+          },
+          create: {
+            ...answer,
+            answersId: formResponse.id,
           },
         }),
       ),
