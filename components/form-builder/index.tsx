@@ -68,8 +68,6 @@ import FormTitle from "@/components/form-title";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import LoadingDots from "@/components/icons/loading-dots";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { QuestionSettingsForm } from "./question-settings-form";
 import { DateRangePicker } from "./date-range-picker";
 import { DatePicker } from "./date-picker";

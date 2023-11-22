@@ -8,6 +8,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 
 import * as z from "zod";
@@ -145,6 +146,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -168,6 +170,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                       <FormControl>
                         <Textarea {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -202,6 +205,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                         </FormControl>
                         <span className="mb-0.5 ml-1.5">Yes</span>
                       </div>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -260,6 +264,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                             })()}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
                       </FormControl>
                     </FormItem>
                   )}
@@ -295,6 +300,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                           toDate={question.toDate ? question.toDate : undefined}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -339,6 +345,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                           toDate={question.toDate ? question.toDate : undefined}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

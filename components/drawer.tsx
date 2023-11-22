@@ -172,11 +172,11 @@ export default function Drawer({ children }: { children: ReactNode }) {
           href: `/city/${subdomain}/events/${path}/tickets`,
           icon: <Ticket width={18} />,
         },
-        {
-          name: "Event Forms",
-          href: `/city/${subdomain}/events/${path}/forms`,
-          icon: <ClipboardSignature width={18} />,
-        },
+        // {
+        //   name: "Event Forms",
+        //   href: `/city/${subdomain}/events/${path}/forms`,
+        //   icon: <ClipboardSignature width={18} />,
+        // },
         {
           name: "Settings",
           href: `/city/${subdomain}/events/${segments[3]}/settings`,
