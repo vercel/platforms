@@ -49,17 +49,17 @@ export default function CreateOrganizationModal() {
           }
         })
       }
-      className="w-full rounded-md bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
+      className="w-full rounded-md bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-400 md:shadow dark:md:border-gray-700"
     >
       <div className="relative flex flex-col space-y-4 p-5 md:p-10">
-        <h2 className="font-cal text-2xl dark:text-gray-100">Create a new city</h2>
+        <h2 className="font-serif text-2xl text-gray-750 dark:text-gray-100">Create a new city</h2>
 
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="name"
-            className="text-sm font-medium text-gray-500 dark:text-gray-400"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
-            City Name
+            Name
           </label>
           <input
             name="name"
@@ -77,7 +77,7 @@ export default function CreateOrganizationModal() {
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="subdomain"
-            className="text-sm font-medium text-gray-500"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
             Subdomain
           </label>
@@ -103,13 +103,13 @@ export default function CreateOrganizationModal() {
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="description"
-            className="text-sm font-medium text-gray-500"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
             Description
           </label>
           <textarea
             name="description"
-            placeholder="Description about why my city is so awesome"
+            placeholder=""
             value={data.description}
             onChange={(e) => setData({ ...data, description: e.target.value })}
             maxLength={140}

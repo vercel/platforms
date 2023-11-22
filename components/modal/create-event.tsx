@@ -12,6 +12,7 @@ import { Organization } from "@prisma/client";
 import FormButton from "./form-button";
 import { DatePicker } from "../form-builder/date-picker";
 import TimePicker from "../ui/time-picker";
+import { Input } from "../ui/input";
 
 export function combineDateAndTime(date: Date, timeInMs: string) {
   const timeElapsed = parseInt(timeInMs);
@@ -31,6 +32,7 @@ export function combineDateAndTime(date: Date, timeInMs: string) {
   combined.setSeconds(seconds);
   combined.setMilliseconds(milliseconds);
 
+  console.log("combined date and time: ", combined.toISOString());
   return combined;
 }
 
@@ -91,10 +93,8 @@ export default function CreateEventModal({
       } else {
         va.track("Created Event");
         const { path } = res;
-        router.refresh();
-        router.push(`/city/${organization.subdomain}/events/${path}`);
-        modal?.hide();
         toast.success(`Successfully created Event!`);
+        router.push(`/city/${organization.subdomain}/events/${path}`);
       }
     });
   };
@@ -112,11 +112,11 @@ export default function CreateEventModal({
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="name"
-            className="text-sm font-medium text-gray-500 dark:text-gray-400"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
-            Event Name
+            Name
           </label>
-          <input
+          <Input
             name="name"
             type="text"
             placeholder="My Awesome Event"
@@ -125,19 +125,21 @@ export default function CreateEventModal({
             onChange={(e) => setData({ ...data, name: e.target.value })}
             maxLength={64}
             required
-            className="w-full rounded-md border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700 dark:focus:ring-white"
           />
         </div>
 
         <div className="flex flex-col space-y-2">
-          <label htmlFor="path" className="text-sm font-medium text-gray-500">
-            SEO Optimized Path
+          <label
+            htmlFor="path"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
+          >
+            Path
           </label>
           <div className="flex w-full max-w-md">
             <div className="flex items-center rounded-r-lg border border-l-0 border-gray-200 bg-gray-100 px-3 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
               {organization.subdomain}.{process.env.NEXT_PUBLIC_ROOT_DOMAIN}/
             </div>
-            <input
+            <Input
               name="path"
               type="text"
               placeholder="path"
@@ -147,7 +149,6 @@ export default function CreateEventModal({
               pattern="[a-zA-Z0-9\-]+" // only allow lowercase letters, numbers, and dashes
               maxLength={6432}
               required
-              className="w-full rounded-l-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700 dark:focus:ring-white"
             />
           </div>
         </div>
@@ -155,7 +156,7 @@ export default function CreateEventModal({
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="description"
-            className="text-sm font-medium text-gray-500"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
             Description
           </label>
@@ -169,7 +170,9 @@ export default function CreateEventModal({
           />
         </div>
         <div className="flex flex-col space-y-2">
-          <label className="text-sm font-medium text-gray-500">Starts At</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-400">
+            Starts At
+          </label>
           <div className="flex">
             <DatePicker
               date={data.startingAtDate}
@@ -186,7 +189,9 @@ export default function CreateEventModal({
           </div>
         </div>
         <div className="flex flex-col space-y-2">
-          <label className="text-sm font-medium text-gray-500">Ends At</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-400">
+            Ends At
+          </label>
           <div className="flex">
             <DatePicker
               date={data.endingAtDate}
