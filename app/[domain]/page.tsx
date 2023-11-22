@@ -56,7 +56,8 @@ export default async function SiteHomePage({
                     src={sitedata.image}
                     alt={`${sitedata?.name} Hero Image` ?? "Hero Image"}
                     blurDataURL={sitedata?.imageBlurhash ?? undefined}
-                    layout="fill"
+                    fill
+                    className="object-cover"
                   />
                 </AspectRatio>
               ) : null}
