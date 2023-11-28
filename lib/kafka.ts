@@ -68,7 +68,7 @@ export async function produceKafkaEvent(
     };
 
     if (eventProducer) {
-      eventProducer.produce(topic, JSON.stringify(message));
+      event.waitUntil(eventProducer.produce(topic, JSON.stringify(message)));
     }
   } catch (error) {
     console.warn("Failed to produce event. ", error);
