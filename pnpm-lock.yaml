@@ -134,6 +134,9 @@ dependencies:
   '@turf/centroid':
     specifier: ^6.5.0
     version: 6.5.0
+  '@upstash/kafka':
+    specifier: 1.3.4-canary.1
+    version: 1.3.4-canary.1
   '@upstash/ratelimit':
     specifier: ^0.4.3
     version: 0.4.4
@@ -3797,6 +3800,11 @@ packages:
       '@upstash/redis': 1.22.0
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /@upstash/kafka@1.3.4-canary.1:
+    resolution: {integrity: sha512-3iA18nUlCu94eO8G8Evmiv46lfDU/1UR0K/HLUDIq5gd73re+oPhWgKgLUz86nG8ETiG4Os8GqcsCbimN727+A==}
+    engines: {node: '>=18'}
     dev: false
 
   /@upstash/ratelimit@0.4.4:
