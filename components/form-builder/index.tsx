@@ -498,10 +498,10 @@ const EditableQuestion = ({
         }}
         className="flex"
       >
-        <div className="text-lg font-semibold ">
+        <div className="text-lg font-semibold w-full h-12">
           {isEditing ? (
             <Input
-              className="m-0 h-auto border-0 p-0 focus:border-b"
+              className="m-0 h-auto border-0 border-collapse text-lg p-2 focus:outline-none"
               placeholder={locales.QUESTION_PLACEHODLER_TEXT}
               type="ghost"
               value={q.text}
@@ -513,9 +513,9 @@ const EditableQuestion = ({
               }}
             />
           ) : q.text.length > 0 ? (
-            <span>{q.text}</span>
+            <span className="p-2 flex items-center">{q.text}</span>
           ) : (
-            <span className="text-md text-gray-400 dark:text-gray-600">
+            <span className="text-gray-400 dark:text-gray-600 p-2 flex items-center">
               {locales.QUESTION_PLACEHODLER_TEXT}
             </span>
           )}
@@ -527,11 +527,11 @@ const EditableQuestion = ({
         onMouseLeave={() => {
           setIsEditingDsc(false);
         }}
+        className="min-h-[56px]"
       >
         {isEditingDsc ? (
           <Input
-            className="text-md m-0 h-auto border-0 p-0 focus:border-b"
-            type="ghost"
+            className="text-md m-0 h-auto border-0 p-2 focus:outline-none resize-none"
             placeholder={"Optional description"}
             value={q.description ? q.description : undefined}
             onChange={(e) => handleUpdateQuestionDsc(q, e.target.value)}
@@ -540,11 +540,11 @@ const EditableQuestion = ({
             }}
           />
         ) : q?.description && q.description?.length > 0 ? (
-          q.description
+          <div className="p-2">{q.description}</div>
         ) : (
-          <span className="text-md text-gray-400 dark:text-gray-600">
+          <div className="text-md text-gray-400 dark:text-gray-600 p-2">
             {"Optional description"}
-          </span>
+          </div>
         )}
       </div>
 
@@ -612,9 +612,9 @@ const questionTypeToDisplayText = (type: QuestionType) => {
 const mapQuestionTypeToInput = (q: Question) => {
   switch (q.type) {
     case QuestionType.SHORT_TEXT:
-      return <Input type="text" />;
+      return <Input readOnly={true} type="text" placeholder={"Short answer"}/>;
     case QuestionType.LONG_TEXT:
-      return <Textarea />;
+      return <Textarea readOnly={true} placeholder={"Long answer"}/>;
     case QuestionType.SELECT:
     case QuestionType.DROPDOWN:
       return (
