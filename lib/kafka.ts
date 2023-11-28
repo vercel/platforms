@@ -2,8 +2,16 @@ import { Kafka } from "@upstash/kafka";
 import { NextFetchEvent, NextRequest } from "next/server";
 
 export function initKafka() {
-  const { KAFKA_BROKER, KAFKA_USERNAME, KAFKA_PASSWORD } = process.env;
-  if (!KAFKA_BROKER || !KAFKA_USERNAME || !KAFKA_PASSWORD) {
+  const {
+    UPSTASH_KAFKA_REST_URL,
+    UPSATSH_KAFKA_REST_USERNAME,
+    UPSTASH_KAFKA_REST_PASSWORD,
+  } = process.env;
+  if (
+    !UPSTASH_KAFKA_REST_URL ||
+    !UPSATSH_KAFKA_REST_USERNAME ||
+    !UPSTASH_KAFKA_REST_PASSWORD
+  ) {
     console.warn(
       "Kafka environment variables are not set. Analytics is disabled.",
     );
@@ -12,9 +20,9 @@ export function initKafka() {
 
   try {
     const kafka = new Kafka({
-      url: KAFKA_BROKER,
-      username: KAFKA_USERNAME,
-      password: KAFKA_PASSWORD,
+      url: UPSTASH_KAFKA_REST_URL,
+      username: UPSATSH_KAFKA_REST_USERNAME,
+      password: UPSTASH_KAFKA_REST_PASSWORD,
     });
 
     return kafka;
@@ -58,7 +66,7 @@ export async function produceKafkaEvent(
     };
 
     if (eventProducer) {
-      event.waitUntil(eventProducer.produce(topic, JSON.stringify(message)));
+      eventProducer.produce(topic, JSON.stringify(message));
     }
   } catch (error) {
     console.warn("Failed to produce event. ", error);
