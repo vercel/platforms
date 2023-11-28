@@ -2,8 +2,8 @@ import { Kafka } from "@upstash/kafka";
 import { NextFetchEvent, NextRequest } from "next/server";
 
 export function initKafka() {
-  const { KAFKA_ENDPOINT, KAFKA_USERNAME, KAFKA_PASSWORD } = process.env;
-  if (!KAFKA_ENDPOINT || !KAFKA_USERNAME || !KAFKA_PASSWORD) {
+  const { KAFKA_BROKER, KAFKA_USERNAME, KAFKA_PASSWORD } = process.env;
+  if (!KAFKA_BROKER || !KAFKA_USERNAME || !KAFKA_PASSWORD) {
     console.warn(
       "Kafka environment variables are not set. Analytics is disabled.",
     );
@@ -12,7 +12,7 @@ export function initKafka() {
 
   try {
     const kafka = new Kafka({
-      url: KAFKA_ENDPOINT,
+      url: KAFKA_BROKER,
       username: KAFKA_USERNAME,
       password: KAFKA_PASSWORD,
     });
