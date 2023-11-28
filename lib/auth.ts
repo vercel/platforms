@@ -21,7 +21,6 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
   const allHeaders = headers();
   const xForwardedHost = allHeaders.get("x-forwarded-host");
   const hostname = host || xForwardedHost || process.env.NEXTAUTH_URL;
-  console.log({ hostname, host, xForwardedHost });
 
   return {
     providers: [
