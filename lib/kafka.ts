@@ -1,9 +1,17 @@
 import { Kafka } from "@upstash/kafka";
-import { NextFetchEvent, NextRequest } from "next/server";
+import { NextFetchEvent, NextRequest, userAgent } from "next/server";
 
 export function initKafka() {
-  const { KAFKA_BROKER, KAFKA_USERNAME, KAFKA_PASSWORD } = process.env;
-  if (!KAFKA_BROKER || !KAFKA_USERNAME || !KAFKA_PASSWORD) {
+  const {
+    UPSTASH_KAFKA_REST_URL,
+    UPSTASH_KAFKA_REST_USERNAME,
+    UPSTASH_KAFKA_REST_PASSWORD,
+  } = process.env;
+  if (
+    !UPSTASH_KAFKA_REST_URL ||
+    !UPSTASH_KAFKA_REST_USERNAME ||
+    !UPSTASH_KAFKA_REST_PASSWORD
+  ) {
     console.warn(
       "Kafka environment variables are not set. Analytics is disabled.",
     );
@@ -12,9 +20,9 @@ export function initKafka() {
 
   try {
     const kafka = new Kafka({
-      url: KAFKA_BROKER,
-      username: KAFKA_USERNAME,
-      password: KAFKA_PASSWORD,
+      url: UPSTASH_KAFKA_REST_URL,
+      username: UPSTASH_KAFKA_REST_USERNAME,
+      password: UPSTASH_KAFKA_REST_PASSWORD,
     });
 
     return kafka;
@@ -40,25 +48,27 @@ export async function produceKafkaEvent(
     // Get the pathname of the request (e.g. /, /about, /blog/first-post)
     const path = url.pathname;
     const searchParams = url.searchParams;
+    const { device } = userAgent(req);
 
     const topic = "fora_request";
-
     const message = {
       hostname,
+      xForwardedHost: req.headers.get("x-forwarded-host") || undefined,
       path,
       searchParams,
-      country: req.geo?.country,
+      hash: url.hash,
+      locale: url.locale,
       city: req.geo?.city,
+      country: req.geo?.country,
       region: req.geo?.region,
       url: req.url,
-      ip: req.headers.get("x-real-ip"),
-      mobile: req.headers.get("sec-ch-ua-mobile"),
-      platform: req.headers.get("sec-ch-ua-platform"),
-      useragent: req.headers.get("user-agent"),
+      ip: req.ip,
+      device: device,
+      userAgent: req.headers.get("user-agent"),
     };
 
     if (eventProducer) {
-      event.waitUntil(eventProducer.produce(topic, JSON.stringify(message)));
+      eventProducer.produce(topic, JSON.stringify(message));
     }
   } catch (error) {
     console.warn("Failed to produce event. ", error);
