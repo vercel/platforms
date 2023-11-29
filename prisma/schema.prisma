@@ -406,3 +406,9 @@ model Booking {
   accommodationUnitId String
   accommodationUnit   AccommodationUnit @relation(fields: [accommodationUnitId], references: [id])
 }
+
+model EmailSubscriber {
+  id    String @id @default(cuid())
+  email String @unique
+  createdAt DateTime @default(now())
+}
