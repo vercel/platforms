@@ -1509,3 +1509,26 @@ export const createAccommodationUnit = withOrganizationAuth(
     return accommodationUnit;
   },
 );
+
+export const createEmailSubscriber = async (email: string) => {
+  try {
+    const [role, organization] = await prisma.$transaction([
+      prisma.emailSubscriber.create({
+        data: {
+          email
+        },
+      })
+    ]);
+  } catch (error: any) {
+    console.error(error);
+    if (error.code === "P2002") {
+      return {
+        error: `This email's already been signed up`,
+      };
+    } else {
+      return {
+        error: error.message,
+      };
+    }
+  }
+};
