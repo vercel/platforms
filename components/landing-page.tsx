@@ -46,7 +46,7 @@ const LandingPage = () => {
               For startup city founder. Start, fund, and grow launch, and manage
             </span> */}
           </p>
-          <div className="mb-8 mt-8">
+          <div className="mb-6 mt-4">
             {/* <Link href={`${process.env.NEXTAUTH_URL}/login`}>
               <PrimaryOutlineButton>Start your city</PrimaryOutlineButton>
             </Link> */}
