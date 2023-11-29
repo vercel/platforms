@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense, useState } from "react";
+import { ChangeEvent, Suspense, useState } from "react";
 import PrimaryOutlineButton from "./primary-outline-button";
 import Link from "next/link";
 import { Input } from "./ui/input";
@@ -16,7 +16,7 @@ const LandingPage = () => {
   const [email, setEmail] = useState('');
   const [submittedEmail, setSubmittedEmail] = useState(false);
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
 
