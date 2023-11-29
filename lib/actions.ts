@@ -1512,13 +1512,14 @@ export const createAccommodationUnit = withOrganizationAuth(
 
 export const createEmailSubscriber = async (email: string) => {
   try {
-    const [role, organization] = await prisma.$transaction([
+    const response = await prisma.$transaction([
       prisma.emailSubscriber.create({
         data: {
           email
         },
       })
     ]);
+    return response;
   } catch (error: any) {
     console.error(error);
     if (error.code === "P2002") {
