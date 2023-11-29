@@ -20,14 +20,10 @@ const LandingPage = () => {
     setEmail(e.target.value);
   };
 
-  const mockCreateEmailSubscriber = (email: string) => {
-    alert(`subscribed (mock): {email}`);
-  }
-
   const handleSubmit = () => {
     if (email.trim() !== '') {
       // createEmailSubscriber(email);
-      mockCreateEmailSubscriber(email);
+      createEmailSubscriber(email);
       setSubmittedEmail(true);
     }
   };
