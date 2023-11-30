@@ -23,10 +23,6 @@ export default function CreateFormButton() {
             { params: { subdomain } },
             null,
           );
-          track("form_created", {
-            subdomain,
-            ...form,
-          });
           router.push(`/city/${subdomain}/forms/${form.id}`);
           router.refresh();
         })

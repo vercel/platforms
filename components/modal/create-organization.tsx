@@ -44,11 +44,7 @@ export default function CreateOrganizationModal() {
             } else {
               const { imageBlurhash, createdAt, updatedAt, ...rest } =
                 res as Organization;
-              track("city_created", {
-                ...rest,
-                createdAt: createdAt.toISOString(),
-                updatedAt: updatedAt.toISOString(),
-              });
+
               const { id, subdomain } = res as Organization;
               router.refresh();
               router.push(`/city/${subdomain}`);

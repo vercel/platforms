@@ -100,13 +100,6 @@ export default function CreateEventModal({
         toast.error(res.error);
       } else {
         const { imageBlurhash, createdAt, updatedAt, ...org } = organization;
-        track("event_created", {
-          name,
-          description,
-          path,
-          organizationId: organization.id,
-          organizationSubdomain: organization.subdomain,
-        });
         toast.success(`Successfully created Event!`);
         router.push(`/city/${organization.subdomain}/events/${res.path}`);
       }

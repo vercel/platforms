@@ -31,12 +31,6 @@ export default function CreateRoleModal() {
               toast.error(res.error);
             } else {
               const role = res as Role;
-              track("role_created", {
-                name: role.name,
-                description: role.description,
-                subdomain,
-                path,
-              });
               router.refresh();
               modal?.hide();
               toast.success(`Successfully created City!`);

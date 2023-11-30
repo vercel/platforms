@@ -26,7 +26,7 @@ export default function ReportAbuse() {
         <form
           action={async (formData) => {
             const url = formData.get("url") as string;
-            va.track("Reported Abuse", { url });
+            // va.track("Reported Abuse", { url });
             // artificial 1s delay
             await new Promise((resolve) => setTimeout(resolve, 1000));
             setOpen(false);
