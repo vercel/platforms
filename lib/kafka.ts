@@ -12,10 +12,12 @@ export function initKafka() {
     !UPSTASH_KAFKA_REST_USERNAME ||
     !UPSTASH_KAFKA_REST_PASSWORD
   ) {
-    console.warn(
+    console.error(
       "Kafka environment variables are not set. Analytics is disabled.",
     );
-    return;
+    throw new Error(
+      "Kafka environment variables are not set. Analytics is disabled.",
+    );
   }
 
   try {
@@ -27,7 +29,8 @@ export function initKafka() {
 
     return kafka;
   } catch (error) {
-    console.warn("Failed to connect to Kafka. Analytics is disabled.", error);
+    console.error("Failed to connect to Kafka", error);
+    throw new Error("Failed to connect to Kafka");
   }
 }
 
@@ -36,8 +39,7 @@ export async function produceKafkaEvent(
   event: NextFetchEvent,
 ) {
   try {
-    const kafka = initKafka();
-    const eventProducer = kafka?.producer();
+    const eventProducer = initKafka().producer();
     const url = req.nextUrl;
 
     // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)

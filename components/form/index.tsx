@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import DomainStatus from "./domain-status";
 import DomainConfiguration from "./domain-configuration";
 import Uploader from "./uploader";
-import va from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 
 export default function Form({
   title,
@@ -31,7 +31,7 @@ export default function Form({
   };
   handleSubmit: any;
 }) {
-  const params = useParams() as { subdomain?: string, path?: string };
+  const params = useParams() as { subdomain?: string; path?: string };
   const router = useRouter();
   const { update } = useSession();
   return (
@@ -45,20 +45,21 @@ export default function Form({
         ) {
           return;
         }
-        handleSubmit(data, {params}, inputAttrs.name).then(async (res: any) => {
-          if (res.error) {
-            toast.error(res.error);
-          } else {
-            va.track(`Updated ${inputAttrs.name}`, params.subdomain ? { subdomain: params.subdomain } : {});
-            if (params.subdomain) {
-              router.refresh();
+        handleSubmit(data, { params }, inputAttrs.name).then(
+          async (res: any) => {
+            if (res.error) {
+              toast.error(res.error);
             } else {
-              await update();
-              router.refresh();
+              if (params.subdomain) {
+                router.refresh();
+              } else {
+                await update();
+                router.refresh();
+              }
+              toast.success(`Successfully updated ${inputAttrs.name}!`);
             }
-            toast.success(`Successfully updated ${inputAttrs.name}!`);
-          }
-        });
+          },
+        );
       }}
       className="rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900"
     >

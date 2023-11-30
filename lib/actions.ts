@@ -13,6 +13,8 @@ import {
   Place,
   Room,
   Bed,
+  EmailSubscriber,
+  EmailSubscriberInterest,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -44,6 +46,7 @@ import {
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
+import { track } from "@/lib/analytics";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -1509,3 +1512,45 @@ export const createAccommodationUnit = withOrganizationAuth(
     return accommodationUnit;
   },
 );
+
+export const createEmailSubscriber = async ({
+  email,
+  name,
+  description,
+  indicatedInterest,
+}: {
+  email: string;
+  name: string;
+  description: string;
+  indicatedInterest: EmailSubscriberInterest;
+}) => {
+  try {
+    const response = await prisma.emailSubscriber.create({
+      data: {
+        email,
+        name,
+        description,
+        indicatedInterest: indicatedInterest,
+      },
+    });
+
+    await track("email_subscription_created", {
+      email,
+      name,
+      indicatedInterest,
+    });
+
+    return response;
+  } catch (error: any) {
+    console.error(error);
+    if (error.code === "P2002") {
+      return {
+        error: `This email's already been signed up`,
+      };
+    } else {
+      return {
+        error: error.message,
+      };
+    }
+  }
+};

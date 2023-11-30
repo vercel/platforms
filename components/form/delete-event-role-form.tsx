@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { deleteEventRole } from "@/lib/actions";
-import va from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 
 export default function DeleteEventRoleForm({ roleName }: { roleName: string }) {
   const { subdomain, path, roleId } = useParams() as { subdomain: string, path: string, roleId: string };
@@ -20,7 +20,6 @@ export default function DeleteEventRoleForm({ roleName }: { roleName: string }) 
             if (res.error) {
               toast.error(res.error);
             } else {
-              va.track("Deleted Role");
               router.refresh();
               router.push(`/city/${res.organizationId}/events/${path}/roles`);
               toast.success(`Successfully deleted role!`);
