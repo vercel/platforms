@@ -1,8 +1,6 @@
 "use server";
 import { initKafka } from "./kafka";
 
-const kafka = initKafka();
-
 type AllowedPropertyValues = string | number | boolean | null;
 const ANALYTICS_TOPIC = "analytics_event";
 
@@ -10,10 +8,14 @@ export const track = async (
   type: ALLOWED_ANALYTICS_EVENTS,
   data?: Record<string, AllowedPropertyValues>,
 ) => {
-  console.warn("track: ", type, data);
+  const kafka = initKafka();
+  console.info("track: ", type, data, kafka);
+
   try {
     const producer = kafka.producer();
-    producer.produce(ANALYTICS_TOPIC, {
+    console.info("producer: ", producer);
+
+    return producer.produce(ANALYTICS_TOPIC, {
       type,
       data,
     });

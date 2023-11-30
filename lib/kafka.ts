@@ -12,7 +12,7 @@ export function initKafka() {
     !UPSTASH_KAFKA_REST_USERNAME ||
     !UPSTASH_KAFKA_REST_PASSWORD
   ) {
-    console.warn(
+    console.error(
       "Kafka environment variables are not set. Analytics is disabled.",
     );
     throw new Error(
@@ -29,7 +29,7 @@ export function initKafka() {
 
     return kafka;
   } catch (error) {
-    console.warn("Failed to connect to Kafka", error);
+    console.error("Failed to connect to Kafka", error);
     throw new Error("Failed to connect to Kafka");
   }
 }
