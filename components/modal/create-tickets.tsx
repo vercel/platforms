@@ -27,10 +27,10 @@ import { toast } from "@/components/ui/use-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "./provider";
 import { Event, Form as ForaForm, Organization, Role } from "@prisma/client";
-import { CreatTicketTierFormSchema } from "@/lib/schema";
+import { CreateTicketTierFormSchema } from "@/lib/schema";
 import { createTicketTier } from "@/lib/actions";
 
-export default function CreateTicketModal({
+export default function CreateTicketsModal({
   roles,
   event,
   forms,
@@ -41,8 +41,8 @@ export default function CreateTicketModal({
   forms: ForaForm[];
   organization: Organization;
 }) {
-  const form = useForm<z.infer<typeof CreatTicketTierFormSchema>>({
-    resolver: zodResolver(CreatTicketTierFormSchema),
+  const form = useForm<z.infer<typeof CreateTicketTierFormSchema>>({
+    resolver: zodResolver(CreateTicketTierFormSchema),
     defaultValues: {
       eventId: event.id,
       currency: "USD",
@@ -56,7 +56,7 @@ export default function CreateTicketModal({
     path: string;
   };
 
-  async function onSubmit(data: z.infer<typeof CreatTicketTierFormSchema>) {
+  async function onSubmit(data: z.infer<typeof CreateTicketTierFormSchema>) {
     const result = await createTicketTier(
       data,
       { params: { subdomain, path } },
@@ -78,7 +78,7 @@ export default function CreateTicketModal({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full rounded-md bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
+        className="w-full rounded-md p-4 space-y-4 bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
       >
         <FormField
           control={form.control}
@@ -89,7 +89,7 @@ export default function CreateTicketModal({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select an event Role to sell Tickets for" />
+                    <SelectValue placeholder="Select an event role to sell tickets for" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -124,7 +124,7 @@ export default function CreateTicketModal({
               <Select onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select an application Form" />
+                    <SelectValue placeholder="Select an application form" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -141,7 +141,7 @@ export default function CreateTicketModal({
                 <Link
                   href={`/city/${organization.subdomain}/events/${event.path}/forms`}
                 >
-                  Click here to build and manage Application Forms
+                  Click here to build and manage application forms
                 </Link>
                 .
               </FormDescription>

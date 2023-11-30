@@ -49,7 +49,7 @@ export default async function EventRolesPage({
       <PageHeader
         title="Event Roles"
         ActionButton={
-          <OpenModalButton text="Create new Role">
+          <OpenModalButton text="Create new role">
             <CreateRoleModal />
           </OpenModalButton>
         }

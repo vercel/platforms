@@ -68,8 +68,6 @@ export default async function EventRolesPage({
 
       <Form
         title="Name"
-        description="The name of your site. This will be used as the meta title on Google as well."
-        helpText="Please use 32 characters maximum."
         inputAttrs={{
           name: "name",
           type: "text",
@@ -82,13 +80,10 @@ export default async function EventRolesPage({
 
       <Form
         title="Description"
-        description="The description of your site. This will be used as the meta description on Google as well."
-        helpText="Include SEO-optimized keywords that you want to rank for."
         inputAttrs={{
           name: "description",
           type: "text",
           defaultValue: role?.description!,
-          placeholder: "A blog about really interesting things.",
         }}
         handleSubmit={updateEventRole}
       />
