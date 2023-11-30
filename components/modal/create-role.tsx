@@ -4,10 +4,10 @@ import { toast } from "sonner";
 import { createEventRole } from "@/lib/actions";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "./provider";
-import va from "@vercel/analytics";
 import { useState } from "react";
 import { Role } from "@prisma/client";
 import FormButton from "./form-button";
+import { track } from "@/lib/analytics";
 
 export default function CreateRoleModal() {
   const router = useRouter();
@@ -30,7 +30,13 @@ export default function CreateRoleModal() {
             if ("error" in res && res.error) {
               toast.error(res.error);
             } else {
-              va.track("Created Role");
+              const role = res as Role;
+              track("role_created", {
+                name: role.name,
+                description: role.description,
+                subdomain,
+                path,
+              });
               router.refresh();
               modal?.hide();
               toast.success(`Successfully created City!`);
@@ -48,7 +54,7 @@ export default function CreateRoleModal() {
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="name"
-            className="text-gray-500 text-sm font-medium dark:text-gray-400"
+            className="text-sm font-medium text-gray-500 dark:text-gray-400"
           >
             Role Name
           </label>
@@ -94,7 +100,7 @@ export default function CreateRoleModal() {
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="description"
-            className="text-gray-500 text-sm font-medium"
+            className="text-sm font-medium text-gray-500"
           >
             Description
           </label>

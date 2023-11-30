@@ -5,6 +5,7 @@ import { createForm } from "@/lib/actions";
 import { useParams, useRouter } from "next/navigation";
 import va from "@vercel/analytics";
 import CreateButton from "./primary-button";
+import { track } from "@/lib/analytics";
 
 export default function CreateFormButton() {
   const router = useRouter();
@@ -22,7 +23,10 @@ export default function CreateFormButton() {
             { params: { subdomain } },
             null,
           );
-          va.track("Created Form");
+          track("form_created", {
+            subdomain,
+            ...form,
+          });
           router.push(`/city/${subdomain}/forms/${form.id}`);
           router.refresh();
         })

@@ -13,6 +13,7 @@ import FormButton from "./form-button";
 import { DatePicker } from "../form-builder/date-picker";
 import TimePicker from "../ui/time-picker";
 import { Input } from "../ui/input";
+import { track } from "@/lib/analytics";
 
 export function combineDateAndTime(date: Date, timeInMs: string) {
   const timeElapsed = parseInt(timeInMs);
@@ -74,27 +75,40 @@ export default function CreateEventModal({
   }, [data.name]);
 
   const onSubmit = async () => {
+    const startingAt =
+      data.startingAtDate && data.startingAtTime
+        ? combineDateAndTime(data.startingAtDate, data.startingAtTime)
+        : new Date();
+
+    const endingAt =
+      data.endingAtDate && data.endingAtTime
+        ? combineDateAndTime(data.endingAtDate, data.endingAtTime)
+        : new Date();
+
+    const name = data.name;
+    const description = data.description;
+    const path = data.path;
     createEvent({
-      name: data.name as string,
-      description: data.description as string,
-      path: data.path as string,
+      name,
+      description,
+      path,
       organizationId: organization.id,
-      startingAt:
-        data.startingAtDate && data.startingAtTime
-          ? combineDateAndTime(data.startingAtDate, data.startingAtTime)
-          : new Date(),
-      endingAt:
-        data.endingAtDate && data.endingAtTime
-          ? combineDateAndTime(data.endingAtDate, data.endingAtTime)
-          : new Date(),
+      startingAt,
+      endingAt,
     }).then((res: any) => {
       if (res.error) {
         toast.error(res.error);
       } else {
-        va.track("Created Event");
-        const { path } = res;
+        const { imageBlurhash, createdAt, updatedAt, ...org } = organization;
+        track("event_created", {
+          name,
+          description,
+          path,
+          organizationId: organization.id,
+          organizationSubdomain: organization.subdomain,
+        });
         toast.success(`Successfully created Event!`);
-        router.push(`/city/${organization.subdomain}/events/${path}`);
+        router.push(`/city/${organization.subdomain}/events/${res.path}`);
       }
     });
   };

@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { Organization } from "@prisma/client";
 import PrimaryButton from "../primary-button";
 import FormButton from "./form-button";
+import { track } from "@/lib/analytics";
 
 export default function CreateOrganizationModal() {
   const router = useRouter();
@@ -36,23 +37,33 @@ export default function CreateOrganizationModal() {
   return (
     <form
       action={async (data: FormData) =>
-        createOrganization(data).then((res: Organization | { error: string }) => {
-          if ('error' in res && res.error) {
-            toast.error(res.error);
-          } else {
-            va.track("Created City");
-            const { id, subdomain } = res as Organization;
-            router.refresh();
-            router.push(`/city/${subdomain}`);
-            modal?.hide();
-            toast.success(`Successfully created City!`);
-          }
-        })
+        createOrganization(data).then(
+          (res: Organization | { error: string }) => {
+            if ("error" in res && res.error) {
+              toast.error(res.error);
+            } else {
+              const { imageBlurhash, createdAt, updatedAt, ...rest } =
+                res as Organization;
+              track("city_created", {
+                ...rest,
+                createdAt: createdAt.toISOString(),
+                updatedAt: updatedAt.toISOString(),
+              });
+              const { id, subdomain } = res as Organization;
+              router.refresh();
+              router.push(`/city/${subdomain}`);
+              modal?.hide();
+              toast.success(`Successfully created City!`);
+            }
+          },
+        )
       }
       className="w-full rounded-md bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-400 md:shadow dark:md:border-gray-700"
     >
       <div className="relative flex flex-col space-y-4 p-5 md:p-10">
-        <h2 className="font-serif text-2xl text-gray-750 dark:text-gray-100">Create a new city</h2>
+        <h2 className="font-serif text-2xl text-gray-750 dark:text-gray-100">
+          Create a new city
+        </h2>
 
         <div className="flex flex-col space-y-2">
           <label
@@ -94,7 +105,7 @@ export default function CreateOrganizationModal() {
               required
               className="w-full rounded-l-lg border border-gray-700 bg-gray-200 px-4 py-2 text-sm text-gray-900 placeholder:text-gray-700 focus:border-gray-900 focus:outline-none focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-700 dark:focus:ring-gray-100"
             />
-            <div className="flex items-center rounded-r-lg border border-l-0 border-gray-700 font-medium text-gray-100 bg-gray-800 px-3 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
+            <div className="flex items-center rounded-r-lg border border-l-0 border-gray-700 bg-gray-800 px-3 text-sm font-medium text-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
               .{process.env.NEXT_PUBLIC_ROOT_DOMAIN}
             </div>
           </div>
@@ -124,4 +135,3 @@ export default function CreateOrganizationModal() {
     </form>
   );
 }
-

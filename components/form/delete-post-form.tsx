@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { deletePost } from "@/lib/actions";
-import va from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 
 export default function DeletePostForm({ postName }: { postName: string }) {
   const { id } = useParams() as { id: string };
@@ -19,7 +19,7 @@ export default function DeletePostForm({ postName }: { postName: string }) {
           if (res.error) {
             toast.error(res.error);
           } else {
-            va.track("Deleted Post");
+            track("post_deleted", { id });
             router.refresh();
             router.push(`/city/${res.organizationId}`);
             toast.success(`Successfully deleted post!`);
