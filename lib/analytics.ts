@@ -1,9 +1,12 @@
-import kafka from "./kafka";
+"use server";
+import { initKafka } from "./kafka";
+
+const kafka = initKafka();
 
 type AllowedPropertyValues = string | number | boolean | null;
 const ANALYTICS_TOPIC = "analytics_event";
 
-export const track = (
+export const track = async (
   type: ALLOWED_ANALYTICS_EVENTS,
   data?: Record<string, AllowedPropertyValues>,
 ) => {
@@ -26,7 +29,6 @@ export const track = (
 export type ALLOWED_ANALYTICS_EVENTS =
   | "email_subscription_created"
   | "user_signup"
-  | "city_created"
   | "city_created"
   | "city_deleted"
   | "form_created"
