@@ -13,6 +13,7 @@ import {
   convertNameToTwoLetters,
   getTwoLetterPlaceholder,
   getUsername,
+  shortenString
 } from "@/lib/profile";
 import {
   Card,
@@ -22,15 +23,18 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import OpenModalButton from "@/components/open-modal-button";
 import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { columns } from "@/components/event-attendee-table/columns";
+import DataTable from "@/components/event-attendee-table/data-table";
 import Form from "@/components/form";
-import DataTable from "@/components/form-response-table/data-table";
+import AddAttendeesModal from "@/components/modal/add-attendees";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RegistrationCardItems } from "./registration-card-items";
 import { ExternalLink } from "lucide-react";
 import { updateEvent, getUsersWithRoleInEvent } from "@/lib/actions";
-import { columns } from "@/components/people-table/columns";
+import prisma from "@/lib/prisma";
 
 
 type RolesAndUsers = {
@@ -85,6 +89,12 @@ export function AboutCard({ event }: { event: Event }) {
 }
 
 export async function AttendeeTableCard({ event }: { event: Event }) {
+  const ticketTiers = await prisma.ticketTier.findMany({
+    where: {
+      eventId: event.id,
+    },
+  });
+
   const data = await getUsersWithRoleInEvent(event.path);
   return (
     <Card>
@@ -96,6 +106,14 @@ export async function AttendeeTableCard({ event }: { event: Event }) {
           data={data}
           columns={columns}
         />
+        <div className="flex justify-end mt-4">
+          <OpenModalButton text="Add attendees">
+            <AddAttendeesModal
+              ticketTiers={ticketTiers}
+              event={event}
+            />
+          </OpenModalButton>
+        </div>
       </CardContent>
     </Card>
   )
