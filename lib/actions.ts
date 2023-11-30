@@ -38,9 +38,10 @@ import {
 } from "@/lib/utils";
 import supabase from "./supabase";
 import {
-  CreatTicketTierFormSchema,
+  CreateTicketTierFormSchema,
   CreateAccommodationUnitSchema,
   CreatePlaceSchema,
+  IssueTicketFormSchema,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
@@ -1046,7 +1047,7 @@ export const updateEvent = withEventAuth(
 
 export const createTicketTier = withEventAuth(
   async (
-    data: z.infer<typeof CreatTicketTierFormSchema>,
+    data: z.infer<typeof CreateTicketTierFormSchema>,
     event: Event & { organization: Organization },
   ) => {
     const session = await getSession();
@@ -1056,7 +1057,7 @@ export const createTicketTier = withEventAuth(
       };
     }
 
-    const result = CreatTicketTierFormSchema.safeParse(data);
+    const result = CreateTicketTierFormSchema.safeParse(data);
     if (!result.success) {
       return {
         error: result.error.formErrors.fieldErrors,
@@ -1086,6 +1087,48 @@ export async function getEventTicketTiers(eventId: string) {
     },
   });
 }
+
+export const issueTicket = withEventAuth(
+  async (
+    data: z.infer<typeof IssueTicketFormSchema>,
+    event: Event & { organization: Organization },
+  ) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const result = IssueTicketFormSchema.safeParse(data);
+    if (!result.success) {
+      return {
+        error: result.error.formErrors.fieldErrors,
+      };
+    }
+
+    try {
+      const user = await prisma.user.create({
+        data: {
+          email: result.data.email
+        }
+      });
+
+      const ticket = await prisma.ticket.create({
+        data: {
+          ...result.data,
+          userId: user.id,
+        }
+      });
+
+      return ticket;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
 
 export const createForm = withOrganizationAuth(
   async (_: any, organization: Organization) => {
