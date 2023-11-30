@@ -10,6 +10,7 @@ export const track = async (
   type: ALLOWED_ANALYTICS_EVENTS,
   data?: Record<string, AllowedPropertyValues>,
 ) => {
+  console.warn("track: ", type, data);
   try {
     const producer = kafka.producer();
     producer.produce(ANALYTICS_TOPIC, {
