@@ -1520,7 +1520,13 @@ export const createEmailSubscriber = async (email: string) => {
         },
       }),
     ]);
-    track("email_subscription_created", { email });
+    console.log("response: ", response);
+
+    const produceResponse = await track("email_subscription_created", {
+      email,
+    });
+    console.log("produceResponse: ", produceResponse);
+
     return response;
   } catch (error: any) {
     console.error(error);
