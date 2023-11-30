@@ -78,7 +78,7 @@ export default function CreateTicketsModal({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full rounded-md p-4 space-y-4 bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
+        className="w-full space-y-4 rounded-md bg-gray-200/80 p-4 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
       >
         <FormField
           control={form.control}
@@ -103,11 +103,10 @@ export default function CreateTicketsModal({
                 </SelectContent>
               </Select>
               <FormDescription>
-               
                 <Link
                   href={`/city/${organization.subdomain}/events/${event.path}/roles`}
                 >
-                   Click here to create and manage Event Roles
+                  Click here to create and manage Event Roles
                 </Link>
                 .
               </FormDescription>

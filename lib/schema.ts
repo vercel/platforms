@@ -1,5 +1,5 @@
 import * as z from "zod";
-export const CreatTicketTierFormSchema = z.object({
+export const CreateTicketTierFormSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
   description: z.string().optional(),
   eventId: z.string().min(1, { message: "Event ID is required." }),
