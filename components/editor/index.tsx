@@ -85,7 +85,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
           }\n\n ${e.editor.getText()}`,
         );
         // complete(e.editor.storage.markdown.getMarkdown());
-        va.track("Autocomplete Shortcut Used");
+        // va.track("Autocomplete Shortcut Used");
       } else {
         setData((prev) => ({
           ...prev,
@@ -107,7 +107,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
     onError: (err) => {
       toast.error(err.message);
       if (err.message === "You have reached your request limit for the day.") {
-        va.track("Rate Limit Reached");
+        // va.track("Rate Limit Reached");
       }
     },
   });

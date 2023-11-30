@@ -52,19 +52,9 @@ export default function Form({
             } else {
               if (params.subdomain) {
                 router.refresh();
-                track("form_updated", {
-                  subdomain: params?.subdomain ?? null,
-                  path: params?.path ?? null,
-                  name: inputAttrs.name,
-                });
               } else {
                 await update();
                 router.refresh();
-                track("form_updated", {
-                  subdomain: params?.subdomain ?? null,
-                  path: params?.path ?? null,
-                  name: inputAttrs.name,
-                });
               }
               toast.success(`Successfully updated ${inputAttrs.name}!`);
             }

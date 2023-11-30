@@ -9,11 +9,9 @@ export const track = async (
   data?: Record<string, AllowedPropertyValues>,
 ) => {
   const kafka = initKafka();
-  console.info("track: ", type, data, kafka);
 
   try {
     const producer = kafka.producer();
-    console.info("producer: ", producer);
 
     return producer.produce(ANALYTICS_TOPIC, {
       type,

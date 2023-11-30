@@ -19,7 +19,6 @@ export default function DeletePostForm({ postName }: { postName: string }) {
           if (res.error) {
             toast.error(res.error);
           } else {
-            track("post_deleted", { id });
             router.refresh();
             router.push(`/city/${res.organizationId}`);
             toast.success(`Successfully deleted post!`);

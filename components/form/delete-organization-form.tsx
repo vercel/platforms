@@ -24,7 +24,6 @@ export default function DeleteOrganizationForm({
             if (res.error) {
               toast.error(res.error);
             } else {
-              track("city_deleted", { subdomain });
               router.refresh();
               router.push("/cities");
               toast.success(`Successfully deleted role!`);

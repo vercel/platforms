@@ -20,7 +20,6 @@ export default function DeleteEventRoleForm({ roleName }: { roleName: string }) 
             if (res.error) {
               toast.error(res.error);
             } else {
-              track("role_deleted", { subdomain, path, roleId });
               router.refresh();
               router.push(`/city/${res.organizationId}/events/${path}/roles`);
               toast.success(`Successfully deleted role!`);
