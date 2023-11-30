@@ -407,8 +407,16 @@ model Booking {
   accommodationUnit   AccommodationUnit @relation(fields: [accommodationUnitId], references: [id])
 }
 
+enum EmailSubscriberInterest {
+  JOIN
+  FOUND
+}
+
 model EmailSubscriber {
-  id    String @id @default(cuid())
-  email String @unique
-  createdAt DateTime @default(now())
+  id                String                  @id @default(cuid())
+  email             String                  @unique
+  name              String?
+  description       String?
+  indicatedInterest EmailSubscriberInterest @default(JOIN)
+  createdAt         DateTime                @default(now())
 }
