@@ -178,11 +178,11 @@ export const CreateAccommodationUnitSchema = z.object({
 export const JoinACitySchema = z.object({
   name: z.string().min(2, { message: "Name is required." }),
   email: z.string().email().min(1, { message: "Email is required." }),
-  description: z.string().optional(),
+  description: z.string().min(60, { message: "Name is required." }),
 });
 
 export const FoundACitySchema = z.object({
   name: z.string().min(2, { message: "Name is required." }),
   email: z.string().email().min(1, { message: "Email is required." }),
-  description: z.string().optional(),
+  description: z.string().min(60, { message: "Name is required." }),
 });

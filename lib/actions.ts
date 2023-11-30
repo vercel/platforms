@@ -1521,11 +1521,19 @@ export const createEmailSubscriber = async ({
 }: {
   email: string;
   name: string;
+<<<<<<< HEAD
   description?: string | undefined;
   indicatedInterest: EmailSubscriberInterest;
 }) => {
   try {
     const response: EmailSubscriber = await prisma.emailSubscriber.create({
+=======
+  description: string;
+  indicatedInterest: EmailSubscriberInterest;
+}) => {
+  try {
+    const response = await prisma.emailSubscriber.create({
+>>>>>>> 8dc7d80 (add email capture segmentation)
       data: {
         email,
         name,

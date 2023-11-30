@@ -413,12 +413,15 @@ enum EmailSubscriberInterest {
 }
 
 model EmailSubscriber {
-  id                String                  @id @default(cuid())
-  email             String                  @unique
+  id                            String                                   @id @default(cuid())
+  email                         String                                   @unique
   name              String?
   description       String?
   indicatedInterest EmailSubscriberInterest @default(JOIN)
-  createdAt         DateTime                @default(now())
+  name              String?
+  description       String?
+  indicatedInterest EmailSubscriberInterest @default(JOIN)
+  createdAt                 DateTime                               @default(now())
 }
 
 model Campaign {
