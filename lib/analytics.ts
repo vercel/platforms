@@ -1,5 +1,7 @@
 "use server";
-import kafka from "./kafka";
+import { initKafka } from "./kafka";
+
+const kafka = initKafka();
 
 type AllowedPropertyValues = string | number | boolean | null;
 const ANALYTICS_TOPIC = "analytics_event";
