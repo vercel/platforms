@@ -18,9 +18,9 @@ export default function Form({
   inputAttrs,
   handleSubmit,
 }: {
-  title: string;
-  description: string;
-  helpText: string;
+  title?: string;
+  description?: string;
+  helpText?: string;
   inputAttrs: {
     name: string;
     type: string;
