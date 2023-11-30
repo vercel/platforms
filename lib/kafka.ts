@@ -1,43 +1,24 @@
 import { Kafka } from "@upstash/kafka";
 import { NextFetchEvent, NextRequest, userAgent } from "next/server";
 
-export function initKafka() {
-  const {
-    UPSTASH_KAFKA_REST_URL,
-    UPSTASH_KAFKA_REST_USERNAME,
-    UPSTASH_KAFKA_REST_PASSWORD,
-  } = process.env;
-  if (
-    !UPSTASH_KAFKA_REST_URL ||
-    !UPSTASH_KAFKA_REST_USERNAME ||
-    !UPSTASH_KAFKA_REST_PASSWORD
-  ) {
-    console.warn(
-      "Kafka environment variables are not set. Analytics is disabled.",
-    );
-    return;
-  }
-
-  try {
-    const kafka = new Kafka({
-      url: UPSTASH_KAFKA_REST_URL,
-      username: UPSTASH_KAFKA_REST_USERNAME,
-      password: UPSTASH_KAFKA_REST_PASSWORD,
-    });
-
-    return kafka;
-  } catch (error) {
-    console.warn("Failed to connect to Kafka. Analytics is disabled.", error);
-  }
+declare global {
+  var kafka: Kafka | undefined;
 }
+
+const kafka =
+  global.kafka ||
+  new Kafka({
+    url: process.env.UPSTASH_KAFKA_REST_URL as string,
+    username: process.env.UPSTASH_KAFKA_REST_USERNAME as string,
+    password: process.env.UPSTASH_KAFKA_REST_PASSWORD as string,
+  });
 
 export async function produceKafkaEvent(
   req: NextRequest,
   event: NextFetchEvent,
 ) {
   try {
-    const kafka = initKafka();
-    const eventProducer = kafka?.producer();
+    const eventProducer = kafka.producer();
     const url = req.nextUrl;
 
     // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
@@ -74,3 +55,6 @@ export async function produceKafkaEvent(
     console.warn("Failed to produce event. ", error);
   }
 }
+
+
+export default kafka;

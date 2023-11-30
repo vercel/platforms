@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { deleteOrganization } from "@/lib/actions";
-import va from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 
 export default function DeleteOrganizationForm({
   organizationName,
@@ -24,7 +24,7 @@ export default function DeleteOrganizationForm({
             if (res.error) {
               toast.error(res.error);
             } else {
-              va.track("Deleted City");
+              track("city_deleted", { subdomain });
               router.refresh();
               router.push("/cities");
               toast.success(`Successfully deleted role!`);

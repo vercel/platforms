@@ -44,6 +44,7 @@ import {
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
+import { track } from "@/lib/analytics";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -1515,10 +1516,11 @@ export const createEmailSubscriber = async (email: string) => {
     const response = await prisma.$transaction([
       prisma.emailSubscriber.create({
         data: {
-          email
+          email,
         },
-      })
+      }),
     ]);
+    track("email_subscription_created", { email });
     return response;
   } catch (error: any) {
     console.error(error);

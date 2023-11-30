@@ -1,6 +1,6 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { initKafka, produceKafkaEvent } from "./lib/kafka";
+import { produceKafkaEvent } from "./lib/kafka";
 
 export const config = {
   matcher: [
