@@ -13,6 +13,8 @@ import {
   Place,
   Room,
   Bed,
+  EmailSubscriber,
+  EmailSubscriberInterest,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -1511,18 +1513,31 @@ export const createAccommodationUnit = withOrganizationAuth(
   },
 );
 
-export const createEmailSubscriber = async (email: string) => {
+export const createEmailSubscriber = async ({
+  email,
+  name,
+  description,
+  indicatedInterest,
+}: {
+  email: string;
+  name: string;
+  description: string;
+  indicatedInterest: EmailSubscriberInterest;
+}) => {
   try {
-    const response = await prisma.$transaction([
-      prisma.emailSubscriber.create({
-        data: {
-          email,
-        },
-      }),
-    ]);
+    const response = await prisma.emailSubscriber.create({
+      data: {
+        email,
+        name,
+        description,
+        indicatedInterest: indicatedInterest,
+      },
+    });
 
     await track("email_subscription_created", {
       email,
+      name,
+      indicatedInterest,
     });
 
     return response;

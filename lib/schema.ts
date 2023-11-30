@@ -174,3 +174,15 @@ export const CreateAccommodationUnitSchema = z.object({
   parentId: z.string().optional(),
   availability: CreateAvailabilitySchema,
 });
+
+export const JoinACitySchema = z.object({
+  name: z.string().min(2, { message: "Name is required." }),
+  email: z.string().email().min(1, { message: "Email is required." }),
+  description: z.string().min(60, { message: "Name is required." }),
+});
+
+export const FoundACitySchema = z.object({
+  name: z.string().min(2, { message: "Name is required." }),
+  email: z.string().email().min(1, { message: "Email is required." }),
+  description: z.string().min(60, { message: "Name is required." }),
+});
