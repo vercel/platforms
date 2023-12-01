@@ -12,17 +12,15 @@ export function RegistrationCardItems({
   event,
 }: RegistrationCardItemProps) {
   return (
-    <RegistrationCardLink eventPath={event.path} ticketTierId={ticketTier.id} key={ticketTier.id}>
-      <Card className="hover:border-white">
+    // <RegistrationCardLink eventPath={event.path} ticketTierId={ticketTier.id} key={ticketTier.id}>
+      <Card className="hover:border-white p-4">
         <h3 className="font-bold">{ticketTier.name}</h3>
         <p>{ticketTier.description}</p>
-        <p>Role: {ticketTier.role.name}</p>
-        <p>Issued: {ticketTier.issued}</p>
-        <p>Quantity: {ticketTier.quantity}</p>
+        <p>{ticketTier.issued} of {ticketTier.quantity} issued</p>
         <p>
-          Price: {ticketTier.price} {ticketTier.currency}
+          {ticketTier.currency === 'USD' ? `\$${ticketTier.price}` : `${ticketTier.price} ${ticketTier.currency}`}
         </p>
       </Card>
-    </RegistrationCardLink>
+    // </RegistrationCardLink>
   );
 }
