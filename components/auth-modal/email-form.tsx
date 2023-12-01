@@ -24,7 +24,7 @@ export default function EmailForm({loading, ...props}: EmailFormProps) {
       </Label>
       <Input
         id="email"
-        className="w-full rounded border border-gray-800 dark:border-gray-300 bg-transparent p-2 text-gray-800 transition-all duration-300 placeholder:text-gray-700 placeholder:dark:text-gray-400 hover:border-brand-primary/40 focus:border-brand-primary/50 focus:ring-brand-primary/50"
+        className="w-full rounded border border-gray-800 dark:border-gray-300 bg-transparent p-2 text-gray-800 transition-all duration-200 placeholder:text-gray-700 placeholder:dark:text-gray-400 hover:border-brand-primary/40 focus:border-brand-primary/50 focus:ring-brand-primary/50"
         placeholder="you@your.city"
         name="email"
         required
