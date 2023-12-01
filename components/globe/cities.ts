@@ -18,7 +18,7 @@ const cityData: CityData[] = [
     lon: -86.46,
     elevation: 3000,
     upcoming: true,
-    link: "https://vitalia.fora.co/",
+    link: "https://vitalia.city/",
   },
   {
     name: "Zuzalu",
