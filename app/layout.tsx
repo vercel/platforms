@@ -14,7 +14,7 @@ const image =
 export const metadata: Metadata = {
   title,
   description,
-  icons: ["https://vercel.pub/favicon.ico"],
+  icons: ["/fora-logo.png"],
   openGraph: {
     title,
     description,
