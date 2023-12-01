@@ -101,7 +101,7 @@ export default function FoundACityModal() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tell us a about your existing community.</FormLabel>
+                <FormLabel>Tell us about your existing community.</FormLabel>
                 <Textarea {...field} />
                 <FormDescription>Minimum 60 characters</FormDescription>
                 <FormMessage />
