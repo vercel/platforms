@@ -54,14 +54,10 @@ export default function JoinACityModal() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full rounded-md bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-lg md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
+        className="w-full rounded-md border-gray-850 bg-gray-200/70  backdrop-blur-xl dark:bg-gray-900/80 md:max-w-lg md:border md:shadow dark:md:border-gray-700"
       >
-        <div className="relative flex flex-col space-y-4 p-5 md:p-10">
-          <h2
-            className={
-              "mb-2 font-serif text-2xl font-light text-gray-800 dark:text-gray-200"
-            }
-          >
+        <div className="relative flex flex-col space-y-4 p-5 text-gray-850 dark:text-gray-200 md:p-10">
+          <h2 className={"mb-2 font-serif text-2xl font-light "}>
             Get an intro to a startup city.
           </h2>
           {/* <p
@@ -77,7 +73,10 @@ export default function JoinACityModal() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Your Name</FormLabel>
-                <Input {...field} />
+                <Input
+                  className="border-gray-700 dark:border-gray-300"
+                  {...field}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -89,7 +88,10 @@ export default function JoinACityModal() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Your Email</FormLabel>
-                <Input {...field} />
+                <Input
+                  className="border-gray-700 dark:border-gray-300"
+                  {...field}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -101,15 +103,20 @@ export default function JoinACityModal() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tell us a little about yourself.</FormLabel>
-                <Textarea {...field} />
-                <FormDescription>Minimum 60 characters</FormDescription>
+                <Textarea
+                  className="border-gray-700 dark:border-gray-300"
+                  {...field}
+                />
+                <FormDescription className="text-gray-800 dark:text-gray-300">
+                  Minimum 60 characters
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
 
-        <div className="flex items-center justify-end rounded-b-lg border-t border-gray-700 bg-gray-200 p-3 dark:border-gray-700 dark:bg-transparent md:px-10">
+        <div className="flex items-center justify-end rounded-b-lg border-t border-gray-700 bg-transparent p-3 dark:border-gray-700 dark:bg-transparent md:px-10">
           <FormButton loading={loading} text={"Submit"} />
         </div>
       </form>
