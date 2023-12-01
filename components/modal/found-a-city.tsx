@@ -111,9 +111,9 @@ export default function FoundACityModal() {
                   className="border-gray-700 dark:border-gray-300"
                   {...field}
                 />
-                <FormDescription className="text-gray-800 dark:text-gray-300">
+                {/* <FormDescription className="text-gray-800 dark:text-gray-300">
                   Minimum 60 characters
-                </FormDescription>
+                </FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
