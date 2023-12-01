@@ -9,6 +9,7 @@ import { useModal } from "./modal/provider";
 import Link from "next/link";
 import JoinACityModal from "./modal/join-a-city";
 import FoundACityModal from "./modal/found-a-city";
+import LandingPageNav from "./landing-page-nav";
 
 const Globe = dynamic(() => import("./globe"), { ssr: false });
 // const ThreeGlobe = dynamic(() => import("./three-globe/index"), { ssr: false });
@@ -41,6 +42,8 @@ const LandingPage = () => {
 
   return (
     <>
+      {/* <LandingPageNav /> */}
+
       <div className="min-w-screen flex min-h-screen flex-col bg-gray-900 pt-[6rem]">
         <div className="flex w-full flex-col items-center justify-center p-6 md:p-8 lg:p-10">
           <h1 className="text-center font-serif text-[2rem]  font-extralight leading-snug text-gray-200 sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl">
