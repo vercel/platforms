@@ -11,6 +11,7 @@ import JoinACityModal from "./modal/join-a-city";
 import FoundACityModal from "./modal/found-a-city";
 import LandingPageNav from "./landing-page-nav";
 import OutlineButton from "./buttons/outline-button";
+import LandingPageFooter from "./landing-page-footer";
 
 const Globe = dynamic(() => import("./globe"), { ssr: false });
 // const ThreeGlobe = dynamic(() => import("./three-globe/index"), { ssr: false });
@@ -108,11 +109,7 @@ const LandingPage = () => {
         </div>
         {/* <HowItWorks /> */}
       </div>
-      <div className="m-16">
-        <p className="font-bold">Contact</p>
-        <p>team@fora.co</p>
-        <p className="mt-2">©2023 Fora Cities Inc.</p>
-      </div>
+      <LandingPageFooter />
     </>
   );
 };
