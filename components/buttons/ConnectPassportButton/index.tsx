@@ -23,7 +23,7 @@ const ConnectPassportButton = (props: any) => (
                     </clipPath>
                 </defs>
             </svg> */}
-            <span className="ml-2 mr-2  group-hover:text-fora-primary transition-all duration-300">{props.children}</span>
+            <span className="ml-2 mr-2  group-hover:text-fora-primary transition-all duration-200">{props.children}</span>
 
         </span>
     </button>
