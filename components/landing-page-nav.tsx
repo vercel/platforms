@@ -4,7 +4,7 @@ import styles from "./landing-page-nav.module.css";
 import { useModal } from "./modal/provider";
 import JoinACityModal from "./modal/join-a-city";
 import FoundACityModal from "./modal/found-a-city";
-import PrimaryOutlineButton from "./primary-outline-button";
+import PrimaryOutlineButton from "./buttons/primary-outline-button";
 
 export default function LandingPageNav() {
   const modal = useModal();

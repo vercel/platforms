@@ -4,12 +4,13 @@ import dynamic from "next/dynamic";
 import { ChangeEvent, Suspense, useState } from "react";
 import { createEmailSubscriber } from "@/lib/actions";
 import { Button } from "./ui/button";
-import PrimaryOutlineButton from "./primary-outline-button";
+import PrimaryOutlineButton from "./buttons/primary-outline-button";
 import { useModal } from "./modal/provider";
 import Link from "next/link";
 import JoinACityModal from "./modal/join-a-city";
 import FoundACityModal from "./modal/found-a-city";
 import LandingPageNav from "./landing-page-nav";
+import OutlineButton from "./buttons/outline-button";
 
 const Globe = dynamic(() => import("./globe"), { ssr: false });
 // const ThreeGlobe = dynamic(() => import("./three-globe/index"), { ssr: false });
@@ -49,12 +50,10 @@ const LandingPage = () => {
           <h1 className="text-center font-serif text-4xl  font-extralight leading-snug text-gray-200 md:text-5xl lg:text-6xl xl:text-6xl">
             <span>{"Launch, Fund, & Grow"}</span>
             <br />
-            <span>A New City</span>
+            <span>A Startup City</span>
           </h1>
           <p className="lg:text-md mt-4 max-w-xl text-center font-sans text-lg leading-normal text-gray-200 md:mt-6 md:text-xl lg:mt-8 lg:max-w-xl xl:max-w-2xl">
-            Fora is a platform that enables communities to found new cities.
-            Fora is built by a network of startup city operators, investors, and
-            citizens.
+            We help you crowdfund, collaborate and attract the right residents.
           </p>
 
           {/* <p className="lg:text-md mt-4 max-w-xl text-center font-sans text-lg leading-normal text-gray-200 md:mt-6 md:text-xl lg:mt-8 lg:max-w-xl xl:max-w-xl">
@@ -68,15 +67,8 @@ const LandingPage = () => {
             </Link> */}
           </div>
           <div className="flex space-x-8">
-            <button
-              onClick={openJoinACity}
-              className="rounded-full group flex h-10 items-center justify-center border border-gray-300/30 py-1.5 px-5 font-medium text-gray-300 transition-all duration-200 hover:border-brand-primary/60 hover:text-brand-primary/60"
-            >
-              Join a city
-            </button>
-            <PrimaryOutlineButton
-              onClick={openFoundACity}
-            >
+            <OutlineButton onClick={openJoinACity}>Join a city</OutlineButton>
+            <PrimaryOutlineButton onClick={openFoundACity}>
               Found a city
             </PrimaryOutlineButton>
           </div>
