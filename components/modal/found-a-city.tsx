@@ -59,7 +59,7 @@ export default function FoundACityModal() {
       >
         <div className="relative flex flex-col space-y-4 p-5 text-gray-850 dark:text-gray-200 md:p-10">
           <h2 className={"mb-2 font-serif text-2xl font-light"}>
-            Found a new city.
+            Found a new city
           </h2>
           {/* <p
             className={

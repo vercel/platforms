@@ -17,6 +17,12 @@ body {
   }
 }
 
+@layer components {
+  .glow-primary {
+    box-shadow: 0 0 3px theme('colors.brand.primary');
+  }
+}
+
 @layer utilities {
   .overflow-hidden {
     mask-image: -webkit-radial-gradient(white, black);

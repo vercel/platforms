@@ -42,11 +42,11 @@ const LandingPage = () => {
 
   return (
     <>
-      {/* <LandingPageNav /> */}
+      <LandingPageNav />
 
       <div className="min-w-screen flex min-h-screen flex-col bg-gray-900 pt-[6rem]">
         <div className="flex w-full flex-col items-center justify-center p-6 md:p-8 lg:p-10">
-          <h1 className="text-center font-serif text-[2rem]  font-extralight leading-snug text-gray-200 sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl">
+          <h1 className="text-center font-serif text-4xl  font-extralight leading-snug text-gray-200 md:text-5xl lg:text-6xl xl:text-6xl">
             <span>{"Launch, Fund, & Grow"}</span>
             <br />
             <span>A New City</span>
@@ -70,16 +70,15 @@ const LandingPage = () => {
           <div className="flex space-x-8">
             <button
               onClick={openJoinACity}
-              className="group flex h-10 items-center justify-center rounded border border-gray-300/30 p-2 px-4 font-semibold text-gray-200 transition-colors duration-200 hover:border-brand-primary/60 hover:text-brand-primary/60"
+              className="rounded-full group flex h-10 items-center justify-center border border-gray-300/30 p-2 px-4 font-semibold text-gray-200 transition-colors duration-200 hover:border-brand-primary/60 hover:text-brand-primary/60"
             >
-              Join a City
+              Join a city
             </button>
-            <button
+            <PrimaryOutlineButton
               onClick={openFoundACity}
-              className="group flex h-10 items-center justify-center rounded border border-gray-300/30 p-2 px-4 font-semibold text-gray-200 transition-colors duration-200 hover:border-brand-primary/60 hover:text-brand-primary/60"
             >
-              Found a City
-            </button>
+              Found a city
+            </PrimaryOutlineButton>
           </div>
           {/* <div>
             {submittedEmail ? (
