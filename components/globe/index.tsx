@@ -115,7 +115,6 @@ const World = ({
   //     </div>
   //   `;
 
-
   const width = size
     ? size
     : window.innerWidth < 768
@@ -128,7 +127,7 @@ const World = ({
 
   const onPointClick = (city: CityData) => {
     window.open(`${city.link}`, "_blank");
-  }
+  };
 
   return (
     <div
@@ -171,7 +170,7 @@ const World = ({
         labelText="name"
         labelSize={1.5}
         labelResolution={0}
-        labelLabel={(d) => getTooltip(d as CityData)}
+        // labelLabel={(d) => getTooltip(d as CityData)}
         onLabelClick={(label) => onPointClick(label as CityData)}
         objectRotation={{ x: 10, y: 0, z: 0 }}
         arcsData={arcsData}
