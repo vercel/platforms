@@ -33,7 +33,7 @@ export default function DeleteEventRoleForm({ roleName }: { roleName: string }) 
         <h2 className="font-cal text-xl dark:text-gray-50">Delete Role</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Deletes your role and everything associated with it. Type in the name
-          of your city <b>{roleName}</b> to confirm.
+          of the role, <b>{roleName}</b>, to confirm.
         </p>
 
         <input

@@ -40,7 +40,7 @@ import {
 } from "@/lib/utils";
 import supabase from "./supabase";
 import {
-  CreatTicketTierFormSchema,
+  CreateTicketTierFormSchema,
   CreateAccommodationUnitSchema,
   CreatePlaceSchema,
 } from "./schema";
@@ -1049,7 +1049,7 @@ export const updateEvent = withEventAuth(
 
 export const createTicketTier = withEventAuth(
   async (
-    data: z.infer<typeof CreatTicketTierFormSchema>,
+    data: z.infer<typeof CreateTicketTierFormSchema>,
     event: Event & { organization: Organization },
   ) => {
     const session = await getSession();
@@ -1059,7 +1059,7 @@ export const createTicketTier = withEventAuth(
       };
     }
 
-    const result = CreatTicketTierFormSchema.safeParse(data);
+    const result = CreateTicketTierFormSchema.safeParse(data);
     if (!result.success) {
       return {
         error: result.error.formErrors.fieldErrors,
