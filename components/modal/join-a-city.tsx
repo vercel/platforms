@@ -41,7 +41,7 @@ export default function JoinACityModal() {
         indicatedInterest: EmailSubscriberInterest.JOIN,
       });
       toast({
-        title: "Successfully submitted.",
+        title: "Thanks!",
       });
       modal?.hide();
     } catch (error) {
@@ -62,7 +62,7 @@ export default function JoinACityModal() {
               "mb-2 font-serif text-2xl font-light text-gray-800 dark:text-gray-200"
             }
           >
-            Get an intro to a startup city.
+            Stay informed about upcoming cities
           </h2>
           {/* <p
             className={
@@ -76,7 +76,7 @@ export default function JoinACityModal() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Name</FormLabel>
+                <FormLabel>Name*</FormLabel>
                 <Input {...field} />
                 <FormMessage />
               </FormItem>
@@ -88,7 +88,7 @@ export default function JoinACityModal() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Email</FormLabel>
+                <FormLabel>Email*</FormLabel>
                 <Input {...field} />
                 <FormMessage />
               </FormItem>
@@ -100,9 +100,10 @@ export default function JoinACityModal() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tell us a little about yourself.</FormLabel>
+                <FormLabel>
+                  (Optional) Tell us a little about yourself. What&apos;s your background? What interests you about startup cities?
+                </FormLabel>
                 <Textarea {...field} />
-                <FormDescription>Minimum 60 characters</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

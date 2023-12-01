@@ -42,7 +42,7 @@ export default function FoundACityModal() {
         indicatedInterest: EmailSubscriberInterest.FOUND,
       });
       toast({
-        title: "Successfully submitted.",
+        title: "Thanks!",
       });
       modal?.hide();
     } catch (error) {
@@ -63,7 +63,7 @@ export default function FoundACityModal() {
               "mb-2 font-serif text-2xl font-light text-gray-800 dark:text-gray-200"
             }
           >
-            Found a new city.
+            Found a new city
           </h2>
           {/* <p
             className={
@@ -77,7 +77,7 @@ export default function FoundACityModal() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Name</FormLabel>
+                <FormLabel>Name*</FormLabel>
                 <Input {...field} />
                 <FormMessage />
               </FormItem>
@@ -89,7 +89,7 @@ export default function FoundACityModal() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Email</FormLabel>
+                <FormLabel>Email*</FormLabel>
                 <Input type="email" {...field} />
                 <FormMessage />
               </FormItem>
@@ -101,9 +101,8 @@ export default function FoundACityModal() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tell us a about your existing community.</FormLabel>
+                <FormLabel>(Optional) Tell us about your idea for a city.</FormLabel>
                 <Textarea {...field} />
-                <FormDescription>Minimum 60 characters</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
