@@ -53,7 +53,11 @@ const LandingPage = () => {
             <span>A Startup City</span>
           </h1>
           <p className="lg:text-md mt-4 max-w-xl text-center font-sans text-lg leading-normal text-gray-200 md:mt-6 md:text-xl lg:mt-8 lg:max-w-xl xl:max-w-2xl">
+<<<<<<< HEAD
             We help you crowdfund, collaborate and attract the right residents.
+=======
+            We help you crowdfund, collaborate, and attract great residents.
+>>>>>>> 4b75ded3a5ebaaeb712460ef03134e03605a3f3c
           </p>
 
           {/* <p className="lg:text-md mt-4 max-w-xl text-center font-sans text-lg leading-normal text-gray-200 md:mt-6 md:text-xl lg:mt-8 lg:max-w-xl xl:max-w-xl">
@@ -107,6 +111,11 @@ const LandingPage = () => {
           </Suspense>
         </div>
         {/* <HowItWorks /> */}
+      </div>
+      <div className="m-16">
+        <p className="font-bold">Contact</p>
+        <p>team@fora.co</p>
+        <p className="mt-2">©2023 Fora Cities Inc.</p>
       </div>
     </>
   );

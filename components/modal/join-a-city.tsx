@@ -41,7 +41,7 @@ export default function JoinACityModal() {
         indicatedInterest: EmailSubscriberInterest.JOIN,
       });
       toast({
-        title: "Successfully submitted.",
+        title: "Thanks!",
       });
       modal?.hide();
     } catch (error) {
@@ -58,7 +58,7 @@ export default function JoinACityModal() {
       >
         <div className="relative flex flex-col space-y-4 p-5 text-gray-850 dark:text-gray-200 md:p-10">
           <h2 className={"mb-2 font-serif text-2xl font-light "}>
-          We will keep you informed about upcoming cities.
+            Stay informed about upcoming cities.
           </h2>
           {/* <p
             className={
@@ -72,7 +72,7 @@ export default function JoinACityModal() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Name</FormLabel>
+                <FormLabel>Your Name *</FormLabel>
                 <Input
                   className="border-gray-700 dark:border-gray-300"
                   {...field}
@@ -87,7 +87,7 @@ export default function JoinACityModal() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Email</FormLabel>
+                <FormLabel>Your Email *</FormLabel>
                 <Input
                   className="border-gray-700 dark:border-gray-300"
                   {...field}
@@ -102,7 +102,9 @@ export default function JoinACityModal() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tell us a little about yourself.</FormLabel>
+                <FormLabel>
+                  Tell us a little about yourself. (Optional){" "}
+                </FormLabel>
                 <Textarea
                   className="border-gray-700 dark:border-gray-300"
                   {...field}
