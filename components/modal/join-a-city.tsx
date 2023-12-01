@@ -100,7 +100,9 @@ export default function JoinACityModal() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>(Optional) Tell us a little about yourself. What's your background? What interests you about startup cities?</FormLabel>
+                <FormLabel>
+                  (Optional) Tell us a little about yourself. What&apos;s your background? What interests you about startup cities?
+                </FormLabel>
                 <Textarea {...field} />
                 <FormMessage />
               </FormItem>
