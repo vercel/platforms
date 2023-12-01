@@ -51,10 +51,10 @@ const LandingPage = () => {
           <h1 className="text-center font-serif text-4xl  font-extralight leading-snug text-gray-200 md:text-5xl lg:text-6xl xl:text-6xl">
             <span>{"Launch, Fund, & Grow"}</span>
             <br />
-            <span>A Startup City</span>
+            <span>Your Startup City</span>
           </h1>
           <p className="lg:text-md mt-4 max-w-xl text-center font-sans text-lg leading-normal text-gray-200 md:mt-6 md:text-xl lg:mt-8 lg:max-w-xl xl:max-w-2xl">
-            We help you crowdfund, collaborate, and attract great residents.
+            Fora helps you crowdfund, collaborate, and attract great residents.
           </p>
 
           {/* <p className="lg:text-md mt-4 max-w-xl text-center font-sans text-lg leading-normal text-gray-200 md:mt-6 md:text-xl lg:mt-8 lg:max-w-xl xl:max-w-xl">

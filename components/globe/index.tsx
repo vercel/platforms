@@ -107,13 +107,13 @@ const World = ({
 
   const getAlt = (d: CityData) => d.elevation * 5e-5;
 
-  const getTooltip = (d: CityData) => `
-      <div class="bg-gray-200">
-        <div><b>${d.name}</b>, ${d.country}</div>
-        <div>(${d.type})</div>
-        <div>Elevation: <em>${d.elevation}</em>m</div>
-      </div>
-    `;
+  // const getTooltip = (d: CityData) => `
+  //     <div class="bg-gray-200">
+  //       <div><b>${d.name}</b>, ${d.country}</div>
+  //       <div>(${d.type})</div>
+  //       <div>Elevation: <em>${d.elevation}</em>m</div>
+  //     </div>
+  //   `;
 
   const width = size
     ? size
@@ -123,16 +123,16 @@ const World = ({
     ? 1200
     : window.innerWidth * 0.6;
 
-  const getPointColor = (d: CityData) =>
-    d.upcoming ? "#00FFEA" : warm[200];
+  const getPointColor = (d: CityData) => (d.upcoming ? "#00FFEA" : warm[200]);
 
-  const onPointClick = (city: CityData) =>
-    window.open(`https://en.wikipedia.org/wiki/${city.name}`, "_blank");
+  const onPointClick = (city: CityData) => {
+    window.open(`${city.link}`, "_blank");
+  };
 
   return (
     <div
       style={{
-        position: 'relative',
+        position: "relative",
         height: width,
         width: width,
       }}
@@ -157,7 +157,7 @@ const World = ({
         pointAltitude={(d) => getAlt(d as CityData)}
         pointRadius={0.4}
         pointColor={(d) => getPointColor(d as CityData)}
-        pointLabel={(o) => getTooltip(o as CityData)}
+        // pointLabel={(o) => getTooltip(o as CityData)}
         onPointClick={(point) => onPointClick(point as CityData)}
         pathsData={[]}
         labelsData={cities}
@@ -170,7 +170,7 @@ const World = ({
         labelText="name"
         labelSize={1.5}
         labelResolution={0}
-        labelLabel={(d) => getTooltip(d as CityData)}
+        // labelLabel={(d) => getTooltip(d as CityData)}
         onLabelClick={(label) => onPointClick(label as CityData)}
         objectRotation={{ x: 10, y: 0, z: 0 }}
         arcsData={arcsData}
@@ -186,7 +186,7 @@ const World = ({
           position: "absolute",
           bottom: 0,
           background:
-          "linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(44, 42, 38) 50%)",
+            "linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(44, 42, 38) 50%)",
         }}
       />
     </div>
