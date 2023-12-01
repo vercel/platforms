@@ -39,11 +39,9 @@ export const IssueTicketFormSchema = z.object({
   email: z.string().min(1, { message: "User ID is required." }),
   tierId: z.string().min(1, { message: "Tier ID is required." }),
   eventId: z.string().min(1, { message: "Event ID is required." }),
-  roleId: z.string().min(1, { message: "Role ID is required." }),
-  validFrom: z.date(),
-  validTo: z.date(),
+  validFrom: z.date().optional(),
+  validTo: z.date().optional(),
   amountPaid: z.coerce.number().nonnegative(),
-  currency: z.string().min(1, { message: "Currency is required." }),
 });
 
 // GEOJSON

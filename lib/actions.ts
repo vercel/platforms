@@ -1108,15 +1108,24 @@ export const issueTicket = withEventAuth(
     }
 
     try {
-      const user = await prisma.user.create({
-        data: {
+      let user = await prisma.user.findUnique({
+        where: {
           email: result.data.email
         }
       });
 
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email: result.data.email
+          }
+        });
+      }
+
+      const { email, ...rest } = result.data;
       const ticket = await prisma.ticket.create({
         data: {
-          ...result.data,
+          ...rest,
           userId: user.id,
         }
       });
