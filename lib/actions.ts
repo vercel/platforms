@@ -942,6 +942,32 @@ export async function getUsersWithRoleInEvent(eventPath: string) {
   }));
 }
 
+export async function getUsersWithTicketForEvent(eventPath: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      tickets: {
+        some: {
+          event: {
+            path: eventPath,
+          },
+        },
+      },
+    },
+    include: {
+      tickets: {
+        include: {
+          event: true,
+        },
+      },
+    },
+  });
+
+  return users.map((user) => ({
+    ...user,
+    thisEventTickets: user.tickets.filter(ticket => ticket.event.path === eventPath),
+  }));
+}
+
 export async function getEventRolesAndUsers(eventId: string) {
   return await prisma.userRole.findMany({
     where: {

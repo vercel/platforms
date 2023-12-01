@@ -33,7 +33,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RegistrationCardItems } from "./registration-card-items";
 import { ExternalLink } from "lucide-react";
-import { updateEvent, getUsersWithRoleInEvent } from "@/lib/actions";
+import { updateEvent, getUsersWithTicketForEvent } from "@/lib/actions";
 import prisma from "@/lib/prisma";
 
 
@@ -95,7 +95,7 @@ export async function AttendeeTableCard({ event }: { event: Event }) {
     },
   });
 
-  const data = await getUsersWithRoleInEvent(event.path);
+  const data = await getUsersWithTicketForEvent(event.path);
   return (
     <Card>
       <CardHeader>

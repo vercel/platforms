@@ -1,19 +1,18 @@
 "use client";
-import { Role, User } from "@prisma/client";
+import { Ticket, User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { shortenString } from "@/lib/profile";
 
-export type UserAndRoles = User & { roles: Role[] };
 
-export const columns: ColumnDef<UserAndRoles>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Name",
   },
   {
-    accessorKey: "roles",
-    header: "Roles",
+    accessorKey: "thisEventTickets",
+    header: "Tickets",
     cell: ({ row }) => {
       // const amount = parseFloat(row.getValue("amount"))
       // const formatted = new Intl.NumberFormat("en-US", {
@@ -21,14 +20,14 @@ export const columns: ColumnDef<UserAndRoles>[] = [
       //   currency: "USD",
       // }).format(amount)
 
-      const roles = row.getValue("roles") as Role[];
+      const tickets = row.getValue("thisEventTickets") as Ticket[];
 
       return (
         <div className="flex flex-wrap space-x-1">
-          {roles.map((role) => {
+          {tickets.map((ticket) => {
             return (
-              <Badge key={role.id} variant="default">
-                {role.name}
+              <Badge key={ticket.id} variant="default">
+                {ticket.tierId}
               </Badge>
             );
           })}
