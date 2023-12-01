@@ -65,7 +65,7 @@ function Siwe({ redirect = true, callbackUrl = "/" }) {
           handleLogin();
         }
       }}
-      className="flex w-full cursor-pointer items-center justify-center rounded-[8px] border border-brand-primary/80 bg-brand-primary/10 px-[16px] py-1.5 font-semibold tracking-wider  transition-colors duration-300 hover:bg-brand-primary/40 dark:text-gray-100 dark:hover:text-gray-50"
+      className="flex w-full cursor-pointer items-center justify-center rounded-[8px] border border-brand-primary/80 bg-brand-primary/10 px-[16px] py-1.5 font-semibold tracking-wider  transition-colors duration-200 hover:bg-brand-primary/40 dark:text-gray-100 dark:hover:text-gray-50"
     >
       <span className="mx-3 my-1 h-6">
         <EthereumLogo />

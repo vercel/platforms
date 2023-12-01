@@ -70,7 +70,7 @@ const LandingPage = () => {
           <div className="flex space-x-8">
             <button
               onClick={openJoinACity}
-              className="rounded-full group flex h-10 items-center justify-center border border-gray-300/30 p-2 px-4 font-semibold text-gray-200 transition-colors duration-200 hover:border-brand-primary/60 hover:text-brand-primary/60"
+              className="rounded-full group flex h-10 items-center justify-center border border-gray-300/30 py-1.5 px-5 font-medium text-gray-300 transition-all duration-200 hover:border-brand-primary/60 hover:text-brand-primary/60"
             >
               Join a city
             </button>
@@ -90,7 +90,7 @@ const LandingPage = () => {
                   id="email"
                   value={email}
                   onChange={handleEmailChange}
-                  className="mr-6 h-10 w-full rounded border border-gray-800 bg-transparent px-3 py-2 text-gray-200 transition-all duration-300 placeholder:text-gray-700 hover:border-brand-primary/40 focus:border-brand-primary/50 focus:ring-brand-primary/50 dark:border-gray-300 placeholder:dark:text-gray-600"
+                  className="mr-6 h-10 w-full rounded border border-gray-800 bg-transparent px-3 py-2 text-gray-200 transition-all duration-200 placeholder:text-gray-700 hover:border-brand-primary/40 focus:border-brand-primary/50 focus:ring-brand-primary/50 dark:border-gray-300 placeholder:dark:text-gray-600"
                   placeholder="Email"
                   name="email"
                   required

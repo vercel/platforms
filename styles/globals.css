@@ -19,7 +19,7 @@ body {
 
 @layer components {
   .glow-primary {
-    box-shadow: 0 0 3px theme('colors.brand.primary');
+    box-shadow: 0 0 2px theme('colors.brand.primary');
   }
 }
 
