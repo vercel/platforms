@@ -33,7 +33,7 @@ export default function CreateRoleModal() {
               va.track("Created Role");
               router.refresh();
               modal?.hide();
-              toast.success(`Successfully created City!`);
+              toast.success(`Successfully created role!`);
             }
           },
         )
@@ -42,7 +42,7 @@ export default function CreateRoleModal() {
     >
       <div className="relative flex flex-col space-y-4 p-5 md:p-10">
         <h2 className="font-cal text-2xl dark:text-gray-100">
-          Create a new Role
+          Create a new role
         </h2>
 
         <div className="flex flex-col space-y-2">

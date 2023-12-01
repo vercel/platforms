@@ -24,9 +24,10 @@ export default function TicketTierCard({
 }) {
   const tierImage = getPlaceholderImage(ticketTier);
   return (
-    <Link
-      href={`/city/${organization.subdomain}/events/${event.path}/tickets/${ticketTier.id}`}
-      className="flex flex-col overflow-hidden rounded-lg"
+    <div
+    // <Link
+    //   href={`/city/${organization.subdomain}/events/${event.path}/tickets/${ticketTier.id}`}
+      className="flex flex-col overflow-hidden rounded-lg dark:hover:border-white"
     >
       <div className="relative rounded-lg border border-gray-200 pb-5 shadow-md transition-all hover:shadow-xl dark:border-gray-700 dark:hover:border-white">
         {tierImage ? (
@@ -49,6 +50,7 @@ export default function TicketTierCard({
           </p>
         </div>
       </div>
-    </Link>
+    {/* </Link> */}
+    </div>
   );
 }
