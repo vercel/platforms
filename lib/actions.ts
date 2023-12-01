@@ -1521,7 +1521,7 @@ export const createEmailSubscriber = async ({
 }: {
   email: string;
   name: string;
-  description: string;
+  description: string | undefined;
   indicatedInterest: EmailSubscriberInterest;
 }) => {
   try {
