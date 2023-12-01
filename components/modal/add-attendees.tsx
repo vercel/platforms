@@ -41,7 +41,6 @@ export default function AddAttendeesModal({
     resolver: zodResolver(IssueTicketFormSchema),
     defaultValues: {
       eventId: event.id,
-      currency: "USD",
     },
   });
 
@@ -58,15 +57,23 @@ export default function AddAttendeesModal({
       { params: { subdomain, path } },
       "",
     );
-    router.refresh();
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+
+    if (result.error) {
+      toast({
+        title: "Error occurred",
+        description: "Please try again later 🤕"
+      });
+    } else {
+      router.refresh();
+      toast({
+        title: "You submitted the following values:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        ),
+      });
+    }
     modal?.hide();
   }
 
@@ -107,7 +114,7 @@ export default function AddAttendeesModal({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Ticket Name</FormLabel>
+              <FormLabel>Email</FormLabel>
               <Input {...field} />
               <FormMessage />
             </FormItem>
