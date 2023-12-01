@@ -5,9 +5,9 @@ import { Providers } from "./providers";
 import { Metadata } from "next";
 import { cn } from "@/lib/utils";
 
-const title = "Fora - Tools for startup cities";
+const title = "Fora - Startup Cities";
 const description =
-  "Fora is an open source suite of tools for startup city builders.";
+  "Fora is an open-source suite of tools for startup city builders.";
 const image =
   "https://ooybxjivdvmpbxtwunrr.supabase.co/storage/v1/object/public/media/public/fora-globe";
 
