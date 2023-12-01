@@ -186,7 +186,7 @@ export default function CreateTicketsModal({
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price</FormLabel>
+              <FormLabel>Price ($)</FormLabel>
               <Input {...field} type="number" />
               <FormMessage />
             </FormItem>

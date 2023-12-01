@@ -38,9 +38,6 @@ export default async function EventTicketTiers({
         width={400}
         height={400}
       />
-      <p className="text-gray-500 text-lg">
-        You have not created any Tickets yet.
-      </p>
     </div>
   );
 }
