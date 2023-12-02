@@ -957,6 +957,7 @@ export async function getUsersWithTicketForEvent(eventPath: string) {
       tickets: {
         include: {
           event: true,
+          tier: true,
         },
       },
     },
@@ -964,7 +965,12 @@ export async function getUsersWithTicketForEvent(eventPath: string) {
 
   return users.map((user) => ({
     ...user,
-    thisEventTickets: user.tickets.filter(ticket => ticket.event.path === eventPath),
+    thisEventTickets: user.tickets.filter(ticket => ticket.event.path === eventPath)
+      .map(ticket => ({
+        ...ticket,
+        tierName: ticket.tier.name,
+        tierPrice: ticket.tier.price,
+      })),
   }));
 }
 

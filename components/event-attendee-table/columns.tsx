@@ -7,37 +7,36 @@ import { shortenString } from "@/lib/profile";
 
 export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: "name",
-    header: "Name",
+    accessorKey: "email",
+    header: "Email",
   },
   {
     accessorKey: "thisEventTickets",
     header: "Tickets",
     cell: ({ row }) => {
-      // const amount = parseFloat(row.getValue("amount"))
-      // const formatted = new Intl.NumberFormat("en-US", {
-      //   style: "currency",
-      //   currency: "USD",
-      // }).format(amount)
-
-      const tickets = row.getValue("thisEventTickets") as Ticket[];
+      const tickets = row.getValue("thisEventTickets") as Array<Ticket &
+        { tierName: string, tierPrice: number }>;
 
       return (
         <div className="flex flex-wrap space-x-1">
           {tickets.map((ticket) => {
+            const formattedPrice = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(ticket.tierPrice);
+            const formattedAmountPaid = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(ticket.amountPaid);
             return (
               <Badge key={ticket.id} variant="default">
-                {ticket.tierId}
+                {`${ticket.tierName} (${formattedAmountPaid} of ${formattedPrice} paid)`}
               </Badge>
             );
           })}
         </div>
       );
     },
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
   },
   {
     accessorKey: "eth_address",
