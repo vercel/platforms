@@ -63,8 +63,8 @@ export const WaitlistWelcomeEmail = ({
               The Fora team.
             </Text>
             <Hr className="my-5 border-gray-600" />
-            <Text className={"text-sm text-gray-700"}>Fora Cities, Inc.</Text>
-            <Text className={"text-sm text-gray-700"}>
+            <Text className={"text-md text-gray-750"}>Fora Cities, Inc.</Text>
+            <Text className={"text-xs text-gray-600"}>
               1111b S Governors Avenue STE 7236 Dover, DE 19904 US
             </Text>
           </Container>
