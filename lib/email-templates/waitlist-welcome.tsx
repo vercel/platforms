@@ -54,7 +54,8 @@ export const WaitlistWelcomeEmail = ({
             </Text>
             <Text className="text-md text-gray-800">
               Fora is currently in private beta. You have been added to the
-              first cohort to be notified when we launch.
+              first cohort to be notified when we launch. In the meantime, we
+              will review your submission and will be in touch shortly.
             </Text>
             <Text className="text-md text-gray-800">
               Best,

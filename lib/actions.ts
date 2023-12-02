@@ -1550,7 +1550,7 @@ export const createEmailSubscriber = async ({
       resend.emails.send({
         from: "Fora <no-reply@mail.fora.co>",
         to: [email, "ryan@fora.co"],
-        subject: "New Fora waitlist registration",
+        subject: "Added to Fora waitlist ",
         html: renderWaitlistWelcomeEmail({ userFirstname }),
       }),
     ]);
