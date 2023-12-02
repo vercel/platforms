@@ -40,7 +40,7 @@ export const WaitlistWelcomeEmail = ({
         }}
       >
         <Body className={"font-sans"}>
-          <Container className="mx-auto  rounded bg-gray-250 px-5 pb-12 pt-5">
+          <Container className="mx-auto  rounded bg-gray-250 px-5 pb-12 pt-10">
             <Img
               src={`https://fora.co/fora-logo.png`}
               width="45"
@@ -63,7 +63,7 @@ export const WaitlistWelcomeEmail = ({
               The Fora team.
             </Text>
             <Hr className="my-5 border-gray-600" />
-            <Text className={"text-md text-gray-750"}>Fora Cities, Inc.</Text>
+            <Text className={"text-md text-gray-700"}>Fora Cities, Inc.</Text>
             <Text className={"text-xs text-gray-600"}>
               1111b S Governors Avenue STE 7236 Dover, DE 19904 US
             </Text>

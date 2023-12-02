@@ -1548,10 +1548,16 @@ export const createEmailSubscriber = async ({
         indicatedInterest,
       }),
       resend.emails.send({
-        from: "Fora <no-reply@mail.fora.co>",
-        to: [email, "ryan@fora.co"],
+        from: "Fora Cities<no-reply@mail.fora.co>",
+        to: [email],
         subject: "Added to Fora waitlist ",
         html: renderWaitlistWelcomeEmail({ userFirstname }),
+      }),
+      resend.emails.send({
+        from: "Team Notifications <no-reply@mail.fora.co>",
+        to: ["ryan@fora.co", "cassie@fora.co", "lily@fora.co", "tomas@fora.co"],
+        subject: `${fullName} registered for Fora`,
+        html: `<p>${fullName} has registered on Fora with the email ${email} and the intent to ${indicatedInterest.toLowerCase()} a startup city.<br /><p>${description}</p></p>`,
       }),
     ]);
 
