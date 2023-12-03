@@ -17,6 +17,14 @@ import {
 } from "@/components/ui/table"
 import { Role, User } from "@prisma/client";
 
+import {
+  useRef,
+  useEffect,
+  useState,
+  useMemo,
+  HTMLProps,
+} from "react";
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -27,11 +35,66 @@ export default function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [rowSelection, setRowSelection] = useState({});
+
+  const columnsWithSelector = useMemo(() => [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <IndeterminateCheckbox
+          {...{
+            checked: table.getIsAllRowsSelected(),
+            indeterminate: table.getIsSomeRowsSelected(),
+            onChange: table.getToggleAllRowsSelectedHandler(),
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="px-1">
+          <IndeterminateCheckbox
+            {...{
+              checked: row.getIsSelected(),
+              indeterminate: row.getIsSomeSelected(),
+              onChange: row.getToggleSelectedHandler(),
+            }}
+          />
+        </div>
+      ),
+    },
+    ...columns,
+  ], [columns]);
+
   const table = useReactTable({
     data,
-    columns,
+    columns: columnsWithSelector,
     getCoreRowModel: getCoreRowModel(),
-  })
+    state: { rowSelection },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+  });
+
+  function IndeterminateCheckbox({
+    indeterminate,
+    className = '',
+    ...rest
+  }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+    const ref = useRef<HTMLInputElement>(null!)
+
+    useEffect(() => {
+      if (typeof indeterminate === 'boolean') {
+        ref.current.indeterminate = !rest.checked && indeterminate
+      }
+    }, [ref, indeterminate])
+
+    return (
+      <input
+        type="checkbox"
+        ref={ref}
+        className={className + 'cursor-pointer'}
+        {...rest}
+      />
+    )
+  }
 
   return (
     <div className="rounded-md border">

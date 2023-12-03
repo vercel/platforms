@@ -1,9 +1,7 @@
 "use client";
 import { Ticket, User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
 import { shortenString } from "@/lib/profile";
-
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -12,11 +10,23 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "thisEventTickets",
-    header: "Tickets",
+    header: "Ticket",
     cell: ({ row }) => {
-      const tickets = row.getValue("thisEventTickets") as Array<Ticket &
-        { tierName: string, tierPrice: number }>;
-
+      const tickets = row.getValue("thisEventTickets") as Array<Ticket & { tierName: string }>;
+      return (
+        <div className="flex flex-wrap space-x-1">
+          {tickets.map((ticket) => (
+            <span key={ticket.id}>{ticket.tierName}</span>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "thisEventTickets",
+    header: "Price",
+    cell: ({ row }) => {
+      const tickets = row.getValue("thisEventTickets") as Array<Ticket & { tierPrice: number }>;
       return (
         <div className="flex flex-wrap space-x-1">
           {tickets.map((ticket) => {
@@ -24,15 +34,35 @@ export const columns: ColumnDef<User>[] = [
               style: "currency",
               currency: "USD",
             }).format(ticket.tierPrice);
-            const formattedAmountPaid = new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(ticket.amountPaid);
-            return (
-              <Badge key={ticket.id} variant="default">
-                {`${ticket.tierName} (${formattedAmountPaid} of ${formattedPrice} paid)`}
-              </Badge>
-            );
+            return <span key={ticket.id}>{formattedPrice}</span>;
+          })}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "thisEventTickets",
+    header: "Paid?",
+    cell: ({ row }) => {
+      const tickets = row.getValue("thisEventTickets") as Array<Ticket & { tierPrice: number, amountPaid: number }>;
+      return (
+        <div className="flex flex-wrap space-x-1">
+          {tickets.map((ticket) => {
+            if (ticket.amountPaid < ticket.tierPrice) {
+              const formattedAmountOwed = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(ticket.tierPrice - ticket.amountPaid);
+              return <span key={ticket.id} className="text-red-500">Owes {formattedAmountOwed}</span>;
+            } else if (ticket.amountPaid === ticket.tierPrice) {
+              return <span key={ticket.id} className="text-green-500">✓</span>;
+            } else {
+              const formattedAmountOverpaid = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(ticket.amountPaid - ticket.tierPrice);
+              return <span key={ticket.id} className="text-red-500">⚠️ Overpaid by {formattedAmountOverpaid}</span>;
+            }
           })}
         </div>
       );
