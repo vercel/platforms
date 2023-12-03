@@ -107,6 +107,11 @@ export async function AttendeeTableCard({ event }: { event: Event }) {
           columns={columns}
         />
         <div className="flex justify-end mt-4">
+          <OpenModalButton
+            text="Request payments"
+            className="mr-2"
+          >
+          </OpenModalButton>
           <OpenModalButton text="Add attendees">
             <AddAttendeesModal
               ticketTiers={ticketTiers}
