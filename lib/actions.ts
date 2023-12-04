@@ -1554,3 +1554,25 @@ export const createEmailSubscriber = async ({
     }
   }
 };
+
+export const createCampaign = withOrganizationAuth(
+  async (_: any, organization: Organization) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const response = await prisma.campaign.create({
+      data: {
+        organizationId: organization.id,
+      },
+      include: {
+        organization: true,
+      },
+    });
+
+    return response;
+  },
+);

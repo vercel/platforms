@@ -420,3 +420,11 @@ model EmailSubscriber {
   indicatedInterest EmailSubscriberInterest @default(JOIN)
   createdAt         DateTime                @default(now())
 }
+
+model Campaign {
+  id                String   @id @default(cuid())
+  name              String
+  threshold         String
+  createdAt         DateTime @default(now())
+  creatorEthAddress String
+}
