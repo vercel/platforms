@@ -32,6 +32,8 @@ import DrawerLink from "./drawer-link";
 // import CitySwitcher from "./city-switcher";
 import { useSession } from "next-auth/react";
 import { Organization, Role } from "@prisma/client";
+import CitySwitcher from "./city-switcher";
+import { SessionData } from "@/lib/auth";
 
 // const externalLinks = [
 //   {
@@ -91,9 +93,6 @@ export default function Drawer({ children }: { children: ReactNode }) {
     string | undefined
   >();
 
-  const [usersOrgs, setUsersOrgs] =
-    useState<UsersUniqueOrgsWithRolesRecord | null>(null);
-
   useEffect(() => {
     if (segments[0] === "post" && subdomain) {
       getOrganizationFromPostId(subdomain).then((subdomain) => {
@@ -104,15 +103,17 @@ export default function Drawer({ children }: { children: ReactNode }) {
 
   const { data: session } = useSession();
 
+  const [usersOrgs, setUsersOrgs] =
+    useState<UsersUniqueOrgsWithRolesRecord | null>(null);
+
   useEffect(() => {
     if (session?.user) {
-      const user = session.user;
-
-      // @ts-expect-error
-      getUsersOrganizations(user.id)
-      .then((userOrgs) => {
-        setUsersOrgs(userOrgs);
-      });
+      const user = session.user as SessionData["user"];
+      if (user?.id) {
+        getUsersOrganizations(user.id).then((userOrgs) => {
+          setUsersOrgs(userOrgs);
+        });
+      }
     }
   }, [session?.user]);
 
@@ -261,10 +262,10 @@ export default function Drawer({ children }: { children: ReactNode }) {
     }
     return [
       {
-        name: "Home",
+        name: "Overview",
         href: "/",
         isActive: segments.length === 0,
-        icon: <Home width={18} />,
+        icon: <LayoutDashboard width={18} />,
       },
       // {
       //   name: "Events",
@@ -296,7 +297,6 @@ export default function Drawer({ children }: { children: ReactNode }) {
     setShowSidebar(false);
   }, [pathname]);
 
-
   // completely hide
   if (formId) {
     return null;
@@ -317,42 +317,8 @@ export default function Drawer({ children }: { children: ReactNode }) {
       </button>
       <DrawerPaper showSidebar={showSidebar}>
         <div className="grid gap-2">
-          {/* <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">
-            <a
-              href="app.localhost:3000"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              <svg
-                width="26"
-                viewBox="0 0 76 65"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-gray-700 dark:text-white"
-              >
-                <path
-                  d="M37.5274 0L75.0548 65H0L37.5274 0Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </a>
-            <div className="dark:border-gray-500 h-6 rotate-[30deg] border-l border-gray-400" />
-            <Link
-              href="/"
-              className="rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              <Image
-                src="/logo.png"
-                width={24}
-                height={24}
-                alt="Logo"
-                className="dark:scale-110 dark:rounded-full dark:border dark:border-gray-400"
-              />
-            </Link>
-          </div> */}
           <div className="grid gap-1">
-            {/* {usersOrgs && <CitySwitcher usersOrgs={usersOrgs} />} */}
+            <CitySwitcher usersOrgs={usersOrgs} />
 
             {tabs.map(({ name, href, isActive, icon }) => (
               <DrawerLink

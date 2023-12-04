@@ -44,7 +44,9 @@ import {
 } from "@/components/ui/select";
 import { UsersUniqueOrgsWithRolesRecord } from "./drawer";
 import { Organization } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { HomeIcon } from "lucide-react";
+import { useEffect } from "react";
 
 const groups = [
   {
@@ -78,7 +80,7 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 >;
 
 interface CitySwitcherProps extends PopoverTriggerProps {
-  usersOrgs: UsersUniqueOrgsWithRolesRecord;
+  usersOrgs: UsersUniqueOrgsWithRolesRecord | null;
 }
 
 export default function CitySwitcher({
@@ -87,14 +89,37 @@ export default function CitySwitcher({
 }: CitySwitcherProps) {
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedOrganization, setSelectedOrganization] =
-    React.useState<Organization | null>(Object.values(usersOrgs)?.[0]?.organization ?? null);
-
+  const [selectedOrganization, setSelectedOrganization] = React.useState<
+    Organization | undefined
+  >(
+    usersOrgs
+      ? Object.values(usersOrgs)?.[0]?.organization ?? undefined
+      : undefined,
+  );
   const router = useRouter();
+  const { subdomain } = useParams() as { subdomain?: string };
 
-  // React.useEffect(() => {
-  //   router.replace("/city/" + selectedOrganization?.subdomain);
-  // }, [selectedOrganization, router]);
+  useEffect(() => {
+    const matchOrgBySubdomain = () => {
+      if (!usersOrgs) {
+        return;
+      }
+      const matchedOrg = Object.values(usersOrgs).find(
+        (org) => org.organization.subdomain === subdomain,
+      );
+      return matchedOrg?.organization;
+    };
+    setSelectedOrganization(matchOrgBySubdomain());
+  }, [subdomain, usersOrgs]);
+
+  // ... rest of your component
+
+  const org = usersOrgs && Object.values(usersOrgs)?.[0];
+  console.log("org: ", org);
+
+  console.log("selectedOrganization: ", selectedOrganization);
+
+  console.log("Render");
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -106,62 +131,90 @@ export default function CitySwitcher({
             aria-expanded={open}
             aria-label="Select a city"
             className={cn(
-              "w-full justify-between px-2 dark:text-gray-300 focus-visible:ring-gray-500",
+              "w-full justify-between px-2 focus-visible:ring-gray-500 dark:text-gray-300",
               className,
             )}
           >
-            <Avatar className="h-[18px] w-[18px]">
-              {selectedOrganization?.logo && (
-                <AvatarImage
-                  className="h-[18px] w-[18px]"
-                  src={selectedOrganization?.logo}
-                  alt={`${selectedOrganization?.name} logo`}
-                />
-              )}
-              <AvatarFallback className="h-[18px] w-[18px]">
-                {selectedOrganization?.name?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <span className="ml-3">{selectedOrganization?.name}</span>
-            <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-300 opacity-50" />
+            {selectedOrganization ? (
+              <>
+                <Avatar className="h-[18px] w-[18px]">
+                  {selectedOrganization?.logo && (
+                    <AvatarImage
+                      className="h-[18px] w-[18px]"
+                      src={selectedOrganization?.logo}
+                      alt={`${selectedOrganization?.name} logo`}
+                    />
+                  )}
+                  <AvatarFallback className="h-[18px] w-[18px]">
+                    {selectedOrganization?.name?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="ml-3">{selectedOrganization?.name}</span>
+                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-300 opacity-50" />
+              </>
+            ) : (
+              <>
+                <HomeIcon className="h-4 w-5" />
+                <span className="ml-2 ">{"Home"}</span>
+                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-300 opacity-50" />
+              </>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandList>
-              <CommandInput placeholder="Search team..." />
               <CommandEmpty>No team found.</CommandEmpty>
-              <CommandGroup key={"Selected City"} heading={"Selected City"}>
-                {Object.values(usersOrgs).map((orgAndRoles) => (
-                  <CommandItem
-                    key={orgAndRoles.organization.id}
-                    onSelect={() => {
-                      setOpen(false);
-                    }}
-                    className="text-sm"
-                  >
-                    <Avatar className="mr-2 h-5 w-5">
-                      <AvatarImage
-                        src={`${orgAndRoles.organization.logo}`}
-                        alt={`${orgAndRoles.organization.name} logo`}
-                        className="grayscale"
-                      />
-                      <AvatarFallback>SC</AvatarFallback>
-                    </Avatar>
-                    {orgAndRoles.organization.name}
-                    <CheckIcon
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        selectedOrganization?.id === orgAndRoles.organization.id
-                          ? "opacity-100"
-                          : "opacity-0",
-                      )}
-                    />
-                  </CommandItem>
-                ))}
+              <CommandGroup key={"Selected City"}>
+                <CommandItem
+                  key={"home"}
+                  onSelect={() => {
+                    setOpen(false);
+                    router.push("/");
+                  }}
+                  className="text-sm"
+                >
+                  <HomeIcon className="h-4 w-5" />
+                  <span className="ml-2 ">{"Home"}</span>
+                </CommandItem>
+                {usersOrgs &&
+                  Object.values(usersOrgs).map((orgAndRoles) => {
+                    console.log("orgAndRoles: ", orgAndRoles);
+                    return (
+                      <CommandItem
+                        key={orgAndRoles.organization.id}
+                        onSelect={() => {
+                          setOpen(false);
+                          router.push(
+                            "/city/" + orgAndRoles.organization.subdomain,
+                          );
+                        }}
+                        className="text-sm"
+                      >
+                        <Avatar className="mr-2 h-5 w-5">
+                          <AvatarImage
+                            src={`${orgAndRoles.organization.logo}`}
+                            alt={`${orgAndRoles.organization.name} logo`}
+                            className="grayscale"
+                          />
+                          <AvatarFallback>SC</AvatarFallback>
+                        </Avatar>
+                        {orgAndRoles.organization.name}
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto h-4 w-4",
+                            selectedOrganization?.id ===
+                              orgAndRoles.organization.id
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                      </CommandItem>
+                    );
+                  })}
               </CommandGroup>
             </CommandList>
-            <CommandSeparator />
+            {/* <CommandSeparator />
             <CommandList>
               <CommandGroup>
                 <DialogTrigger asChild>
@@ -176,10 +229,11 @@ export default function CitySwitcher({
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>
-            </CommandList>
+            </CommandList> */}
           </Command>
         </PopoverContent>
       </Popover>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create team</DialogTitle>
