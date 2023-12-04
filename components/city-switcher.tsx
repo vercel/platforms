@@ -197,7 +197,7 @@ export default function CitySwitcher({
                             alt={`${orgAndRoles.organization.name} logo`}
                             className="grayscale"
                           />
-                          <AvatarFallback>SC</AvatarFallback>
+                          {selectedOrganization?.name?.charAt(0)}
                         </Avatar>
                         {orgAndRoles.organization.name}
                         <CheckIcon
