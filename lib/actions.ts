@@ -47,6 +47,10 @@ import {
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
 import { track } from "@/lib/analytics";
+import { Resend } from "resend";
+import { renderWaitlistWelcomeEmail } from "./email-templates/waitlist-welcome";
+
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -1524,21 +1528,38 @@ export const createEmailSubscriber = async ({
   description?: string | undefined;
   indicatedInterest: EmailSubscriberInterest;
 }) => {
+  const fullName = name.trim();
   try {
     const response: EmailSubscriber = await prisma.emailSubscriber.create({
       data: {
         email,
-        name,
+        name: fullName,
         description,
         indicatedInterest: indicatedInterest,
       },
     });
 
-    await track("email_subscription_created", {
-      email,
-      name,
-      indicatedInterest,
-    });
+    const userFirstname = fullName.split(" ")[0];
+
+    await Promise.allSettled([
+      track("email_subscription_created", {
+        email,
+        name: fullName,
+        indicatedInterest,
+      }),
+      resend.emails.send({
+        from: "Fora Cities<no-reply@mail.fora.co>",
+        to: [email],
+        subject: "Added to Fora waitlist ",
+        html: renderWaitlistWelcomeEmail({ userFirstname }),
+      }),
+      resend.emails.send({
+        from: "Team Notifications <no-reply@mail.fora.co>",
+        to: ["ryan@fora.co", "cassie@fora.co", "lily@fora.co", "tomas@fora.co"],
+        subject: `${fullName} registered for Fora`,
+        html: `<p>${fullName} has registered on Fora with the email ${email} and the intent to ${indicatedInterest.toLowerCase()} a startup city.<br /><p>${description}</p></p>`,
+      }),
+    ]);
 
     return response;
   } catch (error: any) {
