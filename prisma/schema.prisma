@@ -418,9 +418,6 @@ model EmailSubscriber {
   name              String?
   description       String?
   indicatedInterest EmailSubscriberInterest @default(JOIN)
-  name              String?
-  description       String?
-  indicatedInterest EmailSubscriberInterest @default(JOIN)
   createdAt                 DateTime                               @default(now())
 }
 
