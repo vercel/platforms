@@ -10,8 +10,6 @@ contract Campaign {
     mapping(address => uint256) private contributions;
     uint256 private totalContributions;
     bool openToContributions;
-    bool postThreshold;
-    State public state;
 
     using EnumerableSet for EnumerableSet.AddressSet;
     EnumerableSet.AddressSet private authorizedContributors;
@@ -26,25 +24,35 @@ contract Campaign {
         name = _name;
         totalContributions = 0;
         openToContributions = true;
-        postThreshold = false;
     }
 
-    function contribute(uint256 amount) public payable {
-        require(openToContributions);!
+    function contribute() public payable {
+        require(
+            openToContributions,
+            "The campaign isn't accepting contributions right now"
+        );
         contributions[msg.sender] += msg.value;
         totalContributions += msg.value;
     }
 
     function authorizeContributor(address address_) public {
-        require(msg.sender == sponsor);
+        require(
+            msg.sender == sponsor,
+            "Only the campaign sponsor can authorize contributors"
+        );
         authorizedContributors.add(address_);
     }
 
     function refund(uint256 amount) public {
-        // TODO check here whether the threshold has been crossed yet, update postThreshold if so
-        require(!postThreshold);
-        const contribution = contributions[msg.sender];
-        require(amount <= contribution);
+        require(
+            totalContributions < threshold,
+            "The campaign has reached its threshold, so refunds are no longer possible"
+        );
+        uint256 contribution = contributions[msg.sender];
+        require(
+            amount <= contribution,
+            "Refund amount is more than contribution"
+        );
         contributions[msg.sender] = contribution - amount;
         payable(msg.sender).transfer(amount);
     }
