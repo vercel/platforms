@@ -40,10 +40,13 @@ contract Campaign {
         authorizedContributors.add(address_);
     }
 
-    function refund() public {
+    function refund(uint256 amount) public {
         // TODO check here whether the threshold has been crossed yet, update postThreshold if so
         require(!postThreshold);
-        // TODO issue refunds if so
+        const contribution = contributions[msg.sender];
+        require(amount <= contribution);
+        contributions[msg.sender] = contribution - amount;
+        payable(msg.sender).transfer(amount);
     }
 
     // TODO implement a way sponsor can refund all contributors even after threshold
