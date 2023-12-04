@@ -13,6 +13,8 @@ import {
   Place,
   Room,
   Bed,
+  EmailSubscriber,
+  EmailSubscriberInterest,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -41,10 +43,14 @@ import {
   CreateTicketTierFormSchema,
   CreateAccommodationUnitSchema,
   CreatePlaceSchema,
-  IssueTicketFormSchema,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
+import { track } from "@/lib/analytics";
+import { Resend } from "resend";
+import { renderWaitlistWelcomeEmail } from "./email-templates/waitlist-welcome";
+
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -942,38 +948,6 @@ export async function getUsersWithRoleInEvent(eventPath: string) {
   }));
 }
 
-export async function getUsersWithTicketForEvent(eventPath: string) {
-  const users = await prisma.user.findMany({
-    where: {
-      tickets: {
-        some: {
-          event: {
-            path: eventPath,
-          },
-        },
-      },
-    },
-    include: {
-      tickets: {
-        include: {
-          event: true,
-          tier: true,
-        },
-      },
-    },
-  });
-
-  return users.map((user) => ({
-    ...user,
-    thisEventTickets: user.tickets.filter(ticket => ticket.event.path === eventPath)
-      .map(ticket => ({
-        ...ticket,
-        tierName: ticket.tier.name,
-        tierPrice: ticket.tier.price,
-      })),
-  }));
-}
-
 export async function getEventRolesAndUsers(eventId: string) {
   return await prisma.userRole.findMany({
     where: {
@@ -1119,57 +1093,6 @@ export async function getEventTicketTiers(eventId: string) {
     },
   });
 }
-
-export const issueTicket = withEventAuth(
-  async (
-    data: z.infer<typeof IssueTicketFormSchema>,
-    event: Event & { organization: Organization },
-  ) => {
-    const session = await getSession();
-    if (!session?.user.id) {
-      return {
-        error: "Not authenticated",
-      };
-    }
-
-    const result = IssueTicketFormSchema.safeParse(data);
-    if (!result.success) {
-      return {
-        error: result.error.formErrors.fieldErrors,
-      };
-    }
-
-    try {
-      let user = await prisma.user.findUnique({
-        where: {
-          email: result.data.email
-        }
-      });
-
-      if (!user) {
-        user = await prisma.user.create({
-          data: {
-            email: result.data.email
-          }
-        });
-      }
-
-      const { email, ...rest } = result.data;
-      const ticket = await prisma.ticket.create({
-        data: {
-          ...rest,
-          userId: user.id,
-        }
-      });
-
-      return ticket;
-    } catch (error: any) {
-      return {
-        error: error.message,
-      };
-    }
-  },
-);
 
 export const createForm = withOrganizationAuth(
   async (_: any, organization: Organization) => {
@@ -1593,3 +1516,62 @@ export const createAccommodationUnit = withOrganizationAuth(
     return accommodationUnit;
   },
 );
+
+export const createEmailSubscriber = async ({
+  email,
+  name,
+  description,
+  indicatedInterest,
+}: {
+  email: string;
+  name: string;
+  description?: string | undefined;
+  indicatedInterest: EmailSubscriberInterest;
+}) => {
+  const fullName = name.trim();
+  try {
+    const response: EmailSubscriber = await prisma.emailSubscriber.create({
+      data: {
+        email,
+        name: fullName,
+        description,
+        indicatedInterest: indicatedInterest,
+      },
+    });
+
+    const userFirstname = fullName.split(" ")[0];
+
+    await Promise.allSettled([
+      track("email_subscription_created", {
+        email,
+        name: fullName,
+        indicatedInterest,
+      }),
+      resend.emails.send({
+        from: "Fora Cities<no-reply@mail.fora.co>",
+        to: [email],
+        subject: "Added to Fora waitlist ",
+        html: renderWaitlistWelcomeEmail({ userFirstname }),
+      }),
+      resend.emails.send({
+        from: "Team Notifications <no-reply@mail.fora.co>",
+        to: ["ryan@fora.co", "cassie@fora.co", "lily@fora.co", "tomas@fora.co"],
+        subject: `${fullName} registered for Fora`,
+        html: `<p>${fullName} has registered on Fora with the email ${email} and the intent to ${indicatedInterest.toLowerCase()} a startup city.<br /><p>${description}</p></p>`,
+      }),
+    ]);
+
+    return response;
+  } catch (error: any) {
+    console.error(error);
+    if (error.code === "P2002") {
+      return {
+        error: `This email's already been signed up`,
+      };
+    } else {
+      return {
+        error: error.message,
+      };
+    }
+  }
+};

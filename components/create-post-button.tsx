@@ -3,7 +3,6 @@
 import { useTransition } from "react";
 import { createPost } from "@/lib/actions";
 import { useParams, useRouter } from "next/navigation";
-import va from "@vercel/analytics";
 import CreateButton from "./primary-button";
 
 export default function CreatePostButton() {
@@ -16,7 +15,6 @@ export default function CreatePostButton() {
       onClick={() =>
         startTransition(async () => {
           const post = await createPost(null, { params: { subdomain } }, null);
-          va.track("Created Post");
           router.refresh();
           router.push(`/city/${subdomain}/docs/${post.id}`);
         })
