@@ -119,6 +119,7 @@ model Organization {
   apiKeys          ApiKey[]
   form             Form[]
   places           Place[]
+  campaigns        Campaign[]
 }
 
 model Event {
@@ -413,18 +414,20 @@ enum EmailSubscriberInterest {
 }
 
 model EmailSubscriber {
-  id                            String                                   @id @default(cuid())
-  email                         String                                   @unique
+  id                String                  @id @default(cuid())
+  email             String                  @unique
   name              String?
   description       String?
   indicatedInterest EmailSubscriberInterest @default(JOIN)
-  createdAt                 DateTime                               @default(now())
+  createdAt         DateTime                @default(now())
 }
 
 model Campaign {
-  id                String   @id @default(cuid())
+  id                String       @id @default(cuid())
   name              String
   threshold         String
-  createdAt         DateTime @default(now())
+  createdAt         DateTime     @default(now())
   creatorEthAddress String
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId    String
 }
