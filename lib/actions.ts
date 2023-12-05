@@ -43,6 +43,7 @@ import {
   CreateTicketTierFormSchema,
   CreateAccommodationUnitSchema,
   CreatePlaceSchema,
+  CreateCampaignSchema,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
@@ -1556,22 +1557,23 @@ export const createEmailSubscriber = async ({
 };
 
 export const createCampaign = withOrganizationAuth(
-  async (_: any, organization: Organization) => {
-    const session = await getSession();
-    if (!session?.user.id) {
-      return {
-        error: "Not authenticated",
-      };
+  async (data: any, organization: Organization) => {
+    const result = CreateCampaignSchema.safeParse(data);
+
+    if (!result.success) {
+      throw new Error("Invalid data");
     }
 
     const response = await prisma.campaign.create({
       data: {
+        ...result.data,
         organizationId: organization.id,
       },
       include: {
         organization: true,
-      },
+      }
     });
+    // TODO handle error
 
     return response;
   },

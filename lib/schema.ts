@@ -186,3 +186,13 @@ export const FoundACitySchema = z.object({
   email: z.string().email().min(1, { message: "Email is required." }),
   description: z.string().min(60, { message: "Name is required." }),
 });
+
+const EthAddressSchema = z.string()
+  .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address");
+
+export const CreateCampaignSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, { message: "Name is required." }).optional(),
+  threshold: z.number().min(0, { message: "Threshold can't be negative" }),
+  creatorEthAddress: EthAddressSchema,
+});

@@ -14,16 +14,23 @@ export default function CreateCampaignButton() {
 
   return (
     <CreateButton
-      onClick={() =>
-        startTransition(async () => {
-          const campaign = await createCampaign(
-            null,
-            { params: { subdomain } },
-            null,
-          );
-          router.push(`/city/${subdomain}/campaigns/${campaign.id}`);
-          router.refresh();
-        })
+      onClick={
+        () => {
+          // TODO create campaign on-chain
+          startTransition(async () => {
+            const data = {
+              name: 'test',
+              threshold: 0,
+              creatorEthAddress: '',
+            };
+            createCampaign(data, { params: { subdomain } }, null)
+              .then((campaign) => {
+                router.push(`/city/${subdomain}/campaigns/${campaign.id}`);
+                router.refresh();
+              })
+              .catch(console.error);
+          });
+        }
       }
       loading={isPending}
     >
