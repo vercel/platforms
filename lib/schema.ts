@@ -195,4 +195,5 @@ export const CreateCampaignSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }).optional(),
   threshold: z.number().min(0, { message: "Threshold can't be negative" }),
   creatorEthAddress: EthAddressSchema,
+  deployedAddress: EthAddressSchema,
 });
