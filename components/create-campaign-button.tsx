@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { createCampaign } from "@/lib/actions";
 import { useParams, useRouter } from "next/navigation";
+import { ethers, Contract } from "ethers";
 import CreateButton from "./primary-button";
 
 export default function CreateCampaignButton() {
@@ -14,27 +15,51 @@ export default function CreateCampaignButton() {
 
   return (
     <CreateButton
-      onClick={
-        () => {
-          // TODO create campaign on-chain
-          startTransition(async () => {
-            const data = {
-              name: 'test',
-              threshold: 0,
-              creatorEthAddress: '',
-            };
-            createCampaign(data, { params: { subdomain } }, null)
-              .then((campaign) => {
-                router.push(`/city/${subdomain}/campaigns/${campaign.id}`);
-                router.refresh();
-              })
-              .catch(console.error);
-          });
+    onClick={() => {
+      startTransition(async () => {
+        try {
+          if (!window.ethereum) {
+            throw new Error("Please install MetaMask or another wallet to create a campaign.");
+          }
+    
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          await provider.send("eth_requestAccounts", []);
+          const signer = await provider.getSigner();
+    
+          const campaignABI: string = '';
+          const campaignBytecode = "/* ... Bytecode ... */";
+    
+          const creatorAddress = signer.address;
+          const threshold = ethers.parseUnits("0", "ether");
+          const name = "test";
+    
+          const campaignFactory = new ethers.ContractFactory(campaignABI, campaignBytecode, signer);
+          const campaign = await campaignFactory.deploy(creatorAddress, threshold, name);
+    
+          await campaign.waitForDeployment();
+          const deployedAddress = await campaign.getAddress();
+
+          const data = {
+            name: '',
+            threshold: 0,
+            creatorEthAddress: creatorAddress,
+            deployedAddress: deployedAddress
+          }
+    
+          createCampaign(data, { params: { subdomain } }, null)
+            .then((campaignData) => {
+              router.push(`/city/${subdomain}/campaigns/${campaignData.id}`);
+              router.refresh();
+            })
+            .catch(console.error);
+        } catch (error) {
+          console.error(error);
         }
-      }
+      });
+    }}
       loading={isPending}
     >
-      <p>New Form</p>
+      <p>New Campaign</p>
     </CreateButton>
   );
 }

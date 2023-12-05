@@ -1,6 +1,8 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/dashboard-header";
+import ConnectEthButton from "@/components/connect-eth-button";
+import CreateCampaignButton from "@/components/create-campaign-button";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
 // import CreateEventFormButton from "@/components/create-form-button";
@@ -55,10 +57,10 @@ export default async function CampaignsPage({
       <PageHeader
         title="Campaigns"
         ActionButton={
-          // <CreateCampaignButton />
-          btn
+          <CreateCampaignButton />
         }
       />
+      {/* <ConnectEthButton /> */}
       {/* <Campaigns
         organization={organization}
         forms={campaigns}
