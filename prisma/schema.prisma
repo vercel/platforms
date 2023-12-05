@@ -219,13 +219,13 @@ model Ticket {
   userId  String
   tierId  String
   eventId String
-  roleId  String
 
-  validFrom DateTime
-  validTo   DateTime
-  user      User       @relation(fields: [userId], references: [id])
-  tier      TicketTier @relation(fields: [tierId], references: [id])
-  event     Event      @relation(fields: [eventId], references: [id])
+  validFrom  DateTime?
+  validTo    DateTime?
+  user       User       @relation(fields: [userId], references: [id])
+  tier       TicketTier @relation(fields: [tierId], references: [id])
+  event      Event      @relation(fields: [eventId], references: [id])
+  amountPaid Int // In smallest unit of currency
 
   @@unique([userId, tierId])
 }
