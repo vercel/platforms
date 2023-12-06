@@ -44,6 +44,7 @@ import {
   CreateAccommodationUnitSchema,
   CreatePlaceSchema,
   IssueTicketFormSchema,
+  CreateCampaignSchema,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
@@ -1611,12 +1612,12 @@ export const createEmailSubscriber = async ({
 }: {
   email: string;
   name: string;
-  description?: string | undefined;
+  description: string;
   indicatedInterest: EmailSubscriberInterest;
 }) => {
   const fullName = name.trim();
   try {
-    const response: EmailSubscriber = await prisma.emailSubscriber.create({
+    const response = await prisma.emailSubscriber.create({
       data: {
         email,
         name: fullName,
@@ -1661,3 +1662,26 @@ export const createEmailSubscriber = async ({
     }
   }
 };
+
+export const createCampaign = withOrganizationAuth(
+  async (data: any, organization: Organization) => {
+    const result = CreateCampaignSchema.safeParse(data);
+
+    if (!result.success) {
+      throw new Error("Invalid data");
+    }
+
+    const response = await prisma.campaign.create({
+      data: {
+        ...result.data,
+        organizationId: organization.id,
+      },
+      include: {
+        organization: true,
+      }
+    });
+    // TODO handle error
+
+    return response;
+  },
+);

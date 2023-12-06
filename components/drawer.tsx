@@ -16,6 +16,7 @@ import {
   BedSingle,
   Home,
   FileSymlink,
+  CircleDollarSign,
 } from "lucide-react";
 
 import { Drama } from "./icons/drama";
@@ -190,6 +191,12 @@ export default function Drawer({ children }: { children: ReactNode }) {
           href: `/city/${subdomain}/housing`,
           isActive: segments.includes("housing"),
           icon: <BedSingle width={18} />,
+        },
+        {
+          name: "Campaigns",
+          href: `/city/${subdomain}/campaigns`,
+          isActive: segments.includes("campaigns"),
+          icon: <CircleDollarSign width={18} />,
         },
         {
           name: "Forms",
