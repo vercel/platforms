@@ -8,6 +8,7 @@ module.exports = {
   images: {
     domains: [
       "ooybxjivdvmpbxtwunrr.supabase.co",
+      "agxfxvcrqbumicguksnl.supabase.co",
       "public.blob.vercel-storage.com",
       "res.cloudinary.com",
       "abs.twimg.com",

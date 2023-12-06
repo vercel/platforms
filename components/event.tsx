@@ -80,7 +80,7 @@ export function AboutCard({ event }: { event: Event }) {
 }
 
 type RegistrationCardProps = {
-  ticketTiers: (TicketTier & { role: Role })[];
+  ticketTiers: (TicketTier & { role: Role, _count: { tickets: number } })[];
   event: Event & { organization: Organization };
 };
 
@@ -92,9 +92,9 @@ export function RegistrationCard({
 }: RegistrationCardProps) {
   const TitleCopy = (() => {
     // TODO:// Remove hardcoded event id
-    if (event.id === VITALIA_2024_EVENT) {
-      return <Link href="https://lu.ma/vitalia" className="hover:underline">Register Externally↗</Link>;
-    }
+    // if (event.id === VITALIA_2024_EVENT) {
+    //   return <Link href="https://lu.ma/vitalia" className="hover:underline">Register Externally↗</Link>;
+    // }
 
     if (!ticketTiers || !(ticketTiers.length > 0)) {
       return "Registration options are not yet public";
@@ -128,7 +128,7 @@ export default function Event({
 }: {
   event: Event & { organization: Organization };
   rolesAndUsers: RolesAndUsers[];
-  ticketTiers: (TicketTier & { role: Role })[];
+  ticketTiers: (TicketTier & { role: Role, _count: { tickets: number } })[];
 }) {
   const uniqueUsers = useMemo(
     () =>

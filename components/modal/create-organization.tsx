@@ -45,11 +45,11 @@ export default function CreateOrganizationModal() {
               const { imageBlurhash, createdAt, updatedAt, ...rest } =
                 res as Organization;
 
-              const { id, subdomain } = res as Organization;
+              const { id, subdomain, name } = res as Organization;
               router.refresh();
               router.push(`/city/${subdomain}`);
               modal?.hide();
-              toast.success(`Successfully created City!`);
+              toast.success(`Successfully created ${name}!`);
             }
           },
         )

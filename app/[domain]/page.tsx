@@ -1,15 +1,12 @@
 import { notFound } from "next/navigation";
-import { getPostsForOrganization, getSiteData } from "@/lib/fetchers";
-import { getSession } from "@/lib/auth";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import Image from "next/image";
-import Events from "@/components/events";
+import { getSiteData } from "@/lib/fetchers";
 import prisma from "@/lib/prisma";
-import EventCard from "@/components/event-card";
+// import EventCard from "@/components/event-card";
 import Link from "next/link";
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash } from "@/lib/utils";
 import { Organization, Event } from "@prisma/client";
+import SocialLandingPage from "@/components/site-layouts/social-landing-page";
 
 export default async function SiteHomePage({
   params,
@@ -38,36 +35,7 @@ export default async function SiteHomePage({
     notFound();
   }
 
-  return (
-    <>
-      <div className="relative w-full rounded-lg transition-all dark:border-gray-700 dark:hover:border-white">
-        <div className="flex max-h-[90vh] flex-col md:flex-row lg:max-h-[90vh] lg:p-12">
-          <div className="p-10 md:w-1/2 xl:px-20">
-            <h1 className="font-serif text-3xl font-semibold lg:text-5xl xl:text-6xl">
-              {sitedata.header}
-            </h1>
-            <p className="mt-4 text-xl">{sitedata.description}</p>
-          </div>
-          <div className="w-full md:w-1/2">
-            <div className="overflow-hidden p-10 xl:px-20">
-              {sitedata.image ? (
-                <AspectRatio ratio={1 / 1}>
-                  <Image
-                    src={sitedata.image}
-                    alt={`${sitedata?.name} Hero Image` ?? "Hero Image"}
-                    blurDataURL={sitedata?.imageBlurhash ?? undefined}
-                    fill
-                    className="object-cover"
-                  />
-                </AspectRatio>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </div>
-      <UpcomingOrgEventsSection events={events} />
-    </>
-  );
+  return <SocialLandingPage sitedata={sitedata} />;
 }
 
 function UpcomingOrgEventsSection({
@@ -87,7 +55,7 @@ function UpcomingOrgEventsSection({
           <Link
             key={event.id}
             href={`/${event.path}`}
-            className="flex flex-col overflow-hidden rounded-lg border border-gray-750 bg-gray-850 hover:bg-gray-800 transition-colors"
+            className="flex flex-col overflow-hidden rounded-lg border border-gray-750 bg-gray-850 transition-colors hover:bg-gray-800"
           >
             <BlurImage
               alt={event.name ?? "Card thumbnail"}

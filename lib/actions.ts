@@ -436,6 +436,7 @@ export const updateOrganization = withOrganizationAuth(
         // });
 
         if (error || !data?.path) {
+           console.error(error?.message)
           return {
             error: "Failed to upload image.",
           };
@@ -1119,14 +1120,22 @@ export const createTicketTier = withEventAuth(
 );
 
 export async function getEventTicketTiers(eventId: string) {
-  return await prisma.ticketTier.findMany({
+  const tiers = await prisma.ticketTier.findMany({
     where: {
       eventId: eventId,
     },
     include: {
       role: true,
+      _count: {
+        select: {
+          tickets: true,
+        },
+      },
     },
   });
+  console.log({ tiers });
+
+  return tiers;
 }
 
 export const issueTicket = withEventAuth(
@@ -1654,7 +1663,7 @@ export const createEmailSubscriber = async ({
         html: renderWaitlistWelcomeEmail({ userFirstname }),
       }),
       resend.emails.send({
-        from: "Team Notifications <no-reply@mail.fora.co>",
+        from: "Fora Registration <no-reply@mail.fora.co>",
         to: ["ryan@fora.co", "cassie@fora.co", "lily@fora.co", "tomas@fora.co"],
         subject: `${fullName} registered for Fora`,
         html: `<p>${fullName} has registered on Fora with the email ${email} and the intent to ${indicatedInterest.toLowerCase()} a startup city.<br /><p>${description}</p></p>`,
