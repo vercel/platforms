@@ -191,9 +191,20 @@ const EthAddressSchema = z.string()
   .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address");
 
 export const CreateCampaignSchema = z.object({
-  id: z.string().optional(),
   name: z.string().min(1, { message: "Name is required." }).optional(),
   threshold: z.number().min(0, { message: "Threshold can't be negative" }),
-  creatorEthAddress: EthAddressSchema,
-  deployedAddress: EthAddressSchema,
+  content: z.string().optional(),
 });
+
+// Same as CreateCampaignSchema for now
+export const UpdateCampaignSchema = z.object({
+  name: z.string().min(1, { message: "Name is required." }).optional(),
+  threshold: z.number().min(0, { message: "Threshold can't be negative" }),
+  content: z.string().optional(),
+});
+
+export const DeployCampaignSchema = z.object({
+  content: z.string(),
+  sponsorEthAddress: EthAddressSchema,
+  deployedAddress: EthAddressSchema,
+})
