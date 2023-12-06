@@ -1759,28 +1759,28 @@ export const createEmailSubscriber = async ({
 };
 
 export const createCampaign = withOrganizationAuth(
-  async (data: any, organization: Organization) => {
-    const result = CreateCampaignSchema.safeParse(data);
-
-    if (!result.success) {
-      throw new Error(result.error.message);
+  async (_: any, organization: Organization) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
     }
 
     const response = await prisma.campaign.create({
       data: {
-        ...result.data,
         organizationId: organization.id,
       },
       include: {
         organization: true,
       },
     });
-    // TODO handle error
 
     return response;
   },
 );
 
+<<<<<<< HEAD
 export async function getMutualEventAttendeesAll(userId: string) {
   // Get the events that the user attended
   const attendedEvents = await prisma.ticket.findMany({
@@ -1972,6 +1972,30 @@ export async function getCitizensWithMutualEventAttendance(
 
   return mutualAttendees;
 }
+=======
+// export const createCampaign = withOrganizationAuth(
+//   async (data: any, organization: Organization) => {
+//     const result = CreateCampaignSchema.safeParse(data);
+
+//     if (!result.success) {
+//       throw new Error(result.error.message);
+//     }
+
+//     const response = await prisma.campaign.create({
+//       data: {
+//         ...result.data,
+//         organizationId: organization.id,
+//       },
+//       include: {
+//         organization: true,
+//       }
+//     });
+//     // TODO handle error
+
+//     return response;
+//   },
+// );
+>>>>>>> 7289f7e (take out editor stuff for now, just create campaign like you'd create a form)
 
 export const updateCampaign = withOrganizationAuth(
   async (data: any, organization: Organization) => {

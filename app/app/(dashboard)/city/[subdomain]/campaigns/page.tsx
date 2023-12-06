@@ -1,12 +1,13 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/dashboard-header";
-import OpenModalButton from "@/components/open-modal-button";
-import CampaignEditorModal from "@/components/campaign-editor-modal";
+// import OpenModalButton from "@/components/open-modal-button";
+// import CampaignEditorModal from "@/components/campaign-editor-modal";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
-// import CreateEventFormButton from "@/components/create-form-button";
-// import OrgForms from "@/components/org-forms";
+import CreateCampaignButton from "@/components/create-campaign-button";
+import Campaigns from "@/components/campaigns";
+
 
 export default async function CampaignsPage({
   params,
@@ -28,43 +29,31 @@ export default async function CampaignsPage({
     return notFound();
   }
 
-  // const campaigns = await prisma.campaign.findMany({
-  //   where: {
-  //     organizationId: organization.id,
-  //   },
-  //   select: {
-  //     id: true,
-  //     name: true,
-  //     published: true,
-  //     organizationId: true,
-  //     eventId: true,
-  //     image: true,
-  //     questions: true,
-  //     role: true,
-  //     endingTitle: true,
-  //     endingDescription: true,
-  //     formResponse: {
-  //       select: {
-  //         id: true
-  //       },
-  //     }
-  //   }
-  // });
+  const campaigns = await prisma.campaign.findMany({
+    where: {
+      organizationId: organization.id,
+    },
+    select: {
+      id: true,
+      name: true,
+      threshold: true,
+      deployed: true,
+      contributions: true,
+    }
+  });
 
   return (
     <div className="flex flex-col space-y-6">
       <PageHeader
         title="Campaigns"
         ActionButton={
-          <OpenModalButton text="New Campaign">
-            <CampaignEditorModal />
-          </OpenModalButton>
+          <CreateCampaignButton />
         }
       />
-      {/* <Campaigns
+      <Campaigns
         organization={organization}
-        forms={campaigns}
-      /> */}
+        campaigns={campaigns}
+      />
     </div>
   );
 }
