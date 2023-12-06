@@ -1,14 +1,17 @@
 "use client";
 
 import { useTransition } from "react";
-import { createCampaign } from "@/lib/actions";
+import { createCampaign, updateCampaign, launchCampaign } from "@/lib/actions";
 import { useParams, useRouter } from "next/navigation";
+import { Campaign } from "@prisma/client";
 import CreateButton from "./primary-button";
 import { ethers } from "ethers";
 import Editor from "@/components/editor";
 
 
-export default function CampaignEditorModal() {
+export default function CampaignEditorModal(
+  props: { campaign: Campaign | undefined }
+) {
   const router = useRouter();
   const { subdomain } = useParams() as {
     subdomain: string;
@@ -20,24 +23,64 @@ export default function CampaignEditorModal() {
     threshold: 0,
   }
 
-  createCampaign(data, { params: { subdomain } }, null)
+  if (props.campaign === undefined) {
+    // TODO will this need to be async?
+    createCampaign(data, { params: { subdomain } }, null)
     .then((campaignData) => {
       router.push(`/city/${subdomain}/campaigns/${campaignData.id}`);
       router.refresh();
     })
     .catch(console.error);
+  }
 
-  const onUpdate = () => {
-
+  const onUpdate = async () => {
+    updateCampaign(data, { params: { subdomain } }, null)
+    .catch(console.error);
   };
 
-  const deploy = () => {
+  const deploy = async () => {
+    onUpdate()
+    .then(async () => {
+      try {
+        if (!window.ethereum) {
+          throw new Error("Please install MetaMask or another wallet to create a campaign.");
+        }
 
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+
+        const campaignABI: string = '';
+        const campaignBytecode = "/* ... Bytecode ... */";
+
+        // TODO make this actual data
+        const creatorAddress = signer.address;
+        const threshold = ethers.parseUnits("0", "ether");
+        const name = "test";
+
+        const campaignFactory = new ethers.ContractFactory(campaignABI, campaignBytecode, signer);
+        const campaign = await campaignFactory.deploy(creatorAddress, threshold, name);
+        await campaign.waitForDeployment();
+        const deployedAddress = await campaign.getAddress();
+
+        // TODO make this actual data
+        const data = {
+          name: '',
+          threshold: 0,
+          sponsorEthAddress: creatorAddress,
+          deployedAddress: deployedAddress
+        };
+
+        launchCampaign(data, { params: { subdomain } }, null);
+      } catch (error) {
+        console.error(error);
+      }
+    })
   };
 
   return (
     <form
-    onSubmit={onSubmit}
+    onSubmit={onUpdate}
     className="mx-auto w-full rounded-md bg-white dark:bg-gray-900 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
   >
     <div className="m.d:p-10 relative flex flex-col space-y-4 p-5">

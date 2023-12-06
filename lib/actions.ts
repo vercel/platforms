@@ -1601,7 +1601,7 @@ export const updateCampaign = withOrganizationAuth(
   },
 );
 
-export const deployCampaign = withOrganizationAuth(
+export const launchCampaign = withOrganizationAuth(
   async (data: any, organization: Organization) => {
     const result = DeployCampaignSchema.safeParse(data);
 
