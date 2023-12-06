@@ -15,7 +15,11 @@ import {
   ClipboardSignature,
   BedSingle,
   Home,
+  FileSymlink,
 } from "lucide-react";
+
+import { Drama } from "./icons/drama";
+
 import {
   useParams,
   usePathname,
@@ -118,42 +122,6 @@ export default function Drawer({ children }: { children: ReactNode }) {
   }, [session?.user]);
 
   const tabs = useMemo(() => {
-    // Event Settings
-    if (
-      segments?.[2] === "events" &&
-      subdomain &&
-      path &&
-      segments?.[4] === "settings"
-    ) {
-      return [
-        {
-          name: "Back",
-          href: `/city/${subdomain}/events/${path}`,
-          icon: <ArrowLeft width={18} />,
-        },
-        {
-          name: "Event Roles",
-          href: `/city/${subdomain}/events/${path}/roles`,
-          icon: <Users width={18} />,
-        },
-        {
-          name: "Event Tickets",
-          href: `/city/${subdomain}/events/${path}/tickets`,
-          icon: <Ticket width={18} />,
-        },
-        {
-          name: "Event Forms",
-          href: `/city/${subdomain}/events/${path}/forms`,
-          icon: <ClipboardSignature width={18} />,
-        },
-        {
-          name: "Settings",
-          href: `/city/${subdomain}/events/${path}/settings`,
-          isActive: segments.includes("settings"),
-          icon: <Settings width={18} />,
-        },
-      ];
-    }
     // Event drawer
     if (segments?.[2] === "events" && subdomain && path) {
       return [
@@ -164,14 +132,24 @@ export default function Drawer({ children }: { children: ReactNode }) {
           icon: <ArrowLeft width={18} />,
         },
         {
+          name: "Overview ",
+          href: `/city/${subdomain}/events/${path}`,
+          icon: <LayoutDashboard width={18} />,
+        },
+        {
           name: "Event Roles",
           href: `/city/${subdomain}/events/${path}/roles`,
-          icon: <Users width={18} />,
+          icon: <Drama className="w-[18px]" />,
         },
         {
           name: "Event Tickets",
           href: `/city/${subdomain}/events/${path}/tickets`,
           icon: <Ticket width={18} />,
+        },
+        {
+          name: "Event Page",
+          href: `/city/${subdomain}/events/${path}/preview`,
+          icon: <FileSymlink width={18} />,
         },
         // {
         //   name: "Event Forms",
@@ -186,6 +164,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
         },
       ];
     }
+    // City Drawer
     if (segments[0] === "city" && subdomain) {
       return [
         {

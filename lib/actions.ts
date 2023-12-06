@@ -1094,6 +1094,58 @@ export async function getEventTicketTiers(eventId: string) {
   });
 }
 
+export const issueTicket = withEventAuth(
+  async (
+    data: z.infer<typeof IssueTicketFormSchema>,
+    event: Event & { organization: Organization },
+  ) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const result = IssueTicketFormSchema.safeParse(data);
+    if (!result.success) {
+      return {
+        error: result.error.formErrors.fieldErrors,
+      };
+    }
+
+    try {
+      let user = await prisma.user.findUnique({
+        where: {
+          email: result.data.email
+        }
+      });
+
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email: result.data.email
+          }
+        });
+      }
+
+      const { email, ...rest } = result.data;
+      const ticket = await prisma.ticket.create({
+        data: {
+          ...rest,
+          userId: user.id,
+        }
+      });
+
+      return ticket;
+    } catch (error: any) {
+      console.log('error: ', error)
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
 export const createForm = withOrganizationAuth(
   async (_: any, organization: Organization) => {
     const session = await getSession();
