@@ -1,5 +1,4 @@
 import { getUsersWithTicketForEvent } from "@/lib/actions";
-import { Card } from "@tremor/react";
 import AddAttendeesModal from "../modal/add-attendees";
 import OpenModalButton from "../open-modal-button";
 import { CardHeader, CardTitle, CardContent } from "../ui/card";

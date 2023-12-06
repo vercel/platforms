@@ -43,6 +43,7 @@ import {
   CreateTicketTierFormSchema,
   CreateAccommodationUnitSchema,
   CreatePlaceSchema,
+  IssueTicketFormSchema,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
@@ -948,6 +949,39 @@ export async function getUsersWithRoleInEvent(eventPath: string) {
   }));
 }
 
+export async function getUsersWithTicketForEvent(eventPath: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      tickets: {
+        some: {
+          event: {
+            path: eventPath,
+          },
+        },
+      },
+    },
+    include: {
+      tickets: {
+        include: {
+          event: true,
+          tier: true,
+        },
+      },
+    },
+  });
+
+  return users.map((user) => ({
+    ...user,
+    thisEventTickets: user.tickets
+      .filter((ticket) => ticket.event.path === eventPath)
+      .map((ticket) => ({
+        ...ticket,
+        tierName: ticket.tier.name,
+        tierPrice: ticket.tier.price,
+      })),
+  }));
+}
+
 export async function getEventRolesAndUsers(eventId: string) {
   return await prisma.userRole.findMany({
     where: {
@@ -1116,15 +1150,15 @@ export const issueTicket = withEventAuth(
     try {
       let user = await prisma.user.findUnique({
         where: {
-          email: result.data.email
-        }
+          email: result.data.email,
+        },
       });
 
       if (!user) {
         user = await prisma.user.create({
           data: {
-            email: result.data.email
-          }
+            email: result.data.email,
+          },
         });
       }
 
@@ -1133,12 +1167,12 @@ export const issueTicket = withEventAuth(
         data: {
           ...rest,
           userId: user.id,
-        }
+        },
       });
 
       return ticket;
     } catch (error: any) {
-      console.log('error: ', error)
+      console.log("error: ", error);
       return {
         error: error.message,
       };
