@@ -1,8 +1,8 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/dashboard-header";
-import ConnectEthButton from "@/components/connect-eth-button";
-import CreateCampaignButton from "@/components/create-campaign-button";
+import OpenModalButton from "@/components/open-modal-button";
+import CreateCampaignModal from "@/components/create-campaign-modal";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
 // import CreateEventFormButton from "@/components/create-form-button";
@@ -50,17 +50,17 @@ export default async function CampaignsPage({
   //     }
   //   }
   // });
-  const btn = <div>Not a button</div>
 
   return (
     <div className="flex flex-col space-y-6">
       <PageHeader
         title="Campaigns"
         ActionButton={
-          <CreateCampaignButton />
+          <OpenModalButton text="New Campaign">
+            <CampaignEditorModal />
+          </OpenModalButton>
         }
       />
-      {/* <ConnectEthButton /> */}
       {/* <Campaigns
         organization={organization}
         forms={campaigns}
