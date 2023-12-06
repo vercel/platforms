@@ -45,6 +45,8 @@ import {
   CreatePlaceSchema,
   IssueTicketFormSchema,
   CreateCampaignSchema,
+  DeployCampaignSchema,
+  UpdateCampaignSchema,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
@@ -1970,3 +1972,43 @@ export async function getCitizensWithMutualEventAttendance(
 
   return mutualAttendees;
 }
+
+export const updateCampaign = withOrganizationAuth(
+  async (data: any, organization: Organization) => {
+    const result = UpdateCampaignSchema.safeParse(data);
+
+    if (!result.success) {
+      throw new Error("Invalid data");
+    }
+
+    const response = await prisma.campaign.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        data
+      },
+    });
+    return response;
+  },
+);
+
+export const deployCampaign = withOrganizationAuth(
+  async (data: any, organization: Organization) => {
+    const result = DeployCampaignSchema.safeParse(data);
+
+    if (!result.success) {
+      throw new Error("Invalid data");
+    }
+
+    const response = await prisma.campaign.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        data
+      },
+    });
+    return response;
+  },
+);
