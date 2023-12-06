@@ -1,7 +1,5 @@
 import { getUsersWithTicketForEvent } from "@/lib/actions";
-import AddAttendeesModal from "../modal/add-attendees";
-import OpenModalButton from "../open-modal-button";
-import { CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Card } from "../ui/card";
 import { columns } from "./columns";
 import DataTable from "./data-table";
 import prisma from "@/lib/prisma";
@@ -20,17 +18,21 @@ export async function AttendeeTableCard({
 
   const data = await getUsersWithTicketForEvent(event.path);
   return (
-    <div>
-      <CardTitle>Attendees</CardTitle>
-      <DataTable data={data} columns={columns} />
-      <div className="mt-4 flex justify-end">
-        <OpenModalButton text="Request payments" className="mr-2">
-          Request Payments
-        </OpenModalButton>
-        <OpenModalButton text="Add attendees">
-          <AddAttendeesModal ticketTiers={ticketTiers} event={event} />
-        </OpenModalButton>
+    <Card className="space-y-8 p-2 md:p-8">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">
+          {event.name} Attendees
+        </h2>
+        <p className="">
+          <span className="font-medium">Rapidly</span> manage your attendees.
+        </p>
       </div>
-    </div>
+      <DataTable
+        data={data}
+        columns={columns}
+        ticketTiers={ticketTiers}
+        event={event}
+      />
+    </Card>
   );
 }

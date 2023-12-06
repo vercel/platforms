@@ -973,7 +973,7 @@ export async function getUsersWithTicketForEvent(eventPath: string) {
 
   return users.map((user) => ({
     ...user,
-    thisEventTickets: user.tickets
+    tickets: user.tickets
       .filter((ticket) => ticket.event.path === eventPath)
       .map((ticket) => ({
         ...ticket,
@@ -1163,10 +1163,23 @@ export const issueTicket = withEventAuth(
         });
       }
 
+      const tier = await prisma.ticketTier.findUnique({
+        where: {
+          id: data.tierId,
+          eventId: data.eventId,
+        },
+      });
+      if (!tier) {
+        return {
+          error: `Invalid Ticket Tier and/or Event.`,
+        };
+      }
+
       const { email, ...rest } = result.data;
       const ticket = await prisma.ticket.create({
         data: {
-          ...rest,
+          eventId: tier.eventId,
+          tierId: tier.id,
           userId: user.id,
         },
       });
@@ -1678,7 +1691,7 @@ export const createCampaign = withOrganizationAuth(
       },
       include: {
         organization: true,
-      }
+      },
     });
     // TODO handle error
 
