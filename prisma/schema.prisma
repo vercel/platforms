@@ -425,7 +425,7 @@ model EmailSubscriber {
 
 model Campaign {
   id                String                 @id @default(cuid())
-  name              String
+  name              String                 @default("My Campaign")
   threshold         Int                    @default(0)
   content           String?                @db.Text
   createdAt         DateTime               @default(now())
@@ -433,7 +433,7 @@ model Campaign {
   deployed          Boolean                @default(false)
   timeDeployed      DateTime?              @default(now())
   deployedAddress   String?
-  sponsorEthAddress String
+  sponsorEthAddress String?
   contributions     CampaignContribution[]
   organization      Organization           @relation(fields: [organizationId], references: [id], onUpdate: Cascade)
   organizationId    String
