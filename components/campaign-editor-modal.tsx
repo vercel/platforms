@@ -19,17 +19,13 @@ export default function CampaignEditorModal(
   const [isPending, startTransition] = useTransition();
 
   const data = {
-    name: '',
+    name: 'test name',
     threshold: 0,
   }
 
   if (props.campaign === undefined) {
     // TODO will this need to be async?
     createCampaign(data, { params: { subdomain } }, null)
-    .then((campaignData) => {
-      router.push(`/city/${subdomain}/campaigns/${campaignData.id}`);
-      router.refresh();
-    })
     .catch(console.error);
   }
 
@@ -71,7 +67,11 @@ export default function CampaignEditorModal(
           deployedAddress: deployedAddress
         };
 
-        launchCampaign(data, { params: { subdomain } }, null);
+        launchCampaign(data, { params: { subdomain } }, null)
+        .then((campaignData) => {
+          router.push(`/city/${subdomain}/campaigns/${campaignData.id}`);
+          router.refresh();
+        })
       } catch (error) {
         console.error(error);
       }

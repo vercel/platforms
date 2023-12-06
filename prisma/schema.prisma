@@ -442,9 +442,9 @@ model Campaign {
 }
 
 model CampaignContribution {
-  id         String    @id @default(cuid())
+  id               String    @id @default(cuid())
   senderEthAddress String
-  user       User?     @relation(fields: [ethAddress], references: [eth_address])
-  Campaign   Campaign? @relation(fields: [campaignId], references: [id])
-  campaignId String?
+  user             User?     @relation(fields: [senderEthAddress], references: [eth_address])
+  Campaign         Campaign? @relation(fields: [campaignId], references: [id])
+  campaignId       String?
 }

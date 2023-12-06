@@ -1563,7 +1563,7 @@ export const createCampaign = withOrganizationAuth(
     const result = CreateCampaignSchema.safeParse(data);
 
     if (!result.success) {
-      throw new Error("Invalid data");
+      throw new Error(result.error.message);
     }
 
     const response = await prisma.campaign.create({
