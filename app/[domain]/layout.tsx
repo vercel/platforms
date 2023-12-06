@@ -4,7 +4,6 @@ import { notFound, redirect } from "next/navigation";
 import { getSiteData } from "@/lib/fetchers";
 import { fontMapper } from "@/styles/fonts";
 import { Metadata } from "next";
-import SiteNav from "@/components/site-nav";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
@@ -107,7 +106,7 @@ export default async function SiteLayout({
 
   return (
     <div className={cn(fontMapper[data.font], "min-h-screen")}>
-      <SiteNav params={params} />
+      {/* <SiteNav params={params} /> */}
       {children}
     </div>
   );

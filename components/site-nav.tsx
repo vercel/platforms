@@ -4,13 +4,14 @@ import { ReactNode, Suspense } from "react";
 import { getSiteData } from "@/lib/fetchers";
 import UserNav from "./user-nav";
 import dynamic from "next/dynamic";
+import ConnectPassportButton from "./buttons/ConnectPassportButton";
 
-const ConnectEthButton = dynamic(
-  () => import("@/components/connect-eth-button"),
-  {
-    ssr: false,
-  },
-);
+// const ConnectEthButton = dynamic(
+//   () => import("@/components/connect-eth-button"),
+//   {
+//     ssr: false,
+//   },
+// );
 
 export default async function SiteNav({
   params,
@@ -25,18 +26,12 @@ export default async function SiteNav({
       <nav className="ease fixed left-0 right-0 top-0 z-30 flex h-16  bg-gray-100/50 backdrop-blur-xl transition-all duration-150 dark:border-b-0 dark:border-gray-700 dark:bg-gray-900/60">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-center px-2.5">
           <div className="flex">
-            <Link href="/" className="flex items-center justify-center">
-              {/* <div className="relative h-8 w-8">
-                <Image
-                  alt={data?.name || ""}
-                  src={data?.logo || ""}
-                  layout="fill"
-                />
-              </div> */}
+            {/* <Link href="/" className="flex items-center justify-center">
               <span className="ml-3 inline-block truncate font-title font-medium">
-                {/* {data?.name} */}
+                {data?.name}
               </span>
-            </Link>
+            </Link> */}
+            <ConnectPassportButton>Connect Passport</ConnectPassportButton>
           </div>
           <div className="absolute right-1 top-1 p-2.5">
             <UserNav />
