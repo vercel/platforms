@@ -3,6 +3,7 @@
 import { launchCampaign } from "@/lib/actions";
 import CampaignContract from '@/protocol/campaigns/out/Campaign.sol/Campaign.json';
 import { ethers } from "ethers";
+import { Campaign } from "@prisma/client";
 
 
 export default function LaunchCampaignButton(
@@ -21,19 +22,22 @@ export default function LaunchCampaignButton(
         const campaignABI = CampaignContract.abi;
         const campaignBytecode = CampaignContract.bytecode;
 
-        // TODO make this actual data
         const creatorAddress = signer.address;
         const threshold = ethers.parseUnits(props.campaign.threshold.toString(), "ether");
         const name = props.campaign.name;
 
         const campaignFactory = new ethers.ContractFactory(campaignABI, campaignBytecode, signer);
-        const campaign = await campaignFactory.deploy(creatorAddress, threshold, name);
-        await campaign.waitForDeployment();
-        const deployedAddress = await campaign.getAddress();
+        // const campaign = await campaignFactory.deploy(creatorAddress, threshold, name);
+        // await campaign.waitForDeployment();
+        // const deployedAddress = await campaign.getAddress();
+        // // TEMP
 
         const data = {
+          id: props.campaign.id,
           sponsorEthAddress: creatorAddress,
-          deployedAddress: deployedAddress
+          // deployedAddress: deployedAddress,
+          deployedAddress: creatorAddress,  // Debug,
+          deployed: true,
         };
 
         launchCampaign(data, { params: { subdomain: props.subdomain } }, null);

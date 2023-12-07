@@ -3,31 +3,44 @@
 import React, { useState } from "react";
 import { updateCampaign } from "@/lib/actions";
 
-
 interface FormState {
   name: string;
   threshold: number;
   content: string;
 }
 
+interface ModifiedFields {
+  name: boolean;
+  threshold: boolean;
+  content: boolean;
+}
+
 export default function CampaignForm({ id, subdomain }: { id: string, subdomain: string }) {
   const [formState, setFormState] = useState<FormState>({ name: "", threshold: 0, content: "" });
+  const [modified, setModified] = useState<ModifiedFields>({ name: false, threshold: false, content: false });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const updatedValue = name === 'threshold' ? Number(value) : value;
     setFormState({ ...formState, [name]: updatedValue });
+    setModified({ ...modified, [name]: true });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    let payload = { id };
+    if (modified.name) payload.name = formState.name;
+    if (modified.threshold) payload.threshold = formState.threshold;
+    if (modified.content) payload.content = formState.content;
+
     try {
       const response = await updateCampaign(
-        {id, ...formState},
+        payload,
         { params: { subdomain } },
         null,
       );
-      console.log(`response: ${response}`);
+      console.log(`updateCampaign response: ${response}`);
+      console.log(response);
     } catch (error) {
       console.error('Error updating campaign', error);
     }
