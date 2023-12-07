@@ -431,7 +431,7 @@ model Campaign {
   createdAt         DateTime               @default(now())
   updatedAt         DateTime               @updatedAt
   deployed          Boolean                @default(false)
-  timeDeployed      DateTime?              @default(now())
+  timeDeployed      DateTime?
   deployedAddress   String?
   sponsorEthAddress String?
   contributions     CampaignContribution[]
