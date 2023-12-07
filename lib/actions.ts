@@ -2002,16 +2002,14 @@ export const updateCampaign = withOrganizationAuth(
     const result = UpdateCampaignSchema.safeParse(data);
 
     if (!result.success) {
-      throw new Error("Invalid data");
+      throw new Error(result.error.message);
     }
 
     const response = await prisma.campaign.update({
       where: {
         id: data.id,
       },
-      data: {
-        data
-      },
+      data
     });
     return response;
   },
@@ -2022,16 +2020,14 @@ export const launchCampaign = withOrganizationAuth(
     const result = DeployCampaignSchema.safeParse(data);
 
     if (!result.success) {
-      throw new Error("Invalid data");
+      throw new Error(result.error.message);
     }
 
     const response = await prisma.campaign.update({
       where: {
         id: data.id,
       },
-      data: {
-        data
-      },
+      data
     });
     return response;
   },

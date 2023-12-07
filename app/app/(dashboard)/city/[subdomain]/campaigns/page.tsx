@@ -2,7 +2,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/dashboard-header";
 // import OpenModalButton from "@/components/open-modal-button";
-// import CampaignEditorModal from "@/components/campaign-editor-modal";
+import CampaignEditorModal from "@/components/campaign-editor-modal";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
 import CreateCampaignButton from "@/components/create-campaign-button";
