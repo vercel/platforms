@@ -3,11 +3,14 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import notFound from "../../not-found";
 import { Input } from "@/components/ui/input";
+import LaunchCampaignButton from "@/components/launch-campaign-button";
 import { toast } from "@/components/ui/use-toast";
 import { UpdateCampaignSchema } from "@/lib/schema";
 import { updateCampaign } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CampaignForm from "@/components/create-campaign-form";
+import { ethers } from "ethers";
+import { Campaign } from "@prisma/client";
 
 
 export default async function CampaignPage({
@@ -87,7 +90,8 @@ export default async function CampaignPage({
           {`organization: ${campaign.organization.name}`}
         </p>
       </div>
-      <CampaignForm subdomain={params.subdomain} />
+      <CampaignForm id={params.id} subdomain={params.subdomain} />
+      <LaunchCampaignButton campaign={campaign} subdomain={params.subdomain} />
     </div>
   );
 }
