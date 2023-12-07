@@ -18,24 +18,11 @@ export default async function SiteHomePage({
   // const session = await getSession();
   const [sitedata] = await Promise.all([getSiteData(domain)]);
 
-  const events = await prisma.event.findMany({
-    where: {
-      organizationId: sitedata?.id,
-    },
-    include: {
-      organization: true,
-    },
-    orderBy: {
-      createdAt: "asc",
-    },
-    take: 3,
-  });
-
   if (!sitedata) {
     notFound();
   }
 
-  return <SocialLandingPage sitedata={sitedata} />;
+  return <SocialLandingPage params={params} sitedata={sitedata} />;
 }
 
 function UpcomingOrgEventsSection({

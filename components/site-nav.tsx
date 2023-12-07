@@ -25,15 +25,25 @@ export default async function SiteNav({
     <>
       <nav className="ease fixed left-0 right-0 top-0 z-30 flex h-16  bg-gray-100/50 backdrop-blur-xl transition-all duration-150 dark:border-b-0 dark:border-gray-700 dark:bg-gray-900/60">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-center px-2.5">
+          <Link
+            href={
+              process.env.NEXT_PUBLIC_ROOT_DOMAIN === "localhost:3000"
+                ? `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
+                : `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
+            }
+            className="absolute left-1 p-2.5"
+          >
+            <Image
+              alt={"Fora logo"}
+              src={"https://fora.co/fora-logo.png"}
+              height={24}
+              width={24}
+            />
+          </Link>
           <div className="flex">
-            {/* <Link href="/" className="flex items-center justify-center">
-              <span className="ml-3 inline-block truncate font-title font-medium">
-                {data?.name}
-              </span>
-            </Link> */}
-            <ConnectPassportButton>Connect Passport</ConnectPassportButton>
+            <ConnectPassportButton className='h-9'>Connect Passport</ConnectPassportButton>
           </div>
-          <div className="absolute right-1 top-1 p-2.5">
+          <div className="absolute right-1 p-2.5">
             <UserNav />
           </div>
         </div>

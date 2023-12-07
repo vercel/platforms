@@ -154,13 +154,13 @@ export default function CitySwitcher({
                   </AvatarFallback>
                 </Avatar>
                 <span className="ml-3">{selectedOrganization?.name}</span>
-                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-300 opacity-50" />
+                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-700 dark:stroke-gray-300 opacity-50" />
               </>
             ) : (
               <>
                 <HomeIcon className="h-4 w-5" />
                 <span className="ml-2 ">{"Home"}</span>
-                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-300 opacity-50" />
+                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-700 dark:stroke-gray-300 opacity-50" />
               </>
             )}
           </Button>

@@ -436,7 +436,7 @@ export const updateOrganization = withOrganizationAuth(
         // });
 
         if (error || !data?.path) {
-           console.error(error?.message)
+          console.error(error?.message);
           return {
             error: "Failed to upload image.",
           };
@@ -622,11 +622,22 @@ export const updatePostMetadata = withPostAuth(
         const file = formData.get("image") as File;
         const filename = `${nanoid()}.${file.type.split("/")[1]}`;
 
-        const { url } = await put(filename, file, {
-          access: "public",
-        });
+        const { data, error } = await supabase.storage
+          .from("media")
+          .upload(`/public/${filename}`, file);
 
-        const blurhash = await getBlurDataURL(url);
+        // const { url } = await put(filename, file, {
+        //   access: "public",
+        // });
+        if (error || !data?.path) {
+          console.error(error?.message);
+          return {
+            error: "Failed to upload image.",
+          };
+        }
+        const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/media/${data.path}`;
+
+        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
         response = await prisma.post.update({
           where: {

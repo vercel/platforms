@@ -4,11 +4,11 @@ import { notFound, redirect } from "next/navigation";
 import Editor from "@/components/editor";
 
 export default async function PostPage({ params }: { params: { id: string } }) {
-  const session = await getSession();
+  // const session = await getSession();
 
-  const data = await prisma.post.findUnique({
+  const data = await prisma.post.findFirst({
     where: {
-      id: params.id,
+      OR: [{ slug: params.id }, { id: params.id }],
     },
     include: {
       organization: {

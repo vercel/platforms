@@ -7,6 +7,7 @@ module.exports = {
   },
   images: {
     domains: [
+      "fora.co",
       "ooybxjivdvmpbxtwunrr.supabase.co",
       "agxfxvcrqbumicguksnl.supabase.co",
       "public.blob.vercel-storage.com",
