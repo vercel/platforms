@@ -9,7 +9,6 @@ import { UpdateCampaignSchema } from "@/lib/schema";
 import { updateCampaign } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CampaignForm from "@/components/create-campaign-form";
-import { ethers } from "ethers";
 import { Campaign } from "@prisma/client";
 
 
