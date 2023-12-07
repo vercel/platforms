@@ -1,89 +1,42 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { UpdateCampaignSchema } from '@/lib/schema';
+import { Campaign, Organization } from "@prisma/client";
+import { updateCampaign } from '@/lib/actions';
+import { useParams } from "next/navigation";
 
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 
-import { Input } from "./ui/input";
-import { toast } from "@/components/ui/use-toast";
-import { useParams, useRouter } from "next/navigation";
-import { CreatePlaceSchema } from "@/lib/schema";
-import { createPlace } from "@/lib/actions";
-import { Feature, Point, Polygon } from "geojson";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
-import PrimaryButton from "./primary-button";
+interface Data {
+  name: string,
+  threshold: number,
+  content: string
+}
 
-export default function CreateCampaignForm({
-  geoJSON,
-  lng,
-  lat,
-}: {
-  geoJSON?: Feature<Polygon> | Feature<Point>;
-  lng?: number;
-  lat?: number;
-}) {
-  const form = useForm<z.infer<typeof CreatePlaceSchema>>({
-    resolver: zodResolver(CreatePlaceSchema),
+
+export default function CampaignEditorForm(
+  campaign: Campaign,
+  organization: Organization
+) {
+  const [name, setName] = useState(campaign.name);
+  const [threshold, setThreshold] = useState(campaign.threshold);
+  const [content, setContent] = useState(campaign.content);
+
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(UpdateCampaignSchema),
   });
-  const { pending } = useFormStatus();
 
-  const router = useRouter();
-  const modal = useModal();
-  const { subdomain, path } = useParams() as {
-    subdomain: string;
-    path: string;
-  };
-
-  async function onSubmit(data: z.infer<typeof CreatePlaceSchema>) {
-    console.log("on Submit");
-
-    const result = await createPlace(
-      data,
-      { params: { subdomain: subdomain as string } },
-      null,
-    );
-    console.log("result");
-
-    router.refresh();
-    toast({
-      title: "Successfully created a new Property",
-    });
-    modal?.hide();
-  }
+  const { subdomain } = useParams() as { subdomain: string };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-6 rounded-md bg-gray-200/80 px-6 py-6 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
-      >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Property Name</FormLabel>
-              <Input {...field} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div>
-          <FormLabel>Address</FormLabel>
-          <GeocodeInput />
-        </div>
-        <PrimaryButton loading={pending} type="submit">
-          Submit
-        </PrimaryButton>
-      </form>
-    </Form>
+    <form onSubmit={handleSubmit}>
+      <Input {...register('name')} value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)} />
+      <Input {...register('threshold')} value={threshold} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setThreshold(e.target.value)} />
+      <Input {...register('content')} value={content} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContent(e.target.value)} />
+      <button type="submit">Update Campaign</button>
+    </form>
   );
 }
