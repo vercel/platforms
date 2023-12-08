@@ -27,8 +27,8 @@ function generateAvatarGroupAndSentence(
   const avatarGroup = (
     <AvatarGroup
       avatars={attendeesForAvatar.map((attendee) => ({
-        src: attendee.image || "",
-        alt: attendee.name || attendee.ens_name || "",
+        src: attendee.image || undefined,
+        alt: attendee.name || attendee.ens_name || undefined,
       }))}
     />
   );
@@ -51,6 +51,7 @@ export default async function MutualAttendenceCitizens({
             avatars={[
               { src: "", alt: "" },
               { src: "", alt: "" },
+              { src: "", alt: "" },
             ]}
           />
         </div>
@@ -70,8 +71,8 @@ export default async function MutualAttendenceCitizens({
 
   return (
     <div className="flex items-center">
-      <div>{avatarGroup}</div>
-      <div className="mx-2 text-sm leading-tight text-gray-750 dark:text-gray-400">
+      <div className="mr-2">{avatarGroup}</div>
+      <div className="mr-2 text-sm leading-tight text-gray-750 dark:text-gray-400">
         {sentence}
       </div>
     </div>

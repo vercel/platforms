@@ -30,12 +30,12 @@ export default async function SocialButtons({
         <span>Attended</span>
       </button>
 
-      <button className="mr-5 flex items-center justify-center rounded-md border border-transparent text-sm font-medium ">
-        <span className="text-md mr-1 font-bold text-gray-850 dark:text-gray-200">
-          Coming Soon
+      {/* <button className="mr-5 flex items-center justify-center rounded-md border border-transparent text-sm font-medium ">
+        <span className="italic text-md mr-1 font-bold text-gray-850 dark:text-gray-200">
+          Soon
         </span>
         <span>Backers</span>
-      </button>
+      </button> */}
     </div>
   );
 }
