@@ -1567,8 +1567,26 @@ export const createCampaign = withOrganizationAuth(
       };
     }
 
+    const existingCampaigns = await prisma.campaign.findMany({
+      where: {
+        name: {
+          startsWith: 'My Campaign',
+        },
+        organizationId: organization.id,
+      },
+    });
+
+    const existingNames = new Set(existingCampaigns.map(c => c.name));
+    let counter = 1;
+    let name = 'My Campaign';
+    while (existingNames.has(name)) {
+      name = `My Campaign (${counter})`;
+      counter++;
+    }
+
     const response = await prisma.campaign.create({
       data: {
+        name,
         organizationId: organization.id,
       },
       include: {
@@ -1633,7 +1651,7 @@ export const launchCampaign = withOrganizationAuth(
       where: {
         id: data.id,
       },
-      data
+      data: {...data, timeDeployed: new Date()}
     });
     return response;
   },

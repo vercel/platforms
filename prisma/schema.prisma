@@ -425,7 +425,7 @@ model EmailSubscriber {
 
 model Campaign {
   id                String                 @id @default(cuid())
-  name              String                 @default("My Campaign")
+  name              String
   threshold         Int                    @default(0)
   content           String?                @db.Text
   createdAt         DateTime               @default(now())
