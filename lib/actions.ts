@@ -930,6 +930,66 @@ export async function getUsersWithRoleInOrganization(subdomain: string) {
   }));
 }
 
+export async function getUniqueUsersWithRoleInOrganization(subdomain: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            organizationRole: {
+              some: {
+                organization: {
+                  subdomain: subdomain,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  // Create a Set from the user ids to filter out duplicates
+  const uniqueUserIds = new Set(users.map((user) => user.id));
+
+  // The size of the Set is the count of unique users
+  return uniqueUserIds.size;
+}
+
+export async function getUniqueUsersWithRoleInEventsOfOrganization(
+  organizationId: string,
+) {
+  const users = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            eventRole: {
+              some: {
+                event: {
+                  organizationId: organizationId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  // Create a Set from the user ids to filter out duplicates
+  const uniqueUserIds = new Set(users.map((user) => user.id));
+
+  // The size of the Set is the count of unique users
+  return uniqueUserIds.size;
+}
+
 export async function getUsersWithRoleInEvent(eventPath: string) {
   const users = await prisma.user.findMany({
     where: {
@@ -1718,3 +1778,195 @@ export const createCampaign = withOrganizationAuth(
     return response;
   },
 );
+
+export async function getMutualEventAttendeesAll(userId: string) {
+  // Get the events that the user attended
+  const attendedEvents = await prisma.ticket.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      eventId: true,
+    },
+  });
+
+  // Get the users who also attended each event
+  const usersPromises = attendedEvents.map((ticket) =>
+    prisma.ticket.findMany({
+      where: {
+        eventId: ticket.eventId,
+      },
+      select: {
+        userId: true,
+      },
+    }),
+  );
+  const usersResults = await Promise.all(usersPromises);
+
+  // Flatten the array of arrays and remove duplicates
+  const users = Array.from(
+    new Set(
+      usersResults
+        .flat()
+        .map((ticket) => ticket.userId)
+        .filter((id) => id !== userId), // Remove the original user
+    ),
+  );
+
+  return users;
+}
+
+export async function getMutualAttendeesForNewEvent(
+  userId: string,
+  newEventId: string,
+) {
+  // Get the unique event IDs that the user attended
+  const attendedEventIds = await prisma.ticket
+    .findMany({
+      where: {
+        userId: userId,
+      },
+      select: {
+        eventId: true,
+      },
+    })
+    .then((tickets) =>
+      Array.from(new Set(tickets.map((ticket) => ticket.eventId))),
+    );
+
+  // Get the users who also attended each event
+  const usersPromises = attendedEventIds.map((eventId) =>
+    prisma.ticket.findMany({
+      where: {
+        eventId: eventId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    }),
+  );
+  const usersResults = await Promise.all(usersPromises);
+  const flattenedUsersResults = usersResults.flat();
+
+  // Extract unique user IDs
+  const uniquePrevAttendedUserIds = new Set(
+    flattenedUsersResults.map((ticket) => ticket.user.id),
+  );
+
+  // Get the users who are attending the new event
+  const newEventAttendees = await prisma.ticket
+    .findMany({
+      where: {
+        eventId: newEventId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            ens_name: true,
+            image: true,
+          },
+        },
+      },
+    })
+    .then((newAttendees) => newAttendees.map((ticket) => ticket.user));
+
+  // Find the intersection of previousAttendees and newEventAttendees
+  // Find the intersection of previousAttendees and newEventAttendees
+  const mutualAttendees = newEventAttendees.filter((user) =>
+    uniquePrevAttendedUserIds.has(user.id),
+  );
+
+  return mutualAttendees;
+}
+
+
+export async function getCitizensWithMutualEventAttendance(
+  userId: string,
+  organizationId: string,
+) {
+  // Get the unique event IDs that the user attended
+  const attendedEventIds = await prisma.ticket
+    .findMany({
+      where: {
+        userId: userId,
+      },
+      select: {
+        eventId: true,
+      },
+    })
+    .then((tickets) =>
+      Array.from(new Set(tickets.map((ticket) => ticket.eventId))),
+    );
+
+  // Get the users who also attended each event and have a role in the organization
+  const usersPromises = attendedEventIds.map((eventId) =>
+    prisma.ticket.findMany({
+      where: {
+        eventId: eventId,
+        user: {
+          userRoles: {
+            some: {
+              role: {
+                organizationRole: {
+                  some: {
+                    organizationId: organizationId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    }),
+  );
+  const usersResults = await Promise.all(usersPromises);
+  const flattenedUsersResults = usersResults.flat();
+
+  // Extract unique user IDs
+  const uniquePrevAttendedUserIds = new Set(
+    flattenedUsersResults.map((ticket) => ticket.user.id),
+  );
+
+  // Get the users who have a role in the organization
+  const organizationUsers = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            organizationRole: {
+              some: {
+                organizationId: organizationId,
+              },
+            },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      ens_name: true,
+      image: true,
+    },
+  });
+
+  // Find the intersection of organizationUsers and users who attended the same events as the given user
+  const mutualAttendees = organizationUsers.filter((user) =>
+    uniquePrevAttendedUserIds.has(user.id),
+  );
+
+  return mutualAttendees;
+}

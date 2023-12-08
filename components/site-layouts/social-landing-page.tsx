@@ -8,15 +8,20 @@ import SocialLandingPageFeed from "./social-landing-page-feed";
 import AvatarGroup from "./avatar-group";
 import SocialButtons from "./social-buttons";
 import { LineGradient } from "../line-gradient";
+import { getUsersWithRoleInOrganization } from '@/lib/actions';
+import MutualAttendenceCitizens from "./mutual-attendance-citizens";
+
+// Replace 'mySubdomain' with the actual subdomain of your organization
 
 
-export default function SocialLandingPage({
+export default async function SocialLandingPage({
   sitedata,
   params,
 }: {
   sitedata: Organization;
   params: { domain: string };
 }) {
+
   return (
     <>
       <SiteNav params={{ domain: sitedata.subdomain as string }} />
@@ -54,21 +59,8 @@ export default function SocialLandingPage({
                 {sitedata.name}
               </h1>
               <p className="mb-3 max-w-lg font-medium text-gray-800 dark:text-gray-350 tracking-[-0.02em]">{sitedata.description}</p>
-              <SocialButtons citizens={24} visited={118} backers={32} />
-              <div className="flex items-center">
-                <div>
-                  <AvatarGroup
-                    avatars={[
-                      { src: "", alt: "" },
-                      { src: "", alt: "" },
-                      { src: "", alt: "" },
-                    ]}
-                  />
-                </div>
-                <div className="mx-2 text-sm leading-tight text-gray-750 dark:text-gray-400">
-                  Cassie, Tomas, Lily, and 12 others you know are citizens.
-                </div>
-              </div>
+              <SocialButtons sitedata={sitedata} />
+              <MutualAttendenceCitizens organization={sitedata} />
             </div>
 
             <LineGradient />
