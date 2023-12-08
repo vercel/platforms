@@ -57,6 +57,20 @@ contract Campaign {
         payable(msg.sender).transfer(amount);
     }
 
+    function withdraw(uint256 amount) public {
+        require(
+            totalContributions >= threshold,
+            "As the organizer, you can only withdraw once the contribution threshold is met"
+        );
+        require(
+            amount <= address(this).balance,
+            "More funds requested than available"
+        );
+        payable(msg.sender).transfer(amount);
+    }
+
+    // TODO function for organizer to withdraw
+
     // TODO implement a way sponsor can refund all contributors even after threshold
     // maybe just a manual override setting
 }
