@@ -3,7 +3,13 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import notFound from "../../not-found";
 import LaunchCampaignButton from "@/components/launch-campaign-button";
+import CampaignContributeButton from "@/components/campaign-contribute-button";
 import CampaignForm from "@/components/edit-campaign-form";
+import { ethers } from "ethers";
+import { toast } from "sonner";
+import CampaignContract from '@/protocol/campaigns/out/Campaign.sol/Campaign.json';
+import { Campaign } from "@prisma/client";
+import { launchCampaign } from "@/lib/actions";
 
 
 export default async function CampaignPage({
@@ -29,6 +35,69 @@ export default async function CampaignPage({
   if (!campaign || !campaign.organization) {
     return notFound();
   }
+
+  const launch = async (campaign: Campaign) => {
+    try {
+      if (!window.ethereum) {
+        throw new Error("Please install MetaMask or another wallet.");
+      }
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+
+      const campaignABI = CampaignContract.abi;
+      const campaignBytecode = CampaignContract.bytecode;
+
+      const creatorAddress = await signer.getAddress();
+      const threshold = ethers.parseUnits(campaign.threshold.toString(), "ether");
+      const name = campaign.name;
+
+      const campaignFactory = new ethers.ContractFactory(campaignABI, campaignBytecode, signer);
+      const campaignInstance = await campaignFactory.deploy(creatorAddress, threshold, name);
+      await campaignInstance.waitForDeployment();
+      const deployedAddress = await campaignInstance.getAddress();
+
+      const data = {
+        id: campaign.id,
+        sponsorEthAddress: creatorAddress,
+        deployedAddress: deployedAddress,
+        deployed: true,
+      };
+
+      toast.success(`Campaign deployed at ${deployedAddress}`);
+
+      await launchCampaign(data, { params: { subdomain: params.subdomain } }, null);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  };
+
+  const contribute = async (amount: string, campaign: Campaign) => {
+    try {
+      if (!window.ethereum) {
+        throw new Error("Please install MetaMask or another wallet.");
+      }
+
+      if (!campaign.deployed) {
+        throw new Error("Campaign isn't deployed yet");
+      }
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+
+      const campaignABI = CampaignContract.abi;
+      const campaignInstance = new ethers.Contract(campaign.deployedAddress!, campaignABI, signer);
+      await campaignInstance.contribute({ value: ethers.parseEther(amount) });
+
+      toast.success(`Contributed ${amount} ETH`);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div>
@@ -66,11 +135,6 @@ export default async function CampaignPage({
         </p>
         <p>
           {campaign.deployed
-          ? "Deployed"
-          : "Not deployed"}
-        </p>
-        <p>
-          {campaign.timeDeployed
           ? `Deployed ${campaign.timeDeployed.toLocaleString(undefined, {
             year: 'numeric',
             month: '2-digit',
@@ -79,24 +143,24 @@ export default async function CampaignPage({
             minute: '2-digit',
             second: undefined,
             timeZoneName: undefined
-          })}`
-          : "No deployment time known"}
-        </p>
-        <p>
-          {`deployedAddress: ${campaign.deployedAddress}`}
-        </p>
-        <p>
-          {`sponsorEthAddress: ${campaign.sponsorEthAddress}`}
+          })} at ${campaign.deployedAddress} by ${campaign.sponsorEthAddress}`
+          : "Not deployed"}
         </p>
         <p>
           {`contributions: ${campaign.contributions}`}
         </p>
-        {/* <p>
-          {`organization: ${campaign.organization.name}`}
-        </p> */}
       </div>
       <CampaignForm id={params.id} subdomain={params.subdomain} />
-      <LaunchCampaignButton campaign={campaign} subdomain={params.subdomain} />
+      {!campaign.deployed &&
+            <LaunchCampaignButton campaign={campaign} subdomain={params.subdomain} onLaunch={launch} />
+      }
+      {campaign.deployed && (
+        <CampaignContributeButton
+          campaign={campaign}
+          subdomain={params.subdomain}
+          onContribute={contribute}
+        />
+      )}
     </div>
   );
 }
