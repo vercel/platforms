@@ -10,7 +10,7 @@ export default function AvatarGroup({
       {avatars.slice(0, 3).map((avatar, index) => (
         <div
           key={avatar.src}
-          className="relative inline-block h-10 w-10 rounded-full border-2 border-gray-200 bg-gray-600"
+          className="relative inline-block h-10 w-10 rounded-full border-2 border-gray-100 dark:border-gray-900 bg-gray-600"
         >
           <Image
             className="rounded-full object-cover"

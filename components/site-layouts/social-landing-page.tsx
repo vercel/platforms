@@ -7,10 +7,8 @@ import LandingPageTabs from "./landing-page-tabs";
 import SocialLandingPageFeed from "./social-landing-page-feed";
 import AvatarGroup from "./avatar-group";
 import SocialButtons from "./social-buttons";
+import { LineGradient } from "../line-gradient";
 
-export const Line = () => (
-  <div className="from h-[0.5px] w-full bg-gradient-to-r from-gray-500/10 via-gray-600/90 to-gray-500/10 px-5 dark:via-gray-500/90" />
-);
 
 export default function SocialLandingPage({
   sitedata,
@@ -19,7 +17,6 @@ export default function SocialLandingPage({
   sitedata: Organization;
   params: { domain: string };
 }) {
-  console.log("params: ", params);
   return (
     <>
       <SiteNav params={{ domain: sitedata.subdomain as string }} />
@@ -53,10 +50,10 @@ export default function SocialLandingPage({
             </div>
             <div className="h-10 w-full md:h-20"></div>
             <div className="px-5 py-3 md:py-8 ">
-              <h1 className="mb-3 text-xl font-extrabold text-gray-800  dark:text-gray-350 md:text-2xl">
+              <h1 className="mb-3 text-xl font-extrabold text-gray-800  dark:text-gray-200 md:text-2xl">
                 {sitedata.name}
               </h1>
-              <p className="mb-3 max-w-lg font-medium text-gray-800 tracking-[-0.02em]">{sitedata.description}</p>
+              <p className="mb-3 max-w-lg font-medium text-gray-800 dark:text-gray-350 tracking-[-0.02em]">{sitedata.description}</p>
               <SocialButtons citizens={24} visited={118} backers={32} />
               <div className="flex items-center">
                 <div>
@@ -74,7 +71,7 @@ export default function SocialLandingPage({
               </div>
             </div>
 
-            <Line />
+            <LineGradient />
           </div>
         </div>
       </div>

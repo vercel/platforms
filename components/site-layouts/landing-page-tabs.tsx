@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSelectedLayoutSegment } from "next/navigation";
+import { LineGradient } from "../line-gradient";
 
 export default function LandingPageTabs({
   params,
@@ -25,14 +26,12 @@ export default function LandingPageTabs({
       segment: "docs",
     },
   ];
-  console.log("segment: ", segment);
-
   return (
     <div className="">
-      <h4 className="mx-5 font-bold tracking-tight text-gray-750">
+      <h4 className="mx-5 font-bold tracking-tight text-gray-750 dark:text-gray-400">
         {"Resources"}
       </h4>
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 items-center gap-2 border-b border-gray-300 px-2.5 pb-5 pt-2 dark:border-gray-700 md:justify-center">
+      <div className="grid grid-cols-2 items-center gap-2 px-2.5 pb-5 pt-2 dark:border-gray-700 md:grid-cols-3 md:justify-center xl:grid-cols-5">
         {navItems.map((item) => (
           <Link
             key={item.name}
@@ -49,6 +48,7 @@ export default function LandingPageTabs({
           </Link>
         ))}
       </div>
+      <LineGradient />
     </div>
   );
 }

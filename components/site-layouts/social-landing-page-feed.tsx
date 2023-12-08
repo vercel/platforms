@@ -49,14 +49,14 @@ export default async function SocialLandingPageFeed({
     }),
   ]);
 
-  console.log('events: ', events, 'docs: ', docs)
-
   // Usage
   const feed = mergeAndSortByDate(events, docs);
 
   return (
-    <div className="w-full mx-auto pb-20 max-w-5xl">
-      <h4 className="font-bold text-gray-750 tracking-tight mx-5 mb-3 mt-3">{"Latest"}</h4>
+    <div className="mx-auto w-full max-w-5xl pb-20">
+      <h4 className="mx-5 mb-3 mt-3 font-bold tracking-tight text-gray-750 dark:text-gray-400">
+        {"Latest"}
+      </h4>
       {feed.map((eventOrDoc) => {
         if ("content" in eventOrDoc) {
           // Handle Post
