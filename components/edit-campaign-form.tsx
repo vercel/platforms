@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import { updateCampaign } from "@/lib/actions";
+import { Button } from "./ui/button";
+import { toast } from "sonner";
+
 
 interface FormState {
   name: string;
@@ -39,10 +42,11 @@ export default function CampaignForm({ id, subdomain }: { id: string, subdomain:
         { params: { subdomain } },
         null,
       );
-      console.log(`updateCampaign response: ${response}`);
       console.log(response);
-    } catch (error) {
+      toast.success(`Campaign updated`);
+    } catch (error: any) {
       console.error('Error updating campaign', error);
+      toast.error(error);
     }
   };
 
@@ -72,12 +76,13 @@ export default function CampaignForm({ id, subdomain }: { id: string, subdomain:
         placeholder="Content"
         className="p-2 border border-gray-300 rounded-md"
       />
-      <button 
+      <div className="pb-4 w-32">
+      <Button 
         type="submit"
-        className="p-2 text-white rounded-md"
       >
         Submit
-      </button>
+      </Button>
+      </div>
     </form>
   );
 };
