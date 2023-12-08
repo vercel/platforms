@@ -2,14 +2,8 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import notFound from "../../not-found";
-import { Input } from "@/components/ui/input";
 import LaunchCampaignButton from "@/components/launch-campaign-button";
-import { toast } from "@/components/ui/use-toast";
-import { UpdateCampaignSchema } from "@/lib/schema";
-import { updateCampaign } from "@/lib/actions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import CampaignForm from "@/components/create-campaign-form";
-import { Campaign } from "@prisma/client";
+import CampaignForm from "@/components/edit-campaign-form";
 
 
 export default async function CampaignPage({
@@ -39,11 +33,11 @@ export default async function CampaignPage({
   return (
     <div>
       <div>
-        <p>
+        <h1 className="text-2xl font-bold">
           {campaign.name}
-        </p>
+        </h1>
         <p>
-          {`threshold: ${campaign.threshold}`}
+          {`threshold: ${campaign.threshold} ETH`}
         </p>
         <p>
           {`content: ${campaign.content}`}
@@ -60,7 +54,7 @@ export default async function CampaignPage({
           })}`}
         </p>
         <p>
-          {`last update ${campaign.updatedAt.toLocaleString(undefined, {
+          {`last updated ${campaign.updatedAt.toLocaleString(undefined, {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
@@ -71,10 +65,22 @@ export default async function CampaignPage({
           })}`}
         </p>
         <p>
-          {`deployed: ${campaign.deployed}`}
+          {campaign.deployed
+          ? "Deployed"
+          : "Not deployed"}
         </p>
         <p>
-          {`timeDeployed: ${campaign.timeDeployed}`}
+          {campaign.timeDeployed
+          ? `Deployed ${campaign.timeDeployed.toLocaleString(undefined, {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: undefined,
+            timeZoneName: undefined
+          })}`
+          : "No deployment time known"}
         </p>
         <p>
           {`deployedAddress: ${campaign.deployedAddress}`}
@@ -85,9 +91,9 @@ export default async function CampaignPage({
         <p>
           {`contributions: ${campaign.contributions}`}
         </p>
-        <p>
+        {/* <p>
           {`organization: ${campaign.organization.name}`}
-        </p>
+        </p> */}
       </div>
       <CampaignForm id={params.id} subdomain={params.subdomain} />
       <LaunchCampaignButton campaign={campaign} subdomain={params.subdomain} />
