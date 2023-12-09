@@ -21,7 +21,7 @@ import Link from "next/link";
 export default async function UserNav() {
   const session = await getSession();
   if (!session) {
-    return <Link href="/login">Login</Link>;
+    return <Link href="/login">Signin</Link>;
   }
   return (
     <DropdownMenu>

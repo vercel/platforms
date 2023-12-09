@@ -45,6 +45,8 @@ import {
   CreatePlaceSchema,
   IssueTicketFormSchema,
   CreateCampaignSchema,
+  UpsertOrganizationLinkSchema,
+  UpsertOrganizationLinkSchemas,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
@@ -1970,3 +1972,36 @@ export async function getCitizensWithMutualEventAttendance(
 
   return mutualAttendees;
 }
+
+export const upsertOrganizationLinks = withOrganizationAuth(
+  async (data: any, organization: Organization) => {
+    // Validate the data against the schema
+    const result = UpsertOrganizationLinkSchemas.safeParse(data);
+
+    // If the data is not valid, throw an error or return a response
+    if (!result.success) {
+      throw new Error("Invalid data");
+    }
+
+    // If the data is valid, use it to create or update an organization link
+    const txs = result.data.pageLinks.map((pageLink) => {
+      return prisma.organizationPageLinks.upsert({
+        where: {
+          id: pageLink.id ?? "THIS_TEXT_JUST_TRIGGERS_A_NEW_ID_TO_BE_GENERATED",
+        },
+        create: {
+          ...pageLink,
+          organizationId: organization.id,
+        },
+        update: {
+          ...pageLink,
+          organizationId: organization.id,
+        },
+      })
+    })
+
+    const nextPageLinks = await prisma.$transaction(txs);
+
+    return nextPageLinks;
+  },
+);

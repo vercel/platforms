@@ -196,7 +196,8 @@ export const FoundACitySchema = z.object({
   description: z.string().min(60, { message: "Name is required." }),
 });
 
-const EthAddressSchema = z.string()
+const EthAddressSchema = z
+  .string()
   .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address");
 
 export const CreateCampaignSchema = z.object({
@@ -205,4 +206,19 @@ export const CreateCampaignSchema = z.object({
   threshold: z.number().min(0, { message: "Threshold can't be negative" }),
   creatorEthAddress: EthAddressSchema,
   deployedAddress: EthAddressSchema,
+});
+
+const PageLinkSchema = z.object({
+  id: z.string().optional(),
+  href: z.string().url(),
+  display: z.string(),
+  isPrimary: z.boolean().default(false),
+  image: z.string().optional(),
+});
+
+export const UpsertOrganizationLinkSchema = PageLinkSchema;
+
+
+export const UpsertOrganizationLinkSchemas = z.object({
+  pageLinks: z.array(PageLinkSchema),
 });

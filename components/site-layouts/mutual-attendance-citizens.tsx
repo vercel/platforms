@@ -56,7 +56,7 @@ export default async function MutualAttendenceCitizens({
           />
         </div>
         <div className="mx-2 text-sm leading-tight text-gray-750 dark:text-gray-400">
-          Connect to see mutual attendees.
+          Signin to see mutual attendees.
         </div>
       </div>
     );
