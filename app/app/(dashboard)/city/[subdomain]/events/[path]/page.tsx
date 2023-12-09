@@ -3,6 +3,9 @@ import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Event from "@/components/event";
 import { getEventRolesAndUsers, getEventTicketTiers } from "@/lib/actions";
+import { AttendeeTableCard } from "@/components/event-attendee-table/event-attendee-table";
+
+
 
 export default async function EventPage({
   params,
@@ -27,9 +30,6 @@ export default async function EventPage({
     notFound();
   }
 
-  const rolesAndUsers = await getEventRolesAndUsers(event.id);
 
-  const ticketTiers = await getEventTicketTiers(event.id);
-
-  return <Event event={event} rolesAndUsers={rolesAndUsers} ticketTiers={ticketTiers} />;
+  return <AttendeeTableCard event={event} />
 }

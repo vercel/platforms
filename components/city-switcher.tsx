@@ -47,6 +47,8 @@ import { Organization } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { HomeIcon } from "lucide-react";
 import { useEffect } from "react";
+import { useModal } from "./modal/provider";
+import CreateOrganizationModal from "./modal/create-organization";
 
 const groups = [
   {
@@ -121,6 +123,8 @@ export default function CitySwitcher({
 
   console.log("Render");
 
+  const modal = useModal();
+
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
       <Popover open={open} onOpenChange={setOpen}>
@@ -131,7 +135,7 @@ export default function CitySwitcher({
             aria-expanded={open}
             aria-label="Select a city"
             className={cn(
-              "w-full justify-between px-2 focus-visible:ring-gray-500 dark:text-gray-300",
+              "w-full justify-between px-2 focus-visible:ring-gray-500 dark:text-gray-300 border-none shadow-none",
               className,
             )}
           >
@@ -150,13 +154,13 @@ export default function CitySwitcher({
                   </AvatarFallback>
                 </Avatar>
                 <span className="ml-3">{selectedOrganization?.name}</span>
-                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-300 opacity-50" />
+                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-700 dark:stroke-gray-300 opacity-50" />
               </>
             ) : (
               <>
                 <HomeIcon className="h-4 w-5" />
                 <span className="ml-2 ">{"Home"}</span>
-                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-300 opacity-50" />
+                <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 stroke-gray-700 dark:stroke-gray-300 opacity-50" />
               </>
             )}
           </Button>
@@ -214,14 +218,14 @@ export default function CitySwitcher({
                   })}
               </CommandGroup>
             </CommandList>
-            {/* <CommandSeparator />
+            <CommandSeparator />
             <CommandList>
               <CommandGroup>
                 <DialogTrigger asChild>
                   <CommandItem
                     onSelect={() => {
                       setOpen(false);
-                      setShowNewTeamDialog(true);
+                      modal?.show(<CreateOrganizationModal />);
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
@@ -229,7 +233,7 @@ export default function CitySwitcher({
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>
-            </CommandList> */}
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>

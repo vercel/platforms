@@ -43,6 +43,8 @@ import {
   CreateTicketTierFormSchema,
   CreateAccommodationUnitSchema,
   CreatePlaceSchema,
+  IssueTicketFormSchema,
+  CreateCampaignSchema,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
@@ -434,6 +436,7 @@ export const updateOrganization = withOrganizationAuth(
         // });
 
         if (error || !data?.path) {
+          console.error(error?.message);
           return {
             error: "Failed to upload image.",
           };
@@ -619,11 +622,22 @@ export const updatePostMetadata = withPostAuth(
         const file = formData.get("image") as File;
         const filename = `${nanoid()}.${file.type.split("/")[1]}`;
 
-        const { url } = await put(filename, file, {
-          access: "public",
-        });
+        const { data, error } = await supabase.storage
+          .from("media")
+          .upload(`/public/${filename}`, file);
 
-        const blurhash = await getBlurDataURL(url);
+        // const { url } = await put(filename, file, {
+        //   access: "public",
+        // });
+        if (error || !data?.path) {
+          console.error(error?.message);
+          return {
+            error: "Failed to upload image.",
+          };
+        }
+        const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/media/${data.path}`;
+
+        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
         response = await prisma.post.update({
           where: {
@@ -916,6 +930,66 @@ export async function getUsersWithRoleInOrganization(subdomain: string) {
   }));
 }
 
+export async function getUniqueUsersWithRoleInOrganization(subdomain: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            organizationRole: {
+              some: {
+                organization: {
+                  subdomain: subdomain,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  // Create a Set from the user ids to filter out duplicates
+  const uniqueUserIds = new Set(users.map((user) => user.id));
+
+  // The size of the Set is the count of unique users
+  return uniqueUserIds.size;
+}
+
+export async function getUniqueUsersWithRoleInEventsOfOrganization(
+  organizationId: string,
+) {
+  const users = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            eventRole: {
+              some: {
+                event: {
+                  organizationId: organizationId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  // Create a Set from the user ids to filter out duplicates
+  const uniqueUserIds = new Set(users.map((user) => user.id));
+
+  // The size of the Set is the count of unique users
+  return uniqueUserIds.size;
+}
+
 export async function getUsersWithRoleInEvent(eventPath: string) {
   const users = await prisma.user.findMany({
     where: {
@@ -945,6 +1019,39 @@ export async function getUsersWithRoleInEvent(eventPath: string) {
   return users.map((user) => ({
     ...user,
     roles: user.userRoles.map((userRole) => userRole.role),
+  }));
+}
+
+export async function getUsersWithTicketForEvent(eventPath: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      tickets: {
+        some: {
+          event: {
+            path: eventPath,
+          },
+        },
+      },
+    },
+    include: {
+      tickets: {
+        include: {
+          event: true,
+          tier: true,
+        },
+      },
+    },
+  });
+
+  return users.map((user) => ({
+    ...user,
+    tickets: user.tickets
+      .filter((ticket) => ticket.event.path === eventPath)
+      .map((ticket) => ({
+        ...ticket,
+        tierName: ticket.tier.name,
+        tierPrice: ticket.tier.price,
+      })),
   }));
 }
 
@@ -1084,15 +1191,88 @@ export const createTicketTier = withEventAuth(
 );
 
 export async function getEventTicketTiers(eventId: string) {
-  return await prisma.ticketTier.findMany({
+  const tiers = await prisma.ticketTier.findMany({
     where: {
       eventId: eventId,
     },
     include: {
       role: true,
+      _count: {
+        select: {
+          tickets: true,
+        },
+      },
     },
   });
+  console.log({ tiers });
+
+  return tiers;
 }
+
+export const issueTicket = withEventAuth(
+  async (
+    data: z.infer<typeof IssueTicketFormSchema>,
+    event: Event & { organization: Organization },
+  ) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const result = IssueTicketFormSchema.safeParse(data);
+    if (!result.success) {
+      return {
+        error: result.error.formErrors.fieldErrors,
+      };
+    }
+
+    try {
+      let user = await prisma.user.findUnique({
+        where: {
+          email: result.data.email,
+        },
+      });
+
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email: result.data.email,
+          },
+        });
+      }
+
+      const tier = await prisma.ticketTier.findUnique({
+        where: {
+          id: data.tierId,
+          eventId: data.eventId,
+        },
+      });
+      if (!tier) {
+        return {
+          error: `Invalid Ticket Tier and/or Event.`,
+        };
+      }
+
+      const { email, ...rest } = result.data;
+      const ticket = await prisma.ticket.create({
+        data: {
+          eventId: tier.eventId,
+          tierId: tier.id,
+          userId: user.id,
+        },
+      });
+
+      return ticket;
+    } catch (error: any) {
+      console.log("error: ", error);
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
 
 export const createForm = withOrganizationAuth(
   async (_: any, organization: Organization) => {
@@ -1525,12 +1705,12 @@ export const createEmailSubscriber = async ({
 }: {
   email: string;
   name: string;
-  description?: string | undefined;
+  description: string;
   indicatedInterest: EmailSubscriberInterest;
 }) => {
   const fullName = name.trim();
   try {
-    const response: EmailSubscriber = await prisma.emailSubscriber.create({
+    const response = await prisma.emailSubscriber.create({
       data: {
         email,
         name: fullName,
@@ -1554,7 +1734,7 @@ export const createEmailSubscriber = async ({
         html: renderWaitlistWelcomeEmail({ userFirstname }),
       }),
       resend.emails.send({
-        from: "Team Notifications <no-reply@mail.fora.co>",
+        from: "Fora Registration <no-reply@mail.fora.co>",
         to: ["ryan@fora.co", "cassie@fora.co", "lily@fora.co", "tomas@fora.co"],
         subject: `${fullName} registered for Fora`,
         html: `<p>${fullName} has registered on Fora with the email ${email} and the intent to ${indicatedInterest.toLowerCase()} a startup city.<br /><p>${description}</p></p>`,
@@ -1575,3 +1755,218 @@ export const createEmailSubscriber = async ({
     }
   }
 };
+
+export const createCampaign = withOrganizationAuth(
+  async (data: any, organization: Organization) => {
+    const result = CreateCampaignSchema.safeParse(data);
+
+    if (!result.success) {
+      throw new Error("Invalid data");
+    }
+
+    const response = await prisma.campaign.create({
+      data: {
+        ...result.data,
+        organizationId: organization.id,
+      },
+      include: {
+        organization: true,
+      },
+    });
+    // TODO handle error
+
+    return response;
+  },
+);
+
+export async function getMutualEventAttendeesAll(userId: string) {
+  // Get the events that the user attended
+  const attendedEvents = await prisma.ticket.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      eventId: true,
+    },
+  });
+
+  // Get the users who also attended each event
+  const usersPromises = attendedEvents.map((ticket) =>
+    prisma.ticket.findMany({
+      where: {
+        eventId: ticket.eventId,
+      },
+      select: {
+        userId: true,
+      },
+    }),
+  );
+  const usersResults = await Promise.all(usersPromises);
+
+  // Flatten the array of arrays and remove duplicates
+  const users = Array.from(
+    new Set(
+      usersResults
+        .flat()
+        .map((ticket) => ticket.userId)
+        .filter((id) => id !== userId), // Remove the original user
+    ),
+  );
+
+  return users;
+}
+
+export async function getMutualAttendeesForNewEvent(
+  userId: string,
+  newEventId: string,
+) {
+  // Get the unique event IDs that the user attended
+  const attendedEventIds = await prisma.ticket
+    .findMany({
+      where: {
+        userId: userId,
+      },
+      select: {
+        eventId: true,
+      },
+    })
+    .then((tickets) =>
+      Array.from(new Set(tickets.map((ticket) => ticket.eventId))),
+    );
+
+  // Get the users who also attended each event
+  const usersPromises = attendedEventIds.map((eventId) =>
+    prisma.ticket.findMany({
+      where: {
+        eventId: eventId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    }),
+  );
+  const usersResults = await Promise.all(usersPromises);
+  const flattenedUsersResults = usersResults.flat();
+
+  // Extract unique user IDs
+  const uniquePrevAttendedUserIds = new Set(
+    flattenedUsersResults.map((ticket) => ticket.user.id),
+  );
+
+  // Get the users who are attending the new event
+  const newEventAttendees = await prisma.ticket
+    .findMany({
+      where: {
+        eventId: newEventId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            ens_name: true,
+            image: true,
+          },
+        },
+      },
+    })
+    .then((newAttendees) => newAttendees.map((ticket) => ticket.user));
+
+  // Find the intersection of previousAttendees and newEventAttendees
+  // Find the intersection of previousAttendees and newEventAttendees
+  const mutualAttendees = newEventAttendees.filter((user) =>
+    uniquePrevAttendedUserIds.has(user.id),
+  );
+
+  return mutualAttendees;
+}
+
+
+export async function getCitizensWithMutualEventAttendance(
+  userId: string,
+  organizationId: string,
+) {
+  // Get the unique event IDs that the user attended
+  const attendedEventIds = await prisma.ticket
+    .findMany({
+      where: {
+        userId: userId,
+      },
+      select: {
+        eventId: true,
+      },
+    })
+    .then((tickets) =>
+      Array.from(new Set(tickets.map((ticket) => ticket.eventId))),
+    );
+
+  // Get the users who also attended each event and have a role in the organization
+  const usersPromises = attendedEventIds.map((eventId) =>
+    prisma.ticket.findMany({
+      where: {
+        eventId: eventId,
+        user: {
+          userRoles: {
+            some: {
+              role: {
+                organizationRole: {
+                  some: {
+                    organizationId: organizationId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    }),
+  );
+  const usersResults = await Promise.all(usersPromises);
+  const flattenedUsersResults = usersResults.flat();
+
+  // Extract unique user IDs
+  const uniquePrevAttendedUserIds = new Set(
+    flattenedUsersResults.map((ticket) => ticket.user.id),
+  );
+
+  // Get the users who have a role in the organization
+  const organizationUsers = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            organizationRole: {
+              some: {
+                organizationId: organizationId,
+              },
+            },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      ens_name: true,
+      image: true,
+    },
+  });
+
+  // Find the intersection of organizationUsers and users who attended the same events as the given user
+  const mutualAttendees = organizationUsers.filter((user) =>
+    uniquePrevAttendedUserIds.has(user.id),
+  );
+
+  return mutualAttendees;
+}

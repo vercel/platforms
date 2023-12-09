@@ -35,6 +35,15 @@ const GoogleAddressSchema = z.object({
   types: z.array(z.string()).optional(),
 });
 
+export const IssueTicketFormSchema = z.object({
+  email: z.string().min(1, { message: "User ID is required." }),
+  tierId: z.string().min(1, { message: "Tier ID is required." }),
+  eventId: z.string().min(1, { message: "Event ID is required." }),
+  // validFrom: z.date().optional(),
+  // validTo: z.date().optional(),
+  // amountPaid: z.coerce.number().nonnegative(),
+});
+
 // GEOJSON
 
 const PositionSchema = z.tuple([z.number(), z.number()]);
@@ -178,11 +187,22 @@ export const CreateAccommodationUnitSchema = z.object({
 export const JoinACitySchema = z.object({
   name: z.string().min(2, { message: "Name is required." }),
   email: z.string().email().min(1, { message: "Email is required." }),
-  description: z.string().optional(),
+  description: z.string().min(60, { message: "Name is required." }),
 });
 
 export const FoundACitySchema = z.object({
   name: z.string().min(2, { message: "Name is required." }),
   email: z.string().email().min(1, { message: "Email is required." }),
-  description: z.string().optional(),
+  description: z.string().min(60, { message: "Name is required." }),
+});
+
+const EthAddressSchema = z.string()
+  .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address");
+
+export const CreateCampaignSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, { message: "Name is required." }),
+  threshold: z.number().min(0, { message: "Threshold can't be negative" }),
+  creatorEthAddress: EthAddressSchema,
+  deployedAddress: EthAddressSchema,
 });

@@ -1,0 +1,3 @@
+[submodule "protocol/campaigns/lib/forge-std"]
+	path = protocol/campaigns/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std

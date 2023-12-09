@@ -5,10 +5,11 @@ import {
   useDisconnect,
   useEnsAvatar,
   useEnsName,
+  Connector
 } from "wagmi";
 import Image from "next/image";
 
-export default function Profile() {
+export default function EthProfile() {
   const { address, connector, isConnected } = useAccount();
   const { data: ensName } = useEnsName({ address });
   const { data: ensAvatar } = useEnsAvatar({ name: ensName });
@@ -29,14 +30,14 @@ export default function Profile() {
 
   return (
     <div>
-      {connectors.map((connector) => (
+      {connectors.map((connector: Connector) => (
         <button
           disabled={!connector.ready}
           key={connector.id}
           onClick={() => connect({ connector })}
         >
           {connector.name}
-          {!connector.ready && " (unsupported)"}
+          {!connector.ready && " (not installed)"}
           {isLoading &&
             connector.id === pendingConnector?.id &&
             " (connecting)"}
