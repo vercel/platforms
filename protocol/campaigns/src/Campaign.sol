@@ -7,8 +7,8 @@ contract Campaign {
     address public sponsor;
     string public name;
 
-    mapping(address => uint256) private contributions;
-    uint256 private totalContributions;
+    mapping(address => uint256) public contributions;
+    uint256 public totalContributions;
     bool openToContributions;
 
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -68,8 +68,6 @@ contract Campaign {
         );
         payable(msg.sender).transfer(amount);
     }
-
-    // TODO function for organizer to withdraw
 
     // TODO implement a way sponsor can refund all contributors even after threshold
     // maybe just a manual override setting
