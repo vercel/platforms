@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import Form from "@/components/form";
 import { updateOrganization } from "@/lib/actions";
+import UpsertOrganizationPageLinksForm from "@/components/form/upsert-organization-page-links";
 
 export default async function SiteSettingsAppearance({
   params,
@@ -11,6 +12,9 @@ export default async function SiteSettingsAppearance({
     where: {
       subdomain: params.subdomain,
     },
+    include: {
+      pageLinks: true
+    }
   });
 
   return (
@@ -36,6 +40,12 @@ export default async function SiteSettingsAppearance({
           defaultValue: data?.logo!,
         }}
         handleSubmit={updateOrganization}
+      />
+      <UpsertOrganizationPageLinksForm
+        title="Page Resources"
+        description="Links added to your page. Used as a quick information reference for your citizens or guest."
+        helpText="Select one link to be your primary call to action."
+        pageLinks={data?.pageLinks ?? []}
       />
       <Form
         title="Font"
