@@ -1798,7 +1798,6 @@ export const createCampaign = withOrganizationAuth(
   },
 );
 
-<<<<<<< HEAD
 export async function getMutualEventAttendeesAll(userId: string) {
   // Get the events that the user attended
   const attendedEvents = await prisma.ticket.findMany({
@@ -1990,7 +1989,7 @@ export async function getCitizensWithMutualEventAttendance(
 
   return mutualAttendees;
 }
-=======
+
 // export const createCampaign = withOrganizationAuth(
 //   async (data: any, organization: Organization) => {
 //     const result = CreateCampaignSchema.safeParse(data);
@@ -2013,7 +2012,7 @@ export async function getCitizensWithMutualEventAttendance(
 //     return response;
 //   },
 // );
->>>>>>> 7289f7e (take out editor stuff for now, just create campaign like you'd create a form)
+
 
 export const updateCampaign = withOrganizationAuth(
   async (data: any, organization: Organization) => {
