@@ -7,8 +7,6 @@
   - Added the required column `deployedAddress` to the `Campaign` table without a default value. This is not possible if the table is not empty.
 
 */
--- AlterTable
-ALTER TABLE "Campaign" ADD COLUMN     "deployedAddress" TEXT NOT NULL;
 
 -- AlterTable
 ALTER TABLE "Ticket" DROP COLUMN "validFrom",
