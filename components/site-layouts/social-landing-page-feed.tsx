@@ -68,12 +68,12 @@ export default async function SocialLandingPageFeed({
           );
         } else if ("startingAt" in eventOrDoc) {
           // Handle Event
-          return (
-            <EventCard
-              key={eventOrDoc.id}
-              event={Object.assign(eventOrDoc, { organization: sitedata })}
-            />
-          );
+          // return (
+          //   <EventCard
+          //     key={eventOrDoc.id}
+          //     event={Object.assign(eventOrDoc, { organization: sitedata })}
+          //   />
+          // );
         }
       })}
     </div>

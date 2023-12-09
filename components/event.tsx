@@ -165,7 +165,7 @@ export default function Event({
                   alt={event.name ?? "Event thumbnail"}
                   className="object-cover"
                   src={event.image ?? "/placeholder.png"}
-                  layout={"fill"}
+                  // layout={"fill"}
                   priority={true}
                   quality={80}
                   placeholder="blur"

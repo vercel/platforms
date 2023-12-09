@@ -42,7 +42,7 @@ export default async function SocialLandingPage({
             ) : null}
           </div>
           <div className="relative mx-auto flex w-full max-w-5xl flex-col">
-            <div className="relative flex h-10 w-full justify-end">
+            <div className="relative flex h-10 md:h-20 w-full justify-end">
               <div className="absolute -top-10 left-5 h-20  w-20 overflow-hidden rounded-b-3xl rounded-t-3xl md:-top-20 md:left-5 md:h-40 md:w-40">
                 {sitedata.logo ? (
                   <AspectRatio ratio={1 / 1} className="w-full ">
@@ -57,7 +57,7 @@ export default async function SocialLandingPage({
               </div>
 
               <Button
-                className="absolute -bottom-5 mx-5 h-8 md:-bottom-10 md:mx-10"
+                className="absolute md:-bottom-4 mt-3 mx-3 h-8 md:mx-3"
                 asChild
               >
                 <Link href="/apply">Apply to Join</Link>

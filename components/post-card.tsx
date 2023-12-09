@@ -24,7 +24,7 @@ export default function PostCard({
                 alt={data.title ?? "Card thumbnail"}
                 src={data.image ?? "/placeholder.png"}
                 className="h-auto w-full"
-                layout="fill"
+                fill
                 // blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
               />
             </AspectRatio>
