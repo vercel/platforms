@@ -7,19 +7,19 @@ import { Button } from "./ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import React, { useState } from 'react';
+import useEthereum from "@/hooks/useEthereum";
 
 
 interface CampaignContributeButtonProps {
   campaign: Campaign;
   subdomain: string;
-  onContribute: (amount: string, campaign: Campaign) => Promise<void>;
 }
 
 export default function CampaignContributeButton({ 
   campaign, 
-  subdomain, 
-  onContribute 
+  subdomain
 }: CampaignContributeButtonProps) {
+  const { contribute } = useEthereum();
   const [amount, setAmount] = useState('');
 
   const isValidAmount = () => {
@@ -29,7 +29,7 @@ export default function CampaignContributeButton({
 
   const handleContribution = () => {
     if (isValidAmount()) {
-      onContribute(amount, campaign);
+      contribute(amount, campaign);
     }
   };
 

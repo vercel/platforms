@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import CampaignContract from '@/protocol/campaigns/out/Campaign.sol/Campaign.json';
 import { Campaign } from "@prisma/client";
 import { launchCampaign } from "@/lib/actions";
+import useEthereum from "@/hooks/useEthereum";
 
 
 export default async function CampaignPage({
@@ -21,6 +22,8 @@ export default async function CampaignPage({
   if (!session) {
     redirect("/login");
   }
+
+  const { getContributionTotal } = useEthereum();
 
   const campaign = await prisma.campaign.findUnique({
     where: {
@@ -36,68 +39,10 @@ export default async function CampaignPage({
     return notFound();
   }
 
-  const launch = async (campaign: Campaign) => {
-    try {
-      if (!window.ethereum) {
-        throw new Error("Please install MetaMask or another wallet.");
-      }
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-
-      const campaignABI = CampaignContract.abi;
-      const campaignBytecode = CampaignContract.bytecode;
-
-      const creatorAddress = await signer.getAddress();
-      const threshold = ethers.parseUnits(campaign.threshold.toString(), "ether");
-      const name = campaign.name;
-
-      const campaignFactory = new ethers.ContractFactory(campaignABI, campaignBytecode, signer);
-      const campaignInstance = await campaignFactory.deploy(creatorAddress, threshold, name);
-      await campaignInstance.waitForDeployment();
-      const deployedAddress = await campaignInstance.getAddress();
-
-      const data = {
-        id: campaign.id,
-        sponsorEthAddress: creatorAddress,
-        deployedAddress: deployedAddress,
-        deployed: true,
-      };
-
-      toast.success(`Campaign deployed at ${deployedAddress}`);
-
-      await launchCampaign(data, { params: { subdomain: params.subdomain } }, null);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
-    }
-  };
-
-  const contribute = async (amount: string, campaign: Campaign) => {
-    try {
-      if (!window.ethereum) {
-        throw new Error("Please install MetaMask or another wallet.");
-      }
-
-      if (!campaign.deployed) {
-        throw new Error("Campaign isn't deployed yet");
-      }
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-
-      const campaignABI = CampaignContract.abi;
-      const campaignInstance = new ethers.Contract(campaign.deployedAddress!, campaignABI, signer);
-      await campaignInstance.contribute({ value: ethers.parseEther(amount) });
-
-      toast.success(`Contributed ${amount} ETH`);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
-    }
-  };
+  let totalContributions;
+  if (campaign.deployed) {
+    totalContributions = await getContributionTotal(campaign.deployedAddress);
+  }
 
   return (
     <div>
@@ -147,18 +92,17 @@ export default async function CampaignPage({
           : "Not deployed"}
         </p>
         <p>
-          {`contributions: ${campaign.contributions}`}
+          {`Raised so far: ${campaign.contributions} ETH`}
         </p>
       </div>
       <CampaignForm id={params.id} subdomain={params.subdomain} />
       {!campaign.deployed &&
-            <LaunchCampaignButton campaign={campaign} subdomain={params.subdomain} onLaunch={launch} />
+            <LaunchCampaignButton campaign={campaign} subdomain={params.subdomain} />
       }
       {campaign.deployed && (
         <CampaignContributeButton
           campaign={campaign}
           subdomain={params.subdomain}
-          onContribute={contribute}
         />
       )}
     </div>
