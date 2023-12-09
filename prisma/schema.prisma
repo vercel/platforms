@@ -13,26 +13,27 @@ generator client {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
+  id                   String                 @id @default(cuid())
+  name                 String?
   // if you are using Github OAuth, you can get rid of the username attribute (that is for Twitter OAuth)
-  username      String?
-  gh_username   String?
-  eth_address   String?
-  ens_name      String?
-  email         String?        @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  userRoles     UserRole[]
-  tickets       Ticket[]
-  formResponse  FormResponse[]
-  bookings      Booking[]
-  Place         Place[]
+  username             String?
+  gh_username          String?
+  eth_address          String?                @unique
+  ens_name             String?
+  email                String?                @unique
+  emailVerified        DateTime?
+  image                String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  accounts             Account[]
+  sessions             Session[]
+  posts                Post[]
+  userRoles            UserRole[]
+  tickets              Ticket[]
+  formResponse         FormResponse[]
+  bookings             Booking[]
+  Place                Place[]
+  CampaignContribution CampaignContribution[]
 }
 
 model Account {
@@ -421,12 +422,27 @@ model EmailSubscriber {
 }
 
 model Campaign {
-  id                String       @id @default(cuid())
+  id                String                 @id @default(cuid())
   name              String
-  threshold         String
-  createdAt         DateTime     @default(now())
-  deployedAddress   String
-  creatorEthAddress String
-  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  threshold         Int                    @default(0)
+  content           String?                @db.Text
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  deployed          Boolean                @default(false)
+  timeDeployed      DateTime?
+  deployedAddress   String?
+  sponsorEthAddress String?
+  contributions     CampaignContribution[]
+  organization      Organization           @relation(fields: [organizationId], references: [id], onUpdate: Cascade)
   organizationId    String
+
+  @@unique([name, organizationId])
+}
+
+model CampaignContribution {
+  id               String    @id @default(cuid())
+  senderEthAddress String
+  user             User?     @relation(fields: [senderEthAddress], references: [eth_address])
+  Campaign         Campaign? @relation(fields: [campaignId], references: [id])
+  campaignId       String?
 }
