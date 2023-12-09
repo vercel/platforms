@@ -13,26 +13,27 @@ generator client {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
+  id                   String                 @id @default(cuid())
+  name                 String?
   // if you are using Github OAuth, you can get rid of the username attribute (that is for Twitter OAuth)
-  username      String?
-  gh_username   String?
-  eth_address   String?
-  ens_name      String?
-  email         String?        @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  userRoles     UserRole[]
-  tickets       Ticket[]
-  formResponse  FormResponse[]
-  bookings      Booking[]
-  Place         Place[]
+  username             String?
+  gh_username          String?
+  eth_address          String?                @unique
+  ens_name             String?
+  email                String?                @unique
+  emailVerified        DateTime?
+  image                String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  accounts             Account[]
+  sessions             Session[]
+  posts                Post[]
+  userRoles            UserRole[]
+  tickets              Ticket[]
+  formResponse         FormResponse[]
+  bookings             Booking[]
+  Place                Place[]
+  CampaignContribution CampaignContribution[]
 }
 
 model Account {
@@ -119,6 +120,7 @@ model Organization {
   apiKeys          ApiKey[]
   form             Form[]
   places           Place[]
+  campaigns        Campaign[]
 }
 
 model Event {
@@ -219,13 +221,13 @@ model Ticket {
   userId  String
   tierId  String
   eventId String
+  roleId  String
 
-  validFrom  DateTime?
-  validTo    DateTime?
-  user       User       @relation(fields: [userId], references: [id])
-  tier       TicketTier @relation(fields: [tierId], references: [id])
-  event      Event      @relation(fields: [eventId], references: [id])
-  amountPaid Int // In smallest unit of currency
+  validFrom DateTime
+  validTo   DateTime
+  user      User       @relation(fields: [userId], references: [id])
+  tier      TicketTier @relation(fields: [tierId], references: [id])
+  event     Event      @relation(fields: [eventId], references: [id])
 
   @@unique([userId, tierId])
 }
@@ -419,4 +421,30 @@ model EmailSubscriber {
   description       String?
   indicatedInterest EmailSubscriberInterest @default(JOIN)
   createdAt         DateTime                @default(now())
+}
+
+model Campaign {
+  id                String                 @id @default(cuid())
+  name              String
+  threshold         Int                    @default(0)
+  content           String?                @db.Text
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  deployed          Boolean                @default(false)
+  timeDeployed      DateTime?
+  deployedAddress   String?
+  sponsorEthAddress String?
+  contributions     CampaignContribution[]
+  organization      Organization           @relation(fields: [organizationId], references: [id], onUpdate: Cascade)
+  organizationId    String
+
+  @@unique([name, organizationId])
+}
+
+model CampaignContribution {
+  id               String    @id @default(cuid())
+  senderEthAddress String
+  user             User?     @relation(fields: [senderEthAddress], references: [eth_address])
+  Campaign         Campaign? @relation(fields: [campaignId], references: [id])
+  campaignId       String?
 }
