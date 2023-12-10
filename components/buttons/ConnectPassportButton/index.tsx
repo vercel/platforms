@@ -6,7 +6,7 @@ import PrimaryButton from "@/components/primary-button";
 //   // constructZupassPcdGetRequestUrl,
 //   // openZupassPopup,
 //   // useZupassPopupMessages,
-//   openSignedZuzaluSignInPopup
+//   // openSignedZuzaluSignInPopup
 // } from "@pcd/passport-interface";
 // import { ArgumentTypeName } from "@pcd/pcd-types";
 // import { SemaphoreIdentityPCDPackage } from "@pcd/semaphore-identity-pcd";
@@ -17,6 +17,7 @@ import PrimaryButton from "@/components/primary-button";
 // } from "@pcd/zk-eddsa-event-ticket-pcd";
 // import { useEffect, useState } from "react";
 import { ZUPASS_URL } from "./constants";
+import { constructPassportPcdGetRequestUrl } from "@/lib/pcd-light";
 
 /**
  * Opens a Zupass popup to make a proof of a ZK EdDSA event ticket PCD.
@@ -114,6 +115,7 @@ import { ZUPASS_URL } from "./constants";
 //   // Zupass URL.
 //   openZupassPopup(popupUrl, proofUrl);
 // }
+
 
 function ConnectPassportButton(props: any) {
   const openPopup = () => {
