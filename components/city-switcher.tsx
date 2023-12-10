@@ -117,11 +117,6 @@ export default function CitySwitcher({
   // ... rest of your component
 
   const org = usersOrgs && Object.values(usersOrgs)?.[0];
-  console.log("org: ", org);
-
-  console.log("selectedOrganization: ", selectedOrganization);
-
-  console.log("Render");
 
   const modal = useModal();
 
@@ -183,7 +178,6 @@ export default function CitySwitcher({
                 </CommandItem>
                 {usersOrgs &&
                   Object.values(usersOrgs).map((orgAndRoles) => {
-                    console.log("orgAndRoles: ", orgAndRoles);
                     return (
                       <CommandItem
                         key={orgAndRoles.organization.id}
