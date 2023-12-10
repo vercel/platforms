@@ -39,7 +39,7 @@ export default function CampaignContributeButton({
         type="text"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        placeholder="Amount"
+        placeholder="Amount (ETH)"
       />
       <Button
         onClick={handleContribution}

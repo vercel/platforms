@@ -6,6 +6,7 @@ import CampaignForm from "@/components/edit-campaign-form";
 import useEthereum from "@/hooks/useEthereum";
 import { Campaign } from "@prisma/client";
 import { useState, useEffect } from 'react';
+import { ethers } from "ethers";
 
 
 export default function CampaignPageContent(
@@ -74,7 +75,7 @@ export default function CampaignPageContent(
         </p>
         {totalContributions &&
           <p>
-            {`Raised so far: ${totalContributions} ETH`}
+            {`Raised so far: ${ethers.formatEther(totalContributions)} ETH`}
           </p>
         }
       </div>
