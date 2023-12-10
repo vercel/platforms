@@ -1,12 +1,13 @@
+// @ts-ignore
 "use client";
 import PrimaryButton from "@/components/primary-button";
-import { EdDSATicketPCDPackage } from "@pcd/eddsa-ticket-pcd";
-import {
-  // constructZupassPcdGetRequestUrl,
-  // openZupassPopup,
-  // useZupassPopupMessages,
-  openSignedZuzaluSignInPopup
-} from "@pcd/passport-interface";
+// import { EdDSATicketPCDPackage } from "@pcd/eddsa-ticket-pcd";
+// import {
+//   // constructZupassPcdGetRequestUrl,
+//   // openZupassPopup,
+//   // useZupassPopupMessages,
+//   openSignedZuzaluSignInPopup
+// } from "@pcd/passport-interface";
 // import { ArgumentTypeName } from "@pcd/pcd-types";
 // import { SemaphoreIdentityPCDPackage } from "@pcd/semaphore-identity-pcd";
 // import {
@@ -14,7 +15,7 @@ import {
 //   ZKEdDSAEventTicketPCDArgs,
 //   ZKEdDSAEventTicketPCDPackage,
 // } from "@pcd/zk-eddsa-event-ticket-pcd";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { ZUPASS_URL } from "./constants";
 
 /**
@@ -116,17 +117,17 @@ import { ZUPASS_URL } from "./constants";
 
 function ConnectPassportButton(props: any) {
   const openPopup = () => {
-    openSignedZuzaluSignInPopup(
-      ZUPASS_URL,
-      window.location.origin + '/popup',
-      "consumer-client"
-    )
-    // openZKEdDSAEventTicketPopup(
-    //   { revealAttendeeEmail: true },
-    //   BigInt(0),
-    //   [],
-    //   [],
-    // );
+  //   openSignedZuzaluSignInPopup(
+  //     ZUPASS_URL,
+  //     window.location.origin + '/popup',
+  //     "consumer-client"
+  //   )
+  //   // openZKEdDSAEventTicketPopup(
+  //   //   { revealAttendeeEmail: true },
+  //   //   BigInt(0),
+  //   //   [],
+  //   //   [],
+  //   // );
   };
 
   // const [pcdStr] = useZupassPopupMessages();
