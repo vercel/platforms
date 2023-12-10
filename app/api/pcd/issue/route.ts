@@ -1,14 +1,18 @@
 // import { EdDSAPCDPackage } from "@pcd/eddsa-pcd";
 // import {  ArgumentTypeName, EdDSAPCDPackage } from "@pcd/passport-interface"
-import { EdDSAPCDPackage } from "@pcd/eddsa-pcd";
 // import { constructPassportPcdGetRequestUrl } from "@pcd/passport-interface";
-import { ArgumentTypeName } from "@pcd/pcd-types";
-import { constructPassportPcdGetRequestUrl } from "@/lib/pcd-light";
-
+// import { ArgumentTypeName } from "@pcd/pcd-types";
+import {
+  constructPassportPcdGetRequestUrl,
+  ArgumentTypeName,
+  EdDSAPCDPackage,
+  EdDSAPCDTypeName,
+} from "@/lib/pcd-light";
+import { NextResponse } from "next/server";
 const url = constructPassportPcdGetRequestUrl<typeof EdDSAPCDPackage>(
   "https://zupass.org",
-  `https://api.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/pcd/issue/verify`, // This endpoint will handle the request's results.
-  EdDSAPCDPackage.name,
+  `https://api.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/pcd/issue/callback`, // This endpoint will handle the request's results.
+  EdDSAPCDTypeName,
   {
     id: {
       argumentType: ArgumentTypeName.String,
@@ -28,6 +32,7 @@ const url = constructPassportPcdGetRequestUrl<typeof EdDSAPCDPackage>(
 );
 
 export async function GET(request: Request) {
-  const response = await fetch(url).then((res) => res.json());
+  const response = (await fetch(url)).body;
   console.log("response: ", response);
+  return NextResponse.json(response);
 }
