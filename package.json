@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "prisma generate && next dev",
-    "build": "cd protocol/campaigns && forge build && cd ../.. && prisma generate && prisma db push && next build",
+    "build": "prisma generate && prisma db push && next build",
     "format:write": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "start": "next start",
