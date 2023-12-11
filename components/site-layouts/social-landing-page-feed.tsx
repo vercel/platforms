@@ -1,9 +1,4 @@
 import { Event, Organization, Post } from "@prisma/client";
-import { AspectRatio } from "../ui/aspect-ratio";
-import Image from "next/image";
-import SiteNav from "../site-nav";
-import ConnectPassportButton from "../buttons/ConnectPassportButton";
-import LandingPageTabs from "./landing-page-tabs";
 import prisma from "@/lib/prisma";
 import PostCard from "../post-card";
 import EventCard from "../event-card";
@@ -52,9 +47,13 @@ export default async function SocialLandingPageFeed({
   // Usage
   const feed = mergeAndSortByDate(events, docs);
 
+  if (feed.length === 0) {
+    return null;
+  }
+
   return (
     <div className="mx-auto w-full max-w-5xl pb-20">
-      <h4 className="mx-5 mb-3 mt-3 font-bold tracking-tight text-gray-750 dark:text-gray-400">
+      <h4 className="mx-5 mb-3 mt-3 font-bold tracking-tight text-gray-750 dark:text-gray-400 md:my-5 md:text-lg">
         {"Latest"}
       </h4>
       {feed.map((eventOrDoc) => {
@@ -68,12 +67,12 @@ export default async function SocialLandingPageFeed({
           );
         } else if ("startingAt" in eventOrDoc) {
           // Handle Event
-          // return (
-          //   <EventCard
-          //     key={eventOrDoc.id}
-          //     event={Object.assign(eventOrDoc, { organization: sitedata })}
-          //   />
-          // );
+          return (
+            <EventCard
+              key={eventOrDoc.id}
+              event={Object.assign(eventOrDoc, { organization: sitedata })}
+            />
+          );
         }
       })}
     </div>

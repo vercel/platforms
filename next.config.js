@@ -5,6 +5,15 @@ module.exports = {
   experimental: {
     serverActions: true,
   },
+  webpack(config) {
+    config.resolve.fallback = {
+      // if you miss it, all the other options in fallback, specified
+      // by next.js will be dropped.
+      ...config.resolve.fallback,
+      fs: false, // for pcd
+    };
+    return config;
+  },
   images: {
     domains: [
       "fora.co",
@@ -18,7 +27,7 @@ module.exports = {
       "www.google.com",
       "flag.vercel.app",
       "illustrations.popsy.co",
-      "avatar.vercel.sh"
+      "avatar.vercel.sh",
     ],
   },
   reactStrictMode: false,

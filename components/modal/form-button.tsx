@@ -14,6 +14,7 @@ export default function FormButton({
   const { pending } = useFormStatus();
   return (
     <PrimaryButton
+      type="submit"
       className={cn(className)}
       loading={pending || (loading ?? false)}
     >
