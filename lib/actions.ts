@@ -2025,6 +2025,7 @@ export const launchCampaign = withOrganizationAuth(
       data: {...data, timeDeployed: new Date()}
     });
     return response;
+});
 
 export const upsertOrganizationLinks = withOrganizationAuth(
   async (data: any, organization: Organization) => {
