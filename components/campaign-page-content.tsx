@@ -12,8 +12,7 @@ import { getCampaign } from "@/lib/actions";
 
 
 export default function CampaignPageContent(
-  // {campaign, subdomain}: {campaign: Campaign, subdomain: string}
-  {subdomain}: {subdomain: string}
+  {campaignId, subdomain}: {campaignId: string, subdomain: string}
 ) {
   const { getContributionTotal, getContractBalance } = useEthereum();
   const [totalContributions, setTotalContributions] = useState(0);
@@ -21,8 +20,12 @@ export default function CampaignPageContent(
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
 
   useEffect(() => {
-    getCampaign(subdomain).then(setCampaign);
-  }, [subdomain]);
+    getCampaign(campaignId).then(result => {
+      if (result) {
+        setCampaign(result);
+      }
+    });
+  }, [campaignId]);
 
   useEffect(() => {
     async function fetchTotalContributions() {
