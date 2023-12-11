@@ -7,8 +7,8 @@ contract Campaign {
     address public sponsor;
     string public name;
 
-    mapping(address => uint256) private contributions;
-    uint256 private totalContributions;
+    mapping(address => uint256) public contributions;
+    uint256 public totalContributions;
     bool openToContributions;
 
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -54,6 +54,18 @@ contract Campaign {
             "Refund amount is more than contribution"
         );
         contributions[msg.sender] = contribution - amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function withdraw(uint256 amount) public {
+        require(
+            totalContributions >= threshold,
+            "As the organizer, you can only withdraw once the contribution threshold is met"
+        );
+        require(
+            amount <= address(this).balance,
+            "More funds requested than available"
+        );
         payable(msg.sender).transfer(amount);
     }
 

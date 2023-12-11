@@ -45,6 +45,8 @@ import {
   CreatePlaceSchema,
   IssueTicketFormSchema,
   CreateCampaignSchema,
+  DeployCampaignSchema,
+  UpdateCampaignSchema,
   UpsertOrganizationLinkSchema,
   UpsertOrganizationLinkSchemas,
 } from "./schema";
@@ -1759,23 +1761,40 @@ export const createEmailSubscriber = async ({
 };
 
 export const createCampaign = withOrganizationAuth(
-  async (data: any, organization: Organization) => {
-    const result = CreateCampaignSchema.safeParse(data);
+  async (_: any, organization: Organization) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
 
-    if (!result.success) {
-      throw new Error("Invalid data");
+    const existingCampaigns = await prisma.campaign.findMany({
+      where: {
+        name: {
+          startsWith: 'My Campaign',
+        },
+        organizationId: organization.id,
+      },
+    });
+
+    const existingNames = new Set(existingCampaigns.map(c => c.name));
+    let counter = 1;
+    let name = 'My Campaign';
+    while (existingNames.has(name)) {
+      name = `My Campaign (${counter})`;
+      counter++;
     }
 
     const response = await prisma.campaign.create({
       data: {
-        ...result.data,
+        name,
         organizationId: organization.id,
       },
       include: {
         organization: true,
       },
     });
-    // TODO handle error
 
     return response;
   },
@@ -1972,6 +1991,41 @@ export async function getCitizensWithMutualEventAttendance(
 
   return mutualAttendees;
 }
+
+export const updateCampaign = withOrganizationAuth(
+  async (data: any, organization: Organization) => {
+    const result = UpdateCampaignSchema.safeParse(data);
+
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+
+    const response = await prisma.campaign.update({
+      where: {
+        id: data.id,
+      },
+      data
+    });
+    return response;
+  },
+);
+
+export const launchCampaign = withOrganizationAuth(
+  async (data: any, organization: Organization) => {
+    const result = DeployCampaignSchema.safeParse(data);
+
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+
+    const response = await prisma.campaign.update({
+      where: {
+        id: data.id,
+      },
+      data: {...data, timeDeployed: new Date()}
+    });
+    return response;
+});
 
 export const upsertOrganizationLinks = withOrganizationAuth(
   async (data: any, organization: Organization) => {

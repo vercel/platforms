@@ -1,12 +1,11 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/dashboard-header";
-import ConnectEthButton from "@/components/connect-eth-button";
-import CreateCampaignButton from "@/components/create-campaign-button";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
-// import CreateEventFormButton from "@/components/create-form-button";
-// import OrgForms from "@/components/org-forms";
+import CreateCampaignButton from "@/components/create-campaign-button";
+import Campaigns from "@/components/campaigns";
+
 
 export default async function CampaignsPage({
   params,
@@ -28,29 +27,25 @@ export default async function CampaignsPage({
     return notFound();
   }
 
-  // const campaigns = await prisma.campaign.findMany({
-  //   where: {
-  //     organizationId: organization.id,
-  //   },
-  //   select: {
-  //     id: true,
-  //     name: true,
-  //     published: true,
-  //     organizationId: true,
-  //     eventId: true,
-  //     image: true,
-  //     questions: true,
-  //     role: true,
-  //     endingTitle: true,
-  //     endingDescription: true,
-  //     formResponse: {
-  //       select: {
-  //         id: true
-  //       },
-  //     }
-  //   }
-  // });
-  const btn = <div>Not a button</div>
+  const campaigns = await prisma.campaign.findMany({
+    where: {
+      organizationId: organization.id,
+    },
+    select: {
+      id: true,
+      name: true,
+      thresholdWei: true,
+      deployed: true,
+      contributions: true,
+      content: true,
+      createdAt: true,
+      updatedAt: true,
+      timeDeployed: true,
+      deployedAddress: true,
+      sponsorEthAddress: true,
+      organizationId: true,
+    }
+  });
 
   return (
     <div className="flex flex-col space-y-6">
@@ -60,11 +55,10 @@ export default async function CampaignsPage({
           <CreateCampaignButton />
         }
       />
-      {/* <ConnectEthButton /> */}
-      {/* <Campaigns
+      <Campaigns
         organization={organization}
-        forms={campaigns}
-      /> */}
+        campaigns={campaigns}
+      />
     </div>
   );
 }

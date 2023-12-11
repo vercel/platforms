@@ -84,4 +84,24 @@ contract CampaignTest is Test {
         vm.expectRevert("The campaign has reached its threshold, so refunds are no longer possible");
         campaign.refund(0.5 ether);
     }
+
+    function testWithdraw() public {
+        vm.startPrank(contributors[0]);
+        campaign.contribute{ value: 0.5 ether }();
+
+        vm.startPrank(sponsor);
+        vm.expectRevert("As the organizer, you can only withdraw once the contribution threshold is met");
+        campaign.withdraw(0.1 ether);
+
+        vm.startPrank(contributors[1]);
+        campaign.contribute{ value: 0.5 ether }();
+
+        vm.startPrank(sponsor);
+        campaign.withdraw(0.8 ether);
+        campaign.withdraw(0.2 ether);
+
+        vm.expectRevert("More funds requested than available");
+        campaign.withdraw(0.1 ether);
+        vm.stopPrank();
+    }
 }
