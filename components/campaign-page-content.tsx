@@ -2,6 +2,7 @@
 
 import LaunchCampaignButton from "@/components/launch-campaign-button";
 import CampaignContributeButton from "@/components/campaign-contribute-button";
+import CampaignWithdrawButton from "@/components/campaign-withdraw-button";
 import CampaignForm from "@/components/edit-campaign-form";
 import useEthereum from "@/hooks/useEthereum";
 import { Campaign } from "@prisma/client";
@@ -12,8 +13,9 @@ import { ethers } from "ethers";
 export default function CampaignPageContent(
   {campaign, subdomain}: {campaign: Campaign, subdomain: string}
 ) {
-  const { getContributionTotal } = useEthereum();
-  const [totalContributions, setTotalContributions] = useState(null);
+  const { getContributionTotal, getContractBalance } = useEthereum();
+  const [totalContributions, setTotalContributions] = useState(0);
+  const [contractBalance, setContractBalance] = useState(BigInt(0));
 
   useEffect(() => {
     async function fetchTotalContributions() {
@@ -23,6 +25,14 @@ export default function CampaignPageContent(
       }
     }
     fetchTotalContributions();
+
+    async function fetchContractBalance() {
+      if (campaign.deployed) {
+        const balance = await getContractBalance(campaign.deployedAddress!);
+        setContractBalance(balance);
+      }
+    }
+    fetchContractBalance();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaign]);
 
@@ -33,7 +43,7 @@ export default function CampaignPageContent(
           {campaign.name}
         </h1>
         <p>
-          {`threshold: ${campaign.threshold} ETH`}
+          {`threshold: ${ethers.formatEther(campaign.thresholdWei)} ETH`}
         </p>
         <p>
           {`content: ${campaign.content}`}
@@ -70,12 +80,17 @@ export default function CampaignPageContent(
             minute: '2-digit',
             second: undefined,
             timeZoneName: undefined
-          })} at ${campaign.deployedAddress} by ${campaign.sponsorEthAddress}`
+          })}`
           : "Not deployed"}
         </p>
         {totalContributions &&
           <p>
             {`Raised so far: ${ethers.formatEther(totalContributions)} ETH`}
+          </p>
+        }
+        {campaign.deployed &&
+          <p>
+            {`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}
           </p>
         }
       </div>
@@ -85,6 +100,12 @@ export default function CampaignPageContent(
       }
       {campaign.deployed && (
         <CampaignContributeButton
+          campaign={campaign}
+          subdomain={subdomain}
+        />
+      )}
+      {campaign.deployed && (
+        <CampaignWithdrawButton
           campaign={campaign}
           subdomain={subdomain}
         />

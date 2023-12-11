@@ -35,11 +35,11 @@ export default function useEthereum() {
       const campaignBytecode = CampaignContract.bytecode;
 
       const creatorAddress = await signer.getAddress();
-      const threshold = ethers.parseUnits(campaign.threshold.toString(), "ether");
+      const thresholdWei = campaign.thresholdWei;
       const name = campaign.name;
 
       const campaignFactory = new ethers.ContractFactory(campaignABI, campaignBytecode, signer);
-      const campaignInstance = await campaignFactory.deploy(creatorAddress, threshold, name);
+      const campaignInstance = await campaignFactory.deploy(creatorAddress, thresholdWei, name);
       await campaignInstance.waitForDeployment();
 
       const deployedAddress = await campaignInstance.getAddress();
@@ -52,7 +52,6 @@ export default function useEthereum() {
       };
 
       toast.success(`Campaign deployed at ${deployedAddress}`);
-
 
       await launchCampaign(data, { params: { subdomain: params.subdomain } }, null);
     } catch (error: any) {
@@ -80,6 +79,25 @@ export default function useEthereum() {
     }
   };
 
+  const withdraw = async (amount: string, campaign: Campaign): Promise<void> => {
+    try {
+      const signer = await connectToWallet();
+
+      if (!campaign.deployed) {
+        throw new Error("Campaign isn't deployed yet");
+      }
+
+      const campaignABI = CampaignContract.abi;
+      const campaignInstance = new ethers.Contract(campaign.deployedAddress!, campaignABI, signer);
+      await campaignInstance.withdraw(ethers.parseEther(amount));
+
+      toast.success(`Withdrew ${amount} ETH`);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  };
+
   const getContributionTotal = async (contractAddr: string) => {
     const signer = await connectToWallet();
 
@@ -89,10 +107,28 @@ export default function useEthereum() {
     return total;
   }
 
+  const getContractBalance = async (contractAddr: string) => {
+    try {
+      if (!ethers.isAddress(contractAddr)) {
+        throw new Error("Invalid contract address");
+      }
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const balance = await provider.getBalance(contractAddr);
+      return balance;
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message);
+      throw error;
+    }
+  }
+
   return {
     connectToWallet,
     launch,
     contribute,
+    withdraw,
     getContributionTotal,
+    getContractBalance,
   };
 };
