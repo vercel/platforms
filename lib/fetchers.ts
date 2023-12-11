@@ -13,6 +13,9 @@ export async function getSiteData(domain: string) {
     // async () => {
       return prisma.organization.findUnique({
         where: subdomain ? { subdomain } : { customDomain: domain },
+        include: {
+          pageLinks: true
+        }
       });
     // },
     // [`${cleanDomain}-metadata`],

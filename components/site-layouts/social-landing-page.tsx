@@ -1,18 +1,17 @@
-import { Organization } from "@prisma/client";
+import { Organization, OrganizationPageLinks } from "@prisma/client";
 import { AspectRatio } from "../ui/aspect-ratio";
 import Image from "next/image";
 import SiteNav from "../site-nav";
-import ConnectPassportButton from "../buttons/ConnectPassportButton";
-import LandingPageTabs from "./landing-page-tabs";
 import SocialLandingPageFeed from "./social-landing-page-feed";
-import AvatarGroup from "./avatar-group";
 import SocialButtons from "./social-buttons";
 import { LineGradient } from "../line-gradient";
-import { getUsersWithRoleInOrganization } from "@/lib/actions";
+// import { getUsersWithRoleInOrganization } from "@/lib/actions";
 import MutualAttendenceCitizens from "./mutual-attendance-citizens";
-import PrimaryButton from "../primary-button";
+// import PrimaryButton from "../primary-button";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import OrganizationPageLinksGrid from "./organization-page-links-grid";
+import OrganizationPagePrimaryButton from "./organization-page-primary-button";
 
 // Replace 'mySubdomain' with the actual subdomain of your organization
 
@@ -20,9 +19,18 @@ export default async function SocialLandingPage({
   sitedata,
   params,
 }: {
-  sitedata: Organization;
+  sitedata: Organization & { pageLinks: OrganizationPageLinks[] };
   params: { domain: string };
 }) {
+  let primaryPageLink: OrganizationPageLinks | undefined;
+  const nonPrimaryPageLinks = sitedata.pageLinks.filter((pageLink) => {
+    if (pageLink.isPrimary) {
+      primaryPageLink = pageLink;
+      return false;
+    }
+    return true;
+  });
+
   return (
     <>
       <SiteNav params={{ domain: sitedata.subdomain as string }} />
@@ -42,8 +50,8 @@ export default async function SocialLandingPage({
             ) : null}
           </div>
           <div className="relative mx-auto flex w-full max-w-5xl flex-col">
-            <div className="relative flex h-10 md:h-20 w-full justify-end">
-              <div className="absolute -top-10 left-5 h-20  w-20 overflow-hidden rounded-b-3xl rounded-t-3xl md:-top-20 md:left-5 md:h-40 md:w-40">
+            <div className="relative flex h-10 w-full justify-end md:h-16">
+              <div className="absolute -top-10 left-5 h-20  w-20 overflow-hidden rounded-b-3xl rounded-t-3xl md:-top-16 md:left-5 md:h-32 md:w-32">
                 {sitedata.logo ? (
                   <AspectRatio ratio={1 / 1} className="w-full ">
                     <Image
@@ -56,14 +64,9 @@ export default async function SocialLandingPage({
                 ) : null}
               </div>
 
-              <Button
-                className="absolute md:-bottom-4 mt-3 mx-3 h-8 md:mx-3"
-                asChild
-              >
-                <Link href="/apply">Apply to Join</Link>
-              </Button>
+              <OrganizationPagePrimaryButton pageLink={primaryPageLink} />
             </div>
-            <div className="px-5 py-3 md:py-8 ">
+            <div className="px-5 py-3 md:py-4 ">
               <h1 className="mb-3 text-2xl font-extrabold text-gray-800  dark:text-gray-200 md:text-3xl">
                 {sitedata.name}
               </h1>
@@ -78,9 +81,7 @@ export default async function SocialLandingPage({
           </div>
         </div>
       </div>
-      <div className="mx-auto w-full max-w-5xl pt-3">
-        <LandingPageTabs params={params} />
-      </div>
+      <OrganizationPageLinksGrid pageLinks={sitedata.pageLinks} />
       <SocialLandingPageFeed params={params} sitedata={sitedata} />
     </>
   );
