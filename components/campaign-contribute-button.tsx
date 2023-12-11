@@ -1,11 +1,8 @@
 "use client";
 
-import CampaignContract from '@/protocol/campaigns/out/Campaign.sol/Campaign.json';
-import { ethers } from "ethers";
 import { Campaign } from "@prisma/client";
 import { Button } from "./ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import React, { useState } from 'react';
 import useEthereum from "@/hooks/useEthereum";
 
