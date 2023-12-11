@@ -2059,3 +2059,16 @@ export const upsertOrganizationLinks = withOrganizationAuth(
     return nextPageLinks;
   },
 );
+
+export const getCampaign = async (id: string) => {
+  const campaign = await prisma.campaign.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      organization: true,
+      contributions: true,
+    },
+  });
+  return campaign ?? undefined;
+};

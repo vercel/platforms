@@ -8,18 +8,25 @@ import useEthereum from "@/hooks/useEthereum";
 import { Campaign } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
+import { getCampaign } from "@/lib/actions";
 
 
 export default function CampaignPageContent(
-  {campaign, subdomain}: {campaign: Campaign, subdomain: string}
+  // {campaign, subdomain}: {campaign: Campaign, subdomain: string}
+  {subdomain}: {subdomain: string}
 ) {
   const { getContributionTotal, getContractBalance } = useEthereum();
   const [totalContributions, setTotalContributions] = useState(0);
   const [contractBalance, setContractBalance] = useState(BigInt(0));
+  const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
+
+  useEffect(() => {
+    getCampaign(subdomain).then(setCampaign);
+  }, [subdomain]);
 
   useEffect(() => {
     async function fetchTotalContributions() {
-      if (campaign.deployed) {
+      if (campaign?.deployed) {
         const total = await getContributionTotal(campaign.deployedAddress!);
         setTotalContributions(total);
       }
@@ -27,14 +34,20 @@ export default function CampaignPageContent(
     fetchTotalContributions();
 
     async function fetchContractBalance() {
-      if (campaign.deployed) {
+      if (campaign?.deployed) {
         const balance = await getContractBalance(campaign.deployedAddress!);
         setContractBalance(balance);
       }
     }
     fetchContractBalance();
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaign]);
+
+
+  if (!campaign || !campaign.organizationId) {
+    return <div>Campaign not found</div>
+  }
 
   return (
     <div>

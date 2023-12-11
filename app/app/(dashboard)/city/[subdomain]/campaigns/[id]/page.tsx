@@ -30,7 +30,7 @@ export default async function CampaignPage({
   }
 
   return <CampaignPageContent
-    campaign={campaign}
+    // campaign={campaign}
     subdomain={params.subdomain}
   />
 }
