@@ -1,8 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/dashboard-header";
-// import OpenModalButton from "@/components/open-modal-button";
-import CampaignEditorModal from "@/components/campaign-editor-modal";
 import prisma from "@/lib/prisma";
 import notFound from "../not-found";
 import CreateCampaignButton from "@/components/create-campaign-button";
@@ -36,9 +34,16 @@ export default async function CampaignsPage({
     select: {
       id: true,
       name: true,
-      threshold: true,
+      thresholdWei: true,
       deployed: true,
       contributions: true,
+      content: true,
+      createdAt: true,
+      updatedAt: true,
+      timeDeployed: true,
+      deployedAddress: true,
+      sponsorEthAddress: true,
+      organizationId: true,
     }
   });
 

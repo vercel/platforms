@@ -29,7 +29,7 @@ export default function CampaignCard({
 }: {
   campaign: Campaign;
   name: string;
-  threshold: number;
+  threshold: bigint;
   organization: Organization;
 }) {
   const campaignImage = getPlaceholderImage(campaign);

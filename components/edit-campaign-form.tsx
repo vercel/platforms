@@ -5,11 +5,12 @@ import { updateCampaign } from "@/lib/actions";
 import { Button } from "./ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { ethers } from "ethers";
 
 
 interface FormState {
   name: string;
-  threshold: number;
+  threshold: string;
   content: string;
 }
 
@@ -19,22 +20,29 @@ interface ModifiedFields {
   content: boolean;
 }
 
+interface Payload {
+  id: string;
+  name?: string;
+  thresholdWei?: bigint;
+  content?: string;
+}
+
+
 export default function CampaignForm({ id, subdomain }: { id: string, subdomain: string }) {
-  const [formState, setFormState] = useState<FormState>({ name: "", threshold: 0, content: "" });
+  const [formState, setFormState] = useState<FormState>({ name: "", threshold: "", content: "" });
   const [modified, setModified] = useState<ModifiedFields>({ name: false, threshold: false, content: false });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const updatedValue = name === 'threshold' ? Number(value) : value;
-    setFormState({ ...formState, [name]: updatedValue });
+    setFormState({ ...formState, [name]: value });
     setModified({ ...modified, [name]: true });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let payload = { id };
+    let payload: Payload = { id };
     if (modified.name) payload.name = formState.name;
-    if (modified.threshold) payload.threshold = formState.threshold;
+    if (modified.threshold) payload.thresholdWei = ethers.parseEther(formState.threshold);
     if (modified.content) payload.content = formState.content;
 
     try {
@@ -62,7 +70,7 @@ export default function CampaignForm({ id, subdomain }: { id: string, subdomain:
         className="p-2 border border-gray-300 rounded-md"
       />
       <input
-        type="number"
+        type="text"
         name="threshold"
         value={formState.threshold}
         onChange={handleChange}

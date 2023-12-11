@@ -1,7 +1,6 @@
 import Image from "next/image";
 import CampaignCard from "./campaign-card";
 import { Campaign, Organization } from "@prisma/client";
-import CampaignList from "./campaign-list";
 
 export default function Campaigns({
   organization,
@@ -20,7 +19,7 @@ export default function Campaigns({
               key={campaign.id}
               campaign={campaign}
               name={campaign.name}
-              threshold={campaign.threshold}
+              threshold={campaign.thresholdWei}
               organization={organization}
             />
           ))}
