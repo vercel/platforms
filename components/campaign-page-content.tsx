@@ -9,16 +9,19 @@ import { Campaign } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
 import { getCampaign } from "@/lib/actions";
+import LoadingDots from "@/components/icons/loading-dots";
 
 
 export default function CampaignPageContent(
-  {campaignId, subdomain}: {campaignId: string, subdomain: string}
+  {campaignId, subdomain, isPublic}:
+  {campaignId: string, subdomain: string, isPublic: boolean}
 ) {
   const { getContributionTotal, getContractBalance } = useEthereum();
   const [totalContributions, setTotalContributions] = useState(0);
   const [contractBalance, setContractBalance] = useState(BigInt(0));
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const triggerRefresh = () => {
     setRefreshFlag(prev => !prev);
@@ -29,7 +32,7 @@ export default function CampaignPageContent(
       if (result) {
         setCampaign(result);
       }
-    });
+    }).then(() => setLoading(false));
   }, [refreshFlag, campaignId]);
 
   useEffect(() => {
@@ -52,8 +55,10 @@ export default function CampaignPageContent(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaign]);
 
-
-  if (!campaign || !campaign.organizationId) {
+  if (loading) {
+    return <LoadingDots color="#808080" />
+  }
+  else if (!campaign || !campaign.organizationId) {
     return <div>Campaign not found</div>
   }
 
@@ -66,9 +71,16 @@ export default function CampaignPageContent(
         <p className="text-xl">
           {`Goal: ${ethers.formatEther(campaign.thresholdWei)} ETH`}
         </p>
-        <p>
-          {`content: ${campaign.content}`}
-        </p>
+        {totalContributions &&
+          <p>
+            {`${ethers.formatEther(totalContributions)} ETH raised`}
+          </p>
+        }
+        {campaign.content &&
+          <p>
+            {`content: ${campaign.content}`}
+          </p>
+        }
         <p>
           {campaign.deployed
           ? `Launched ${campaign.timeDeployed!.toLocaleString(undefined, {
@@ -93,18 +105,15 @@ export default function CampaignPageContent(
             timeZoneName: undefined
           })}`}
         </p>
-        {totalContributions &&
-          <p>
-            {`Raised so far: ${ethers.formatEther(totalContributions)} ETH`}
-          </p>
-        }
         {campaign.deployed &&
           <p>
             {`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}
           </p>
         }
       </div>
-      <CampaignForm id={campaign.id} subdomain={subdomain} />
+      {!isPublic &&
+        <CampaignForm id={campaign.id} subdomain={subdomain} />
+      }
       {!campaign.deployed &&
         <LaunchCampaignButton
           campaign={campaign}
@@ -119,7 +128,7 @@ export default function CampaignPageContent(
           onComplete={triggerRefresh}
         />
       )}
-      {campaign.deployed && (
+      {!isPublic && campaign.deployed && (
         <CampaignWithdrawButton
           campaign={campaign}
           subdomain={subdomain}

@@ -32,5 +32,6 @@ export default async function CampaignPage({
   return <CampaignPageContent
     campaignId={params.id}
     subdomain={params.subdomain}
+    isPublic={false}
   />
 }

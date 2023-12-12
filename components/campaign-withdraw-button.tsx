@@ -47,7 +47,7 @@ export default function CampaignWithdrawButton({
       <Button
         onClick={handleWithdraw}
         disabled={!isValidAmount()}
-        className={`mt-2 ${isValidAmount() ? 'hover:bg-gray-700' : 'bg-gray-500'}`}
+        className={`${isValidAmount() ? 'hover:bg-gray-700' : 'bg-gray-500'}`}
       >
         Withdraw
       </Button>
