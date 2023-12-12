@@ -2,9 +2,6 @@
  * @type {import('next').NextConfig}
  */
 module.exports = {
-  experimental: {
-    serverActions: true,
-  },
   webpack(config) {
     config.resolve.fallback = {
       // if you miss it, all the other options in fallback, specified
@@ -30,5 +27,5 @@ module.exports = {
       "avatar.vercel.sh",
     ],
   },
-  reactStrictMode: false,
+  reactStrictMode: true,
 };
