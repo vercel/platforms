@@ -19,7 +19,7 @@ import { useModal } from "./provider";
 import { CreatePlaceSchema } from "@/lib/schema";
 import { createPlace } from "@/lib/actions";
 import { Feature, Point, Polygon } from "geojson";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import PrimaryButton from "../primary-button";
 import { GeocodeInput } from "../geocode-input";
 

@@ -17,7 +17,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useParams } from "next/navigation";
 import { UpdatePlaceSchema } from "@/lib/schema";
 import { upsertPlace } from "@/lib/actions";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import PrimaryButton from "../primary-button";
 import { Place } from "@prisma/client";
 import { useEffect } from "react";
