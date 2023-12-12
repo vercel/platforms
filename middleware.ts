@@ -38,6 +38,16 @@ export default async function middleware(
     hostname === `app.${process.env.VERCEL_URL}`
   ) {
     const session = await getToken({ req });
+    if (!session && path === "/popup") {
+      return NextResponse.rewrite(
+        new URL(
+          `/app${path}${
+            typeof searchParams === "string" ? `?${searchParams}` : ""
+          }`,
+          req.url,
+        ),
+      );
+    }
     if (!session && path !== "/login") {
       return NextResponse.redirect(new URL("/login", req.url));
     } else if (session && path == "/login") {
