@@ -1,7 +1,5 @@
 import { getSession } from "@/lib/auth";
-import { Event } from "@prisma/client";
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { userHasEventRole } from "../actions";
 
 export const tryGetSession = async () => {

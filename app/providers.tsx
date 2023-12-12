@@ -47,19 +47,20 @@ const config = createConfig({
   ],
   publicClient,
 });
+const passportServerUrl = "https://api.pcd-passport.com";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiConfig config={config}>
       <SessionProvider>
-        <OldToaster position="top-right" className="dark:hidden" />
-        <OldToaster
-          position="top-right"
-          theme="dark"
-          className="hidden dark:block"
-        />
-        <Toaster />
-        <ModalProvider>{children}</ModalProvider>
+          <OldToaster position="top-right" className="dark:hidden" />
+          <OldToaster
+            position="top-right"
+            theme="dark"
+            className="hidden dark:block"
+          />
+          <Toaster />
+          <ModalProvider>{children}</ModalProvider>
       </SessionProvider>
     </WagmiConfig>
   );
