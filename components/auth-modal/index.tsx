@@ -43,16 +43,16 @@ export default function AuthModal({
   return (
     <div className="mx-auto w-full max-w-[420px] rounded-md border border-gray-200 bg-gray-50/80  p-2 py-6 shadow backdrop-blur-lg dark:border-gray-700 dark:bg-gray-900/80 md:max-w-md md:border">
       <div className="mx-6">
-        <h1 className="mt-2 font-serif text-2xl font-light dark:text-gray-50 md:text-3xl">
+        <h1 className="mt-2 mb-3 font-serif text-2xl font-light dark:text-gray-50 md:text-3xl">
           {steps[state] === "email" && "It's time to build new cities"}
           {steps[state] === "verify" && "We sent you an email"}
         </h1>
-        <p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-200">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
           {`Signin with your Zero-Knowledge Passport.`}
         </p>
       </div>
       <div className="mx-auto mt-4 w-full">
-        <div className="my-8 px-6">
+        <div className="mt-6 mb-8 px-6">
           {steps[state] === "email" && (
             <ConnectPassportButton className="w-full" onSuccess={() => {}}>
               Signin with Passport
