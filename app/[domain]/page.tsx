@@ -6,7 +6,7 @@ import Link from "next/link";
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash } from "@/lib/utils";
 import { Organization, Event } from "@prisma/client";
-import SocialLandingPage from "@/components/site-layouts/social-landing-page";
+import SocialLandingPage from "@/components/site-layouts/social-media/social-landing-page";
 
 export default async function SiteHomePage({
   params,

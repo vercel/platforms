@@ -47,27 +47,31 @@ export default function AuthModal({
           {steps[state] === "email" && "It's time to build new cities"}
           {steps[state] === "verify" && "We sent you an email"}
         </h1>
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-          {`Signin with your Zero-Knowledge Passport.`}
-        </p>
+        {steps[state] === "email" && (
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+            {`Sign in with your Zero-Knowledge Passport.`}
+          </p>
+        )}
       </div>
       <div className="mx-auto mt-4 w-full">
         <div className="mb-8 mt-6 px-6">
           {steps[state] === "email" && (
             <ConnectPassportButton className="w-full" callbackUrl={callbackUrl}>
-              Signin with ZK Passport
+              Signin with Passport
             </ConnectPassportButton>
           )}
         </div>
-        <div className="relative flex w-full items-center py-0 px-6">
-          <LineGradient />
-          <div className="px-3">
-            <span className=" font-mono text-xs font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-400">
-              {"OR"}
-            </span>
+        {steps[state] === "email" && (
+          <div className="relative flex w-full items-center px-6 py-0">
+            <LineGradient />
+            <div className="px-3">
+              <span className=" font-mono text-xs font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-400">
+                {"OR"}
+              </span>
+            </div>
+            <LineGradient />
           </div>
-          <LineGradient />
-        </div>
+        )}
         <div>
           <div className="mx-6 mt-4">
             <p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-200">

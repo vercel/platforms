@@ -80,7 +80,7 @@ export function AboutCard({ event }: { event: Event }) {
 }
 
 type RegistrationCardProps = {
-  ticketTiers: (TicketTier & { role: Role, _count: { tickets: number } })[];
+  ticketTiers: (TicketTier & { role: Role; _count: { tickets: number } })[];
   event: Event & { organization: Organization };
 };
 
@@ -128,7 +128,7 @@ export default function Event({
 }: {
   event: Event & { organization: Organization };
   rolesAndUsers: RolesAndUsers[];
-  ticketTiers: (TicketTier & { role: Role, _count: { tickets: number } })[];
+  ticketTiers: (TicketTier & { role: Role; _count: { tickets: number } })[];
 }) {
   const uniqueUsers = useMemo(
     () =>
@@ -155,45 +155,50 @@ export default function Event({
   );
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="mx-auto flex w-full max-w-[960px] flex-col space-y-6">
-        <Card className="w-full overflow-hidden">
-          <div className="flex flex-col">
-            <div className="w-full">
-              <AspectRatio ratio={2 / 1}>
-                <Image
-                  alt={event.name ?? "Event thumbnail"}
-                  className="object-cover"
-                  src={event.image ?? "/placeholder.png"}
-                  // layout={"fill"}
-                  priority={true}
-                  quality={80}
-                  placeholder="blur"
-                  blurDataURL={event.imageBlurhash ?? placeholderBlurhash}
-                />
-              </AspectRatio>
-            </div>
-            <div className="p-4 md:px-5 md:pb-4 md:pt-6">
-              <h1 className="mt-2 text-2xl font-bold dark:text-white md:text-3xl">
-                {event.name}
-              </h1>
-              <div className="mt-2 flex items-center space-x-3">
-                <Avatar className="h-5 w-5">
-                  {event.organization?.logo ? (
-                    <AvatarImage src={event.organization.logo} />
-                  ) : null}
-                </Avatar>
-                <h3 className="font-medium uppercase">
-                  {event.organization.name}
-                </h3>
+    <>
+      {" "}
+      <div className="h-14 w-full" />
+      <div className="flex flex-col items-center">
+        <div className="mx-auto flex w-full max-w-[960px] flex-col space-y-6">
+          <Card className="w-full overflow-hidden">
+            <div className="flex flex-col">
+              <div className="w-full">
+                <AspectRatio ratio={3 / 1}>
+                  <Image
+                    alt={event.name ?? "Event thumbnail"}
+                    className="object-cover"
+                    src={event.image ?? "/placeholder.png"}
+                    // layout={"fill"}
+                    priority={true}
+                    quality={100}
+                    placeholder="blur"
+                    fill
+                    blurDataURL={event.imageBlurhash ?? placeholderBlurhash}
+                  />
+                </AspectRatio>
+              </div>
+              <div className="p-4 md:px-5 md:pb-4 md:pt-6">
+                <h1 className="mt-2 text-2xl font-bold dark:text-white md:text-3xl">
+                  {event.name}
+                </h1>
+                <div className="mt-2 flex items-center space-x-3">
+                  <Avatar className="h-5 w-5">
+                    {event.organization?.logo ? (
+                      <AvatarImage src={event.organization.logo} />
+                    ) : null}
+                  </Avatar>
+                  <h3 className="font-medium uppercase">
+                    {event.organization.name}
+                  </h3>
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
-        <RegistrationCard event={event} ticketTiers={ticketTiers} />
-        <AboutCard event={event} />
-        <HostsCard hostUsers={hostUsers} />
+          </Card>
+          <RegistrationCard event={event} ticketTiers={ticketTiers} />
+          <AboutCard event={event} />
+          <HostsCard hostUsers={hostUsers} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
