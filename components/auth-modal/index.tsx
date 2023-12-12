@@ -41,9 +41,9 @@ export default function AuthModal({
   };
 
   return (
-    <div className="mx-auto w-full max-w-[420px] rounded-md border border-gray-200 bg-gray-50/80  p-2 py-6 shadow backdrop-blur-lg dark:border-gray-700 dark:bg-gray-900/80 md:max-w-md md:border">
+    <div className="mx-auto w-full max-w-[420px] rounded-md border border-gray-200 bg-gray-50/80  p-2 py-6 shadow backdrop-blur-lg dark:border-gray-750 dark:bg-gray-900/80 md:max-w-md md:border">
       <div className="mx-6">
-        <h1 className="mt-2 mb-3 font-serif text-2xl font-light dark:text-gray-50 md:text-3xl">
+        <h1 className="mb-3 mt-2 font-serif text-2xl font-light dark:text-gray-50 md:text-3xl">
           {steps[state] === "email" && "It's time to build new cities"}
           {steps[state] === "verify" && "We sent you an email"}
         </h1>
@@ -52,20 +52,21 @@ export default function AuthModal({
         </p>
       </div>
       <div className="mx-auto mt-4 w-full">
-        <div className="mt-6 mb-8 px-6">
+        <div className="mb-8 mt-6 px-6">
           {steps[state] === "email" && (
-            <ConnectPassportButton className="w-full" onSuccess={() => {}}>
-              Signin with Passport
+            <ConnectPassportButton className="w-full" callbackUrl={callbackUrl}>
+              Signin with ZK Passport
             </ConnectPassportButton>
           )}
         </div>
-        <div className="relative flex w-full justify-center py-3">
+        <div className="relative flex w-full items-center py-0 px-6">
           <LineGradient />
-          <div className="absolute -top-[2px] bg-gray-50 px-1.5 dark:bg-gray-800">
+          <div className="px-3">
             <span className=" font-mono text-xs font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-400">
               {"OR"}
             </span>
           </div>
+          <LineGradient />
         </div>
         <div>
           <div className="mx-6 mt-4">

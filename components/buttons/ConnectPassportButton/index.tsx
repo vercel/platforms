@@ -29,6 +29,7 @@ import {
 } from "@/lib/pcd-light";
 import { ReactNode, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
+import router from "next/router";
 // import { useZupass } from "zukit";
 
 /**
@@ -138,10 +139,12 @@ type ConnectPassportButtonProps = {
     proof: PCD<SemaphoreSignaturePCDClaim, PackedProof>;
     _raw: string;
   }) => void;
+  callbackUrl?: string;
 } & Omit<PrimaryButtonProps, "loading">;
 
 function ConnectPassportButton({
   onSuccess,
+  callbackUrl = "/",
   ...props
 }: ConnectPassportButtonProps) {
   const openPopup = () => {
@@ -244,6 +247,9 @@ function ConnectPassportButton({
         redirect: false,
       });
       console.info("response: ", response);
+      if (response?.ok && !response?.error) {
+        router.replace(callbackUrl);
+      }
     } catch (error) {}
   };
 

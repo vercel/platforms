@@ -44,7 +44,7 @@ export default function EmailForm({ loading, ...props }: EmailFormProps) {
         ) : (
           <div className="flex items-center">
             <MailIcon width={16} />
-            <span className="mx-2">{"Send magic link"}</span>
+            <span className="mx-2">{"Send Magic Link"}</span>
           </div>
         )}
         {/* <svg
