@@ -55,7 +55,7 @@ export default function AuthModal({
         <div className="mb-8 mt-6 px-6">
           {steps[state] === "email" && (
             <ConnectPassportButton className="w-full" callbackUrl={callbackUrl}>
-              Signin with Passport
+              Signin with ZK Passport
             </ConnectPassportButton>
           )}
         </div>
