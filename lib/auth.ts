@@ -406,7 +406,7 @@ async function findOrCreateUserFromEth(ethAddress: string) {
   // Check if account already exists
   let account = await prisma.account.findFirst({
     where: {
-      type: "ethereum",
+      type: "credentials",
       provider: "ethereum",
       providerAccountId: ethAddress,
     },
@@ -484,7 +484,7 @@ async function findOrCreateUserFromZuPass(
     try {
       account = await prisma.account.create({
         data: {
-          type: "zupass",
+          type: "credentials",
           provider: "zupass",
           providerAccountId: zupassUserId,
           user: {
