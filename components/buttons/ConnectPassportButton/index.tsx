@@ -2,10 +2,14 @@
 import PrimaryButton from "@/components/primary-button";
 // import { EdDSATicketPCDPackage } from "@pcd/eddsa-ticket-pcd";
 import {
+  SignInMessagePayload,
   // constructZupassPcdGetRequestUrl,
   // openZupassPopup,
   // useZupassPopupMessages,
-  openSignedZuzaluSignInPopup, useZupassPopupMessages
+  useFetchUser,
+  openSignedZuzaluSignInPopup,
+  useSemaphoreSignatureProof,
+  useZupassPopupMessages,
 } from "@pcd/passport-interface";
 // import { ArgumentTypeName } from "@pcd/pcd-types";
 // import { SemaphoreIdentityPCDPackage } from "@pcd/semaphore-identity-pcd";
@@ -15,7 +19,7 @@ import {
 //   ZKEdDSAEventTicketPCDPackage,
 // } from "@pcd/zk-eddsa-event-ticket-pcd";
 // import { useEffect, useState } from "react";
-import { ZUPASS_URL } from "./constants";
+import { ZUPASS_SERVER_URL, ZUPASS_URL } from "./constants";
 import { constructPassportPcdGetRequestUrl } from "@/lib/pcd-light";
 import { useEffect, useState } from "react";
 // import { useZupass } from "zukit";
@@ -119,11 +123,11 @@ import { useEffect, useState } from "react";
 
 function ConnectPassportButton(props: any) {
   const openPopup = () => {
-      openSignedZuzaluSignInPopup(
-        ZUPASS_URL,
-        window.location.origin + '/popup',
-        "consumer-client"
-      )
+    openSignedZuzaluSignInPopup(
+      ZUPASS_URL,
+      window.location.origin + "/popup",
+      "consumer-client",
+    );
     //   // openZKEdDSAEventTicketPopup(
     //   //   { revealAttendeeEmail: true },
     //   //   BigInt(0),
@@ -154,11 +158,44 @@ function ConnectPassportButton(props: any) {
     })();
   }, [pcdStr]);
 
+  // console.log(pcdStr, "pcdString")
+
+  const [signatureProofValid, setSignatureProofValid] = useState<
+    boolean | undefined
+  >();
+  // Extract UUID, the signed message of the returned PCD
+  const [signedMessage, setSignedMessage] = useState<
+    SignInMessagePayload | undefined
+  >();
+
+  const onProofVerified = (valid: boolean) => {
+    setSignatureProofValid(valid);
+  };
+
+  const { signatureProof } = useSemaphoreSignatureProof(
+    pcdStr,
+    onProofVerified,
+  );
+
+  useEffect(() => {
+    if (signatureProofValid && signatureProof) {
+      const signInPayload = JSON.parse(
+        signatureProof.claim.signedMessage,
+      ) as SignInMessagePayload;
+      setSignedMessage(signInPayload);
+    }
+  }, [signatureProofValid, signatureProof]);
+
+  const { user, error, loading } = useFetchUser(
+    ZUPASS_SERVER_URL,
+    true,
+    signedMessage?.uuid,
+  );
+
   return (
     <PrimaryButton
       {...props}
       onClick={() => {
-        console.log('fire: ');
         openPopup();
       }}
     >
@@ -179,7 +216,7 @@ function ConnectPassportButton(props: any) {
           <path d="m9 9.5 2 2 4-4" />
         </svg>
         <span className="group-hover:text-fora-primary ml-2  mr-2 transition-all duration-100">
-          {props.children}
+          {user?.email ? user.email : props.children}
         </span>
       </span>
     </PrimaryButton>
