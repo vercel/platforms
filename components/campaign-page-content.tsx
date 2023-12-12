@@ -18,6 +18,11 @@ export default function CampaignPageContent(
   const [totalContributions, setTotalContributions] = useState(0);
   const [contractBalance, setContractBalance] = useState(BigInt(0));
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
+  const [refreshFlag, setRefreshFlag] = useState(false);
+
+  const triggerRefresh = () => {
+    setRefreshFlag(prev => !prev);
+  };
 
   useEffect(() => {
     getCampaign(campaignId).then(result => {
@@ -25,7 +30,7 @@ export default function CampaignPageContent(
         setCampaign(result);
       }
     });
-  }, [campaignId]);
+  }, [refreshFlag, campaignId]);
 
   useEffect(() => {
     async function fetchTotalContributions() {
@@ -55,40 +60,18 @@ export default function CampaignPageContent(
   return (
     <div>
       <div>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold my-6">
           {campaign.name}
         </h1>
-        <p>
-          {`threshold: ${ethers.formatEther(campaign.thresholdWei)} ETH`}
+        <p className="text-xl">
+          {`Goal: ${ethers.formatEther(campaign.thresholdWei)} ETH`}
         </p>
         <p>
           {`content: ${campaign.content}`}
         </p>
         <p>
-          {`created ${campaign.createdAt.toLocaleString(undefined, {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: undefined,
-            timeZoneName: undefined
-          })}`}
-        </p>
-        <p>
-          {`last updated ${campaign.updatedAt.toLocaleString(undefined, {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: undefined,
-            timeZoneName: undefined
-          })}`}
-        </p>
-        <p>
           {campaign.deployed
-          ? `Deployed ${campaign.timeDeployed!.toLocaleString(undefined, {
+          ? `Launched ${campaign.timeDeployed!.toLocaleString(undefined, {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
@@ -98,6 +81,17 @@ export default function CampaignPageContent(
             timeZoneName: undefined
           })}`
           : "Not deployed"}
+        </p>
+        <p>
+          {`Last updated ${campaign.updatedAt.toLocaleString(undefined, {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: undefined,
+            timeZoneName: undefined
+          })}`}
         </p>
         {totalContributions &&
           <p>
@@ -112,18 +106,24 @@ export default function CampaignPageContent(
       </div>
       <CampaignForm id={campaign.id} subdomain={subdomain} />
       {!campaign.deployed &&
-            <LaunchCampaignButton campaign={campaign} subdomain={subdomain} />
+        <LaunchCampaignButton
+          campaign={campaign}
+          subdomain={subdomain}
+          onComplete={triggerRefresh}
+        />
       }
       {campaign.deployed && (
         <CampaignContributeButton
           campaign={campaign}
           subdomain={subdomain}
+          onComplete={triggerRefresh}
         />
       )}
       {campaign.deployed && (
         <CampaignWithdrawButton
           campaign={campaign}
           subdomain={subdomain}
+          onComplete={triggerRefresh}
         />
       )}
     </div>
