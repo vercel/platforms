@@ -254,6 +254,7 @@ function ConnectPassportButton({
   return (
     <PrimaryButton
       {...props}
+      disabled={loading || fetchUserLoading}
       loading={loading || fetchUserLoading}
       onClick={() => {
         openPopup();
