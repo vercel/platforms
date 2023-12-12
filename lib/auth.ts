@@ -39,6 +39,7 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
       }),
       // sign in with ethereum
       CredentialsProvider({
+        id: 'ethereum',
         name: "Ethereum",
         credentials: {
           message: {
@@ -129,6 +130,17 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
             return null;
           }
         },
+      }),
+      CredentialsProvider({
+        id: 'zupass',
+        name: 'ZuPass',
+        async authorize(credentials, req) {
+          try {
+            
+          } catch (error) {
+            return null
+          }
+        }
       }),
       GitHubProvider({
         clientId: process.env.AUTH_GITHUB_ID as string,

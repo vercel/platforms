@@ -4,6 +4,7 @@ import EmailForm from "./email-form";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import ConnectPassportButton from "../buttons/ConnectPassportButton";
 
 const steps = ["email", "verify", "siwe"];
 export default function AuthModal({
@@ -54,6 +55,12 @@ export default function AuthModal({
       <div className="mx-auto mt-4 w-full">
         {steps[state] === "email" && (
           <EmailForm onSubmit={onEmailSubmit} loading={loading} />
+        )}
+
+        {steps[state] === "email" && (
+          <ConnectPassportButton onSuccess={() => {
+            
+          }} />
         )}
         {/* {steps[state] === 'verify' && <div>verify</div>} */}
         {/* {steps[state] === "email" && (

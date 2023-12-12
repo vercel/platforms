@@ -1,3 +1,42 @@
+import type { NumericString } from "snarkjs";
+export type SnarkArtifacts = {
+  wasmFilePath: string;
+  zkeyFilePath: string;
+};
+
+export interface SemaphoreSignaturePCDClaim {
+  /**
+   * Pre-hashed message.
+   */
+  signedMessage: string;
+  /**
+   * Stringified `BigInt`.
+   */
+  identityCommitment: string;
+  /**
+   * Stringified `BigInt`.
+   */
+  nullifierHash: string;
+}
+
+export type SemaphoreProof = {
+  merkleTreeRoot: NumericString;
+  signal: NumericString;
+  nullifierHash: NumericString;
+  externalNullifier: NumericString;
+  proof: PackedProof;
+};
+export type PackedProof = [
+  NumericString,
+  NumericString,
+  NumericString,
+  NumericString,
+  NumericString,
+  NumericString,
+  NumericString,
+  NumericString,
+];
+
 export interface PCD<C = unknown, P = unknown> {
   id: string;
   type: string;
@@ -134,8 +173,7 @@ export type EdDSAPublicKey = [string, string];
 export interface EdDSAInitArgs {}
 /**
  * Defines the essential parameters required for creating an {@link EdDSAPCD}.
- */export 
-type EdDSAPCDArgs = {
+ */ export type EdDSAPCDArgs = {
   /**
    * The EdDSA private key is a 32-byte value used to sign the message.
    * {@link newEdDSAPrivateKey} is recommended for generating highly secure private keys.
@@ -223,7 +261,12 @@ declare function getDisplayOptions(pcd: EdDSAPCD): DisplayOptions;
  * The PCD package of the EdDSA PCD. It exports an object containing
  * the code necessary to operate on this PCD data.
  */
-export declare const EdDSAPCDPackage: PCDPackage<EdDSAPCDClaim, EdDSAPCDProof, EdDSAPCDArgs, EdDSAInitArgs>;
+export declare const EdDSAPCDPackage: PCDPackage<
+  EdDSAPCDClaim,
+  EdDSAPCDProof,
+  EdDSAPCDArgs,
+  EdDSAInitArgs
+>;
 
 /**
  * Returns an {@link EdDSAPublicKey} derived from a 32-byte EdDSA private key.
@@ -416,12 +459,11 @@ type DisplayArg<Arg extends Argument<any, unknown>> = Arg & {
   validate?: ArgumentValidator<Arg>;
 };
 
-
 export enum PCDRequestType {
   Get = "Get",
   GetWithoutProving = "GetWithoutProving",
   Add = "Add",
-  ProveAndAdd = "ProveAndAdd"
+  ProveAndAdd = "ProveAndAdd",
 }
 
 export interface PCDRequest {
@@ -476,12 +518,12 @@ export interface PCDProveAndAddRequest<T extends PCDPackage = PCDPackage>
 export function getWithoutProvingUrl(
   passportOrigin: string,
   returnUrl: string,
-  pcdType: string
+  pcdType: string,
 ) {
   const req: PCDGetWithoutProvingRequest = {
     type: PCDRequestType.GetWithoutProving,
     pcdType,
-    returnUrl
+    returnUrl,
   };
   const encReq = encodeURIComponent(JSON.stringify(req));
   return `${passportOrigin}#/get-without-proving?request=${encReq}`;
@@ -492,14 +534,14 @@ export function constructPassportPcdGetRequestUrl<T extends PCDPackage>(
   returnUrl: string,
   pcdType: T["name"],
   args: ArgsOf<T>,
-  options?: ProveOptions
+  options?: ProveOptions,
 ) {
   const req: PCDGetRequest<T> = {
     type: PCDRequestType.Get,
     returnUrl: returnUrl,
     args: args,
     pcdType,
-    options
+    options,
   };
   const encReq = encodeURIComponent(JSON.stringify(req));
   return `${passportOrigin}#/prove?request=${encReq}`;
@@ -508,26 +550,26 @@ export function constructPassportPcdGetRequestUrl<T extends PCDPackage>(
 export function constructPassportPcdAddRequestUrl(
   passportOrigin: string,
   returnUrl: string,
-  pcd: SerializedPCD
+  pcd: SerializedPCD,
 ) {
   const req: PCDAddRequest = {
     type: PCDRequestType.Add,
     returnUrl: returnUrl,
-    pcd
+    pcd,
   };
   const eqReq = encodeURIComponent(JSON.stringify(req));
   return `${passportOrigin}#/add?request=${eqReq}`;
 }
 
 export function constructPassportPcdProveAndAddRequestUrl<
-  T extends PCDPackage = PCDPackage
+  T extends PCDPackage = PCDPackage,
 >(
   passportOrigin: string,
   returnUrl: string,
   pcdType: string,
   args: ArgsOf<T>,
   options?: ProveOptions,
-  returnPCD?: boolean
+  returnPCD?: boolean,
 ) {
   const req: PCDProveAndAddRequest = {
     type: PCDRequestType.ProveAndAdd,
@@ -535,10 +577,8 @@ export function constructPassportPcdProveAndAddRequestUrl<
     pcdType,
     args,
     options,
-    returnPCD
+    returnPCD,
   };
   const eqReq = encodeURIComponent(JSON.stringify(req));
   return `${passportOrigin}#/add?request=${eqReq}`;
 }
-
-
