@@ -54,14 +54,14 @@ export default function AuthModal({
       <div className="mx-auto mt-4 w-full">
         <div className="mt-6 mb-8 px-6">
           {steps[state] === "email" && (
-            <ConnectPassportButton className="w-full" onSuccess={() => {}}>
+            <ConnectPassportButton className="w-full" callbackUrl={callbackUrl}>
               Signin with Passport
             </ConnectPassportButton>
           )}
         </div>
         <div className="relative flex w-full justify-center py-3">
           <LineGradient />
-          <div className="absolute -top-[2px] bg-gray-50 px-1.5 dark:bg-gray-800">
+          <div className="absolute -top-[2px] bg-gray-50 px-1.5 dark:bg-gray-900/80">
             <span className=" font-mono text-xs font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-400">
               {"OR"}
             </span>
