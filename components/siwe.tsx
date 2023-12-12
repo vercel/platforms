@@ -31,7 +31,7 @@ function Siwe({ redirect = true, callbackUrl = "/" }) {
       const signature = await signMessageAsync({
         message: message.prepareMessage(),
       });
-      const response = await signIn("credentials", {
+      const response = await signIn("ethereum", {
         message: JSON.stringify(message),
         redirect,
         signature,

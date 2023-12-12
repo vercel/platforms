@@ -215,6 +215,7 @@ function ConnectPassportButton({
     error,
     loading: fetchUserLoading,
   } = useFetchUser(ZUPASS_SERVER_URL, true, signedMessage?.uuid);
+  console.log({ user, error, fetchUserLoading });
 
   useEffect(() => {
     if (user && signatureProof && pcdStr) {
@@ -229,7 +230,9 @@ function ConnectPassportButton({
   const signInWithZupass = async () => {
     try {
       const response = await signIn("zupass", {
-        user,
+        userId: user?.uuid,
+        email: user?.email,
+        ...user,
         proof: signatureProof,
         _raw: pcdStr,
       });
@@ -262,7 +265,11 @@ function ConnectPassportButton({
           <path d="m9 9.5 2 2 4-4" />
         </svg>
         <span className="group-hover:text-fora-primary ml-2  mr-2 transition-all duration-100">
-          {user?.email ? user.email : props.children ? "Sign in With ZuPass" : props.children}
+          {user?.email
+            ? user.email
+            : props.children
+            ? "Sign in With ZuPass"
+            : props.children}
         </span>
       </span>
     </PrimaryButton>
