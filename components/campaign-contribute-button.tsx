@@ -44,7 +44,7 @@ export default function CampaignContributeButton({
       <Button
         onClick={handleContribution}
         disabled={!isValidAmount()}
-        className={`mt-2 ${isValidAmount() ? 'hover:bg-gray-700' : 'bg-gray-500'}`}
+        className={`${isValidAmount() ? 'hover:bg-gray-700' : 'bg-gray-500'}`}
       >
         Contribute
       </Button>
