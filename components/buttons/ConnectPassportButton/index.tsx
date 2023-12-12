@@ -29,7 +29,7 @@ import {
 } from "@/lib/pcd-light";
 import { ReactNode, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 // import { useZupass } from "zukit";
 
 /**
