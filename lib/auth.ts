@@ -83,7 +83,7 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
 
             if (result.success) {
               // Check if account already exists
-              const user = await findOrCreateEthUser(siwe.address);
+              const user = await findOrCreateUserFromEth(siwe.address);
               return user;
             }
             return null;
@@ -128,19 +128,18 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
             const userId = credentials?.userId;
             const userEmail = credentials?.email;
             const userName = credentials?.name;
-            if (!userId || !userEmail || !userName) {
+            if (!userId || !userEmail) {
               return null;
             }
-            console.info("Logging in from ZuPass Proof", {
-              id: userId,
-              email: userEmail,
-              name: userName,
-            });
-            return {
-              id: userId,
-              email: userEmail,
-              name: userName,
-            };
+
+            // TODO: verify the raw proof here.
+            const user = await findOrCreateUserFromZuPass(
+              userId,
+              userEmail,
+              userName,
+            );
+
+            return user;
           } catch (error) {
             return null;
           }
@@ -403,10 +402,12 @@ export function withPostAuth(action: any) {
   };
 }
 
-async function findOrCreateEthUser(ethAddress: string) {
+async function findOrCreateUserFromEth(ethAddress: string) {
   // Check if account already exists
   let account = await prisma.account.findFirst({
     where: {
+      type: "credentials",
+      provider: "ethereum",
       providerAccountId: ethAddress,
     },
     include: {
@@ -430,6 +431,62 @@ async function findOrCreateEthUser(ethAddress: string) {
           type: "ethereum", // Add this line
           provider: "ethereum", // Add this line
           providerAccountId: ethAddress, // Add this line
+          user: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+        include: {
+          user: true, // Include the user
+        },
+      });
+    } catch (error) {
+      console.error("error", error);
+      throw error;
+    }
+  }
+  if (!account?.user) {
+    return null;
+  }
+
+  return {
+    ...account.user,
+    id: account.user.id,
+  };
+}
+
+async function findOrCreateUserFromZuPass(
+  zupassUserId: string,
+  zupassEmail: string,
+  zupassName?: string,
+) {
+  // Check if account already exists
+  let account = await prisma.account.findFirst({
+    where: {
+      providerAccountId: zupassUserId,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  // If account does not exist, create a new account and user
+  if (!account) {
+    const user = await prisma.user.create({
+      data: {
+        email: zupassEmail,
+        name: zupassName,
+        // Add any other user data you need
+      },
+    });
+
+    try {
+      account = await prisma.account.create({
+        data: {
+          type: "credentials",
+          provider: "zupass",
+          providerAccountId: zupassUserId,
           user: {
             connect: {
               id: user.id,

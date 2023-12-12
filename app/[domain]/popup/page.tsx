@@ -1,6 +1,9 @@
 "use client";
-import { usePassportPopupSetup } from "./passport-popup";
+import { useZupassPopupSetup } from "@pcd/passport-interface";
+// import { usePassportPopupSetup } from "./passport-popup";
 
 export default function PassportPopup() {
-  return <div>{usePassportPopupSetup()}</div>;
+  
+
+  return <div>{useZupassPopupSetup()}</div>;
 }
