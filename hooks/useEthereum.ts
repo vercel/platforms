@@ -70,7 +70,10 @@ export default function useEthereum() {
 
       const campaignABI = CampaignContract.abi;
       const campaignInstance = new ethers.Contract(campaign.deployedAddress!, campaignABI, signer);
-      await campaignInstance.contribute({ value: ethers.parseEther(amount) });
+      const transactionResponse = await campaignInstance.contribute({ value: ethers.parseEther(amount) });
+      toast('Sending contribution...')
+      // Wait for the transaction to be mined
+      await transactionResponse.wait();
 
       toast.success(`Contributed ${amount} ETH`);
     } catch (error: any) {

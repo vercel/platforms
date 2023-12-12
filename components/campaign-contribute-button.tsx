@@ -10,11 +10,13 @@ import useEthereum from "@/hooks/useEthereum";
 interface CampaignContributeButtonProps {
   campaign: Campaign;
   subdomain: string;
+  onComplete: () => void;
 }
 
 export default function CampaignContributeButton({ 
   campaign, 
-  subdomain
+  subdomain,
+  onComplete
 }: CampaignContributeButtonProps) {
   const { contribute } = useEthereum();
   const [amount, setAmount] = useState('');
@@ -24,19 +26,20 @@ export default function CampaignContributeButton({
     return !isNaN(num) && num > 0;
   };
 
-  const handleContribution = () => {
+  const handleContribution = async () => {
     if (isValidAmount()) {
-      contribute(amount, campaign);
+      contribute(amount, campaign).then(onComplete);
     }
   };
 
   return (
-    <div>
+    <div className="flex items-center space-x-4 my-4">
       <Input
         type="text"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         placeholder="Amount (ETH)"
+        className="w-36"
       />
       <Button
         onClick={handleContribution}
