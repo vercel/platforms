@@ -29,7 +29,7 @@ import {
 } from "@/lib/pcd-light";
 import { ReactNode, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
-import router from "next/router";
+import { useRouter } from "next/router";
 // import { useZupass } from "zukit";
 
 /**
@@ -164,6 +164,7 @@ function ConnectPassportButton({
   const [pcdStr] = useZupassPopupMessages();
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -231,13 +232,6 @@ function ConnectPassportButton({
 
   const signInWithZupass = async () => {
     try {
-      console.log({
-        userId: user?.uuid,
-        email: user?.email,
-        ...user,
-        proof: signatureProof,
-        _raw: pcdStr,
-      });
       const response = await signIn("zupass", {
         userId: user?.uuid,
         email: user?.email,
@@ -246,11 +240,12 @@ function ConnectPassportButton({
         _raw: pcdStr,
         redirect: false,
       });
-      console.info("response: ", response);
       if (response?.ok && !response?.error) {
         router.replace(callbackUrl);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
