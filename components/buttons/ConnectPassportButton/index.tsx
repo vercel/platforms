@@ -10,6 +10,7 @@ import {
   openSignedZuzaluSignInPopup,
   useSemaphoreSignatureProof,
   useZupassPopupMessages,
+  ZupassUserJson,
 } from "@pcd/passport-interface";
 // import { ArgumentTypeName } from "@pcd/pcd-types";
 // import { SemaphoreIdentityPCDPackage } from "@pcd/semaphore-identity-pcd";
@@ -20,8 +21,14 @@ import {
 // } from "@pcd/zk-eddsa-event-ticket-pcd";
 // import { useEffect, useState } from "react";
 import { ZUPASS_SERVER_URL, ZUPASS_URL } from "./constants";
-import { constructPassportPcdGetRequestUrl } from "@/lib/pcd-light";
-import { useEffect, useState } from "react";
+import {
+  PCD,
+  PackedProof,
+  SemaphoreSignaturePCDClaim,
+  constructPassportPcdGetRequestUrl,
+} from "@/lib/pcd-light";
+import { ReactNode, useEffect, useState } from "react";
+import { signIn } from "next-auth/react";
 // import { useZupass } from "zukit";
 
 /**
@@ -121,7 +128,23 @@ import { useEffect, useState } from "react";
 //   openZupassPopup(popupUrl, proofUrl);
 // }
 
-function ConnectPassportButton(props: any) {
+type ConnectPassportButtonProps = {
+  onSuccess?: ({
+    user,
+    proof,
+    _raw,
+  }: {
+    user: ZupassUserJson;
+    proof: PCD<SemaphoreSignaturePCDClaim, PackedProof>;
+    _raw: string;
+  }) => void;
+  children?: ReactNode;
+};
+
+function ConnectPassportButton({
+  onSuccess,
+  ...props
+}: ConnectPassportButtonProps) {
   const openPopup = () => {
     openSignedZuzaluSignInPopup(
       ZUPASS_URL,
@@ -138,6 +161,7 @@ function ConnectPassportButton(props: any) {
 
   const [pcdStr] = useZupassPopupMessages();
   const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -186,15 +210,40 @@ function ConnectPassportButton(props: any) {
     }
   }, [signatureProofValid, signatureProof]);
 
-  const { user, error, loading } = useFetchUser(
-    ZUPASS_SERVER_URL,
-    true,
-    signedMessage?.uuid,
-  );
+  const {
+    user,
+    error,
+    loading: fetchUserLoading,
+  } = useFetchUser(ZUPASS_SERVER_URL, true, signedMessage?.uuid);
+  console.log({ user, error, fetchUserLoading });
+
+  useEffect(() => {
+    if (user && signatureProof && pcdStr) {
+      signInWithZupass();
+      if (onSuccess) {
+        onSuccess({ user, proof: signatureProof, _raw: pcdStr });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  const signInWithZupass = async () => {
+    try {
+      const response = await signIn("zupass", {
+        userId: user?.uuid,
+        email: user?.email,
+        ...user,
+        proof: signatureProof,
+        _raw: pcdStr,
+      });
+      console.info("response: ", response);
+    } catch (error) {}
+  };
 
   return (
     <PrimaryButton
       {...props}
+      loading={loading}
       onClick={() => {
         openPopup();
       }}
@@ -216,7 +265,11 @@ function ConnectPassportButton(props: any) {
           <path d="m9 9.5 2 2 4-4" />
         </svg>
         <span className="group-hover:text-fora-primary ml-2  mr-2 transition-all duration-100">
-          {user?.email ? user.email : props.children}
+          {user?.email
+            ? user.email
+            : props.children
+            ? "Sign in With ZuPass"
+            : props.children}
         </span>
       </span>
     </PrimaryButton>

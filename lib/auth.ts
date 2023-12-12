@@ -39,7 +39,9 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
       }),
       // sign in with ethereum
       CredentialsProvider({
+        id: "ethereum",
         name: "Ethereum",
+        type: "credentials",
         credentials: {
           message: {
             label: "Message",
@@ -52,80 +54,90 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
             placeholder: "0x0",
           },
         },
-        async authorize(credentials, req) {
+        async authorize(credentials) {
           try {
             if (!process.env.NEXTAUTH_URL) {
               throw new Error("NEXTAUTH_URL is not set");
             }
 
+            // Verify
             const siwe = new SiweMessage(
               JSON.parse(credentials?.message || "{}"),
             );
-            // const nextAuthUrl = new URL(process.env.NEXTAUTH_URL);
-
-            const nonce = await getCsrfToken();
-
-            // if (siwe.nonce !== nonce) {
-            //   return null;
-            // }
-
+            const nonce = await getCsrfToken({
+              req: {
+                headers: Object.fromEntries(req?.headers.entries() || []),
+                body: req?.body,
+              },
+            });
+            if (siwe.nonce !== nonce) {
+              return null;
+            }
             const result = await siwe.verify({
               signature: credentials?.signature || "",
               domain: hostname,
-              // nonce: nonce,
+              nonce: nonce,
             });
+
+            // Signin
+
             if (result.success) {
               // Check if account already exists
-              let account = await prisma.account.findFirst({
-                where: {
-                  providerAccountId: siwe.address,
-                },
-                include: {
-                  user: true,
-                },
-              });
-
-              // If account does not exist, create a new account and user
-              if (!account) {
-                const user = await prisma.user.create({
-                  data: {
-                    eth_address: siwe.address,
-                    // ens_name:
-                    /* user data */
-                  },
-                });
-
-                try {
-                  account = await prisma.account.create({
-                    data: {
-                      type: "ethereum", // Add this line
-                      provider: "ethereum", // Add this line
-                      providerAccountId: siwe.address, // Add this line
-                      user: {
-                        connect: {
-                          id: user.id,
-                        },
-                      },
-                    },
-                    include: {
-                      user: true, // Include the user
-                    },
-                  });
-                } catch (error) {
-                  console.log("error", error);
-                }
-              }
-              if (!account?.user) {
-                return null;
-              }
-
-              return {
-                ...account.user,
-                id: account.user.id,
-              };
+              const user = await findOrCreateEthUser(siwe.address);
+              return user;
             }
             return null;
           } catch (e) {
+            return null;
+          }
+        },
+      }),
+      CredentialsProvider({
+        id: "zupass",
+        name: "ZuPass",
+        type: "credentials",
+        credentials: {
+          userId: {
+            label: "Zupass User Id",
+            type: "text",
+            placeholder: "Enter your username",
+          },
+          email: {
+            label: "Zupass Email",
+            type: "text",
+            placeholder: "Enter your username",
+          },
+          name: {
+            label: "Zupass Name",
+            type: "text",
+            placeholder: "Enter your username",
+          },
+          proof: {
+            label: "Proof",
+            type: "text",
+            placeholder: "Enter your proof",
+          },
+          _raw: { label: "Raw", type: "text", placeholder: "Enter raw data" },
+        },
+        async authorize(credentials, req) {
+          try {
+            const userId = credentials?.userId;
+            const userEmail = credentials?.email;
+            const userName = credentials?.name;
+            if (!userId || !userEmail || !userName) {
+              return null;
+            }
+            console.info("Logging in from ZuPass Proof", {
+              id: userId,
+              email: userEmail,
+              name: userName,
+            });
+            return {
+              id: userId,
+              email: userEmail,
+              name: userName,
+            };
+          } catch (error) {
             return null;
           }
         },
@@ -384,5 +396,57 @@ export function withPostAuth(action: any) {
     }
 
     return action(formData, post, key);
+  };
+}
+
+async function findOrCreateEthUser(ethAddress: string) {
+  // Check if account already exists
+  let account = await prisma.account.findFirst({
+    where: {
+      providerAccountId: ethAddress,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  // If account does not exist, create a new account and user
+  if (!account) {
+    const user = await prisma.user.create({
+      data: {
+        eth_address: ethAddress,
+        // ens_name:
+        /* user data */
+      },
+    });
+
+    try {
+      account = await prisma.account.create({
+        data: {
+          type: "ethereum", // Add this line
+          provider: "ethereum", // Add this line
+          providerAccountId: ethAddress, // Add this line
+          user: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+        include: {
+          user: true, // Include the user
+        },
+      });
+    } catch (error) {
+      console.error("error", error);
+      throw error;
+    }
+  }
+  if (!account?.user) {
+    return null;
+  }
+
+  return {
+    ...account.user,
+    id: account.user.id,
   };
 }
