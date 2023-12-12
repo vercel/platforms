@@ -1,5 +1,5 @@
 "use client";
-import PrimaryButton from "@/components/primary-button";
+import PrimaryButton, { PrimaryButtonProps } from "@/components/primary-button";
 // import { EdDSATicketPCDPackage } from "@pcd/eddsa-ticket-pcd";
 import {
   SignInMessagePayload,
@@ -29,6 +29,7 @@ import {
 } from "@/lib/pcd-light";
 import { ReactNode, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 // import { useZupass } from "zukit";
 
 /**
@@ -138,11 +139,12 @@ type ConnectPassportButtonProps = {
     proof: PCD<SemaphoreSignaturePCDClaim, PackedProof>;
     _raw: string;
   }) => void;
-  children?: ReactNode;
-};
+  callbackUrl?: string;
+} & Omit<PrimaryButtonProps, "loading">;
 
 function ConnectPassportButton({
   onSuccess,
+  callbackUrl = "/",
   ...props
 }: ConnectPassportButtonProps) {
   const openPopup = () => {
@@ -162,6 +164,7 @@ function ConnectPassportButton({
   const [pcdStr] = useZupassPopupMessages();
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -229,13 +232,7 @@ function ConnectPassportButton({
 
   const signInWithZupass = async () => {
     try {
-      console.log({
-        userId: user?.uuid,
-        email: user?.email,
-        ...user,
-        proof: signatureProof,
-        _raw: pcdStr,
-      });
+      setLoading(true);
       const response = await signIn("zupass", {
         userId: user?.uuid,
         email: user?.email,
@@ -244,14 +241,21 @@ function ConnectPassportButton({
         _raw: pcdStr,
         redirect: false,
       });
-      console.info("response: ", response);
-    } catch (error) {}
+      if (response?.ok && !response?.error) {
+        router.replace(callbackUrl);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <PrimaryButton
       {...props}
-      loading={loading}
+      disabled={loading || fetchUserLoading}
+      loading={loading || fetchUserLoading}
       onClick={() => {
         openPopup();
       }}
@@ -276,8 +280,8 @@ function ConnectPassportButton({
           {user?.email
             ? user.email
             : props.children
-            ? "Sign in With ZuPass"
-            : props.children}
+            ? props.children
+            : "Signin with ZuPass"}
         </span>
       </span>
     </PrimaryButton>
