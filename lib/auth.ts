@@ -121,6 +121,10 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
         },
         async authorize(credentials, req) {
           try {
+            console.info(
+              "Logging in from ZuPass with credentials",
+              credentials,
+            );
             const userId = credentials?.userId;
             const userEmail = credentials?.email;
             const userName = credentials?.name;
