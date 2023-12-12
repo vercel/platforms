@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { OrganizationPageLinks } from "@prisma/client";
 import { ChevronRight } from "lucide-react";
 

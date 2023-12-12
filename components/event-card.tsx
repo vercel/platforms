@@ -1,6 +1,7 @@
 import BlurImage from "@/components/blur-image";
 import { placeholderBlurhash, random } from "@/lib/utils";
 import { Event, Organization } from "@prisma/client";
+import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { BarChart } from "lucide-react";
 import Link from "next/link";
 
@@ -11,7 +12,7 @@ export default function EventCard({
 }: {
   event: Event & { organization: Organization };
   href?: string;
-  showAnalytics?: boolean
+  showAnalytics?: boolean;
 }) {
   const url = `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/events/${event.path}`;
   return (
@@ -24,12 +25,12 @@ export default function EventCard({
       >
         <BlurImage
           alt={event.name ?? "Card thumbnail"}
-          width={500}
-          height={400}
-          className="h-44 object-cover"
+          className="object-cover"
           src={event.image ?? "/placeholder.png"}
           placeholder="blur"
           blurDataURL={event.imageBlurhash ?? placeholderBlurhash}
+          width={800}
+          height={400}
         />
         <div className="border-t border-gray-200 p-4 dark:border-gray-700">
           <h3 className="my-0 truncate text-xl font-bold tracking-wide text-gray-800 dark:text-gray-200">

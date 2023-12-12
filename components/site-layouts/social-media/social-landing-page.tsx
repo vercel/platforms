@@ -1,17 +1,17 @@
 import { Organization, OrganizationPageLinks } from "@prisma/client";
-import { AspectRatio } from "../ui/aspect-ratio";
+import { AspectRatio } from "../../ui/aspect-ratio";
 import Image from "next/image";
-import SiteNav from "../site-nav";
-import SocialLandingPageFeed from "./social-landing-page-feed";
-import SocialButtons from "./social-buttons";
-import { LineGradient } from "../line-gradient";
+import SiteNav from "../../site-nav";
+import SocialLandingPageFeed from "../social-media/social-landing-page-feed";
+import SocialButtons from "../social-media/social-buttons";
+import { LineGradient } from "../../line-gradient";
 // import { getUsersWithRoleInOrganization } from "@/lib/actions";
-import MutualAttendenceCitizens from "./mutual-attendance-citizens";
+import MutualAttendenceCitizens from "../social-media/mutual-attendance-citizens";
 // import PrimaryButton from "../primary-button";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import Link from "next/link";
-import OrganizationPageLinksGrid from "./organization-page-links-grid";
-import OrganizationPagePrimaryButton from "./organization-page-primary-button";
+import OrganizationPageLinksGrid from "../social-media/organization-page-links-grid";
+import OrganizationPagePrimaryButton from "../social-media/organization-page-primary-button";
 
 // Replace 'mySubdomain' with the actual subdomain of your organization
 
@@ -34,8 +34,8 @@ export default async function SocialLandingPage({
   return (
     <>
       <SiteNav params={{ domain: sitedata.subdomain as string }} />
-      <div className="relative w-full rounded-lg transition-all dark:border-gray-700 dark:hover:border-white">
-        <div className="flex flex-col items-center">
+      <div className="relative w-full  md:px-8">
+        <div className="flex flex-col items-center ">
           <div className="mx-auto w-full max-w-5xl overflow-hidden md:rounded-3xl">
             {sitedata.image ? (
               <AspectRatio ratio={3 / 1} className="w-full">
@@ -80,9 +80,9 @@ export default async function SocialLandingPage({
             <LineGradient />
           </div>
         </div>
+        <OrganizationPageLinksGrid pageLinks={sitedata.pageLinks} />
+        <SocialLandingPageFeed params={params} sitedata={sitedata} />
       </div>
-      <OrganizationPageLinksGrid pageLinks={sitedata.pageLinks} />
-      <SocialLandingPageFeed params={params} sitedata={sitedata} />
     </>
   );
 }

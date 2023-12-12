@@ -18,13 +18,14 @@ export default function PostCard({
     <div className="relative border-y border-gray-350 pb-10 transition-all hover:shadow-xl dark:border-gray-700 dark:hover:border-gray-100 md:rounded-lg md:border md:border-x md:shadow-md max-w-lg">
       <Link href={`/docs/${data.id}`} className="flex flex-col overflow-hidden">
         <div className="relative overflow-hidden">
-          <div className="">
-            <AspectRatio className="w-full max-w-xl" ratio={16 / 9}>
+          <div className="w-full">
+            <AspectRatio className="w-full" ratio={16 / 9}>
               <Image
                 alt={data.title ?? "Card thumbnail"}
                 src={data.image ?? "/placeholder.png"}
-                className="h-auto w-full"
+                className="h-auto w-full object-cover"
                 fill
+                quality={100}
                 // blurDataURL={data.imageBlurhash ?? placeholderBlurhash}
               />
             </AspectRatio>

@@ -1,7 +1,7 @@
 import { OrganizationPageLinks } from "@prisma/client";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { LineGradient } from "../line-gradient";
+import { LineGradient } from "../../line-gradient";
 import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 
@@ -10,7 +10,7 @@ export default async function OrganizationPageLinksGrid({
 }: {
   pageLinks?: OrganizationPageLinks[];
 }) {
-  if (!pageLinks) {
+  if (!pageLinks || pageLinks?.length === 0) {
     return null;
   }
 
@@ -19,7 +19,7 @@ export default async function OrganizationPageLinksGrid({
       <h4 className="mx-5 my-3 font-bold tracking-tight text-gray-750 dark:text-gray-400 md:my-5 md:text-lg">
         {"Resources"}
       </h4>
-      <div className="grid grid-cols-2 items-center gap-2 px-2.5 pb-5 md:pb-8 dark:border-gray-700 md:grid-cols-3 md:justify-center">
+      <div className="grid grid-cols-2 items-center gap-2 px-5 pb-5 md:pb-8 dark:border-gray-700 md:grid-cols-3 md:justify-center">
         {pageLinks.map((link) => (
           <Link
             key={link.href}
