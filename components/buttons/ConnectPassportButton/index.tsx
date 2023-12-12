@@ -27,7 +27,7 @@ import {
   SemaphoreSignaturePCDClaim,
   constructPassportPcdGetRequestUrl,
 } from "@/lib/pcd-light";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 // import { useZupass } from "zukit";
 
@@ -129,7 +129,7 @@ import { signIn } from "next-auth/react";
 // }
 
 type ConnectPassportButtonProps = {
-  onSuccess: ({
+  onSuccess?: ({
     user,
     proof,
     _raw,
@@ -138,7 +138,7 @@ type ConnectPassportButtonProps = {
     proof: PCD<SemaphoreSignaturePCDClaim, PackedProof>;
     _raw: string;
   }) => void;
-  children?: JSX.Element;
+  children?: ReactNode;
 };
 
 function ConnectPassportButton({
@@ -219,10 +219,10 @@ function ConnectPassportButton({
 
   useEffect(() => {
     if (user && signatureProof && pcdStr) {
+      signInWithZupass();
       if (onSuccess) {
         onSuccess({ user, proof: signatureProof, _raw: pcdStr });
       }
-      signInWithZupass();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -236,7 +236,7 @@ function ConnectPassportButton({
         proof: signatureProof,
         _raw: pcdStr,
       });
-      console.log("response: ", response);
+      console.info("response: ", response);
     } catch (error) {}
   };
 

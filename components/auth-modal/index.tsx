@@ -59,7 +59,6 @@ export default function AuthModal({
 
         {steps[state] === "email" && (
           <ConnectPassportButton onSuccess={() => {
-            
           }} />
         )}
         {/* {steps[state] === 'verify' && <div>verify</div>} */}

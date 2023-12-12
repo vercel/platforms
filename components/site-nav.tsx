@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode, Suspense } from "react";
-import { getSiteData } from "@/lib/fetchers";
+// import { ReactNode, Suspense } from "react";
+// import { getSiteData } from "@/lib/fetchers";
 import UserNav from "./user-nav";
-import dynamic from "next/dynamic";
-import ConnectPassportButton from "./buttons/ConnectPassportButton";
+// import dynamic from "next/dynamic";
+// import ConnectPassportButton from "./buttons/ConnectPassportButton";
 
 // const ConnectEthButton = dynamic(
 //   () => import("@/components/connect-eth-button"),
@@ -18,8 +18,8 @@ export default async function SiteNav({
 }: {
   params: { domain: string };
 }) {
-  const domain = params.domain.replace("%3A", ":");
-  const data = await getSiteData(domain);
+  // const domain = params.domain.replace("%3A", ":");
+  // const data = await getSiteData(domain);
 
   return (
     <>
@@ -41,7 +41,7 @@ export default async function SiteNav({
             />
           </Link>
           <div className="flex">
-            <ConnectPassportButton className='h-9'>Connect Passport</ConnectPassportButton>
+            {/* <ConnectPassportButton className='h-9'>Connect Passport</ConnectPassportButton> */}
           </div>
           <div className="absolute right-1 p-2.5">
             <UserNav />
