@@ -2,7 +2,7 @@
 import Siwe from "@/components/siwe";
 import EmailForm from "./email-form";
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import ConnectPassportButton from "../buttons/ConnectPassportButton";
 import { LineGradient } from "../line-gradient";
@@ -15,9 +15,9 @@ export default function AuthModal({
   callbackUrl?: string;
   redirect?: boolean;
 }) {
-  // const params = useParams();
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email");
+  const params = useParams();
+  // const searchParams = useSearchParams();
+  // const email = searchParams.get("email");
   const [state, setState] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -48,14 +48,14 @@ export default function AuthModal({
           {steps[state] === "verify" && "We sent you an email"}
         </h1>
         <p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-200">
-              Signin with the Passport issued to you by your city.
-            </p>
+          {`Signin with your Zero-Knowledge Passport.`}
+        </p>
       </div>
       <div className="mx-auto mt-4 w-full">
         <div className="my-8 px-6">
           {steps[state] === "email" && (
             <ConnectPassportButton className="w-full" onSuccess={() => {}}>
-              Signin with ZK Passport
+              Signin with Passport
             </ConnectPassportButton>
           )}
         </div>
