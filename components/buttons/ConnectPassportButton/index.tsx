@@ -232,6 +232,7 @@ function ConnectPassportButton({
 
   const signInWithZupass = async () => {
     try {
+      setLoading(true);
       const response = await signIn("zupass", {
         userId: user?.uuid,
         email: user?.email,
@@ -245,13 +246,15 @@ function ConnectPassportButton({
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <PrimaryButton
       {...props}
-      loading={loading}
+      loading={loading || fetchUserLoading}
       onClick={() => {
         openPopup();
       }}
