@@ -235,6 +235,7 @@ function ConnectPassportButton({
         ...user,
         proof: signatureProof,
         _raw: pcdStr,
+        redirect: false,
       });
       console.info("response: ", response);
     } catch (error) {}
