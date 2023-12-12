@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import ConnectPassportButton from "../buttons/ConnectPassportButton";
+import { LineGradient } from "../line-gradient";
 
 const steps = ["email", "verify", "siwe"];
 export default function AuthModal({
@@ -47,20 +48,38 @@ export default function AuthModal({
           {steps[state] === "verify" && "We sent you an email"}
         </h1>
         <p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-200">
-          {steps[state] === "email" && "Enter your email to continue."}
-          {steps[state] === "verify" &&
-            "Click the link in the email we sent you to continue."}
-        </p>
+              Signin with the Passport issued to you by your city.
+            </p>
       </div>
       <div className="mx-auto mt-4 w-full">
-        {steps[state] === "email" && (
-          <EmailForm onSubmit={onEmailSubmit} loading={loading} />
-        )}
+        <div className="my-8 px-6">
+          {steps[state] === "email" && (
+            <ConnectPassportButton className="w-full" onSuccess={() => {}}>
+              Signin with ZK Passport
+            </ConnectPassportButton>
+          )}
+        </div>
+        <div className="relative flex w-full justify-center py-3">
+          <LineGradient />
+          <div className="absolute -top-[2px] bg-gray-50 px-1.5 dark:bg-gray-800">
+            <span className=" font-mono text-xs font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-400">
+              {"OR"}
+            </span>
+          </div>
+        </div>
+        <div>
+          <div className="mx-6 mt-4">
+            <p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-200">
+              {steps[state] === "email" && "Enter your email to continue."}
+              {steps[state] === "verify" &&
+                "Click the link in the email we sent you to continue."}
+            </p>
+          </div>
+          {steps[state] === "email" && (
+            <EmailForm onSubmit={onEmailSubmit} loading={loading} />
+          )}
+        </div>
 
-        {steps[state] === "email" && (
-          <ConnectPassportButton onSuccess={() => {
-          }} />
-        )}
         {/* {steps[state] === 'verify' && <div>verify</div>} */}
         {/* {steps[state] === "email" && (
           <div className="mx-6">

@@ -1,5 +1,5 @@
 "use client";
-import PrimaryButton from "@/components/primary-button";
+import PrimaryButton, { PrimaryButtonProps } from "@/components/primary-button";
 // import { EdDSATicketPCDPackage } from "@pcd/eddsa-ticket-pcd";
 import {
   SignInMessagePayload,
@@ -138,8 +138,7 @@ type ConnectPassportButtonProps = {
     proof: PCD<SemaphoreSignaturePCDClaim, PackedProof>;
     _raw: string;
   }) => void;
-  children?: ReactNode;
-};
+} & Omit<PrimaryButtonProps, "loading">;
 
 function ConnectPassportButton({
   onSuccess,
@@ -276,8 +275,8 @@ function ConnectPassportButton({
           {user?.email
             ? user.email
             : props.children
-            ? "Sign in With ZuPass"
-            : props.children}
+            ? props.children
+            : "Signin with ZuPass"}
         </span>
       </span>
     </PrimaryButton>
