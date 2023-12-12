@@ -229,6 +229,13 @@ function ConnectPassportButton({
 
   const signInWithZupass = async () => {
     try {
+      console.log({
+        userId: user?.uuid,
+        email: user?.email,
+        ...user,
+        proof: signatureProof,
+        _raw: pcdStr,
+      });
       const response = await signIn("zupass", {
         userId: user?.uuid,
         email: user?.email,
