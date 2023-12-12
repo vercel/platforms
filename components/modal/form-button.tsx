@@ -1,4 +1,4 @@
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import PrimaryButton from "../primary-button";
 import { cn } from "@/lib/utils";
 
