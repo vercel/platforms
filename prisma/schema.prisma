@@ -34,6 +34,8 @@ model User {
   bookings             Booking[]
   Place                Place[]
   CampaignContribution CampaignContribution[]
+  // Invite               Invite[]
+  Invite               Invite[]
 }
 
 model Account {
@@ -122,6 +124,8 @@ model Organization {
   places           Place[]
   campaigns        Campaign[]
   pageLinks        OrganizationPageLinks[]
+  // Invite           Invite[]
+  Invite           Invite[]
 }
 
 model OrganizationPageLinks {
@@ -188,6 +192,7 @@ model Role {
   ticketTier       TicketTier[]
   formId           String?
   form             Form?              @relation(fields: [formId], references: [id])
+  invites          Invite[]
 }
 
 model RolePermission {
@@ -458,4 +463,26 @@ model CampaignContribution {
   user             User?     @relation(fields: [senderEthAddress], references: [eth_address])
   Campaign         Campaign? @relation(fields: [campaignId], references: [id])
   campaignId       String?
+}
+
+model Invite {
+  id         String       @id @default(cuid())
+  email      String
+  roleId     String
+  role       Role         @relation(fields: [roleId], references: [id])
+  status     InviteStatus @default(PENDING)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  acceptedAt DateTime?
+
+  inviterId      String
+  inviter        User         @relation(fields: [inviterId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
