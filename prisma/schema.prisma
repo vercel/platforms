@@ -34,8 +34,7 @@ model User {
   bookings             Booking[]
   Place                Place[]
   CampaignContribution CampaignContribution[]
-  // Invite               Invite[]
-  Invite               Invite[]
+  invites               Invite[]
 }
 
 model Account {
@@ -124,8 +123,7 @@ model Organization {
   places           Place[]
   campaigns        Campaign[]
   pageLinks        OrganizationPageLinks[]
-  // Invite           Invite[]
-  Invite           Invite[]
+  invites           Invite[]
 }
 
 model OrganizationPageLinks {
