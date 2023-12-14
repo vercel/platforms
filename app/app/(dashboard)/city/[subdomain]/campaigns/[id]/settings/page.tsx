@@ -1,8 +1,8 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import notFound from "../../not-found";
-import CampaignDashboard from "@/components/campaign-dashboard";
+import notFound from "../../../not-found";
+import CampaignEditor from "@/components/campaign-editor";
 
 
 export default async function CampaignPage({
@@ -29,7 +29,7 @@ export default async function CampaignPage({
     return notFound();
   }
 
-  return <CampaignDashboard
+  return <CampaignEditor
     campaignId={params.id}
     subdomain={params.subdomain}
     isPublic={false}

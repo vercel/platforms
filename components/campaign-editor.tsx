@@ -1,0 +1,239 @@
+"use client";
+
+import useEthereum from "@/hooks/useEthereum";
+import { Campaign } from "@prisma/client";
+import { useState, useEffect } from 'react';
+import { ethers } from "ethers";
+import { getCampaign, updateCampaign } from "@/lib/actions";
+import LoadingDots from "@/components/icons/loading-dots";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/form-builder/date-picker";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import * as ToggleGroup from '@radix-ui/react-toggle-group';
+import { useRouter } from "next/navigation";
+
+
+interface EditedFields {
+  name?: string;
+  thresholdETH?: string;
+  content?: string;
+}
+
+interface Payload {
+  id: string;
+  name: string;
+  thresholdWei: bigint;
+  content: string | null;
+}
+
+export default function CampaignEditor(
+  {campaignId, subdomain, isPublic}:
+  {campaignId: string, subdomain: string, isPublic: boolean}
+) {
+  const { getContributionTotal, getContractBalance } = useEthereum();
+  const [totalContributions, setTotalContributions] = useState(0);
+  const [contractBalance, setContractBalance] = useState(BigInt(0));
+  const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
+  const [refreshFlag, setRefreshFlag] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [editedCampaign, setEditedCampaign] = useState<EditedFields>(
+    { name: undefined, thresholdETH: undefined, content: undefined });
+  const [requireApproval, setRequireApproval] = useState(false);
+  const [deadline, setDeadline] = useState<Date | undefined>(undefined);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    getCampaign(campaignId).then(result => {
+      if (result) {
+        setCampaign(result);
+      }
+    }).then(() => setLoading(false));
+  }, [refreshFlag, campaignId]);
+
+  useEffect(() => {
+    async function fetchTotalContributions() {
+      if (campaign?.deployed) {
+        const total = await getContributionTotal(campaign.deployedAddress!);
+        setTotalContributions(total);
+      }
+    }
+    fetchTotalContributions();
+
+    async function fetchContractBalance() {
+      if (campaign?.deployed) {
+        const balance = await getContractBalance(campaign.deployedAddress!);
+        setContractBalance(balance);
+      }
+    }
+    fetchContractBalance();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaign]);
+
+  useEffect(() => {
+    if (campaign) {
+      setEditedCampaign({
+        name: campaign.name,
+        thresholdETH: ethers.formatEther(campaign.thresholdWei),
+        content: campaign.content ?? undefined
+      });
+    }
+  }, [campaign]);
+
+  const handleFieldChange = (field: string, value: string) => {
+    setEditedCampaign(prev => ({ ...prev, [field]: value }));
+  };
+
+  const submitChanges = async () => {
+    // check in caes somehow `campaign` hasn't loaded yet
+    if (campaign) {
+      let payload: Payload = {...campaign};
+      if (editedCampaign.name) payload.name = editedCampaign.name;
+      if (editedCampaign.thresholdETH) payload.thresholdWei = ethers.parseEther(editedCampaign.thresholdETH);
+      if (editedCampaign.content) payload.content = editedCampaign.content ?? null;
+
+      try {
+        await updateCampaign(
+          payload,
+          { params: { subdomain } },
+          null,
+        );
+        toast.success(`Campaign updated`);
+        setCampaign({...campaign, ...payload});
+      } catch (error: any) {
+        console.error('Error updating campaign', error);
+        toast.error(error.message);
+      }
+    }
+  };
+
+  const saveChanges = () => {
+    submitChanges()
+    .then(() => router.push(`/city/${subdomain}/campaigns/${campaignId}`))
+  };
+
+  const handleSwitchChange = () => {
+    setRequireApproval(!requireApproval);
+  };
+
+
+  if (loading) {
+    return <LoadingDots color="#808080" />
+  }
+  else if (!campaign || !campaign.organizationId) {
+    return <div>Campaign not found</div>
+  }
+
+  return (
+    <div>
+      {loading ? (
+        <LoadingDots color="#808080" />
+      ) : !campaign || !campaign.organizationId ? (
+        <div>Campaign not found</div>
+      ) : (
+        <div>
+          <div>
+            <h1 className="text-2xl">
+              Campaign Settings
+            </h1>
+            <div className="space-y-4 my-4">
+              <Input 
+                type="text" 
+                value={editedCampaign.name}
+                placeholder="Campaign name"
+                onChange={(e) => handleFieldChange('name', e.target.value)} 
+                disabled={isPublic || campaign.deployed}
+              />
+              <Input 
+                type="text" 
+                value={editedCampaign.thresholdETH}
+                placeholder="Fundraising goal"
+                onChange={(e) => handleFieldChange('thresholdETH', e.target.value)} 
+                disabled={isPublic || campaign.deployed}
+              />
+              <Textarea 
+                value={editedCampaign.content} 
+                onChange={(e) => handleFieldChange('content', e.target.value)} 
+                disabled={isPublic}
+              />
+              <div className="flex space-x-4">
+                  <div>Require approval for contributors?</div>
+                  <Switch 
+                    checked={requireApproval} 
+                    onCheckedChange={handleSwitchChange} 
+                  />
+              </div>
+              <div className="flex space-x-4 items-center">
+                <div>
+                  Deadline
+                </div>
+                <DatePicker
+                  date={deadline}
+                  onSelect={(date) => {
+                    setDeadline(date);
+                  }}
+                />
+              </div>
+              <div className="flex space-x-4 items-center">
+                <div>Currency</div>
+                <ToggleGroup.Root
+                  className="inline-flex bg-gray-200 rounded-full shadow-md"
+                  type="single"
+                  defaultValue="eth"
+                >
+                  <ToggleGroup.Item
+                    className="bg-gray-800 w-20 p-2 text-gray-100 shadow hover:bg-gray-800/90 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300/90 data-[state=on]:!bg-gray-600/90 rounded-l-full"
+                    value="eth"
+                  >
+                    ETH
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    className="bg-gray-800 w-20 p-2 text-gray-100 shadow hover:bg-gray-800/90 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300/90 data-[state=on]:!bg-gray-600/90"
+                    value="usdc"
+                  >
+                    USDC
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    className="bg-gray-800 w-20 p-2 text-gray-100 shadow hover:bg-gray-800/90 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300/90 data-[state=on]:!bg-gray-600/90 rounded-r-full"
+                    value="usdt"
+                  >
+                    USDT
+                  </ToggleGroup.Item>
+                </ToggleGroup.Root>
+              </div>
+            </div>
+            <div className="my-2">
+              {campaign.deployed
+              ? `Launched ${campaign.timeDeployed!.toLocaleString(undefined, {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: undefined,
+                timeZoneName: undefined
+              })}`
+              : "Not launched yet"}
+            </div>
+            {campaign.deployed && (
+              <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
+            )}
+          </div>
+
+          {!isPublic && (
+            <Button
+              className="float-right"
+              onClick={saveChanges}
+            >
+              {'Save Changes'}
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
