@@ -1,9 +1,5 @@
 "use client";
 
-import LaunchCampaignButton from "@/components/launch-campaign-button";
-import CampaignContributeButton from "@/components/campaign-contribute-button";
-import CampaignWithdrawButton from "@/components/campaign-withdraw-button";
-import CampaignForm from "@/components/edit-campaign-form";
 import useEthereum from "@/hooks/useEthereum";
 import { Campaign } from "@prisma/client";
 import { useState, useEffect } from 'react';
@@ -17,6 +13,7 @@ import { DatePicker } from "@/components/form-builder/date-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
+import { useRouter } from "next/navigation";
 
 
 interface ModifiedFields {
@@ -32,7 +29,7 @@ interface Payload {
   content?: string;
 }
 
-export default function CampaignPageContent(
+export default function CampaignEditor(
   {campaignId, subdomain, isPublic}:
   {campaignId: string, subdomain: string, isPublic: boolean}
 ) {
@@ -42,11 +39,12 @@ export default function CampaignPageContent(
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
   const [editedCampaign, setEditedCampaign] = useState({ name: '', thresholdETH: '', content: '' });
   const [modified, setModified] = useState<ModifiedFields>({ name: false, threshold: false, content: false });
   const [requireApproval, setRequireApproval] = useState(false);
   const [deadline, setDeadline] = useState(undefined);
+
+  const router = useRouter();
 
   const triggerRefresh = () => {
     setRefreshFlag(prev => !prev);
@@ -117,11 +115,9 @@ export default function CampaignPageContent(
     }
   };
 
-  const handleEditToggle = () => {
-    if (editMode) {
-      submitChanges();
-    }
-    setEditMode(!editMode);
+  const saveChanges = () => {
+    submitChanges()
+    .then(() => router.push(`/city/${subdomain}/campaigns/${campaignId}`))
   };
 
   const handleSwitchChange = () => {
@@ -145,37 +141,29 @@ export default function CampaignPageContent(
       ) : (
         <div>
           <div>
+            <h1 className="text-2xl">
+              Campaign Settings
+            </h1>
             <div className="space-y-4 my-4">
-              {editMode ? (
-                <Input 
-                  type="text" 
-                  value={editedCampaign.name} 
-                  onChange={(e) => handleFieldChange('name', e.target.value)} 
-                  disabled={isPublic || campaign.deployed}
-                  className="text-2xl font-bold my-6"
-                />
-              ) : (
-                <h1 className="text-2xl font-bold my-6">{campaign.name}</h1>
-              )}
-              {editMode ? (
-                <Input 
-                  type="text" 
-                  value={editedCampaign.thresholdETH} 
-                  onChange={(e) => handleFieldChange('thresholdETH', e.target.value)} 
-                  disabled={isPublic || campaign.deployed}
-                />
-              ) : (
-                <p className="text-xl">{`Goal: ${ethers.formatEther(campaign.thresholdWei)} ETH`}</p>
-              )}
-              {editMode ? (
-                <Textarea 
-                  value={editedCampaign.content} 
-                  onChange={(e) => handleFieldChange('content', e.target.value)} 
-                  disabled={isPublic}
-                />
-              ) : (
-                <p>{campaign.content}</p>
-              )}
+              <Input 
+                type="text" 
+                value={editedCampaign.name}
+                placeholder="Campaign name"
+                onChange={(e) => handleFieldChange('name', e.target.value)} 
+                disabled={isPublic || campaign.deployed}
+              />
+              <Input 
+                type="text" 
+                value={editedCampaign.thresholdETH}
+                placeholder="Fundraising goal"
+                onChange={(e) => handleFieldChange('thresholdETH', e.target.value)} 
+                disabled={isPublic || campaign.deployed}
+              />
+              <Textarea 
+                value={editedCampaign.content} 
+                onChange={(e) => handleFieldChange('content', e.target.value)} 
+                disabled={isPublic}
+              />
               <div className="flex space-x-4">
                   <div>Require approval for contributors?</div>
                   <Switch 
@@ -235,119 +223,21 @@ export default function CampaignPageContent(
               })}`
               : "Not launched yet"}
             </div>
-            <p>{`Last updated ${campaign.updatedAt.toLocaleString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})}`}</p>
-
             {campaign.deployed && (
               <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
             )}
           </div>
 
           {!isPublic && (
-            <Button onClick={handleEditToggle}>
-              {editMode ? 'Save Changes' : 'Edit Campaign'}
+            <Button
+              className="float-right"
+              onClick={saveChanges}
+            >
+              {'Save Changes'}
             </Button>
           )}
-          <div className="mt-4">
-            {!campaign.deployed &&
-              <LaunchCampaignButton
-                campaign={campaign}
-                subdomain={subdomain}
-                onComplete={triggerRefresh}
-              />
-            }
-            {campaign.deployed && (
-              <CampaignContributeButton
-                campaign={campaign}
-                subdomain={subdomain}
-                onComplete={triggerRefresh}
-              />
-            )}
-            {!isPublic && campaign.deployed && (
-              <CampaignWithdrawButton
-                campaign={campaign}
-                subdomain={subdomain}
-                onComplete={triggerRefresh}
-              />
-            )}
-          </div>
         </div>
       )}
     </div>
   );
 }
-  // return (
-  //   <div>
-  //     <div>
-  //       <h1 className="text-2xl font-bold my-6">
-  //         {campaign.name}
-  //       </h1>
-  //       <p className="text-xl">
-  //         {`Goal: ${ethers.formatEther(campaign.thresholdWei)} ETH`}
-  //       </p>
-  //       {totalContributions > 0 &&
-  //         <p>
-  //           {`${ethers.formatEther(totalContributions)} ETH raised`}
-  //         </p>
-  //       }
-  //       {campaign.content &&
-  //         <p>
-  //           {campaign.content}
-  //         </p>
-  //       }
-  //       <p>
-  //         {campaign.deployed
-  //         ? `Launched ${campaign.timeDeployed!.toLocaleString(undefined, {
-  //           year: 'numeric',
-  //           month: '2-digit',
-  //           day: '2-digit',
-  //           hour: '2-digit',
-  //           minute: '2-digit',
-  //           second: undefined,
-  //           timeZoneName: undefined
-  //         })}`
-  //         : "Not deployed"}
-  //       </p>
-  //       <p>
-  //         {`Last updated ${campaign.updatedAt.toLocaleString(undefined, {
-  //           year: 'numeric',
-  //           month: '2-digit',
-  //           day: '2-digit',
-  //           hour: '2-digit',
-  //           minute: '2-digit',
-  //           second: undefined,
-  //           timeZoneName: undefined
-  //         })}`}
-  //       </p>
-  //       {campaign.deployed &&
-  //         <p>
-  //           {`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}
-  //         </p>
-  //       }
-  //     </div>
-  //     {!isPublic &&
-  //       <CampaignForm id={campaign.id} subdomain={subdomain} />
-  //     }
-  //     {!campaign.deployed &&
-  //       <LaunchCampaignButton
-  //         campaign={campaign}
-  //         subdomain={subdomain}
-  //         onComplete={triggerRefresh}
-  //       />
-  //     }
-  //     {campaign.deployed && (
-  //       <CampaignContributeButton
-  //         campaign={campaign}
-  //         subdomain={subdomain}
-  //         onComplete={triggerRefresh}
-  //       />
-  //     )}
-  //     {!isPublic && campaign.deployed && (
-  //       <CampaignWithdrawButton
-  //         campaign={campaign}
-  //         subdomain={subdomain}
-  //         onComplete={triggerRefresh}
-  //       />
-  //     )}
-  //   </div>
-  // );
-// }
