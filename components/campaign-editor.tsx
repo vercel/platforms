@@ -16,17 +16,17 @@ import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { useRouter } from "next/navigation";
 
 
-interface ModifiedFields {
-  name: boolean;
-  threshold: boolean;
-  content: boolean;
+interface EditedFields {
+  name?: string;
+  thresholdETH?: string;
+  content?: string;
 }
 
 interface Payload {
   id: string;
-  name?: string;
-  thresholdWei?: bigint;
-  content?: string;
+  name: string;
+  thresholdWei: bigint;
+  content: string | null;
 }
 
 export default function CampaignEditor(
@@ -39,16 +39,12 @@ export default function CampaignEditor(
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [editedCampaign, setEditedCampaign] = useState({ name: '', thresholdETH: '', content: '' });
-  const [modified, setModified] = useState<ModifiedFields>({ name: false, threshold: false, content: false });
+  const [editedCampaign, setEditedCampaign] = useState<EditedFields>(
+    { name: undefined, thresholdETH: undefined, content: undefined });
   const [requireApproval, setRequireApproval] = useState(false);
-  const [deadline, setDeadline] = useState(undefined);
+  const [deadline, setDeadline] = useState<Date | undefined>(undefined);
 
   const router = useRouter();
-
-  const triggerRefresh = () => {
-    setRefreshFlag(prev => !prev);
-  };
 
   useEffect(() => {
     getCampaign(campaignId).then(result => {
@@ -83,35 +79,35 @@ export default function CampaignEditor(
       setEditedCampaign({
         name: campaign.name,
         thresholdETH: ethers.formatEther(campaign.thresholdWei),
-        content: campaign.content
+        content: campaign.content ?? undefined
       });
     }
   }, [campaign]);
 
-  const handleFieldChange = (field, value) => {
+  const handleFieldChange = (field: string, value: string) => {
     setEditedCampaign(prev => ({ ...prev, [field]: value }));
-    setModified({ ...modified, [field]: true });
   };
 
   const submitChanges = async () => {
-    let payload: Payload = { id: campaignId };
-    if (modified.name) payload.name = editedCampaign.name;
-    if (modified.threshold) payload.thresholdWei = ethers.parseEther(editedCampaign.thresholdETH);
-    if (modified.content) payload.content = editedCampaign.content;
+    // check in caes somehow `campaign` hasn't loaded yet
+    if (campaign) {
+      let payload: Payload = {...campaign};
+      if (editedCampaign.name) payload.name = editedCampaign.name;
+      if (editedCampaign.thresholdETH) payload.thresholdWei = ethers.parseEther(editedCampaign.thresholdETH);
+      if (editedCampaign.content) payload.content = editedCampaign.content ?? null;
 
-    try {
-      const response = await updateCampaign(
-        payload,
-        { params: { subdomain } },
-        null,
-      );
-      console.log(response);
-      toast.success(`Campaign updated`);
-      // Update campaign state with new values
-      setCampaign({...campaign, ...payload});
-    } catch (error: any) {
-      console.error('Error updating campaign', error);
-      toast.error(error.message);
+      try {
+        await updateCampaign(
+          payload,
+          { params: { subdomain } },
+          null,
+        );
+        toast.success(`Campaign updated`);
+        setCampaign({...campaign, ...payload});
+      } catch (error: any) {
+        console.error('Error updating campaign', error);
+        toast.error(error.message);
+      }
     }
   };
 

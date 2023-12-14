@@ -113,12 +113,6 @@ export default function CampaignDashboard(
               <div>
                 Deadline
               </div>
-              <DatePicker
-                date={deadline}
-                onSelect={(date) => {
-                  setDeadline(date);
-                }}
-              />
             </div>
             <div className="my-2">
               {campaign.deployed
@@ -133,7 +127,6 @@ export default function CampaignDashboard(
               })}`
               : "Not launched yet"}
             </div>
-            <p>{`Last updated ${campaign.updatedAt.toLocaleString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})}`}</p>
 
             {campaign.deployed && (
               <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
