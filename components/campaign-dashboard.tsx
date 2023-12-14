@@ -33,7 +33,7 @@ export default function CampaignDashboard(
   {campaignId: string, subdomain: string, isPublic: boolean}
 ) {
   const { getContributionTotal, getContractBalance } = useEthereum();
-  const [totalContributions, setTotalContributions] = useState(BigInt(500000000000000000));
+  const [totalContributions, setTotalContributions] = useState(BigInt(0));
   const [contractBalance, setContractBalance] = useState(BigInt(0));
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
@@ -41,6 +41,8 @@ export default function CampaignDashboard(
   const [deadline, setDeadline] = useState(undefined);
 
   const router = useRouter();
+
+  const numBackers = 12;  // TEMP
 
   const triggerRefresh = () => {
     setRefreshFlag(prev => !prev);
@@ -99,14 +101,22 @@ export default function CampaignDashboard(
         <div>
           <div className="space-y-4 my-4">
             <h1 className="text-2xl font-bold my-6">{campaign.name}</h1>
-            <div className="bg-gray-800 p-6 flex space-x-4 rounded-md">
+            <div className="mb-6 flex flex-col space-y-4">
               <Progress
                 value={getProgress(totalContributions, campaign.thresholdWei)}
-                className="h-6 w-[60%]"
+                className="h-6 w-[80%]"
               />
-              <p className="text-md">
-                {`${ethers.formatEther(totalContributions)} of ${ethers.formatEther(campaign.thresholdWei)} ETH`}
-              </p>
+              <div className="flex space-x-8">
+                <p className="text-sm">
+                  {`${ethers.formatEther(totalContributions)} of ${ethers.formatEther(campaign.thresholdWei)} ETH funded`}
+                </p>
+                <p className="text-sm">
+                  {`${numBackers} backers`}
+                </p>
+                <p className="text-sm">
+                  {`${ethers.formatEther(contractBalance)} ETH available`}
+                </p>
+              </div>
             </div>
             <p>{campaign.content}</p>
             <div className="flex space-x-4 items-center">
