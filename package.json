@@ -38,6 +38,7 @@
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-toggle-group": "^1.0.4",
     "@radix-ui/themes": "^2.0.0",
     "@react-email/components": "^0.0.12",
     "@react-email/render": "^0.0.10",
