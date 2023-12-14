@@ -24,9 +24,9 @@ interface EditedFields {
 
 interface Payload {
   id: string;
-  name: string;
-  thresholdWei: bigint;
-  content: string | null;
+  name?: string;
+  thresholdWei?: bigint;
+  content?: string | null;
 }
 
 export default function CampaignEditor(
@@ -89,9 +89,9 @@ export default function CampaignEditor(
   };
 
   const submitChanges = async () => {
-    // check in caes somehow `campaign` hasn't loaded yet
+    // check in case somehow `campaign` hasn't loaded yet
     if (campaign) {
-      let payload: Payload = {...campaign};
+      let payload: Payload = { id: campaignId };
       if (editedCampaign.name) payload.name = editedCampaign.name;
       if (editedCampaign.thresholdETH) payload.thresholdWei = ethers.parseEther(editedCampaign.thresholdETH);
       if (editedCampaign.content) payload.content = editedCampaign.content ?? null;
