@@ -97,53 +97,28 @@ export default function CampaignDashboard(
         <div>Campaign not found</div>
       ) : (
         <div>
-          <div>
-            <div className="space-y-4 my-4">
-              <h1 className="text-2xl font-bold my-6">{campaign.name}</h1>
+          <div className="space-y-4 my-4">
+            <h1 className="text-2xl font-bold my-6">{campaign.name}</h1>
+            <div className="bg-gray-800 p-6 flex space-x-4 rounded-md">
               <Progress
                 value={getProgress(totalContributions, campaign.thresholdWei)}
-                className="h-8"
+                className="h-6 w-[60%]"
               />
-              <p className="text-xl">{`Goal: ${ethers.formatEther(campaign.thresholdWei)} ETH`}</p>
-              <p>{campaign.content}</p>
-              <div className="flex space-x-4 items-center">
-                <div>
-                  Deadline
-                </div>
-                <DatePicker
-                  date={deadline}
-                  onSelect={(date) => {
-                    setDeadline(date);
-                  }}
-                />
+              <p className="text-md">
+                {`${ethers.formatEther(totalContributions)} of ${ethers.formatEther(campaign.thresholdWei)} ETH`}
+              </p>
+            </div>
+            <p>{campaign.content}</p>
+            <div className="flex space-x-4 items-center">
+              <div>
+                Deadline
               </div>
-              <div className="flex space-x-4 items-center">
-                <div>Currency</div>
-                <ToggleGroup.Root
-                  className="inline-flex bg-gray-200 rounded-full shadow-md"
-                  type="single"
-                  defaultValue="eth"
-                >
-                  <ToggleGroup.Item
-                    className="bg-gray-800 w-20 p-2 text-gray-100 shadow hover:bg-gray-800/90 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300/90 data-[state=on]:!bg-gray-600/90 rounded-l-full"
-                    value="eth"
-                  >
-                    ETH
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item
-                    className="bg-gray-800 w-20 p-2 text-gray-100 shadow hover:bg-gray-800/90 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300/90 data-[state=on]:!bg-gray-600/90"
-                    value="usdc"
-                  >
-                    USDC
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item
-                    className="bg-gray-800 w-20 p-2 text-gray-100 shadow hover:bg-gray-800/90 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300/90 data-[state=on]:!bg-gray-600/90 rounded-r-full"
-                    value="usdt"
-                  >
-                    USDT
-                  </ToggleGroup.Item>
-                </ToggleGroup.Root>
-              </div>
+              <DatePicker
+                date={deadline}
+                onSelect={(date) => {
+                  setDeadline(date);
+                }}
+              />
             </div>
             <div className="my-2">
               {campaign.deployed
