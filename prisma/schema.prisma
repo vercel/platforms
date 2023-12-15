@@ -34,7 +34,7 @@ model User {
   bookings             Booking[]
   Place                Place[]
   CampaignContribution CampaignContribution[]
-  invites               Invite[]
+  invites              Invite[]
 }
 
 model Account {
@@ -123,7 +123,7 @@ model Organization {
   places           Place[]
   campaigns        Campaign[]
   pageLinks        OrganizationPageLinks[]
-  invites           Invite[]
+  invites          Invite[]
 }
 
 model OrganizationPageLinks {
@@ -265,6 +265,19 @@ model TicketTier {
   @@index([eventId])
 }
 
+model CampaignTier {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  quantity    Int?
+  formId      String?
+  form        Form?    @relation(fields: [formId], references: [id])
+  price       Int?
+  currency    String?
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id])
+}
+
 model Form {
   id                String         @id @default(cuid())
   name              String         @default("My Form")
@@ -281,6 +294,8 @@ model Form {
   formResponse      FormResponse[]
   role              Role[]
   ticketTier        TicketTier[]
+  campaignTier      CampaignTier[]
+  Campaign          Campaign[]
 }
 
 model Question {
@@ -451,6 +466,11 @@ model Campaign {
   contributions     CampaignContribution[]
   organization      Organization           @relation(fields: [organizationId], references: [id], onUpdate: Cascade)
   organizationId    String
+  deadline          DateTime
+  requiresAccept    Boolean
+  form              Form?                  @relation(fields: [formId], references: [id])
+  campaignTier      CampaignTier[]
+  formId            String?
 
   @@unique([name, organizationId])
 }
