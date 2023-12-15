@@ -23,7 +23,7 @@ export default function CreateCampaignButton() {
             { params: { subdomain } },
             null,
           );
-          router.push(`/city/${subdomain}/campaigns/${campaign.id}`);
+          router.push(`/city/${subdomain}/campaigns/${campaign.id}/settings`);
           router.refresh();
         })
       }
