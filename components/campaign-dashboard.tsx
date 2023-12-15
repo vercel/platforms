@@ -18,7 +18,7 @@ export default function CampaignDashboard(
   {campaignId: string, subdomain: string, isPublic: boolean}
 ) {
   const { getContributionTotal, getContractBalance } = useEthereum();
-  const [totalContributions, setTotalContributions] = useState(BigInt(500000000000000000));
+  const [totalContributions, setTotalContributions] = useState(BigInt(0));
   const [contractBalance, setContractBalance] = useState(BigInt(0));
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
@@ -26,6 +26,8 @@ export default function CampaignDashboard(
   const [deadline, setDeadline] = useState(undefined);
 
   const router = useRouter();
+
+  const numBackers = 12;  // TEMP
 
   const triggerRefresh = () => {
     setRefreshFlag(prev => !prev);
@@ -84,16 +86,6 @@ export default function CampaignDashboard(
         <div>
           <div className="space-y-4 my-4">
             <h1 className="text-2xl font-bold my-6">{campaign.name}</h1>
-<<<<<<< Updated upstream
-            <div className="bg-gray-800 p-6 flex space-x-4 rounded-md">
-              <Progress
-                value={getProgress(totalContributions, campaign.thresholdWei)}
-                className="h-6 w-[60%]"
-              />
-              <p className="text-md">
-                {`${ethers.formatEther(totalContributions)} of ${ethers.formatEther(campaign.thresholdWei)} ETH`}
-              </p>
-=======
             <div className="mb-6 flex flex-col space-y-4">
               <div className="flex justify-between space-x-4">
                 <Progress
@@ -117,7 +109,6 @@ export default function CampaignDashboard(
                   {`${ethers.formatEther(contractBalance)} ETH available`}
                 </p>
               </div>
->>>>>>> Stashed changes
             </div>
             <p>{campaign.content}</p>
             <div className="flex space-x-4 items-center">
