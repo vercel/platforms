@@ -466,8 +466,8 @@ model Campaign {
   contributions     CampaignContribution[]
   organization      Organization           @relation(fields: [organizationId], references: [id], onUpdate: Cascade)
   organizationId    String
-  deadline          DateTime
-  requireApproval   Boolean
+  deadline          DateTime?
+  requireApproval   Boolean                @default(false)
   form              Form?                  @relation(fields: [formId], references: [id])
   campaignTier      CampaignTier[]
   formId            String?
