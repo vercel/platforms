@@ -206,19 +206,6 @@ export default function CampaignEditor(
                 </ToggleGroup.Root>
               </div>
             </div>
-            <div className="my-2">
-              {campaign.deployed
-              ? `Launched ${campaign.timeDeployed!.toLocaleString(undefined, {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: undefined,
-                timeZoneName: undefined
-              })}`
-              : "Not launched yet"}
-            </div>
             {campaign.deployed && (
               <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
             )}

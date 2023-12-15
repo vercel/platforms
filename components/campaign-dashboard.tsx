@@ -10,23 +10,8 @@ import { getCampaign, updateCampaign } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress"
-import { DatePicker } from "@/components/form-builder/date-picker";
-import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { useRouter } from "next/navigation";
 
-
-interface ModifiedFields {
-  name: boolean;
-  threshold: boolean;
-  content: boolean;
-}
-
-interface Payload {
-  id: string;
-  name?: string;
-  thresholdWei?: bigint;
-  content?: string;
-}
 
 export default function CampaignDashboard(
   {campaignId, subdomain}:
@@ -102,10 +87,17 @@ export default function CampaignDashboard(
           <div className="space-y-4 my-4">
             <h1 className="text-2xl font-bold my-6">{campaign.name}</h1>
             <div className="mb-6 flex flex-col space-y-4">
-              <Progress
-                value={getProgress(totalContributions, campaign.thresholdWei)}
-                className="h-6 w-[80%]"
-              />
+              <div className="flex justify-between space-x-4">
+                <Progress
+                  value={getProgress(totalContributions, campaign.thresholdWei)}
+                  className="h-6 w-[80%]"
+                />
+                <Button
+                    onClick={() => router.push(`/city/${subdomain}/campaigns/${campaignId}/settings`)}
+                  >
+                  Edit
+                </Button>
+              </div>
               <div className="flex space-x-8">
                 <p className="text-sm">
                   {`${ethers.formatEther(totalContributions)} of ${ethers.formatEther(campaign.thresholdWei)} ETH funded`}
@@ -142,11 +134,6 @@ export default function CampaignDashboard(
               <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
             )}
           </div>
-          <Button
-            onClick={() => router.push(`/city/${subdomain}/campaigns/${campaignId}/settings`)}
-          >
-            Edit campaign
-          </Button>
           <div className="mt-4">
             {!campaign.deployed &&
               <LaunchCampaignButton
