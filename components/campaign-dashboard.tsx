@@ -132,9 +132,6 @@ export default function CampaignDashboard(
               })}`
               : "Not launched yet"}
             </div>
-            {campaign.deployed && (
-              <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
-            )}
           </div>
           <div className="mt-4">
             {!campaign.deployed &&
