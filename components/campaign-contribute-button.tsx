@@ -46,7 +46,7 @@ export default function CampaignContributeButton({
         disabled={!isValidAmount()}
         className={`${isValidAmount() ? 'hover:bg-gray-700' : 'bg-gray-500'}`}
       >
-        Contribute
+        {campaign.requireApproval ? "Apply to Join" : "Fund"}
       </Button>
     </div>
   );

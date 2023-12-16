@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
-import CampaignDashboard from "@/components/campaign-dashboard";
+import CampaignPublicView from "@/components/campaign-public-view";
 import { PathParamsContext } from "next/dist/shared/lib/hooks-client-context.shared-runtime";
 
 export default async function PublicCampaignPage(
@@ -24,13 +24,13 @@ export default async function PublicCampaignPage(
     notFound();
   }
 
-  if (!data.deployed) {
-    notFound();
-  }
+  // if (!data.deployed) {
+  //   notFound();
+  // }
 
   return (
     <div className="px-24 py-12">
-      <CampaignDashboard
+      <CampaignPublicView
         campaignId={params.id}
         subdomain={params.subdomain}
         isPublic={true}
