@@ -1,7 +1,7 @@
 "use client";
 
 import useEthereum from "@/hooks/useEthereum";
-import { Campaign } from "@prisma/client";
+import { Campaign, CampaignTier } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
 import { getCampaign, updateCampaign } from "@/lib/actions";
@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { useRouter } from "next/navigation";
+import CampaignTierEditor from "@/components/campaign-tier-editor";
 
 
 interface EditedFields {
@@ -41,6 +42,7 @@ export default function CampaignEditor(
   const [totalContributions, setTotalContributions] = useState(0);
   const [contractBalance, setContractBalance] = useState(BigInt(0));
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
+  const [campaignTiers, setCampaignTiers] = useState<CampaignTier[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editedCampaign, setEditedCampaign] = useState<EditedFields>(
@@ -87,6 +89,18 @@ export default function CampaignEditor(
       });
     }
   }, [campaign]);
+
+  const addNewTier = () => {
+    setCampaignTiers([...campaignTiers, { name: '', description: '', quantity: undefined, price: 0 }]);
+  };
+
+  const updateTier = (index: number, field: keyof CampaignTier,
+    value: string | number | undefined
+  ) => {
+    const updatedTiers = [...campaignTiers];
+    updatedTiers[index] = { ...updatedTiers[index], [field]: value };
+    setCampaignTiers(updatedTiers);
+  };
 
   const handleFieldChange = (field: string, value: string | boolean | Date) => {
     setEditedCampaign(prev => ({ ...prev, [field]: value }));
@@ -209,9 +223,17 @@ export default function CampaignEditor(
                 </ToggleGroup.Root>
               </div>
             </div>
-            {campaign.deployed && (
-              <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
-            )}
+            <div>
+              <h2 className="text-xl">Campaign Tiers</h2>
+              {campaignTiers.map((tier, index) => (
+                <CampaignTierEditor
+                  key={index}
+                  tier={tier}
+                  onChange={(field, value) => updateTier(index, field, value)}
+                />
+              ))}
+              <Button onClick={addNewTier}>Add New Tier</Button>
+            </div>
           </div>
 
           {!isPublic && (
