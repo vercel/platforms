@@ -20,6 +20,8 @@ interface EditedFields {
   name?: string;
   thresholdETH?: string;
   content?: string;
+  requireApproval?: boolean;
+  deadline?: Date;
 }
 
 interface Payload {
@@ -27,6 +29,8 @@ interface Payload {
   name?: string;
   thresholdWei?: bigint;
   content?: string | null;
+  requireApproval?: boolean;
+  deadline?: Date | null;
 }
 
 export default function CampaignEditor(
@@ -41,8 +45,6 @@ export default function CampaignEditor(
   const [loading, setLoading] = useState(true);
   const [editedCampaign, setEditedCampaign] = useState<EditedFields>(
     { name: undefined, thresholdETH: undefined, content: undefined });
-  const [requireApproval, setRequireApproval] = useState(false);
-  const [deadline, setDeadline] = useState<Date | undefined>(undefined);
 
   const router = useRouter();
 
@@ -79,12 +81,14 @@ export default function CampaignEditor(
       setEditedCampaign({
         name: campaign.name,
         thresholdETH: ethers.formatEther(campaign.thresholdWei),
-        content: campaign.content ?? undefined
+        content: campaign.content ?? undefined,
+        deadline: campaign.deadline ?? undefined,
+        requireApproval: campaign.requireApproval,
       });
     }
   }, [campaign]);
 
-  const handleFieldChange = (field: string, value: string) => {
+  const handleFieldChange = (field: string, value: string | boolean | Date) => {
     setEditedCampaign(prev => ({ ...prev, [field]: value }));
   };
 
@@ -93,8 +97,10 @@ export default function CampaignEditor(
     if (campaign) {
       let payload: Payload = { id: campaignId };
       if (editedCampaign.name) payload.name = editedCampaign.name;
-      if (editedCampaign.thresholdETH) payload.thresholdWei = ethers.parseEther(editedCampaign.thresholdETH);
+      if (editedCampaign.thresholdETH !== undefined) payload.thresholdWei = ethers.parseEther(editedCampaign.thresholdETH);
       if (editedCampaign.content) payload.content = editedCampaign.content ?? null;
+      if (editedCampaign.requireApproval !== undefined) payload.requireApproval = editedCampaign.requireApproval;
+      if (editedCampaign.deadline) payload.deadline = editedCampaign.deadline;
 
       try {
         await updateCampaign(
@@ -115,11 +121,6 @@ export default function CampaignEditor(
     submitChanges()
     .then(() => router.push(`/city/${subdomain}/campaigns/${campaignId}`))
   };
-
-  const handleSwitchChange = () => {
-    setRequireApproval(!requireApproval);
-  };
-
 
   if (loading) {
     return <LoadingDots color="#808080" />
@@ -163,8 +164,8 @@ export default function CampaignEditor(
               <div className="flex space-x-4">
                   <div>Require approval for contributors?</div>
                   <Switch 
-                    checked={requireApproval} 
-                    onCheckedChange={handleSwitchChange} 
+                    checked={editedCampaign.requireApproval}
+                    onCheckedChange={(val) => handleFieldChange('requireApproval', val)}
                   />
               </div>
               <div className="flex space-x-4 items-center">
@@ -172,9 +173,11 @@ export default function CampaignEditor(
                   Deadline
                 </div>
                 <DatePicker
-                  date={deadline}
+                  date={editedCampaign.deadline}
                   onSelect={(date) => {
-                    setDeadline(date);
+                    if (date) {
+                      handleFieldChange('deadline', date);
+                    }
                   }}
                 />
               </div>

@@ -111,10 +111,13 @@ export default function CampaignDashboard(
               </div>
             </div>
             <p>{campaign.content}</p>
-            <div className="flex space-x-4 items-center">
-              <div>
-                Deadline
+            {campaign.deadline && 
+              <div className="flex space-x-4 items-center">
+                {`Deadline: ${campaign.deadline.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric'})}`}
               </div>
+            }
+            <div className="my=2">
+              {campaign.requireApproval ? "Requires approval" : "No approval required"}
             </div>
             <div className="my-2">
               {campaign.deployed
@@ -129,7 +132,6 @@ export default function CampaignDashboard(
               })}`
               : "Not launched yet"}
             </div>
-
             {campaign.deployed && (
               <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
             )}
