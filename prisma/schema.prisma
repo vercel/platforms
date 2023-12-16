@@ -270,12 +270,12 @@ model CampaignTier {
   name        String
   description String?
   quantity    Int?
-  formId      String?
-  form        Form?    @relation(fields: [formId], references: [id])
   price       Int?
   currency    String?
   campaignId  String
   campaign    Campaign @relation(fields: [campaignId], references: [id])
+  Form        Form?    @relation(fields: [formId], references: [id])
+  formId      String?
 }
 
 model Form {
@@ -469,7 +469,7 @@ model Campaign {
   deadline          DateTime?
   requireApproval   Boolean                @default(false)
   form              Form?                  @relation(fields: [formId], references: [id])
-  campaignTier      CampaignTier[]
+  campaignTiers     CampaignTier[]
   formId            String?
 
   @@unique([name, organizationId])
