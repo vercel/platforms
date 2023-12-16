@@ -111,11 +111,11 @@ export default function CampaignDashboard(
               </div>
             </div>
             <p>{campaign.content}</p>
-            <div className="flex space-x-4 items-center">
-              <div>
+            {campaign.deadline && 
+              <div className="flex space-x-4 items-center">
                 {`Deadline: ${campaign.deadline.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric'})}`}
               </div>
-            </div>
+            }
             <div className="my=2">
               {campaign.requireApproval ? "Requires approval" : "No approval required"}
             </div>
