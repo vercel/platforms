@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { useRouter } from "next/navigation";
 import CampaignTierEditor from "@/components/campaign-tier-editor";
+import CampaignTierCard from "@/components/campaign-tier-card";
 
 
 interface EditedFields {
@@ -49,6 +50,7 @@ export default function CampaignEditor(
   const [editedCampaign, setEditedCampaign] = useState<EditedFields>(
     { name: undefined, thresholdETH: undefined, content: undefined,
       deadline: undefined, requireApproval: undefined });
+  const [editingTierIndex, setEditingTierIndex] = useState<number | null>(null);
 
   const router = useRouter();
 
@@ -56,6 +58,8 @@ export default function CampaignEditor(
     getCampaign(campaignId).then(result => {
       if (result) {
         setCampaign(result);
+        setCampaignTiers(result.campaignTiers);
+        // console.log('useeffect campaign tiers:', result.campaignTiers);
       }
     }).then(() => setLoading(false));
   }, [refreshFlag, campaignId]);
@@ -101,6 +105,14 @@ export default function CampaignEditor(
     const updatedTiers = [...campaignTiers];
     updatedTiers[index] = { ...updatedTiers[index], ...updatedTier };
     setCampaignTiers(updatedTiers);
+  };
+
+  const startEditTier = (index: number) => {
+    setEditingTierIndex(index);
+  };
+
+  const stopEditTier = () => {
+    setEditingTierIndex(null);
   };
 
   const handleFieldChange = (field: string, value: string | boolean | Date) => {
@@ -240,13 +252,25 @@ export default function CampaignEditor(
             </div>
             <div>
               <h2 className="text-xl">Campaign Tiers</h2>
-              {campaignTiers.map((tier, index) => (
-                <CampaignTierEditor
-                  key={index}
-                  tier={tier}
-                  onSave={(updatedTier) => updateTier(index, updatedTier)}
-                />
-              ))}
+              {
+                campaignTiers.map((tier, index) => (
+                  editingTierIndex === index ? (
+                    <CampaignTierEditor
+                      key={index}
+                      tier={tier}
+                      onSave={(updatedTier) => {
+                        updateTier(index, updatedTier);
+                        stopEditTier();
+                      }}
+                    />
+                  ) : (
+                    <CampaignTierCard
+                      key={index}
+                      tier={tier}
+                    />
+                  )
+                ))
+              }
               <Button
                 className="mt-2"
                 onClick={addNewTier}

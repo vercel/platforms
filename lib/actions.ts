@@ -1211,7 +1211,6 @@ export async function getEventTicketTiers(eventId: string) {
       },
     },
   });
-  console.log({ tiers });
 
   return tiers;
 }
@@ -1273,7 +1272,6 @@ export const issueTicket = withEventAuth(
 
       return ticket;
     } catch (error: any) {
-      console.log("error: ", error);
       return {
         error: error.message,
       };
@@ -1606,7 +1604,6 @@ export const upsertPlace = withOrganizationAuth(
 
 export const deletePlace = withOrganizationAuth(
   async (id: string, organization: Organization) => {
-    console.log("id: ", id);
     // Delete the place with the provided ID
     const place = await prisma.place.delete({
       where: {
