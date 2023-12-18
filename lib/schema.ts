@@ -240,7 +240,7 @@ const CampaignTierSchema = z.object({
   description: z.string().optional(),
   quantity: z.number().optional(),
   price: z.number().optional(),
-  currency: z.string().optional(),
+  currency: z.string().nullish(),
 })
 
 export const UpsertCampaignTierSchemas = z.object({
