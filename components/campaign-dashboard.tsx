@@ -3,7 +3,7 @@
 import LaunchCampaignButton from "@/components/launch-campaign-button";
 import CampaignWithdrawButton from "@/components/campaign-withdraw-button";
 import useEthereum from "@/hooks/useEthereum";
-import { Campaign } from "@prisma/client";
+import { Campaign, CampaignTier } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
 import { getCampaign, updateCampaign } from "@/lib/actions";
@@ -133,6 +133,14 @@ export default function CampaignDashboard(
               : "Not launched yet"}
             </div>
           </div>
+          {campaign.campaignTiers &&
+            <div>
+              <h2 className="text-xl">Campaign Tiers</h2>
+              {campaign.campaignTiers.map((tier: CampaignTier) =>
+                <div>{tier.name}</div>
+              )}
+            </div>
+          }
           <div className="mt-4">
             {!campaign.deployed &&
               <LaunchCampaignButton

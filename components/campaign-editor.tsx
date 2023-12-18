@@ -4,7 +4,7 @@ import useEthereum from "@/hooks/useEthereum";
 import { Campaign, CampaignTier } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
-import { getCampaign, updateCampaign } from "@/lib/actions";
+import { getCampaign, updateCampaign, upsertCampaignTiers } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ interface Payload {
   content?: string | null;
   requireApproval?: boolean;
   deadline?: Date | null;
+  campaignTiers?: CampaignTier[] | null;
 }
 
 export default function CampaignEditor(
@@ -46,7 +47,8 @@ export default function CampaignEditor(
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editedCampaign, setEditedCampaign] = useState<EditedFields>(
-    { name: undefined, thresholdETH: undefined, content: undefined });
+    { name: undefined, thresholdETH: undefined, content: undefined,
+      deadline: undefined, requireApproval: undefined });
 
   const router = useRouter();
 
@@ -91,14 +93,13 @@ export default function CampaignEditor(
   }, [campaign]);
 
   const addNewTier = () => {
-    setCampaignTiers([...campaignTiers, { name: '', description: '', quantity: undefined, price: 0 }]);
+    setCampaignTiers([...campaignTiers, { name: '', description: '',
+      quantity: undefined, price: 0 }]);
   };
 
-  const updateTier = (index: number, field: keyof CampaignTier,
-    value: string | number | undefined
-  ) => {
+  const updateTier = (index: number, updatedTier: EditedFields) => {
     const updatedTiers = [...campaignTiers];
-    updatedTiers[index] = { ...updatedTiers[index], [field]: value };
+    updatedTiers[index] = { ...updatedTiers[index], ...updatedTier };
     setCampaignTiers(updatedTiers);
   };
 
@@ -122,10 +123,19 @@ export default function CampaignEditor(
           { params: { subdomain } },
           null,
         );
+
+        await upsertCampaignTiers(
+          { tiers: campaignTiers, campaign: campaign },
+          { params: { subdomain: subdomain as string } },
+          null,
+        );
         toast.success(`Campaign updated`);
+        
         setCampaign({...campaign, ...payload});
+        router.refresh();
+
       } catch (error: any) {
-        console.error('Error updating campaign', error);
+        console.error('Error updating campaign or tiers', error);
         toast.error(error.message);
       }
     }
@@ -158,6 +168,7 @@ export default function CampaignEditor(
             <div className="space-y-4 my-4">
               <Input 
                 type="text" 
+                id="campaignName"
                 value={editedCampaign.name}
                 placeholder="Campaign name"
                 onChange={(e) => handleFieldChange('name', e.target.value)} 
@@ -166,18 +177,21 @@ export default function CampaignEditor(
               <Input 
                 type="text" 
                 value={editedCampaign.thresholdETH}
+                id="thresholdETH"
                 placeholder="Fundraising goal"
                 onChange={(e) => handleFieldChange('thresholdETH', e.target.value)} 
                 disabled={isPublic || campaign.deployed}
               />
               <Textarea 
                 value={editedCampaign.content} 
+                id="content"
                 onChange={(e) => handleFieldChange('content', e.target.value)} 
                 disabled={isPublic}
               />
               <div className="flex space-x-4">
                   <div>Require approval for contributors?</div>
                   <Switch 
+                    id="requireApproval"
                     checked={editedCampaign.requireApproval}
                     onCheckedChange={(val) => handleFieldChange('requireApproval', val)}
                   />
@@ -187,6 +201,7 @@ export default function CampaignEditor(
                   Deadline
                 </div>
                 <DatePicker
+                  id="deadline"
                   date={editedCampaign.deadline}
                   onSelect={(date) => {
                     if (date) {
@@ -229,10 +244,15 @@ export default function CampaignEditor(
                 <CampaignTierEditor
                   key={index}
                   tier={tier}
-                  onChange={(field, value) => updateTier(index, field, value)}
+                  onSave={(updatedTier) => updateTier(index, updatedTier)}
                 />
               ))}
-              <Button onClick={addNewTier}>Add New Tier</Button>
+              <Button
+                className="mt-2"
+                onClick={addNewTier}
+              >
+                Add New Tier
+              </Button>
             </div>
           </div>
 
