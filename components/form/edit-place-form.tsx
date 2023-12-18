@@ -18,7 +18,7 @@ import { useParams } from "next/navigation";
 import { UpdatePlaceSchema } from "@/lib/schema";
 import { upsertPlace } from "@/lib/actions";
 import { useFormStatus } from "react-dom";
-import PrimaryButton from "../primary-button";
+import PrimaryButton from "../buttons/primary-button";
 import { Place } from "@prisma/client";
 import { useEffect } from "react";
 

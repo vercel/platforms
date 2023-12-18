@@ -40,7 +40,7 @@ export const WaitlistWelcomeEmail = ({
         }}
       >
         <Body className={"font-sans"}>
-          <Container className="mx-auto  rounded bg-gray-250 px-5 pb-12 pt-10">
+          <Container className="mx-auto  rounded bg-gray-150 px-16 pb-12 pt-10">
             <Img
               src={`https://fora.co/fora-logo.png`}
               width="45"
@@ -49,9 +49,9 @@ export const WaitlistWelcomeEmail = ({
               className={"mx-auto"}
             />
             <Text className="text-md text-gray-800">Hi {userFirstname},</Text>
-            <Text className="text-md text-gray-800">
+            <Button className="text-md text-gray-800">
               Welcome to Fora, the platform for startup cities.
-            </Text>
+            </Button>
             <Text className="text-md text-gray-800">
               Fora is currently in private beta. You have been added to the
               first cohort to be notified when we launch. In the meantime, we

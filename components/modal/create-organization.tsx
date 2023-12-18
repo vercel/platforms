@@ -10,7 +10,7 @@ import { useModal } from "./provider";
 import va from "@vercel/analytics";
 import { useEffect, useState } from "react";
 import { Organization } from "@prisma/client";
-import PrimaryButton from "../primary-button";
+import PrimaryButton from "../buttons/primary-button";
 import FormButton from "./form-button";
 import { track } from "@/lib/analytics";
 

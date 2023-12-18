@@ -1,5 +1,5 @@
 "use client";
-import PrimaryButton, { PrimaryButtonProps } from "@/components/primary-button";
+import PrimaryButton, { PrimaryButtonProps } from "@/components/buttons/primary-button";
 // import { EdDSATicketPCDPackage } from "@pcd/eddsa-ticket-pcd";
 import {
   SignInMessagePayload,

@@ -7,7 +7,7 @@
 import { SendVerificationRequestParams } from "next-auth/providers/email";
 import nodemailer from "nodemailer";
 
-async function sendVerificationRequest({
+export default async function sendVerificationRequest({
   identifier: email,
   url,
   provider: { server, from },
@@ -78,3 +78,4 @@ function html({ url, host, email }: Record<"url" | "host" | "email", string>) {
 function text({ url, host }: Record<"url" | "host", string>) {
   return `Sign in to ${host}\n${url}\n\n`;
 }
+

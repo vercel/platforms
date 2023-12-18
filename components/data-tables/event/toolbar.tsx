@@ -5,23 +5,23 @@ import { Table } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DataTableViewOptions } from "./data-table-view-options";
+import { DataTableViewOptions } from "@/components/ui/data-table/data-table-view-options";
 
-import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import { DataTableFacetedFilter } from "@/components/ui/data-table/data-table-faceted-filter";
 import { TicketTier, Event } from "@prisma/client";
 import { useMemo } from "react";
-import EventTableActionButton from "./event-table-action-button";
+import EventTableActionButton from "./table-actions";
 
-interface DataTableToolbarProps<TData> {
+interface EventTableToolbarProps<TData> {
   table: Table<TData>;
   ticketTiers: TicketTier[];
   event: Event;
 }
-export function DataTableToolbar<TData>({
+export default function EventTableToolbar<TData>({
   table,
   ticketTiers,
   event,
-}: DataTableToolbarProps<TData>) {
+}: EventTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   const ticketFilterOptions = useMemo(() => {
@@ -38,7 +38,7 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter attendees..."
+          placeholder="Search"
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("email")?.setFilterValue(event.target.value)

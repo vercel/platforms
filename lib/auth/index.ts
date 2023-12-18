@@ -1,4 +1,4 @@
-import { getServerSession, type NextAuthOptions } from "next-auth";
+import { getServerSession, Session, type NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import DiscordProvider from "next-auth/providers/discord";
@@ -10,9 +10,10 @@ import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
-import { userHasEventRole, userHasOrgRole } from "./actions";
+import { userHasEventRole, userHasOrgRole } from "../actions";
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
+import sendVerificationRequest from "./send-verification-request";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
@@ -25,8 +26,10 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
   return {
     providers: [
       // passwordless / magic link
-
       EmailProvider({
+        id: "email",
+        name: "magic link",
+        type: "email",
         server: {
           host: process.env.SMTP_HOST,
           port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587,
@@ -36,6 +39,8 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
           },
         },
         from: process.env.SMTP_FROM,
+        maxAge: 24 * 60 * 60, // How long email links are valid for (default 24h)
+        sendVerificationRequest,
       }),
       // sign in with ethereum
       CredentialsProvider({
@@ -203,17 +208,17 @@ export const authOptions = (req?: NextRequest): NextAuthOptions => {
 export type SessionData = {
   user: {
     id: string;
-    name: string;
-    username: string;
     email: string;
-    image: string;
+    name?: string;
+    username?: string;
+    image?: string;
     eth_address?: string;
     ens_name?: string;
   };
 };
 
 export function getSession() {
-  return getServerSession(authOptions()) as Promise<SessionData | null>;
+  return getServerSession(authOptions()) as Promise<Session | null>;
 }
 
 export function withOrganizationAuth(action: any) {

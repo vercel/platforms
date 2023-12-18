@@ -1,13 +1,17 @@
 "use client";
-import { Ticket, User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { shortenString } from "@/lib/profile";
+import { convertNameToTwoLetters, shortenString } from "@/lib/profile";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "./data-table-column-header";
-import { EventTableRowActions } from "./event-table-row-actions";
+import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
+import { OrgTableRowActions } from "./row-actions";
 
-export const columns: ColumnDef<User>[] = [
+export type UserAndRoles = User & { roles: Role[] };
+
+export const columns: ColumnDef<UserAndRoles>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -37,6 +41,7 @@ export const columns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
+    enableGlobalFilter: true,
   },
   {
     accessorKey: "email",
@@ -45,29 +50,25 @@ export const columns: ColumnDef<User>[] = [
     ),
   },
   {
-    accessorKey: "tickets",
+    accessorKey: "roles",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Tickets" />
+      <DataTableColumnHeader column={column} title="Roles" />
     ),
     cell: ({ row }) => {
-      const tickets = row.getValue("tickets") as Array<
-        Ticket & { tierName: string; tierPrice: number }
-      >;
+      // const amount = parseFloat(row.getValue("amount"))
+      // const formatted = new Intl.NumberFormat("en-US", {
+      //   style: "currency",
+      //   currency: "USD",
+      // }).format(amount)
+
+      const roles = row.getValue("roles") as Role[];
 
       return (
         <div className="flex flex-wrap space-x-1">
-          {tickets.map((ticket) => {
-            // const formattedPrice = new Intl.NumberFormat("en-US", {
-            //   style: "currency",
-            //   currency: "USD",
-            // }).format(ticket.tierPrice);
-            // const formattedAmountPaid = new Intl.NumberFormat("en-US", {
-            //   style: "currency",
-            //   currency: "USD",
-            // }).format(ticket.amountPaid);
+          {roles.map((role) => {
             return (
-              <Badge key={ticket.id} variant="default">
-                {`${ticket.tierName}`}
+              <Badge key={role.id} variant="default">
+                {role.name}
               </Badge>
             );
           })}
@@ -75,21 +76,18 @@ export const columns: ColumnDef<User>[] = [
       );
     },
     filterFn: (row, id, filterValues) => {
-      //  console.log('rows: ', rows)
-      const tickets = row.getValue("tickets") as Array<
-        Ticket & { tierName: string; tierPrice: number }
-      >;
-      console.log("tickets: ", tickets);
-      console.log("filterValues: ", filterValues);
+      const roles = row.getValue("roles") as Role[];
 
       if (filterValues.length === 0) return true;
 
-      return tickets.some((t) => filterValues.includes(t.tierName));
+      return roles.some((t) => filterValues.includes(t.name));
     },
   },
   {
     accessorKey: "eth_address",
-    header: "Wallet",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Wallet" />
+    ),
     cell: ({ row }) => {
       const address = row.getValue("eth_address") as string;
       if (!address) {
@@ -112,6 +110,6 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <EventTableRowActions row={row} />,
+    cell: ({ row }) => <OrgTableRowActions row={row} />,
   },
 ];

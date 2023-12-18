@@ -23,11 +23,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Role, TicketTier, Event } from "@prisma/client";
+import { TicketTier, Event } from "@prisma/client";
 
 import { useRef, useEffect, useState, useMemo, HTMLProps } from "react";
-import { DataTableToolbar } from "./data-table-toolbar";
-import { DataTablePagination } from "../ui/data-table/data-table-pagination";
+import EventTableToolbar from "./toolbar";
+import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -70,7 +70,7 @@ export default function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} ticketTiers={ticketTiers} event={event} />
+      <EventTableToolbar table={table} ticketTiers={ticketTiers} event={event} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

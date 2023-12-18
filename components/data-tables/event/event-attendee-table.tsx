@@ -1,5 +1,5 @@
 import { getUsersWithTicketForEvent } from "@/lib/actions";
-import { Card } from "../ui/card";
+import { Card } from "../../ui/card";
 import { columns } from "./columns";
 import DataTable from "./data-table";
 import prisma from "@/lib/prisma";

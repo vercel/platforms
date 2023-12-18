@@ -11,10 +11,8 @@ import {
   Prisma,
   QuestionType,
   Place,
-  Room,
-  Bed,
-  EmailSubscriber,
   EmailSubscriberInterest,
+  User,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -31,9 +29,10 @@ import {
   // removeDomainFromVercelTeam,
   validDomainRegex,
 } from "@/lib/domains";
-import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
 import {
+  FORA_API_URL,
+  FORA_APP_URL,
   calcAccommodationUnitCapacity,
   calcRoomCapacity,
   getBlurDataURL,
@@ -44,17 +43,25 @@ import {
   CreateAccommodationUnitSchema,
   CreatePlaceSchema,
   IssueTicketFormSchema,
-  CreateCampaignSchema,
   DeployCampaignSchema,
   UpdateCampaignSchema,
-  UpsertOrganizationLinkSchema,
   UpsertOrganizationLinkSchemas,
+  CreateInviteSchema,
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
 import { track } from "@/lib/analytics";
 import { Resend } from "resend";
 import { renderWaitlistWelcomeEmail } from "./email-templates/waitlist-welcome";
+import { UserAndRoles } from "@/components/data-tables/org/columns";
+import { sendOrgInviteEmail } from "./email-templates/org-invite";
+import { getCsrfToken } from "next-auth/react";
+import {
+  assertUserHasEventRole,
+  tryGetOrgBySubdomain,
+  tryGetSession,
+} from "./assertions";
+import { createInviteParams } from "./auth/create-invite-params";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
@@ -197,6 +204,88 @@ export async function userHasOrgRole(
   });
 
   return userRoles.length > 0;
+}
+
+export async function getUserOrgRolesBySubdomain({
+  userId,
+  orgIdOrSubdomain,
+}: {
+  userId: string;
+  orgIdOrSubdomain: string;
+}) {
+  return prisma.role.findMany({
+    where: {
+      userRoles: {
+        some: {
+          userId,
+          role: {
+            organizationRole: {
+              some: {
+                OR: [
+                  { organization: { id: orgIdOrSubdomain } },
+                  {
+                    organization: {
+                      subdomain: orgIdOrSubdomain,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+export async function assertUserHasOrgRoleId(
+  userId: string,
+  orgId: string,
+  roleId: string,
+) {
+  const userRoles = await prisma.userRole.findMany({
+    where: {
+      userId: userId,
+      role: {
+        id: roleId,
+        organizationRole: {
+          some: {
+            organizationId: orgId,
+          },
+        },
+      },
+    },
+  });
+
+  return userRoles.length > 0;
+}
+
+export async function assertUserHasOrgRoleByName(
+  userId: string,
+  orgIdOrSubdomain: string,
+  roleName: string,
+) {
+  const userRoles = await prisma.userRole.findMany({
+    where: {
+      userId: userId,
+      role: {
+        name: roleName,
+        organizationRole: {
+          some: {
+            OR: [{ organizationId: orgIdOrSubdomain }],
+          },
+        },
+      },
+    },
+  });
+
+  if (userRoles.length > 0) {
+    return userRoles;
+  }
+
+  throw {
+    message: `User does not have ${roleName} role`,
+  };
 }
 
 export async function getUserEventRoles(userId: string, eventId: string) {
@@ -885,53 +974,111 @@ export const deleteEventRole = withEventRoleAuth(
 // );
 
 export async function getUsersWithRoleInOrganization(subdomain: string) {
-  const users = await prisma.user.findMany({
+  const start = Date.now();
+  // const users = await prisma.user.findMany({
+  //   where: {
+  //     userRoles: {
+  //       some: {
+  //         role: {
+  //           organizationRole: {
+  //             some: {
+  //               organization: {
+  //                 subdomain: subdomain,
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   include: {
+  //     userRoles: {
+  //       include: {
+  //         role: {
+  //           include: {
+  //             organizationRole: {
+  //               include: {
+  //                 organization: {
+  //                   select: {
+  //                     subdomain: true,
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // });
+  console.log("Query time: ", Date.now() - start, " ms");
+
+  const roleFirstStart = Date.now();
+  const userRoles = await prisma.userRole.findMany({
     where: {
-      userRoles: {
-        some: {
-          role: {
-            organizationRole: {
-              some: {
-                organization: {
-                  subdomain: subdomain,
-                },
-              },
+      role: {
+        organizationRole: {
+          some: {
+            organization: {
+              subdomain,
             },
           },
         },
       },
     },
     include: {
-      userRoles: {
-        include: {
-          role: {
-            include: {
-              organizationRole: {
-                include: {
-                  organization: {
-                    select: {
-                      subdomain: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      user: true,
+      role: true,
     },
   });
+  const usersWithRoles: Record<string, User & { roles: Role[] }> = {};
+  const uniqueRoles: Record<string, Role> = {};
+  userRoles.forEach(({ user, role }) => {
+    if (usersWithRoles[user.id]) {
+      // If the user already exists in the record, just append the new role
+      usersWithRoles[user.id].roles.push(role);
+    } else {
+      // If the user does not exist in the record, add them with the new role
+      usersWithRoles[user.id] = { ...user, roles: [role] };
+    }
+    if (uniqueRoles[role.id]) {
+    } else {
+      uniqueRoles[role.id] = role;
+    }
+  });
 
-  return users.map((user) => ({
-    ...user,
-    roles: user.userRoles
-      .filter((userRole) =>
-        userRole.role.organizationRole.some(
-          (orgRole) => orgRole.organization.subdomain === subdomain,
-        ),
-      )
-      .map((userRole) => userRole.role),
-  }));
+  return { usersWithRoles, uniqueRoles };
+
+  console.log("userRole: ", userRoles);
+  console.log("Query time 2: ", Date.now() - roleFirstStart, " ms");
+
+  // const usersWithRoles = organizationRoles.reduce((acc, orgRole) => {
+  //   orgRole.role.userRoles.forEach(userRole => {
+  //     const existingUser = acc.find(user => user.id === userRole.user.id);
+  //     if (existingUser) {
+  //       existingUser.roles.push(orgRole.role);
+  //     } else {
+  //       acc.push({
+  //         ...userRole.user,
+  //         roles: [orgRole.role],
+  //       });
+  //     }
+  //   });
+  //   return acc;
+  // }, [] as never as UserAndRoles);
+
+  // const usersWithRoleInOrganization = users.map((user) => ({
+  //   ...user,
+  //   roles: user.userRoles
+  //     .filter((userRole) =>
+  //       userRole.role.organizationRole.some(
+  //         (orgRole) => orgRole.organization.subdomain === subdomain,
+  //       ),
+  //     )
+  //     .map((userRole) => userRole.role),
+  // }));
+
+  // return usersWithRoleInOrganization;
 }
 
 export async function getUniqueUsersWithRoleInOrganization(subdomain: string) {
@@ -1772,15 +1919,15 @@ export const createCampaign = withOrganizationAuth(
     const existingCampaigns = await prisma.campaign.findMany({
       where: {
         name: {
-          startsWith: 'My Campaign',
+          startsWith: "My Campaign",
         },
         organizationId: organization.id,
       },
     });
 
-    const existingNames = new Set(existingCampaigns.map(c => c.name));
+    const existingNames = new Set(existingCampaigns.map((c) => c.name));
     let counter = 1;
-    let name = 'My Campaign';
+    let name = "My Campaign";
     while (existingNames.has(name)) {
       name = `My Campaign (${counter})`;
       counter++;
@@ -1906,7 +2053,6 @@ export async function getMutualAttendeesForNewEvent(
   return mutualAttendees;
 }
 
-
 export async function getCitizensWithMutualEventAttendance(
   userId: string,
   organizationId: string,
@@ -2004,7 +2150,7 @@ export const updateCampaign = withOrganizationAuth(
       where: {
         id: data.id,
       },
-      data
+      data,
     });
     return response;
   },
@@ -2022,10 +2168,11 @@ export const launchCampaign = withOrganizationAuth(
       where: {
         id: data.id,
       },
-      data: {...data, timeDeployed: new Date()}
+      data: { ...data, timeDeployed: new Date() },
     });
     return response;
-});
+  },
+);
 
 export const upsertOrganizationLinks = withOrganizationAuth(
   async (data: any, organization: Organization) => {
@@ -2051,8 +2198,8 @@ export const upsertOrganizationLinks = withOrganizationAuth(
           ...pageLink,
           organizationId: organization.id,
         },
-      })
-    })
+      });
+    });
 
     const nextPageLinks = await prisma.$transaction(txs);
 
@@ -2072,3 +2219,185 @@ export const getCampaign = async (id: string) => {
   });
   return campaign ?? undefined;
 };
+
+export const createInvite = async (data: any) => {
+  const input = CreateInviteSchema.safeParse(data);
+
+  if (!input.success) {
+    throw new Error(input.error.message);
+  }
+
+  const [inviter, org, role] = await Promise.all([
+    prisma.user.findUnique({
+      where: {
+        id: input.data.inviterId,
+        userRoles: {
+          some: {
+            role: {
+              organizationRole: {
+                some: {
+                  organizationId: input.data.organizationId,
+                },
+              },
+            },
+          },
+        },
+      },
+      include: {
+        userRoles: {
+          select: {
+            role: true,
+          },
+        },
+      },
+    }),
+    prisma.organization.findUnique({
+      where: { id: input.data.organizationId },
+    }),
+    prisma.role.findUnique({ where: { id: input.data.roleId } }),
+  ]);
+  // 3) Authorize
+
+  // 3.a) Presence of data
+  if (!inviter || !org || !role) {
+    return { error: "Unable to fetch relevant data" };
+  }
+
+  // 3.b) Access Controls
+  const hasAdminRole =
+    inviter.userRoles.findIndex((roles) => roles.role.name === "Admin") >= -1;
+
+  if (!hasAdminRole) {
+    return { error: "You don't have permission to send invites." };
+  }
+
+  // 4) Process
+  const invite = await prisma.invite.create({
+    data: {
+      ...input.data,
+    },
+  });
+
+  // generate invite hash
+  const { url, expires, hash } = await createInviteParams({
+    baseUrl: FORA_APP_URL,
+    id: invite.id,
+    email: input.data.email,
+    organizationId: org.id,
+    roleId: role.id,
+  });
+
+  await Promise.allSettled([
+    track("invite_sent", {
+      invitingUserId: inviter.id,
+      invitingUserName: inviter.name,
+      invitingUserEmail: inviter.email,
+      email: invite.email,
+    }),
+    // create verification token
+    prisma.verificationToken.create({
+      data: {
+        expires,
+        token: hash,
+        identifier: input.data.email,
+      },
+    }),
+    // send the email
+    sendOrgInviteEmail({ invite, inviter, org, role, url }),
+  ]);
+
+  return { success: true };
+};
+/*
+    this function is deleting all roles that a specific user has in a specific organization.
+    */
+export const kickAction = async ({
+  email,
+  subdomain,
+}: {
+  email: string;
+  subdomain: string;
+}) => {
+  try {
+    const session = await tryGetSession();
+    const org = await tryGetOrgBySubdomain(subdomain);
+    await assertUserHasOrgRoleByName(session.user.id, org.id, "Admin");
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return {
+        success: false,
+        error: { message: "Unable to fetch relevant data" },
+      };
+    }
+
+    await prisma.userRole.deleteMany({
+      where: {
+        user: { id: user.id },
+        role: {
+          organizationRole: {
+            some: {
+              organization: {
+                id: org.id,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+// export async function getTotalCampaignRevenue() {
+//   const campaigns = await prisma.campaign.findMany({
+//     include: {
+//       contributions: true,
+//     },
+//   });
+
+//   const totalRevenue = campaigns.reduce((total, campaign) => {
+//     const campaignRevenue = campaign.contributions.reduce(
+//       (total, contribution) => total + contribution.amount,
+//       0,
+//     );
+//     return total + campaignRevenue;
+//   }, 0);
+
+//   return totalRevenue;
+// }
+
+export async function getCitizenCount(organizationId: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      userRoles: {
+        some: {
+          role: {
+            organizationRole: {
+              some: {
+                organizationId: organizationId,
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return users.length;
+}
+
+export async function getUniqueEventVisitors(eventId: string) {
+  const tickets = await prisma.ticket.findMany({
+    where: {
+      eventId: eventId,
+    },
+  });
+
+  const uniqueUserIds = new Set(tickets.map((ticket) => ticket.userId));
+
+  return uniqueUserIds.size;
+}

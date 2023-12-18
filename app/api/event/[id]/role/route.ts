@@ -5,7 +5,7 @@ import {
   assertUserHasEventRole,
   tryGetEvent,
   tryGetSession,
-} from "@/lib/api/assertions";
+} from "@/lib/assertions";
 
 export async function GET(
   request: Request,

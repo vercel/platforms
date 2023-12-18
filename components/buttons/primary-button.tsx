@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import LoadingDots from "@/components/icons/loading-dots";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 export type PrimaryButtonProps =
   React.ButtonHTMLAttributes<HTMLButtonElement> & {

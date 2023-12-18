@@ -210,7 +210,10 @@ export const CreateCampaignSchema = z.object({
 // Same as CreateCampaignSchema for now
 export const UpdateCampaignSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }).optional(),
-  threshold: z.number().min(0, { message: "Threshold can't be negative" }).optional(),
+  threshold: z
+    .number()
+    .min(0, { message: "Threshold can't be negative" })
+    .optional(),
   content: z.string().optional(),
 });
 
@@ -229,7 +232,27 @@ const PageLinkSchema = z.object({
 
 export const UpsertOrganizationLinkSchema = PageLinkSchema;
 
-
 export const UpsertOrganizationLinkSchemas = z.object({
   pageLinks: z.array(PageLinkSchema),
+});
+
+export const InviteStatusEnum = z.enum(["PENDING", "ACCEPTED", "REJECTED"]);
+
+export const InviteSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  roleId: z.string(),
+  status: InviteStatusEnum,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  acceptedAt: z.date().optional(),
+  inviterId: z.string(),
+  organizationId: z.string(),
+});
+
+export const CreateInviteSchema = z.object({
+  email: z.string().email(),
+  roleId: z.string(),
+  inviterId: z.string(),
+  organizationId: z.string(),
 });

@@ -4,7 +4,7 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
 import { Event, TicketTier } from "@prisma/client";
-import AddAttendeesModal from "../modal/add-attendees";
+import AddAttendeesModal from "../../modal/add-attendees";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,19 +14,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useModal } from "../modal/provider";
+import { useModal } from "../../modal/provider";
 
-interface EventTableActionButtonProps<TData> {
+interface EventTableActionsProps<TData> {
   table: Table<TData>;
   ticketTiers: TicketTier[];
   event: Event;
 }
 
-export default function EventTableActionButton<TData>({
+export default function EventTableActions<TData>({
   table,
   ticketTiers,
   event,
-}: EventTableActionButtonProps<TData>) {
+}: EventTableActionsProps<TData>) {
   const modal = useModal();
 
   return (
