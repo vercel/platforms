@@ -15,6 +15,8 @@ import {
   Bed,
   EmailSubscriber,
   EmailSubscriberInterest,
+  Campaign,
+  CampaignTier,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -49,6 +51,7 @@ import {
   UpdateCampaignSchema,
   UpsertOrganizationLinkSchema,
   UpsertOrganizationLinkSchemas,
+  UpsertCampaignTierSchemas
 } from "./schema";
 import { z } from "zod";
 import { geocode, reverseGeocode } from "./gis";
@@ -2072,3 +2075,34 @@ export const getCampaign = async (id: string) => {
   });
   return campaign ?? undefined;
 };
+
+export const upsertCampaignTiers = withOrganizationAuth(
+  async (data: { tiers: CampaignTier[], campaign: Campaign }) => {
+    const result = UpsertCampaignTierSchemas.safeParse(data);
+    console.log('parse result:', result);
+    console.log('\ndata:', data, '\n');
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+
+    const txs = result.data.tiers.map((tier) => {
+      return prisma.campaignTier.upsert({
+        where: {
+          id: tier.id ?? "THIS_TEXT_JUST_TRIGGERS_A_NEW_ID_TO_BE_GENERATED",
+        },
+        create: {
+          ...tier,
+          campaignId: data.campaign.id,
+        },
+        update: {
+          ...tier,
+          campaignId: data.campaign.id,
+        },
+      })
+    })
+
+    const tiers = await prisma.$transaction(txs);
+
+    return tiers;
+  }
+)

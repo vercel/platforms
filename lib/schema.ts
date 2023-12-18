@@ -233,3 +233,16 @@ export const UpsertOrganizationLinkSchema = PageLinkSchema;
 export const UpsertOrganizationLinkSchemas = z.object({
   pageLinks: z.array(PageLinkSchema),
 });
+
+const CampaignTierSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, { message: "Name is required." }),
+  description: z.string().optional(),
+  quantity: z.number().optional(),
+  price: z.number().optional(),
+  currency: z.string().optional(),
+})
+
+export const UpsertCampaignTierSchemas = z.object({
+  tiers: z.array(CampaignTierSchema),
+})
