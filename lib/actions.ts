@@ -2071,6 +2071,7 @@ export const getCampaign = async (id: string) => {
     include: {
       organization: true,
       contributions: true,
+      campaignTiers: true,
     },
   });
   return campaign ?? undefined;
@@ -2079,8 +2080,6 @@ export const getCampaign = async (id: string) => {
 export const upsertCampaignTiers = withOrganizationAuth(
   async (data: { tiers: CampaignTier[], campaign: Campaign }) => {
     const result = UpsertCampaignTierSchemas.safeParse(data);
-    console.log('parse result:', result);
-    console.log('\ndata:', data, '\n');
     if (!result.success) {
       throw new Error(result.error.message);
     }
