@@ -264,10 +264,10 @@ export default function CampaignEditor(
                       }}
                     />
                   ) : (
-                    <CampaignTierCard
-                      key={index}
-                      tier={tier}
-                    />
+                    <div key={index}>
+                      <CampaignTierCard tier={tier} />
+                      <Button onClick={() => startEditTier(index)}>Edit</Button>
+                    </div>
                   )
                 ))
               }

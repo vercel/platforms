@@ -2,6 +2,7 @@
 
 import LaunchCampaignButton from "@/components/launch-campaign-button";
 import CampaignWithdrawButton from "@/components/campaign-withdraw-button";
+import CampaignTierCard from "@/components/campaign-tier-card";
 import useEthereum from "@/hooks/useEthereum";
 import { Campaign, CampaignTier } from "@prisma/client";
 import { useState, useEffect } from 'react';
@@ -136,8 +137,11 @@ export default function CampaignDashboard(
           {campaign.campaignTiers &&
             <div>
               <h2 className="text-xl">Campaign Tiers</h2>
-              {campaign.campaignTiers.map((tier: CampaignTier) =>
-                <div>{tier.name}</div>
+              {campaign.campaignTiers.map((tier: CampaignTier, index: number) =>
+                <CampaignTierCard
+                  key={index}
+                  tier={tier}
+                />
               )}
             </div>
           }

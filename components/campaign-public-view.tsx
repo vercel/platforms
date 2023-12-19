@@ -1,13 +1,14 @@
 "use client";
 
 import useEthereum from "@/hooks/useEthereum";
-import { Campaign } from "@prisma/client";
+import { Campaign, CampaignTier } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
 import { getCampaign, updateCampaign } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { Button } from "@/components/ui/button";
 import CampaignContributeButton from "@/components/campaign-contribute-button";
+import CampaignTierCard from "@/components/campaign-tier-card";
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -82,49 +83,41 @@ export default function CampaignPublicView(
       ) : !campaign || !campaign.organizationId ? (
         <div>Campaign not found</div>
       ) : (
-        <div>
-          <div className="space-y-4 my-4">
-            <h1 className="text-2xl font-bold my-6">{campaign.name}</h1>
-            <div>
-              Hosted by
-              <Link href={`/`} className="font-bold">
-                {` ${campaign.organization.name}`}
-              </Link>
-            </div>
-            <div className="mb-6 flex flex-col space-y-4">
-              <div className="flex justify-between space-x-4">
-                <Progress
-                  value={getProgress(totalContributions, campaign.thresholdWei)}
-                  className="h-6 w-[80%]"
-                />
+        <div className="flex space-x-16">
+          <div className="flex-grow 0 flex-basis 2/3">
+            <div className="space-y-4">
+              <h1 className="text-2xl font-bold mb-6">{campaign.name}</h1>
+              <div>
+                Hosted by
+                <Link href={`/`} className="font-bold">
+                  {` ${campaign.organization.name}`}
+                </Link>
               </div>
-              <div className="flex space-x-8">
-                <p className="text-sm">
-                  {`${ethers.formatEther(totalContributions)} of ${ethers.formatEther(campaign.thresholdWei)} ETH funded`}
-                </p>
-                <p className="text-sm">
-                  {`${numBackers} backers`}
-                </p>
+              <div className="mb-6 flex flex-col space-y-4">
+                <div className="flex space-x-8">
+                </div>
               </div>
+              <p>{campaign.content}</p>
+              {campaign.campaignTiers &&
+                <div>
+                  <h2 className="text-xl">Campaign Tiers</h2>
+                  {campaign.campaignTiers.map((tier: CampaignTier, index: number) =>
+                    <CampaignTierCard
+                      key={index}
+                      tier={tier}
+                    />
+                  )}
+                </div>
+              }
             </div>
-            <p>{campaign.content}</p>
-            {campaign.deadline && 
-              <div className="flex space-x-4 items-center">
-                {`Deadline: ${campaign.deadline.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric'})}`}
-              </div>
-            }
-            <div className="my=2">
-              {campaign.requireApproval ? "Requires approval" : "No approval required"}
-            </div>
+          </div>
+          <div className="flex-grow 0 flex-basis 1/3">
             <CampaignContributeButton
-                campaign={campaign}
-                subdomain={subdomain}
-                onComplete={triggerRefresh}
-              />
-            <div>
-              <h2>Tiers</h2>
-              {campaign.campaignTiers}
-            </div>
+              campaign={campaign}
+              subdomain={subdomain}
+              onComplete={triggerRefresh}
+              className={"p-4 border border-gray-500 rounded-md"}
+            />
           </div>
         </div>
       )}
