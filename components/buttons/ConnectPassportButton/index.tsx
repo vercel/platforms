@@ -1,5 +1,7 @@
 "use client";
-import PrimaryButton, { PrimaryButtonProps } from "@/components/buttons/primary-button";
+import PrimaryButton, {
+  PrimaryButtonProps,
+} from "@/components/buttons/primary-button";
 // import { EdDSATicketPCDPackage } from "@pcd/eddsa-ticket-pcd";
 import {
   SignInMessagePayload,
@@ -239,8 +241,11 @@ function ConnectPassportButton({
         ...user,
         proof: signatureProof,
         _raw: pcdStr,
-        redirect: false,
+        redirect: true,
+        callbackUrl,
       });
+
+      console.error(response?.error);
       if (response?.ok && !response?.error) {
         router.replace(callbackUrl);
       }
