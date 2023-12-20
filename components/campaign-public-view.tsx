@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import CampaignContributeButton from "@/components/campaign-contribute-button";
 import CampaignTierCard from "@/components/campaign-tier-card";
 import { Progress } from "@/components/ui/progress"
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 
@@ -24,8 +23,6 @@ export default function CampaignPublicView(
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const router = useRouter();
 
   const numBackers = 12;  // TEMP
 
@@ -116,7 +113,7 @@ export default function CampaignPublicView(
               campaign={campaign}
               subdomain={subdomain}
               onComplete={triggerRefresh}
-              className={"p-4 border border-gray-500 rounded-md"}
+              className={"p-4 border border-gray-500 rounded-md min-w-52"}
             />
           </div>
         </div>

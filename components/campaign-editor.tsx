@@ -1,10 +1,11 @@
 "use client";
 
 import useEthereum from "@/hooks/useEthereum";
-import { Campaign, CampaignTier } from "@prisma/client";
+import { Campaign, CampaignTier, Form } from "@prisma/client";
 import { useState, useEffect } from 'react';
-import { ethers } from "ethers";
-import { getCampaign, updateCampaign, upsertCampaignTiers } from "@/lib/actions";
+import { Result, ethers } from "ethers";
+import { getCampaign, updateCampaign, upsertCampaignTiers,
+  getOrganizationForms } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/form-builder/date-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+// import { Select } from "@/components/ui/select";
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { useRouter } from "next/navigation";
 import CampaignTierEditor from "@/components/campaign-tier-editor";
@@ -24,6 +26,7 @@ interface EditedFields {
   content?: string;
   requireApproval?: boolean;
   deadline?: Date;
+  formId?: string;
 }
 
 interface Payload {
@@ -34,6 +37,7 @@ interface Payload {
   requireApproval?: boolean;
   deadline?: Date | null;
   campaignTiers?: CampaignTier[] | null;
+  formId?: string;
 }
 
 export default function CampaignEditor(
@@ -43,13 +47,15 @@ export default function CampaignEditor(
   const { getContributionTotal, getContractBalance } = useEthereum();
   const [totalContributions, setTotalContributions] = useState(0);
   const [contractBalance, setContractBalance] = useState(BigInt(0));
+  const [forms, setForms] = useState<Form[]>([]);
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [campaignTiers, setCampaignTiers] = useState<CampaignTier[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editedCampaign, setEditedCampaign] = useState<EditedFields>(
     { name: undefined, thresholdETH: undefined, content: undefined,
-      deadline: undefined, requireApproval: undefined });
+      deadline: undefined, requireApproval: undefined,
+      formId: undefined });
   const [editingTierIndex, setEditingTierIndex] = useState<number | null>(null);
 
   const router = useRouter();
@@ -59,7 +65,7 @@ export default function CampaignEditor(
       if (result) {
         setCampaign(result);
         setCampaignTiers(result.campaignTiers);
-        // console.log('useeffect campaign tiers:', result.campaignTiers);
+        getOrganizationForms(result.organizationId).then(setForms);
       }
     }).then(() => setLoading(false));
   }, [refreshFlag, campaignId]);
@@ -115,7 +121,8 @@ export default function CampaignEditor(
     setEditingTierIndex(null);
   };
 
-  const handleFieldChange = (field: string, value: string | boolean | Date) => {
+  const handleFieldChange = (field: string, value: string | string[] | boolean | Date | ((prevState: string[]) => string[])) => {
+    console.log('handling');
     setEditedCampaign(prev => ({ ...prev, [field]: value }));
   };
 
@@ -128,6 +135,7 @@ export default function CampaignEditor(
       if (editedCampaign.content) payload.content = editedCampaign.content ?? null;
       if (editedCampaign.requireApproval !== undefined) payload.requireApproval = editedCampaign.requireApproval;
       if (editedCampaign.deadline) payload.deadline = editedCampaign.deadline;
+      if (editedCampaign.formId) payload.formId = editedCampaign.formId
 
       try {
         await updateCampaign(
@@ -249,6 +257,22 @@ export default function CampaignEditor(
                   </ToggleGroup.Item>
                 </ToggleGroup.Root>
               </div>
+            </div>
+            <div className="my-4">
+              <h2 className="text-xl">Application Form</h2>
+              <select
+                value={editedCampaign.formId}
+                onChange={(e) => handleFieldChange('formId', e.target.value)}
+                disabled={isPublic}
+                className="text-black"
+              >
+                <option value="">Select a Form</option>
+                {forms.map((form) => (
+                  <option key={form.id} value={form.id}>
+                    {form.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <h2 className="text-xl">Campaign Tiers</h2>

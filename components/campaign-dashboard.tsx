@@ -118,7 +118,7 @@ export default function CampaignDashboard(
               </div>
             }
             <div className="my=2">
-              {campaign.requireApproval ? "Requires approval" : "No approval required"}
+              {campaign.requireApproval ? "Requires approval" : "Anyone can contribute"}
             </div>
             <div className="my-2">
               {campaign.deployed
@@ -133,6 +133,9 @@ export default function CampaignDashboard(
               })}`
               : "Not launched yet"}
             </div>
+          </div>
+          <div>
+            {campaign.form.name}
           </div>
           {campaign.campaignTiers &&
             <div>
