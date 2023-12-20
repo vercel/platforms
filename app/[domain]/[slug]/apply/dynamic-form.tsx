@@ -118,7 +118,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
       return;
     }
     if ("id" in response) {
-      toast.success("Successfully submitted respone to " + props.form.name);
+      toast.success("Successfully submitted response to " + props.form.name);
       router.refresh();
     }
   }
@@ -126,7 +126,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
   return (
     <CustomForm {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
-        {orderedQuestions.map((question) => {
+        {orderedQuestions.map((question: Question) => {
           switch (question.type) {
             case QuestionType.SHORT_TEXT:
               return (
@@ -211,6 +211,7 @@ export function DynamicForm(props: { form: Form & { questions: Question[] } }) {
                 />
               );
             case QuestionType.DROPDOWN:
+              return null;
             case QuestionType.SELECT:
               return (
                 <FormField
