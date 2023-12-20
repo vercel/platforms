@@ -1,6 +1,7 @@
 import { Bed } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import _ from 'lodash';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -74,4 +75,25 @@ export const calcRoomCapacity = (roomWithBedsType: RoomWithBedsType) =>
 
 export function calcAccommodationUnitCapacity(rooms: RoomWithBedsType[]) {
   return rooms.reduce((total, room) => total + calcRoomCapacity(room), 0);
+}
+
+
+function replaceNullWithUndefined(obj: Record<any, any>) {
+  return _.transform(obj, function(result: any, value, key) {
+    if (_.isObject(value)) {
+      result[key] = replaceNullWithUndefined(value);
+    } else {
+      result[key] = value === null ? undefined : value;
+    }
+  });
+}
+
+function replaceUndefinedWithNull(obj: Record<any, any>) {
+  return _.transform(obj, function(result: any, value, key) {
+    if (_.isObject(value)) {
+      result[key] = replaceUndefinedWithNull(value);
+    } else {
+      result[key] = value === undefined ? null : value;
+    }
+  });
 }

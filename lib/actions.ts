@@ -17,6 +17,7 @@ import {
   EmailSubscriberInterest,
   Campaign,
   CampaignTier,
+  CampaignContribution,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -2059,6 +2060,12 @@ export const upsertOrganizationLinks = withOrganizationAuth(
     return nextPageLinks;
   },
 );
+export type CampaignWithData = Campaign & {
+  organization : Organization,
+  contributions: CampaignContribution[],
+  campaignTiers: CampaignTier[],
+  form: Form,
+}
 
 export const getCampaign = async (id: string) => {
   const campaign = await prisma.campaign.findUnique({
@@ -2072,7 +2079,7 @@ export const getCampaign = async (id: string) => {
       form: true,
     },
   });
-  return campaign ?? undefined;
+  return campaign as CampaignWithData ?? undefined;
 };
 
 export const upsertCampaignTiers = withOrganizationAuth(

@@ -7,10 +7,11 @@ import React, { useState } from 'react';
 import useEthereum from "@/hooks/useEthereum";
 import { ethers } from "ethers";
 import { useRouter } from "next/navigation";
+import { CampaignWithData } from "@/lib/actions";
 
 
 interface CampaignContributeButtonProps {
-  campaign: Campaign;
+  campaign: CampaignWithData;
   subdomain: string;
   onComplete: () => void;
   className: string;

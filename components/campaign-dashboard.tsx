@@ -7,11 +7,12 @@ import useEthereum from "@/hooks/useEthereum";
 import { Campaign, CampaignTier } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
-import { getCampaign, updateCampaign } from "@/lib/actions";
+import { CampaignWithData, getCampaign, updateCampaign } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation";
+
 
 
 export default function CampaignDashboard(
@@ -21,7 +22,7 @@ export default function CampaignDashboard(
   const { getContributionTotal, getContractBalance } = useEthereum();
   const [totalContributions, setTotalContributions] = useState(BigInt(0));
   const [contractBalance, setContractBalance] = useState(BigInt(0));
-  const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
+  const [campaign, setCampaign] = useState<CampaignWithData | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
   const [deadline, setDeadline] = useState(undefined);
