@@ -63,7 +63,7 @@ export default function FormCard({
       <Separator />
       <Link href={`/city/${organization.subdomain}/forms/${form.id}/results`}>
         <CardFooter className="bg-gray-50 dark:bg-gray-900 py-4">
-          <span>
+          <span className="hover:text-gray-500">
             {form.formResponse?.length === 0
               ? "No responses"
               : `${form.formResponse?.length.toString()} response`}

@@ -80,7 +80,7 @@ export default function FormResponseDataTable({
       user: formResponse.user.name,
     };
 
-    formResponse.answers.forEach((answer) => {
+    formResponse.answers.forEach((answer: Answer) => {
       row[answer.questionId] = answer;
     });
 

@@ -281,7 +281,7 @@ function ConnectPassportButton({
             ? user.email
             : props.children
             ? props.children
-            : "Signin with ZuPass"}
+            : "Sign in with ZuPass"}
         </span>
       </span>
     </PrimaryButton>
