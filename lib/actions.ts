@@ -36,6 +36,7 @@ import {
   calcAccommodationUnitCapacity,
   calcRoomCapacity,
   getBlurDataURL,
+  getCityUrl,
 } from "@/lib/utils";
 import supabase from "./supabase";
 import {
@@ -849,13 +850,11 @@ export const createEventRole = withEventAuth(
         data: {
           name,
           description,
-        },
-      });
-
-      await prisma.eventRole.create({
-        data: {
-          eventId: event.id,
-          roleId: role.id,
+          eventRole: {
+            create: {
+              eventId: event.id,
+            }
+          }
         },
       });
 
@@ -924,6 +923,39 @@ export const deleteEventRole = withEventRoleAuth(
         }),
       ]);
       return response;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
+
+export const createOrgRole = withOrganizationAuth(
+  async (formData: FormData, organization: Organization) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+
+    try {
+      const role = await prisma.role.create({
+        data: {
+          name,
+          description,
+          organizationRole: {
+            create: {
+              organizationId: organization.id,
+            },
+          },
+        },
+      });
+
+      return role;
     } catch (error: any) {
       return {
         error: error.message,
@@ -2280,7 +2312,7 @@ export const createInvite = async (data: any) => {
 
   // generate invite hash
   const { url, expires, hash } = await createInviteParams({
-    baseUrl: FORA_APP_URL,
+    baseUrl: getCityUrl(org),
     id: invite.id,
     email: input.data.email,
     organizationId: org.id,

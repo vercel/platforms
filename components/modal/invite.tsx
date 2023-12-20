@@ -31,8 +31,10 @@ import { CreateInviteSchema } from "@/lib/schema";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import FormButton from "./form-button";
-import { SessionData } from "@/lib/auth";
 import { createInvite } from "@/lib/actions";
+import { Textarea } from "../ui/textarea";
+import FormTitle from "../form-title";
+import FormFooter from "../form/form-footer";
 
 export default function InviteModal({
   roles,
@@ -67,15 +69,17 @@ export default function InviteModal({
   async function onSubmit(data: z.infer<typeof CreateInviteSchema>) {
     try {
       setLoading(true);
-      createInvite(data)
+      const promise = createInvite(data);
       toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
+        title: "Processed invites.",
       });
+      const { success, error } = await promise;
+      if (!success) {
+        toast({
+          title: "Failed to send invite",
+          description: <span>{error}</span>,
+        });
+      }
       router.refresh();
       // }
       modal?.hide();
@@ -84,61 +88,59 @@ export default function InviteModal({
     } finally {
       setLoading(false);
     }
-    // const result = await issueTicket(data, { params: { subdomain, path } }, "");
-
-    // if (result.error) {
-    //   console.log("result.error: ", result.error);
-    //   toast({
-    //     title: "Error occurred",
-    //     description: result.error || "Please try again later 🤕",
-    //   });
-    // } else {
   }
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-4 rounded-md bg-gray-200/80 p-4 backdrop-blur-lg dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
+        className="w-full rounded-md bg-gray-200/50 backdrop-blur-xl  dark:bg-gray-900/50 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-800"
       >
-        <FormField
-          control={form.control}
-          name="roleId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Role</FormLabel>
-              <Select onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {roles.map((role) => {
-                    return (
-                      <SelectItem key={role.id} value={role.id}>
-                        {role.name}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <Input {...field} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormButton loading={loading} text="Send Invite"></FormButton>
+        <div className="relative flex flex-col space-y-4 p-5 md:p-10">
+          <FormTitle>Send invite to join {organization.name}</FormTitle>
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <Input {...field} />
+                <FormMessage />
+                <FormDescription></FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="roleId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Role</FormLabel>
+                <Select onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {roles.map((role) => {
+                      return (
+                        <SelectItem key={role.id} value={role.id}>
+                          {role.name}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <FormFooter>
+          <FormButton loading={loading} text="Send Invite"></FormButton>
+        </FormFooter>
       </form>
     </Form>
   );

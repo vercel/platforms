@@ -4,6 +4,7 @@ import { Event, Organization } from "@prisma/client";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { BarChart } from "lucide-react";
 import Link from "next/link";
+import { format } from 'date-fns';
 
 export default function EventCard({
   event,
@@ -39,6 +40,10 @@ export default function EventCard({
           <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-gray-500 dark:text-gray-400">
             {event.description}
           </p>
+
+          {event.startingAt ? <div className="text-sm font-medium">
+            {format(event.startingAt, 'EEEE, MMMM d, yyyy')}
+          </div> : null}
         </div>
       </Link>
       {showAnalytics && (

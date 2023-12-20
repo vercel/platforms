@@ -8,7 +8,7 @@ interface FormTitleProps extends HTMLAttributes<HTMLHeadingElement> {
 export default function FormTitle({ className, ...props }: FormTitleProps) {
   return (
     <h1
-      className={cn("p-1 font-serif text-3xl dark:text-white mb-7", className)}
+      className={cn("p-1 font-serif text-3xl dark:text-white mb-5", className)}
       {...props}
     />
   );

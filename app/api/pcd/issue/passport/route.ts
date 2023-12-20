@@ -1,10 +1,6 @@
 // import { getEdDSAPublicKey } from "@pcd/eddsa-pcd";
 import { NextResponse } from "next/server";
-import {
-  genPassport,
-  genSignedPCDIdentity,
-  issueEmailPCDs,
-} from "../generate";
+import { genPassport, genSignedPCDIdentity, issueEmailPCDs } from "../generate";
 import {
   SemaphoreSignaturePCD,
   SemaphoreSignaturePCDPackage,
@@ -21,10 +17,7 @@ export async function GET() {
   passport.add(emailPCD);
 
   //   new SemaphoreSignaturePCD('')
-//   const signedPCDIdentity = await genSignedPCDIdentity(identity);
-
-//   SemaphoreSignaturePCDPackage.serialize(identityPCD);
-  //   verifyFeedCredential()
+  //   const signedPCDIdentity = await genSignedPCDIdentity(identity);
 
   const passportString = await passport.serializeCollection();
   const emailPCDString = passport.serialize(emailPCD);

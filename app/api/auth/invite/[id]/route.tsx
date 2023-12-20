@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { FORA_APP_URL } from "@/lib/utils";
+import { FORA_APP_URL, getCityUrl } from "@/lib/utils";
 
 export async function GET(
   req: NextRequest,
@@ -45,6 +45,8 @@ export async function GET(
     return notFound();
   }
 
+  const successRedirectUrl = getCityUrl(org)
+
   if (!user) {
     // New User Signup
 
@@ -82,7 +84,7 @@ export async function GET(
       return notFound();
     }
 
-    return NextResponse.redirect(`${FORA_APP_URL}/city/${org.subdomain}`);
+    return NextResponse.redirect(successRedirectUrl);
   } else {
     // Existing User Joined New City
 
@@ -97,7 +99,7 @@ export async function GET(
     });
     if (userRole) {
       console.error("User already has this role.");
-      return NextResponse.redirect(`${FORA_APP_URL}/city/${org.subdomain}`);
+      return NextResponse.redirect(successRedirectUrl);
     }
 
     // accept invite by issuing role and updating invite
@@ -118,6 +120,6 @@ export async function GET(
         },
       }),
     ]);
-    return NextResponse.redirect(`${FORA_APP_URL}/city/${org.subdomain}`);
+    return NextResponse.redirect(successRedirectUrl);
   }
 }

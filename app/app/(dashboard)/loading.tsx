@@ -5,7 +5,7 @@ export default function Loading() {
     <>
       <div className="h-10 w-48 animate-pulse rounded-md bg-gray-100 dark:bg-gray-800" />
       <div className="flex h-full w-full items-center justify-center">
-        <LoadingDots />
+        {/* <LoadingDots /> */}
       </div>
     </>
   );

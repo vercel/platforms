@@ -12,6 +12,7 @@ import { Button } from "../../ui/button";
 import Link from "next/link";
 import OrganizationPageLinksGrid from "../social-media/organization-page-links-grid";
 import OrganizationPagePrimaryButton from "../social-media/organization-page-primary-button";
+import EventsFeed from "../events-app/events-feed";
 
 // Replace 'mySubdomain' with the actual subdomain of your organization
 
@@ -22,6 +23,8 @@ export default async function SocialLandingPage({
   sitedata: Organization & { pageLinks: OrganizationPageLinks[] };
   params: { domain: string };
 }) {
+  const domain = params.domain.replace("%3A", ":");
+
   let primaryPageLink: OrganizationPageLinks | undefined;
   const nonPrimaryPageLinks = sitedata.pageLinks.filter((pageLink) => {
     if (pageLink.isPrimary) {
@@ -30,6 +33,7 @@ export default async function SocialLandingPage({
     }
     return true;
   });
+
 
   return (
     <>
@@ -74,14 +78,18 @@ export default async function SocialLandingPage({
                 {sitedata.description}
               </p>
               <SocialButtons sitedata={sitedata} />
-              <MutualAttendenceCitizens organization={sitedata} />
+              {/* <MutualAttendenceCitizens organization={sitedata} /> */}
             </div>
 
             <LineGradient />
           </div>
         </div>
-        <OrganizationPageLinksGrid pageLinks={sitedata.pageLinks} />
-        <SocialLandingPageFeed params={params} sitedata={sitedata} />
+        <OrganizationPageLinksGrid pageLinks={nonPrimaryPageLinks} />
+        {sitedata.subdomain === "vitalia" || sitedata.subdomain === "fora" ? (
+          <EventsFeed domain={domain} />
+        ) : (
+          <SocialLandingPageFeed params={params} sitedata={sitedata} />
+        )}
       </div>
     </>
   );

@@ -34,17 +34,23 @@ const getPlaceholderImage = (role: Role) => {
 
 export default function RoleCard({
   role,
+  org,
   event,
+  href,
 }: {
   role: Role;
-  event: Event & { organization: Organization };
+  org: Organization;
+  event?: Event;
+  href?: string;
 }) {
   const roleImage = getPlaceholderImage(role);
+  const linkTo =
+    href || event
+      ? `/city/${org.subdomain}/event/${event?.path}/roles/${role.id}`
+      : `/city/${org.subdomain}/roles/${role.id}`;
+
   return (
-    <Link
-      href={`/city/${event.organization.subdomain}/events/${event.path}/roles/${role.id}`}
-      className="flex flex-col overflow-hidden rounded-lg"
-    >
+    <Link href={linkTo} className="flex flex-col overflow-hidden rounded-lg">
       <div className="relative rounded-lg border border-gray-200 pb-5 shadow-md transition-all hover:shadow-xl dark:border-gray-700 dark:hover:border-white">
         {roleImage ? (
           <div className="w-full">
@@ -61,7 +67,7 @@ export default function RoleCard({
           <h3 className="my-0 truncate font-cal text-xl font-bold tracking-wide dark:text-white">
             {role.name}
           </h3>
-          <p className="text-gray-500 mt-2 line-clamp-1 text-sm font-normal leading-snug dark:text-gray-400">
+          <p className="mt-2 line-clamp-1 text-sm font-normal leading-snug text-gray-500 dark:text-gray-400">
             {role.description}
           </p>
         </div>
