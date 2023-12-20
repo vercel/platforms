@@ -17,6 +17,7 @@ import {
   EmailSubscriberInterest,
   Campaign,
   CampaignTier,
+  CampaignContribution,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -2060,6 +2061,13 @@ export const upsertOrganizationLinks = withOrganizationAuth(
   },
 );
 
+export type CampaignWithData = Campaign & {
+  organization: Organization,
+  contributions: CampaignContribution[],
+  campaignTiers: CampaignTier[],
+  form: Form,
+}
+
 export const getCampaign = async (id: string) => {
   const campaign = await prisma.campaign.findUnique({
     where: {
@@ -2072,7 +2080,7 @@ export const getCampaign = async (id: string) => {
       form: true,
     },
   });
-  return campaign ?? undefined;
+  return campaign as CampaignWithData ?? undefined;
 };
 
 export const upsertCampaignTiers = withOrganizationAuth(
@@ -2119,4 +2127,60 @@ export const getOrganizationForms = async (organizationId: string) => {
   }
 
   return organization.form;
+}
+
+export const getFormResponses = async (formId: string) => {
+  const formResponses = await prisma.formResponse.findMany({
+    where: {
+      formId: formId,
+    },
+    include: {
+      user: true,
+      answers: true,
+    },
+  });
+
+  return formResponses;
+}
+
+export const getFormQuestions = async (formId: string) => {
+  const questions = await prisma.question.findMany({
+    where: {
+      formId: formId
+    },
+    include: {
+      form: true,
+    },
+  });
+
+  return questions;
+}
+
+export const getUserCampaignApplication = async (campaignId: string, userId: string) => {
+  const campaignApplication = await prisma.campaignApplication.findFirst({
+    where: {
+      campaignId: campaignId,
+      userId: userId,
+    }
+  });
+
+  return campaignApplication;
+}
+
+export const createCampaignApplication = async (campaignId: string) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const campaignApplication = await prisma.campaignApplication.create({
+    data: {
+      campaignId: campaignId,
+      userId: session.user.id,
+    }
+  })
+
+  return campaignApplication;
 }

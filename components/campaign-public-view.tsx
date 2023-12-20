@@ -4,7 +4,7 @@ import useEthereum from "@/hooks/useEthereum";
 import { Campaign, CampaignTier } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
-import { getCampaign, updateCampaign } from "@/lib/actions";
+import { getCampaign, createCampaignApplication } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { Button } from "@/components/ui/button";
 import CampaignContributeButton from "@/components/campaign-contribute-button";
@@ -112,7 +112,12 @@ export default function CampaignPublicView(
             <CampaignContributeButton
               campaign={campaign}
               subdomain={subdomain}
-              onComplete={triggerRefresh}
+              // TODO createCampaignApplication only works if the user is signed in,
+              // should prompt signin if they aren't
+              onComplete={() =>{
+                triggerRefresh;
+                createCampaignApplication(campaign.id);
+              }}
               className={"p-4 border border-gray-500 rounded-md min-w-52"}
             />
           </div>
