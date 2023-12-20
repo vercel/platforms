@@ -2069,6 +2069,7 @@ export const getCampaign = async (id: string) => {
       organization: true,
       contributions: true,
       campaignTiers: true,
+      form: true,
     },
   });
   return campaign ?? undefined;
@@ -2102,3 +2103,20 @@ export const upsertCampaignTiers = withOrganizationAuth(
     return tiers;
   }
 )
+
+export const getOrganizationForms = async (organizationId: string) => {
+  const organization = await prisma.organization.findUnique({
+    where: {
+      id: organizationId,
+    },
+    include: {
+      form: true,
+    },
+  });
+
+  if (!organization || !organization.form) {
+    return [];
+  }
+
+  return organization.form;
+}
