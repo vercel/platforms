@@ -2064,7 +2064,7 @@ export type CampaignWithData = Campaign & {
   organization : Organization,
   contributions: CampaignContribution[],
   campaignTiers: CampaignTier[],
-  form: Form,
+  form: Form | null,
 }
 
 export const getCampaign = async (id: string) => {
@@ -2079,7 +2079,7 @@ export const getCampaign = async (id: string) => {
       form: true,
     },
   });
-  return campaign as CampaignWithData ?? undefined;
+  return campaign  ?? undefined;
 };
 
 export const upsertCampaignTiers = withOrganizationAuth(

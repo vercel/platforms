@@ -136,7 +136,7 @@ export default function CampaignDashboard(
             </div>
           </div>
           <div>
-            {campaign.form.name}
+            {campaign?.form?.name}
           </div>
           {campaign.campaignTiers &&
             <div>
