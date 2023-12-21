@@ -31,9 +31,9 @@ const ResponseModal: React.FC<ResponseModalProps> = (
     Object.entries(rowData)
       .filter(([key, value]) => value && typeof value === 'object' && 'questionId' in value)
       .map(([key, value]) => (
-        <div>
+        <div key={key}>
           <h2 className="text-xl">{value.questionId}</h2>
-          <p key={key} className="text-sm text-gray-200">{JSON.stringify(value.value)}</p>
+          <p className="text-sm text-gray-200">{JSON.stringify(value.value)}</p>
         </div>
       ))
   )
