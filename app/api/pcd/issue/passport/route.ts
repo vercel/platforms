@@ -1,14 +1,8 @@
-// import { getEdDSAPublicKey } from "@pcd/eddsa-pcd";
 import { NextResponse } from "next/server";
-import { genPassport, genSignedPCDIdentity, issueEmailPCDs } from "../generate";
-import {
-  SemaphoreSignaturePCD,
-  SemaphoreSignaturePCDPackage,
-} from "@pcd/semaphore-signature-pcd";
-import { verifyFeedCredential } from "@pcd/passport-interface";
+import { genPassport, issueEmailPCDs } from "../generate";
 
 export async function POST() {
-  const { passport, identity, identityPCD } = await genPassport();
+  const { passport, identity } = await genPassport();
   const emailPCD = await issueEmailPCDs({
     email: "test@example.com",
     identityCommitment: identity.commitment.toString(),

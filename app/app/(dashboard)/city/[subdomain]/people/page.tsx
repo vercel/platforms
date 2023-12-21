@@ -2,6 +2,7 @@ import { getUsersWithRoleInOrganization } from "@/lib/actions";
 import { getSession } from "@/lib/auth";
 import OrgTableCard from "@/components/data-tables/org/card";
 import NotFoundCity from "../not-found";
+import prisma from "@/lib/prisma";
 
 export default async function PeoplePage({
   params,
