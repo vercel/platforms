@@ -7,18 +7,18 @@ import { useState, useEffect } from 'react';
 
 interface CampaignTierEditorProps {
   tier: CampaignTier;
-  onSave: (tier: CampaignTier) => void;
+  onSave: (tier: Partial<CampaignTier>) => void;
 }
 
-interface EditedFields {
-  name?: string;
-  description?: string;
-  quantity?: number;
-  price?: number;
-}
+// interface EditedFields {
+//   name?: string;
+//   description?: string;
+//   quantity?: number;
+//   price?: number;
+// }
 
 export default function CampaignTierEditor({ tier, onSave }: CampaignTierEditorProps) {
-  const [editedTier, setEditedTier] = useState<EditedFields>(
+  const [editedTier, setEditedTier] = useState<Partial<CampaignTier>>(
     { name: tier.name, description: tier.description, quantity: tier.quantity,
       price: tier.price });
 
@@ -64,7 +64,7 @@ export default function CampaignTierEditor({ tier, onSave }: CampaignTierEditorP
         <Input 
           type="number"
           id="price"
-          value={editedTier.price}
+          value={editedTier.price ?? ''}
           placeholder="Price (ETH)"
           onChange={(e) => handleFieldChange('price', e.target.valueAsNumber)}
         />

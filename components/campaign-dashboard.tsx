@@ -8,14 +8,14 @@ import { Campaign, CampaignTier, Question, Form, FormResponse,
   Answer, User } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
-import { getCampaign, updateCampaign, CampaignWithData,
-  getFormResponses, getFormQuestions } from "@/lib/actions";
+import { getCampaign, CampaignWithData, getFormResponses, getFormQuestions } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation";
 import CampaignResponseDataTable from "@/components/form-response-table/campaign-response-data-table";
 import prisma from "@/lib/prisma";
+
 
 
 export default function CampaignDashboard(
@@ -152,7 +152,7 @@ export default function CampaignDashboard(
             </div>
           </div>
           <div>
-            {campaign.form.name}
+            {campaign?.form?.name}
           </div>
           {campaign.campaignTiers &&
             <div className="mt-12">

@@ -4,7 +4,7 @@ import useEthereum from "@/hooks/useEthereum";
 import { Campaign, CampaignTier } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
-import { getCampaign, createCampaignApplication } from "@/lib/actions";
+import { getCampaign, createCampaignApplication, CampaignWithData } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { Button } from "@/components/ui/button";
 import CampaignContributeButton from "@/components/campaign-contribute-button";
@@ -20,7 +20,7 @@ export default function CampaignPublicView(
   const { getContributionTotal, getContractBalance } = useEthereum();
   const [totalContributions, setTotalContributions] = useState(BigInt(0));
   const [contractBalance, setContractBalance] = useState(BigInt(0));
-  const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
+  const [campaign, setCampaign] = useState<CampaignWithData | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
 

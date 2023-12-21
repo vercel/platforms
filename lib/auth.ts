@@ -415,11 +415,11 @@ export function withCampaignAuth(action: any) {
       };
     }
 
-    const application = await prisma.CampaignApplication.findUnique({
+    const application = await prisma.campaignApplication.findFirst({
       where: {
         userId: session.user.id,
         campaignId: context.params.id,
-      }
+      },
     });
     if (!application) {
       return {
@@ -428,8 +428,8 @@ export function withCampaignAuth(action: any) {
     }
     if (application.status != "ACCEPTED") {
       return {
-        error: application.status == "Application hasn't been accepted yet"
-      }
+        error: "Application hasn't been accepted yet",
+      };
     }
 
     return action(formData, application, key);

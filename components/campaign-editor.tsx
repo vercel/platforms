@@ -26,7 +26,7 @@ interface EditedFields {
   content?: string;
   requireApproval?: boolean;
   deadline?: Date;
-  formId?: string;
+  formId?: string | null;
 }
 
 interface Payload {
@@ -37,7 +37,7 @@ interface Payload {
   requireApproval?: boolean;
   deadline?: Date | null;
   campaignTiers?: CampaignTier[] | null;
-  formId?: string;
+  formId?: string | null;
 }
 
 export default function CampaignEditor(
@@ -103,8 +103,9 @@ export default function CampaignEditor(
   }, [campaign]);
 
   const addNewTier = () => {
+    // @ts-expect-error
     setCampaignTiers([...campaignTiers, { name: '', description: '',
-      quantity: undefined, price: 0 }]);
+      quantity: null, price: 0 }]);
   };
 
   const updateTier = (index: number, updatedTier: EditedFields) => {
@@ -261,7 +262,7 @@ export default function CampaignEditor(
             <div className="my-4">
               <h2 className="text-xl">Application Form</h2>
               <select
-                value={editedCampaign.formId}
+                value={editedCampaign.formId || ""}
                 onChange={(e) => handleFieldChange('formId', e.target.value)}
                 disabled={isPublic}
                 className="text-black"
