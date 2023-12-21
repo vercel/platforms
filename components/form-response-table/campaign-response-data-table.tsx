@@ -109,7 +109,7 @@ export default function CampaignResponseDataTable({
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         rowData={selectedRow ? selectedRow.original : null}
-        questionTexts={questionTexts}
+        questionsData={questionsData}
       />
     </div>
   );

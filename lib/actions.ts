@@ -2279,18 +2279,12 @@ export const upsertOrganizationLinks = withOrganizationAuth(
     return nextPageLinks;
   },
 );
+
 export type CampaignWithData = Campaign & {
   organization : Organization,
   contributions: CampaignContribution[],
   campaignTiers: CampaignTier[],
   form: Form | null,
-}
-
-export type CampaignWithData = Campaign & {
-  organization: Organization,
-  contributions: CampaignContribution[],
-  campaignTiers: CampaignTier[],
-  form: Form,
 }
 
 export const getCampaign = async (id: string) => {
