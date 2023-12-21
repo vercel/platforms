@@ -17,7 +17,6 @@ import CampaignResponseDataTable from "@/components/form-response-table/campaign
 import prisma from "@/lib/prisma";
 
 
-
 export default function CampaignDashboard(
   {campaignId, subdomain}:
   {campaignId: string, subdomain: string, isPublic: boolean}

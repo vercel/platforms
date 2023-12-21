@@ -41,6 +41,7 @@ export default function CampaignResponseDataTable({
           return {
             ...formResponse,
             status: campaignApplication!.status,
+            applicationId: campaignApplication!.id,
           };
         })
       );
@@ -50,6 +51,7 @@ export default function CampaignResponseDataTable({
           id: formResponse.id,
           user: formResponse.user.name,
           status: formResponse.status,
+          applicationId: formResponse.applicationId,
         };
 
         formResponse.answers.forEach((answer: Answer) => {
@@ -79,7 +81,7 @@ export default function CampaignResponseDataTable({
         const answer = row.getValue(question.id) as Answer;
         return (
           <div
-            className="flex flex-wrap space-x-1 truncate max-w-[220px]"
+            className="flex flex-wrap space-x-1 truncate max-w-[220px] cursor-pointer"
             onClick={() => handleRowClick(row)}
           >
             {formatAnswer(question, answer)}

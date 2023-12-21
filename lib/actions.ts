@@ -18,6 +18,7 @@ import {
   Campaign,
   CampaignTier,
   CampaignContribution,
+  ApplicationStatus,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import {
@@ -2189,4 +2190,17 @@ export const createCampaignApplication = async (campaignId: string) => {
   })
 
   return campaignApplication;
+}
+
+export const respondToCampaignApplication = async (applicationId: string,
+  isApprove: boolean) =>
+{
+  await prisma.campaignApplication.update({
+    where: {
+      id: applicationId
+    },
+    data: {
+      status: isApprove ? ApplicationStatus.ACCEPTED : ApplicationStatus.REJECTED
+    }
+  });
 }
