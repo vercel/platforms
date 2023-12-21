@@ -7,7 +7,7 @@ import {
 } from "@pcd/semaphore-signature-pcd";
 import { verifyFeedCredential } from "@pcd/passport-interface";
 
-export async function GET() {
+export async function POST() {
   const { passport, identity, identityPCD } = await genPassport();
   const emailPCD = await issueEmailPCDs({
     email: "test@example.com",
@@ -22,7 +22,7 @@ export async function GET() {
   const passportString = await passport.serializeCollection();
   const emailPCDString = passport.serialize(emailPCD);
 
-  const feed = await fetch("http://api.localhost:3000/pcd/feeds/", {
+  const feed = await fetch("/api/pcd/feeds/", {
     method: "POST",
     body: JSON.stringify({
       feedId: "1",

@@ -1,7 +1,6 @@
 "use client";
 
 import LaunchCampaignButton from "@/components/launch-campaign-button";
-import CampaignWithdrawButton from "@/components/campaign-withdraw-button";
 import useEthereum from "@/hooks/useEthereum";
 import { Campaign } from "@prisma/client";
 import { useState, useEffect } from 'react';
