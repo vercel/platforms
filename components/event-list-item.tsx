@@ -2,6 +2,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import EventListItemImage from "./event-list-item-image";
 import { EventFeedEvent, uniqueHosts } from "./event-list";
+import { HostedByInline } from "./event-page";
 
 export default function EventListItem({
   event,
@@ -17,13 +18,13 @@ export default function EventListItem({
 
   const hosts = uniqueHosts(event);
   return (
-    <>
+    <div>
       {event.startingAt ? (
         <div className="mb-3 space-x-2">
           <span className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100">
             {format(event.startingAt, "MMM d, yyyy")}
           </span>
-          <span className="font-medium text-gray-600 dark:text-gray-400">
+          <span className="font-medium text-gray-750 dark:text-gray-250">
             {format(event.startingAt, "EEEE")}
           </span>
         </div>
@@ -43,7 +44,9 @@ export default function EventListItem({
             <h3 className="mb-2 truncate text-lg font-medium tracking-wide text-gray-800 dark:text-gray-200">
               {event.name}
             </h3>
-            
+
+            <HostedByInline users={Object.values(hosts).map(eventHost => eventHost)} />
+
             {/* <p className="mb-2 line-clamp-2 text-sm font-normal leading-snug text-gray-650 dark:text-gray-350">
               {event.description}
             </p> */}
@@ -57,6 +60,6 @@ export default function EventListItem({
           </div>
         </div>
       </Link>
-    </>
+    </div>
   );
 }

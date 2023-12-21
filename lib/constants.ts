@@ -28,3 +28,5 @@ export const brand = {
   darkBase: "#2C2A26",
   gray,
 };
+
+export const MAX_MB_UPLOAD = 5;

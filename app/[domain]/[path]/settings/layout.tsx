@@ -2,17 +2,16 @@ import { ReactNode } from "react";
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
-import EventSettingsNav from "./nav";
 import { getUserEventRoles, userHasOrgRole } from "@/lib/actions";
+import EventSettingsNav from "@/app/app/(dashboard)/city/[subdomain]/events/[path]/settings/nav";
 
 export default async function EventSettingsLayout({
   params,
   children,
 }: {
-  params: { subdomain?: string, domain?: string, path: string };
+  params: { domain: string; path: string };
   children: ReactNode;
 }) {
-  const subdomain = params.subdomain || params.domain || undefined;
   const session = await getSession();
   if (!session) {
     redirect("/login");
@@ -23,8 +22,8 @@ export default async function EventSettingsLayout({
       path: params.path,
     },
     include: {
-      organization: true
-    }
+      organization: true,
+    },
   });
 
   if (!event) {
@@ -33,18 +32,18 @@ export default async function EventSettingsLayout({
 
   const userEventRoles = await getUserEventRoles(session.user.id, event.id);
 
-  const isHost = userEventRoles.findIndex(eventRole => eventRole.role.name === 'Host') > -1;
-
+  const isHost =
+    userEventRoles.findIndex((eventRole) => eventRole.role.name === "Host") >
+    -1;
 
   if (!isHost) {
-    notFound();
+    return <p>You must be a host to edit the settings</p>;
   }
   if (!event) {
     notFound();
   }
 
   const url = `${event.organization.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${event.path}`;
-
 
   return (
     <>

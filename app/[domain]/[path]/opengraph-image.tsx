@@ -9,9 +9,9 @@ export const runtime = "edge";
 export default async function PostOG({
   params,
 }: {
-  params: { domain: string; slug: string };
+  params: { domain: string; path: string };
 }) {
-  const { domain, slug } = params;
+  const { domain, path } = params;
 
   const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
     ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
@@ -27,7 +27,7 @@ export default async function PostOG({
         organization.subdomain = ${subdomain}
         OR organization."customDomain" = ${domain}
     )
-    AND post.slug = ${slug}
+    AND post.path = ${path}
   LIMIT 1;
 `;
 

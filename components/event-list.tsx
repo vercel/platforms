@@ -12,13 +12,13 @@ export type EventFeedEvent = Event & {
       image: string | null;
       name: string;
       userRoles: {
-        user: EventFeedEventHost;
+        user: EventHost;
       }[];
     };
   }[];
 };
 
-type EventFeedEventHost = {
+export type EventHost = {
   id: string;
   ens_name: string | null;
   image: string | null;
@@ -27,7 +27,7 @@ type EventFeedEventHost = {
 };
 
 export const uniqueHosts = (event: EventFeedEvent) => {
-  let acc = {} as Record<string, EventFeedEventHost>;
+  let acc = {} as Record<string, EventHost>;
   event.eventRole.forEach((eventRole) => {
     if (eventRole.role.name === "Host") {
       eventRole.role.userRoles.forEach((userRole) => {
@@ -41,9 +41,11 @@ export const uniqueHosts = (event: EventFeedEvent) => {
 export default async function EventList({
   domain,
   limit,
+  upcoming,
 }: {
   domain: string;
   limit?: number;
+  upcoming?: boolean
 }) {
   const organization = await getSiteData(domain);
   if (!organization) {
@@ -53,9 +55,7 @@ export default async function EventList({
   const events = await prisma.event.findMany({
     where: {
       organizationId: organizationId,
-      startingAt: {
-        lt: new Date(),
-      },
+      ...(upcoming !== undefined ? { startingAt: { [upcoming ? 'gt' : 'lt']: new Date() } } : {}),
     },
     include: {
       //   organization: {},

@@ -1,9 +1,9 @@
 import PaperDoc from "@/components/paper-doc";
 import { SessionData, getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import notFound from "../../[slug]/not-found";
+import notFound from "../../[path]/not-found";
 import FormTitle from "@/components/form-title";
-import DynamicForm from "../../[slug]/apply/dynamic-form";
+import DynamicForm from "../../[path]/apply/dynamic-form";
 import AuthModalCoverProvider from "@/components/auth-modal-cover-provider";
 import {
   Answer,

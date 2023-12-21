@@ -13,7 +13,7 @@ import {
   Link,
 } from "@react-email/components";
 import { render } from "@react-email/render";
-import { brand } from "@/lib/colors";
+import { brand } from "@/lib/constants";
 import { Organization } from "@prisma/client";
 import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY as string);

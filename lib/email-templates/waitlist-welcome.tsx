@@ -12,7 +12,7 @@ import {
   Hr,
 } from "@react-email/components";
 import { render } from "@react-email/render";
-import { brand } from "@/lib/colors";
+import { brand } from "@/lib/constants";
 
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

@@ -16,7 +16,7 @@ export default async function AllEvents({
 
   return (
     <div className="flex max-w-screen-xl flex-col space-y-20 md:p-8">
-        <CreateEventModal organization={organization} />
+        <CreateEventModal organization={organization}  redirectBaseUrl={'/'} />
     </div>
   );
 }

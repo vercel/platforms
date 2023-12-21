@@ -39,10 +39,10 @@ export function combineDateAndTime(date: Date, timeInMs: string) {
 
 export default function CreateEventModal({
   organization,
-  redirectUrl,
+  redirectBaseUrl,
 }: {
   organization: Organization;
-  redirectUrl?: string;
+  redirectBaseUrl?: string;
 }) {
   const router = useRouter();
   const modal = useModal();
@@ -77,7 +77,7 @@ export default function CreateEventModal({
   }, [data.name]);
 
   const onSubmit = async (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     const startingAt =
       data.startingAtDate && data.startingAtTime
         ? combineDateAndTime(data.startingAtDate, data.startingAtTime)
@@ -104,7 +104,11 @@ export default function CreateEventModal({
       } else {
         const { imageBlurhash, createdAt, updatedAt, ...org } = organization;
         toast.success(`Successfully created Event!`);
-        router.push(redirectUrl ? redirectUrl : `/city/${organization.subdomain}/events/${res.path}`);
+        router.push(
+          redirectBaseUrl
+            ? `${redirectBaseUrl}${res.path}`
+            : `/city/${organization.subdomain}/events/${res.path}`,
+        );
       }
     });
   };

@@ -810,16 +810,55 @@ export const editUser = async (
     };
   }
   const value = formData.get(key) as string;
-
+  
   try {
-    const response = await prisma.user.update({
-      where: {
-        id: session.user.id,
-      },
-      data: {
-        [key]: value,
-      },
-    });
+    let response;
+    if (key === "image" || key === "logo") {
+      if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+        return {
+          error: "Missing SUPABASE_URL or SUPABASE_ANON_KEY token.",
+        };
+      }
+
+      const file = formData.get(key) as File;
+      const filename = `${nanoid()}.${file.type.split("/")[1]}`;
+
+      const { data, error } = await supabase.storage
+        .from("media")
+        .upload(`/public/${filename}`, file);
+
+      // const { url } = await put(filename, file, {
+      //   access: "public",
+      // });
+
+      if (error || !data?.path) {
+        return {
+          error: "Failed to upload image.",
+        };
+      }
+      const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/media/${data.path}`;
+
+      // const blurhash = key === "image" ? await getBlurDataURL(url) : null;
+
+      response = await prisma.user.update({
+        where: {
+          id: session.user.id,
+        },
+        data: {
+          image: url,
+        },
+      });
+    } else {
+      response = await prisma.user.update({
+        where: {
+          id: session.user.id,
+        },
+        data: {
+          [key]: value,
+        },
+      });
+    }
+
     return response;
   } catch (error: any) {
     if (error.code === "P2002") {
@@ -853,8 +892,8 @@ export const createEventRole = withEventAuth(
           eventRole: {
             create: {
               eventId: event.id,
-            }
-          }
+            },
+          },
         },
       });
 

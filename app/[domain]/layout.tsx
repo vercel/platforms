@@ -5,8 +5,10 @@ import { getSiteData } from "@/lib/fetchers";
 import { fontMapper } from "@/styles/fonts";
 import { Metadata } from "next";
 import { cn } from "@/lib/utils";
-import Drawer from "@/components/site-drawer";
-import Profile from "@/components/profile";
+// import Drawer from "@/components/site-drawer";
+// import Profile from "@/components/profile";
+import EventsAppLayout from "@/components/site-layouts/events-app";
+// import Profile from "@/components/profile";
 // import Drawer from "@/components/drawer";
 
 export async function generateMetadata({
@@ -103,14 +105,7 @@ export default async function SiteLayout({
 
   return (
     <div className={cn(fontMapper[data.font], "min-h-screen")}>
-      <Drawer>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Profile />
-        </Suspense>
-      </Drawer>
-      <div className="min-h-screen dark:bg-gray-900 md:pl-60 xl:pr-60">
-        {children}
-      </div>
+      <EventsAppLayout>{children}</EventsAppLayout>
     </div>
   );
 }

@@ -3,20 +3,16 @@
 // import Link from "next/link";
 import {
   ArrowLeft,
-  BarChart3,
   Edit3,
   Ticket,
   LayoutDashboard,
   Menu,
-  Newspaper,
   Settings,
-  Users,
   Users2,
-  ClipboardSignature,
-  BedSingle,
   Home,
   FileSymlink,
   CircleDollarSign,
+  CalendarDays,
 } from "lucide-react";
 
 import { Drama } from "./icons/drama";
@@ -82,6 +78,7 @@ export type UsersUniqueOrgsWithRolesRecord = Record<
 
 export default function Drawer({ children }: { children: ReactNode }) {
   const segments = useSelectedLayoutSegments();
+
   const { subdomain, path, formId } = useParams() as {
     subdomain?: string;
     path?: string;
@@ -91,6 +88,8 @@ export default function Drawer({ children }: { children: ReactNode }) {
   const [organizationSubdomain, setOrganizationSubdomain] = useState<
     string | undefined
   >();
+
+  
 
   useEffect(() => {
     if (segments[0] === "post" && subdomain) {
@@ -257,7 +256,7 @@ export default function Drawer({ children }: { children: ReactNode }) {
         name: "Events",
         href: `/events`,
         isActive: segments.includes("events"),
-        icon: <Ticket width={18} />,
+        icon: <CalendarDays width={18} />,
       },
       // {
       //   name: "Housing",

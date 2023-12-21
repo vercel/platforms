@@ -31,10 +31,10 @@ export default function CreateRoleModal() {
               if ("error" in res && res.error) {
                 toast.error(res.error);
               } else {
-                const role = res as Role;
-                router.refresh();
-                modal?.hide();
                 toast.success(`Successfully created role!`);
+                const role = res as Role;
+                modal?.hide();
+                router.refresh();
               }
             },
           );
@@ -45,9 +45,11 @@ export default function CreateRoleModal() {
                 toast.error(res.error);
               } else {
                 const role = res as Role;
-                router.refresh();
-                modal?.hide();
                 toast.success(`Successfully created role!`);
+
+                modal?.hide();
+
+                router.refresh();
               }
             },
           );
@@ -63,7 +65,7 @@ export default function CreateRoleModal() {
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="name"
-            className="text-sm font-medium text-gray-500 dark:text-gray-400"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
             Role Name
           </label>
@@ -109,7 +111,7 @@ export default function CreateRoleModal() {
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="description"
-            className="text-sm font-medium text-gray-500"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
             Description
           </label>

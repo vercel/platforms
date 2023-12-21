@@ -17,7 +17,7 @@ import Siwe from "@/components/siwe";
 export default async function CheckoutPage({
   params,
 }: {
-  params: { slug: string; domain: string; ticketTierId: string };
+  params: { path: string; domain: string; ticketTierId: string };
 }) {
   const session = await getSession();
   // if (!session) {
@@ -57,7 +57,7 @@ export default async function CheckoutPage({
             Price: {ticketTier.price} {ticketTier.currency}
           </p>
           <h3>Event: {ticketTier.event.name}</h3>
-          {!session && <Siwe callbackUrl={`/${params.slug}/apply/${ticketTierId}`} />}
+          {!session && <Siwe callbackUrl={`/${params.path}/apply/${ticketTierId}`} />}
           {session && ticketTier.form && (
             <DynamicForm form={ticketTier.form} />
           )}
