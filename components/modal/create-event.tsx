@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import LoadingDots from "@/components/icons/loading-dots";
 import { useModal } from "./provider";
 import va from "@vercel/analytics";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Organization } from "@prisma/client";
 import FormButton from "./form-button";
 import { DatePicker } from "../form-builder/date-picker";
@@ -39,8 +39,10 @@ export function combineDateAndTime(date: Date, timeInMs: string) {
 
 export default function CreateEventModal({
   organization,
+  redirectBaseUrl,
 }: {
   organization: Organization;
+  redirectBaseUrl?: string;
 }) {
   const router = useRouter();
   const modal = useModal();
@@ -74,7 +76,8 @@ export default function CreateEventModal({
     }));
   }, [data.name]);
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     const startingAt =
       data.startingAtDate && data.startingAtTime
         ? combineDateAndTime(data.startingAtDate, data.startingAtTime)
@@ -101,7 +104,11 @@ export default function CreateEventModal({
       } else {
         const { imageBlurhash, createdAt, updatedAt, ...org } = organization;
         toast.success(`Successfully created Event!`);
-        router.push(`/city/${organization.subdomain}/events/${res.path}`);
+        router.push(
+          redirectBaseUrl
+            ? `${redirectBaseUrl}${res.path}`
+            : `/city/${organization.subdomain}/events/${res.path}`,
+        );
       }
     });
   };
@@ -176,6 +183,7 @@ export default function CreateEventModal({
             className="w-full rounded-md border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900  focus:outline-none focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-700 dark:focus:ring-white"
           />
         </div>
+
         <div className="flex flex-col space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-400">
             Starts At
@@ -195,6 +203,7 @@ export default function CreateEventModal({
             />
           </div>
         </div>
+
         <div className="flex flex-col space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-400">
             Ends At

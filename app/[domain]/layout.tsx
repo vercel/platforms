@@ -5,6 +5,11 @@ import { getSiteData } from "@/lib/fetchers";
 import { fontMapper } from "@/styles/fonts";
 import { Metadata } from "next";
 import { cn } from "@/lib/utils";
+// import Drawer from "@/components/site-drawer";
+// import Profile from "@/components/profile";
+import EventsAppLayout from "@/components/site-layouts/events-app";
+// import Profile from "@/components/profile";
+// import Drawer from "@/components/drawer";
 
 export async function generateMetadata({
   params,
@@ -16,13 +21,7 @@ export async function generateMetadata({
   if (!data) {
     return null;
   }
-  const {
-    name,
-    title,
-    description,
-    image,
-    logo,
-  } = data as {
+  const { name, title, description, image, logo } = data as {
     name: string;
     title?: string;
     description: string;
@@ -92,7 +91,7 @@ export default async function SiteLayout({
   const data = await getSiteData(domain);
 
   if (!data) {
-    notFound();
+    return notFound();
   }
 
   // Optional: Redirect to custom domain if it exists
@@ -106,8 +105,7 @@ export default async function SiteLayout({
 
   return (
     <div className={cn(fontMapper[data.font], "min-h-screen")}>
-      {/* <SiteNav params={params} /> */}
-      {children}
+      <EventsAppLayout>{children}</EventsAppLayout>
     </div>
   );
 }

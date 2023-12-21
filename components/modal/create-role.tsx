@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import { createEventRole } from "@/lib/actions";
+import { createEventRole, createOrgRole } from "@/lib/actions";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "./provider";
 import { useState } from "react";
@@ -14,7 +14,7 @@ export default function CreateRoleModal() {
   const modal = useModal();
   const { subdomain, path } = useParams() as {
     subdomain: string;
-    path: string;
+    path?: string;
   };
 
   const [data, setData] = useState({
@@ -24,21 +24,38 @@ export default function CreateRoleModal() {
 
   return (
     <form
-      action={async (data: FormData) =>
-        createEventRole(data, { params: { subdomain, path } }, null).then(
-          (res: Role | { error: string }) => {
-            if ("error" in res && res.error) {
-              toast.error(res.error);
-            } else {
-              const role = res as Role;
-              router.refresh();
-              modal?.hide();
-              toast.success(`Successfully created role!`);
-            }
-          },
-        )
-      }
-      className="w-full rounded-md bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
+      action={async (data: FormData) => {
+        if (path) {
+          createEventRole(data, { params: { subdomain, path } }, null).then(
+            (res: Role | { error: string }) => {
+              if ("error" in res && res.error) {
+                toast.error(res.error);
+              } else {
+                toast.success(`Successfully created role!`);
+                const role = res as Role;
+                modal?.hide();
+                router.refresh();
+              }
+            },
+          );
+        } else {
+          createOrgRole(data, { params: { subdomain } }, null).then(
+            (res: Role | { error: string }) => {
+              if ("error" in res && res.error) {
+                toast.error(res.error);
+              } else {
+                const role = res as Role;
+                toast.success(`Successfully created role!`);
+
+                modal?.hide();
+
+                router.refresh();
+              }
+            },
+          );
+        }
+      }}
+      className="w-full rounded-md bg-gray-200/50 backdrop-blur-xl  dark:bg-gray-900/50 md:max-w-md md:border md:border-gray-200 md:shadow dark:md:border-gray-700"
     >
       <div className="relative flex flex-col space-y-4 p-5 md:p-10">
         <h2 className="font-cal text-2xl dark:text-gray-100">
@@ -48,7 +65,7 @@ export default function CreateRoleModal() {
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="name"
-            className="text-sm font-medium text-gray-500 dark:text-gray-400"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
             Role Name
           </label>
@@ -94,7 +111,7 @@ export default function CreateRoleModal() {
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="description"
-            className="text-sm font-medium text-gray-500"
+            className="text-sm font-medium text-gray-700 dark:text-gray-400"
           >
             Description
           </label>

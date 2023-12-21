@@ -2,6 +2,7 @@ import Form from "@/components/form";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { editUser } from "@/lib/actions";
+import { MAX_MB_UPLOAD } from "@/lib/constants";
 
 export default async function SettingsPage() {
   const session = await getSession();
@@ -28,14 +29,14 @@ export default async function SettingsPage() {
           handleSubmit={editUser}
         />
         <Form
-          title="Email"
-          description="Your email on this app."
-          helpText="Please enter a valid email."
+          title="Profile Image"
+          description="The image for your profile. Accepted formats: .png, .jpg, .jpeg"
+          helpText={`Max file size ${MAX_MB_UPLOAD}MB. Recommended size 1080x1080.`}
           inputAttrs={{
-            name: "email",
-            type: "email",
-            defaultValue: session.user.email!,
-            placeholder: "panic@thedis.co",
+            name: "image",
+            type: "file",
+            defaultValue: session.user?.image!,
+            aspectRatio: "aspect-square",
           }}
           handleSubmit={editUser}
         />

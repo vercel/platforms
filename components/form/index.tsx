@@ -28,10 +28,14 @@ export default function Form({
     placeholder?: string;
     maxLength?: number;
     pattern?: string;
+    aspectRatio?: "aspect-video" | "aspect-square";
   };
   handleSubmit: any;
 }) {
-  const params = useParams() as { subdomain?: string; path?: string };
+  const params = useParams() as { subdomain?: string; path?: string, domain?: string };
+
+  const subdomain = params.subdomain || params.domain || undefined
+
   const router = useRouter();
   const { update } = useSession();
   return (
@@ -45,12 +49,13 @@ export default function Form({
         ) {
           return;
         }
-        handleSubmit(data, { params }, inputAttrs.name).then(
+        handleSubmit(data, { ...params, ...(params.domain ? ({ subdomain: params.domain}) : ({})),  }, inputAttrs.name).then(
           async (res: any) => {
             if (res.error) {
               toast.error(res.error);
             } else {
-              if (params.subdomain) {
+              if (subdomain) {
+                await update();
                 router.refresh();
               } else {
                 await update();
@@ -72,6 +77,7 @@ export default function Form({
           <Uploader
             defaultValue={inputAttrs.defaultValue}
             name={inputAttrs.name}
+            aspectRatio={inputAttrs.aspectRatio}
           />
         ) : inputAttrs.name === "font" ? (
           <div className="flex max-w-sm items-center overflow-hidden rounded-lg border border-gray-600">

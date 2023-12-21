@@ -1,17 +1,18 @@
 import { Suspense } from "react";
 import OrganizationEvents from "@/components/events";
 import PlacholderCard from "@/components/placeholder-card";
-import OpenModalButton from "@/components/open-modal-button";
-import CreateEventModal from "@/components/modal/create-event";
+// import OpenModalButton from "@/components/open-modal-button";
+// import CreateEventModal from "@/components/modal/create-event";
 import prisma from "@/lib/prisma";
 import NotFoundSite from "../not-found";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import PagePadding from "@/components/page-padding";
 
 export default async function AllEvents({
   params,
 }: {
-  params: { subdomain: string; id: string };
+  params: { subdomain: string };
 }) {
   const organization = await prisma.organization.findUnique({
     where: {
@@ -24,7 +25,7 @@ export default async function AllEvents({
   }
 
   return (
-    <div className="flex max-w-screen-xl flex-col space-y-12 p-8">
+    <PagePadding>
       <div className="flex flex-col space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="font-cal text-3xl font-bold dark:text-white">
@@ -48,6 +49,6 @@ export default async function AllEvents({
           <OrganizationEvents organizationId={organization.id} />
         </Suspense>
       </div>
-    </div>
+    </PagePadding>
   );
 }

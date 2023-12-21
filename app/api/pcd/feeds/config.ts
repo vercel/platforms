@@ -31,7 +31,7 @@ export type Ticket = z.infer<typeof TicketSchema>;
 
 const TicketFileSchema = z.record(z.array(TicketSchema));
 
-export async function loadTickets(): Promise<Record<string, Ticket[]>> {
+export function loadTickets(): Record<string, Ticket[]> {
   const tickets = TicketFileSchema.parse(mockTickets);
   return tickets;
 }

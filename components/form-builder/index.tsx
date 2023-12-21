@@ -72,6 +72,7 @@ import { QuestionSettingsForm } from "./question-settings-form";
 import { DateRangePicker } from "./date-range-picker";
 import { DatePicker } from "./date-picker";
 import YesNoIcon from "./svgs/yes-no";
+import { Session } from "next-auth";
 
 type FormAndContext = Form & {
   organization: Organization;
@@ -85,15 +86,7 @@ export default function FormBuilder({
   session,
   form,
 }: {
-  session: {
-    user: {
-      id: string;
-      name: string;
-      username: string;
-      email: string;
-      image: string;
-    };
-  };
+  session: Session;
   form: FormAndContext;
 }) {
   const [isEditing, setIsEditing] = useState(false);

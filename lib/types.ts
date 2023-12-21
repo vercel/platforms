@@ -1,3 +1,5 @@
+import { Role, User } from "@prisma/client";
+
 export type DomainVerificationStatusProps =
   | "Valid Configuration"
   | "Invalid Configuration"
@@ -55,4 +57,19 @@ export interface DomainVerificationResponse {
     value: string;
     reason: string;
   }[];
+}
+
+export type UsersWithRolesInOrg = (User & { roles: Role[] })[];
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string;
+      email: string;
+      image?: string;
+      eth_address?: string;
+      ens_name?: string;
+    };
+  }
 }
