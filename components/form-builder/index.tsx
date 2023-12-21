@@ -228,7 +228,7 @@ export default function FormBuilder({
           <div className="flex flex-col">
             <DrawerLink
               name={"Back to Forms"}
-              href={`/city/${form.organization.subdomain}/events/${form.event?.path}/forms`}
+              href={`/city/${form.organization.subdomain}/forms`}
               icon={<ArrowLeft width={18} />}
               isActive={false}
             />

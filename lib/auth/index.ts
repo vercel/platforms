@@ -409,6 +409,40 @@ export function withPostAuth(action: any) {
   };
 }
 
+export function withCampaignAuth(action: any) {
+  return async (
+    formData: FormData | null,
+    context: { params: { id: string } },
+    key: string | null,
+  ) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    const application = await prisma.campaignApplication.findFirst({
+      where: {
+        userId: session.user.id,
+        campaignId: context.params.id,
+      },
+    });
+    if (!application) {
+      return {
+        error: "Application not found",
+      };
+    }
+    if (application.status != "ACCEPTED") {
+      return {
+        error: "Application hasn't been accepted yet",
+      };
+    }
+
+    return action(formData, application, key);
+  };
+}
+
 async function findOrCreateUserFromEth(ethAddress: string) {
   // Check if account already exists
   let account = await prisma.account.findFirst({

@@ -1,15 +1,20 @@
 "use client";
 
 import LaunchCampaignButton from "@/components/launch-campaign-button";
+import CampaignWithdrawButton from "@/components/campaign-withdraw-button";
+import CampaignTierCard from "@/components/campaign-tier-card";
 import useEthereum from "@/hooks/useEthereum";
-import { Campaign } from "@prisma/client";
+import { Campaign, CampaignTier, Question, Form, FormResponse,
+  Answer, User } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
-import { getCampaign, updateCampaign } from "@/lib/actions";
+import { getCampaign, CampaignWithData, getFormResponses, getFormQuestions } from "@/lib/actions";
 import LoadingDots from "@/components/icons/loading-dots";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation";
+import CampaignResponseDataTable from "@/components/form-response-table/campaign-response-data-table";
+import prisma from "@/lib/prisma";
 
 
 export default function CampaignDashboard(
@@ -19,10 +24,12 @@ export default function CampaignDashboard(
   const { getContributionTotal, getContractBalance } = useEthereum();
   const [totalContributions, setTotalContributions] = useState(BigInt(0));
   const [contractBalance, setContractBalance] = useState(BigInt(0));
-  const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
+  const [campaign, setCampaign] = useState<CampaignWithData | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loading, setLoading] = useState(true);
   const [deadline, setDeadline] = useState(undefined);
+  const [formQuestions, setFormQuestions] = useState<(Question & { form: Form })[] | undefined>([]);
+  const [formResponses, setFormResponses] = useState<(FormResponse & { answers: Answer[]; user: User })[] | undefined>([]);
 
   const router = useRouter();
 
@@ -36,6 +43,7 @@ export default function CampaignDashboard(
     getCampaign(campaignId).then(result => {
       if (result) {
         setCampaign(result);
+
       }
     }).then(() => setLoading(false));
   }, [refreshFlag, campaignId]);
@@ -57,6 +65,16 @@ export default function CampaignDashboard(
     }
     fetchContractBalance();
 
+    async function fetchFormResponses() {
+      if (campaign && campaign.formId) {
+        const questions = await getFormQuestions(campaign.formId);
+        setFormQuestions(questions);
+
+        const formResponses = await getFormResponses(campaign.formId);
+        setFormResponses(formResponses);
+      }
+    }
+    fetchFormResponses();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaign]);
 
@@ -116,7 +134,7 @@ export default function CampaignDashboard(
               </div>
             }
             <div className="my=2">
-              {campaign.requireApproval ? "Requires approval" : "No approval required"}
+              {campaign.requireApproval ? "Requires approval" : "Anyone can contribute"}
             </div>
             <div className="my-2">
               {campaign.deployed
@@ -131,10 +149,21 @@ export default function CampaignDashboard(
               })}`
               : "Not launched yet"}
             </div>
-            {campaign.deployed && (
-              <p>{`Contract balance: ${ethers.formatEther(contractBalance)} ETH`}</p>
-            )}
           </div>
+          <div>
+            {campaign?.form?.name}
+          </div>
+          {campaign.campaignTiers &&
+            <div className="mt-12">
+              <h2 className="text-xl">Campaign Tiers</h2>
+              {campaign.campaignTiers.map((tier: CampaignTier, index: number) =>
+                <CampaignTierCard
+                  key={index}
+                  tier={tier}
+                />
+              )}
+            </div>
+          }
           <div className="mt-4">
             {!campaign.deployed &&
               <LaunchCampaignButton
@@ -144,6 +173,16 @@ export default function CampaignDashboard(
               />
             }
           </div>
+          {formQuestions && formResponses &&
+            <div className="mt-12">
+              <h2 className="text-xl">Applications</h2>
+              <CampaignResponseDataTable
+                campaign={campaign}
+                questions={formQuestions}
+                formResponses={formResponses}
+              />
+            </div>
+          }
         </div>
       )}
     </div>

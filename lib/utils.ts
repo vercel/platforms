@@ -1,6 +1,7 @@
 import { Bed, Organization } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import _ from 'lodash';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -76,6 +77,26 @@ export function calcAccommodationUnitCapacity(rooms: RoomWithBedsType[]) {
   return rooms.reduce((total, room) => total + calcRoomCapacity(room), 0);
 }
 
+
+function replaceNullWithUndefined(obj: Record<any, any>) {
+  return _.transform(obj, function(result: any, value, key) {
+    if (_.isObject(value)) {
+      result[key] = replaceNullWithUndefined(value);
+    } else {
+      result[key] = value === null ? undefined : value;
+    }
+  });
+}
+
+function replaceUndefinedWithNull(obj: Record<any, any>) {
+  return _.transform(obj, function(result: any, value, key) {
+    if (_.isObject(value)) {
+      result[key] = replaceUndefinedWithNull(value);
+    } else {
+      result[key] = value === undefined ? null : value;
+    }
+  });
+}
 
 export const FORA_BASE_URL = process.env.NEXT_PUBLIC_ROOT_DOMAIN === 'localhost:3000' ? `http://localhost:3000` : `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 export const FORA_APP_URL = process.env.NEXT_PUBLIC_ROOT_DOMAIN === 'localhost:3000' ? `http://app.localhost:3000` : `https://app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;

@@ -12,6 +12,10 @@ import {
   QuestionType,
   Place,
   EmailSubscriberInterest,
+  Campaign,
+  CampaignTier,
+  CampaignContribution,
+  ApplicationStatus,
   User,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
@@ -47,6 +51,7 @@ import {
   DeployCampaignSchema,
   UpdateCampaignSchema,
   UpsertOrganizationLinkSchemas,
+  UpsertCampaignTierSchemas,
   CreateInviteSchema,
 } from "./schema";
 import { z } from "zod";
@@ -1426,7 +1431,6 @@ export async function getEventTicketTiers(eventId: string) {
       },
     },
   });
-  console.log({ tiers });
 
   return tiers;
 }
@@ -1488,7 +1492,6 @@ export const issueTicket = withEventAuth(
 
       return ticket;
     } catch (error: any) {
-      console.log("error: ", error);
       return {
         error: error.message,
       };
@@ -1821,7 +1824,6 @@ export const upsertPlace = withOrganizationAuth(
 
 export const deletePlace = withOrganizationAuth(
   async (id: string, organization: Organization) => {
-    console.log("id: ", id);
     // Delete the place with the provided ID
     const place = await prisma.place.delete({
       where: {
@@ -2278,6 +2280,13 @@ export const upsertOrganizationLinks = withOrganizationAuth(
   },
 );
 
+export type CampaignWithData = Campaign & {
+  organization : Organization,
+  contributions: CampaignContribution[],
+  campaignTiers: CampaignTier[],
+  form: Form | null,
+}
+
 export const getCampaign = async (id: string) => {
   const campaign = await prisma.campaign.findUnique({
     where: {
@@ -2286,10 +2295,127 @@ export const getCampaign = async (id: string) => {
     include: {
       organization: true,
       contributions: true,
+      campaignTiers: true,
+      form: true,
     },
   });
-  return campaign ?? undefined;
+  return campaign as CampaignWithData ?? undefined;
 };
+
+export const upsertCampaignTiers = withOrganizationAuth(
+  async (data: { tiers: CampaignTier[], campaign: Campaign }) => {
+    const result = UpsertCampaignTierSchemas.safeParse(data);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+
+    const txs = result.data.tiers.map((tier) => {
+      return prisma.campaignTier.upsert({
+        where: {
+          id: tier.id ?? "THIS_TEXT_JUST_TRIGGERS_A_NEW_ID_TO_BE_GENERATED",
+        },
+        create: {
+          ...tier,
+          campaignId: data.campaign.id,
+        },
+        update: {
+          ...tier,
+          campaignId: data.campaign.id,
+        },
+      })
+    })
+
+    const tiers = await prisma.$transaction(txs);
+
+    return tiers;
+  }
+)
+
+export const getOrganizationForms = async (organizationId: string) => {
+  const organization = await prisma.organization.findUnique({
+    where: {
+      id: organizationId,
+    },
+    include: {
+      form: true,
+    },
+  });
+
+  if (!organization || !organization.form) {
+    return [];
+  }
+
+  return organization.form;
+}
+
+export const getFormResponses = async (formId: string) => {
+  const formResponses = await prisma.formResponse.findMany({
+    where: {
+      formId: formId,
+    },
+    include: {
+      user: true,
+      answers: true,
+    },
+  });
+
+  return formResponses;
+}
+
+export const getFormQuestions = async (formId: string) => {
+  const questions = await prisma.question.findMany({
+    where: {
+      formId: formId
+    },
+    include: {
+      form: true,
+    },
+  });
+
+  return questions;
+}
+
+export const getUserCampaignApplication = async (campaignId: string, userId: string) => {
+  const campaignApplication = await prisma.campaignApplication.findFirst({
+    where: {
+      campaignId: campaignId,
+      userId: userId,
+    }
+  });
+
+  return campaignApplication;
+}
+
+export const createCampaignApplication = async (campaignId: string) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const campaignApplication = await prisma.campaignApplication.create({
+    data: {
+      campaignId: campaignId,
+      userId: session.user.id,
+    }
+  })
+
+  return campaignApplication;
+}
+
+export const respondToCampaignApplication = async (applicationId: string,
+  isApprove: boolean) =>
+{
+  await prisma.campaignApplication.update({
+    where: {
+      id: applicationId
+    },
+    data: {
+      status: isApprove ? ApplicationStatus.ACCEPTED : ApplicationStatus.REJECTED
+    }
+  });
+}
 
 export const createInvite = async (data: any) => {
   const input = CreateInviteSchema.safeParse(data);

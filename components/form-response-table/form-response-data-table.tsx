@@ -80,14 +80,14 @@ export default function FormResponseDataTable({
       user: formResponse.user.name,
     };
 
-    formResponse.answers.forEach((answer) => {
+    formResponse.answers.forEach((answer: Answer) => {
       row[answer.questionId] = answer;
     });
 
     return row;
   });
   return (
-    <div className="bg-gray-100 dark:bg-gray-700 md:p-8">
+    <div className="md:p-8">
       <DataTable columns={columns} data={data} />
     </div>
   );

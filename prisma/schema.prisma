@@ -35,6 +35,7 @@ model User {
   Place                Place[]
   CampaignContribution CampaignContribution[]
   invites              Invite[]
+  CampaignApplication  CampaignApplication[]
 }
 
 model Account {
@@ -270,12 +271,12 @@ model CampaignTier {
   name        String
   description String?
   quantity    Int?
-  formId      String?
-  form        Form?    @relation(fields: [formId], references: [id])
   price       Int?
   currency    String?
   campaignId  String
   campaign    Campaign @relation(fields: [campaignId], references: [id])
+  Form        Form?    @relation(fields: [formId], references: [id])
+  formId      String?
 }
 
 model Form {
@@ -453,24 +454,25 @@ model EmailSubscriber {
 }
 
 model Campaign {
-  id                String                 @id @default(cuid())
-  name              String
-  thresholdWei      BigInt                 @default(0)
-  content           String?                @db.Text
-  createdAt         DateTime               @default(now())
-  updatedAt         DateTime               @updatedAt
-  deployed          Boolean                @default(false)
-  timeDeployed      DateTime?
-  deployedAddress   String?
-  sponsorEthAddress String?
-  contributions     CampaignContribution[]
-  organization      Organization           @relation(fields: [organizationId], references: [id], onUpdate: Cascade)
-  organizationId    String
-  deadline          DateTime?
-  requireApproval   Boolean                @default(false)
-  form              Form?                  @relation(fields: [formId], references: [id])
-  campaignTier      CampaignTier[]
-  formId            String?
+  id                  String                 @id @default(cuid())
+  name                String
+  thresholdWei        BigInt                 @default(0)
+  content             String?                @db.Text
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  deployed            Boolean                @default(false)
+  timeDeployed        DateTime?
+  deployedAddress     String?
+  sponsorEthAddress   String?
+  contributions       CampaignContribution[]
+  organization        Organization           @relation(fields: [organizationId], references: [id], onUpdate: Cascade)
+  organizationId      String
+  deadline            DateTime?
+  requireApproval     Boolean                @default(false)
+  form                Form?                  @relation(fields: [formId], references: [id])
+  campaignTiers       CampaignTier[]
+  formId              String?
+  CampaignApplication CampaignApplication[]
 
   @@unique([name, organizationId])
 }
@@ -502,5 +504,24 @@ model Invite {
 enum InviteStatus {
   PENDING
   ACCEPTED
+  REJECTED
+}
+
+model CampaignApplication {
+  id         String            @id @default(cuid())
+  user       User              @relation(fields: [userId], references: [id])
+  campaign   Campaign          @relation(fields: [campaignId], references: [id])
+  status     ApplicationStatus @default(PENDING)
+  createdAt  DateTime          @default(now())
+  acceptedAt DateTime?
+  userId     String
+  campaignId String
+}
+
+enum ApplicationStatus {
+  NOT_SUBMITTED
+  PENDING
+  ACCEPTED
+  TIMED_OUT
   REJECTED
 }

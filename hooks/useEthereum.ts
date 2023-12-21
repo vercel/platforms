@@ -3,6 +3,7 @@ import CampaignContract from '@/protocol/campaigns/out/Campaign.sol/Campaign.jso
 import { toast } from "sonner";
 import { Campaign } from "@prisma/client";
 import { launchCampaign } from "@/lib/actions";
+import { withCampaignAuth } from "@/lib/auth";
 
 
 interface LaunchCampaignData {
