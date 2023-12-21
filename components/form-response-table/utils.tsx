@@ -27,9 +27,9 @@ export function formatAnswer(q: Question, a?: Answer) {
       const dateRange = a.value as unknown as { to: string; from: string };
       return (
         <div>
-          {formatCalendarDay(dateRange.from)}
-          <br />
-          {formatCalendarDay(dateRange.to)}
+          {`${formatCalendarDay(dateRange.from)}
+          -
+          ${formatCalendarDay(dateRange.to)}`}
         </div>
       );
     }

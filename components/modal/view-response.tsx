@@ -30,13 +30,19 @@ const ResponseModal: React.FC<ResponseModalProps> = (
   let formattedRowData = (
     Object.entries(rowData)
       .filter(([key, value]) => value && typeof value === 'object' && 'questionId' in value)
-      .map(([key, value]) => (
-        <div key={key}>
-          <h2 className="text-xl">{value.questionId}</h2>
-          <p className="text-sm text-gray-200">{JSON.stringify(value.value)}</p>
-        </div>
-      ))
-  )
+      .map(([key, value]) => {
+        const question = questionsData.find(q => q.id === value.questionId);
+        const questionText = question!.text;
+
+        return (
+          <div key={key}>
+            <h2 className="text-xl">{questionText}</h2>
+            <p className="text-sm text-gray-200">{formatAnswer(question!, value)}</p>
+          </div>
+        );
+      }
+    )
+  );
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
