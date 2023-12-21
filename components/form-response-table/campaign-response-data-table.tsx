@@ -5,16 +5,13 @@ import {
   Campaign,
   Form,
   FormResponse,
-  Prisma,
   Question,
-  QuestionType,
   User,
 } from "@prisma/client";
 import DataTable from "./data-table";
-import { Row, RowData } from "@tanstack/react-table";
+import { Row } from "@tanstack/react-table";
 import { formatAnswer } from "./utils";
 import { getUserCampaignApplication } from "@/lib/actions";
-import test from "node:test";
 import { useEffect, useState } from 'react';
 import ResponseModal from '@/components/modal/view-response';
 
@@ -31,6 +28,7 @@ export default function CampaignResponseDataTable({
   const [data, setData] = useState<Row<any>[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Row<any> | null>(null);
+  const [questionsData, setQuestionsData] = useState<(Question & { form: Form })[]>([]);
 
   useEffect(() => {
     async function fetchCampaignApplications() {
@@ -65,6 +63,7 @@ export default function CampaignResponseDataTable({
     }
 
     fetchCampaignApplications();
+    setQuestionsData(questions);
   }, [formResponses]);
 
   const handleRowClick = (row: Row<any>) => {
@@ -110,6 +109,7 @@ export default function CampaignResponseDataTable({
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         rowData={selectedRow ? selectedRow.original : null}
+        questionTexts={questionTexts}
       />
     </div>
   );
