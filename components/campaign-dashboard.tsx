@@ -155,7 +155,7 @@ export default function CampaignDashboard(
             {campaign.form.name}
           </div>
           {campaign.campaignTiers &&
-            <div>
+            <div className="mt-12">
               <h2 className="text-xl">Campaign Tiers</h2>
               {campaign.campaignTiers.map((tier: CampaignTier, index: number) =>
                 <CampaignTierCard
@@ -175,7 +175,8 @@ export default function CampaignDashboard(
             }
           </div>
           {formQuestions && formResponses &&
-            <div>
+            <div className="mt-12">
+              <h2 className="text-xl">Applications</h2>
               <CampaignResponseDataTable
                 campaign={campaign}
                 questions={formQuestions}
