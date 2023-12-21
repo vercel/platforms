@@ -1,5 +1,6 @@
 "use client";
 
+import { MAX_MB_UPLOAD } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -7,11 +8,17 @@ import { toast } from "sonner";
 export default function Uploader({
   defaultValue,
   name,
+  aspectRatio,
 }: {
   defaultValue: string | null;
   name: "image" | "logo";
+  aspectRatio?: "aspect-video" | "aspect-square";
 }) {
-  const aspectRatio = name === "image" ? "aspect-video" : "aspect-square";
+  const ratio = aspectRatio
+    ? aspectRatio
+    : name === "image"
+    ? "aspect-video"
+    : "aspect-square";
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [data, setData] = useState({
@@ -22,8 +29,8 @@ export default function Uploader({
 
   const handleUpload = (file: File | null) => {
     if (file) {
-      if (file.size / 1024 / 1024 > 50) {
-        toast.error("File size too big (max 50MB)");
+      if (file.size / 1024 / 1024 > MAX_MB_UPLOAD) {
+        toast.error(`File size too big (max ${MAX_MB_UPLOAD}MB)`);
       } else if (
         !file.type.includes("png") &&
         !file.type.includes("jpg") &&
@@ -47,10 +54,10 @@ export default function Uploader({
         htmlFor={`${name}-upload`}
         className={cn(
           "group relative mt-2 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50",
-          aspectRatio,
+          ratio,
           {
-            "max-w-screen-md": aspectRatio === "aspect-video",
-            "max-w-xs": aspectRatio === "aspect-square",
+            "max-w-screen-md": ratio === "aspect-video",
+            "max-w-xs": ratio === "aspect-square",
           },
         )}
       >

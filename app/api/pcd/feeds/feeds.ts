@@ -1,45 +1,47 @@
 import {
   EdDSATicketPCD,
   EdDSATicketPCDPackage,
-  ITicketData
+  ITicketData,
 } from "@pcd/eddsa-ticket-pcd";
 import { EmailPCDPackage } from "@pcd/email-pcd";
 import {
   FeedHost,
   PollFeedRequest,
   PollFeedResponseValue,
-  verifyFeedCredential
+  verifyFeedCredential,
 } from "@pcd/passport-interface";
 import {
   DeleteFolderPermission,
   PCDAction,
   PCDActionType,
   PCDPermissionType,
-  ReplaceInFolderPermission
+  ReplaceInFolderPermission,
 } from "@pcd/pcd-collection";
 import { ArgumentTypeName, SerializedPCD } from "@pcd/pcd-types";
-// import { SemaphoreSignaturePCDPackage } from "@pcd/semaphore-signature-pcd";
+import { SemaphoreSignaturePCDPackage } from "@pcd/semaphore-signature-pcd";
 import _ from "lodash";
 import { Ticket, loadTickets } from "./config";
+import path from "node:path";
 // import { ZUPASS_PUBLIC_KEY } from "./main";
 
 export const ZUPASS_PUBLIC_KEY = JSON.parse(
-  process.env.ZUPASS_PUBLIC_KEY as string
+  process.env.ZUPASS_PUBLIC_KEY as string,
 );
+// console.log('ZUPASS_PUBLIC_KEY')
+// const PUBLIC_KEY = "8afb266cb9c2f78a042d97dd02488ffc7d726def6c314112f0a1a96c30326e02"
 
+const fullPath = path.join(__dirname, "../artifacts/");
+SemaphoreSignaturePCDPackage.init?.({
+  zkeyFilePath: fullPath + "16.zkey",
+  wasmFilePath: fullPath + "16.wasm",
+});
 
-// const fullPath = path.join(__dirname, "../artifacts/");
-// SemaphoreSignaturePCDPackage.init?.({
-//   zkeyFilePath: fullPath + "16.zkey",
-//   wasmFilePath: fullPath + "16.wasm"
-// });
+export let feedHost: FeedHost = initFeedHost();
 
-export let feedHost: FeedHost;
-
-export async function initFeedHost() {
-  const tickets = await loadTickets();
+export function initFeedHost() {
+  const tickets = loadTickets();
   const folders = Object.keys(tickets);
-  feedHost = new FeedHost(
+  return new FeedHost(
     [
       {
         feed: {
@@ -50,27 +52,28 @@ export async function initFeedHost() {
             return [
               {
                 folder,
-                type: PCDPermissionType.ReplaceInFolder
+                type: PCDPermissionType.ReplaceInFolder,
               } as ReplaceInFolderPermission,
               {
                 folder,
-                type: PCDPermissionType.DeleteFolder
-              } as DeleteFolderPermission
+                type: PCDPermissionType.DeleteFolder,
+              } as DeleteFolderPermission,
             ];
           }),
           credentialRequest: {
             signatureType: "sempahore-signature-pcd",
-            pcdType: "email-pcd"
-          }
+            pcdType: "email-pcd",
+          },
         },
         handleRequest: async (
-          req: PollFeedRequest
+          req: PollFeedRequest,
         ): Promise<PollFeedResponseValue> => {
+          console.log("inside handle request");
           if (req.pcd === undefined) {
             throw new Error(`Missing credential`);
           }
           const { payload } = await verifyFeedCredential(req.pcd);
-
+          console.log("payload: ", payload);
           if (payload?.pcd && payload.pcd.type === EmailPCDPackage.name) {
             const pcd = await EmailPCDPackage.deserialize(payload?.pcd.pcd);
             const verified =
@@ -80,27 +83,27 @@ export async function initFeedHost() {
               return {
                 actions: await feedActionsForEmail(
                   pcd.claim.emailAddress,
-                  pcd.claim.semaphoreId
-                )
+                  pcd.claim.semaphoreId,
+                ),
               };
             }
           }
           return { actions: [] };
-        }
-      }
+        },
+      },
     ],
-    "http://localhost:3100/feeds",
-    "Test Feed Server"
+    "http://api.localhost:3000/pcd/feeds",
+    "Test Feed Server",
   );
 }
 
 async function feedActionsForEmail(
   emailAddress: string,
-  semaphoreId: string
+  semaphoreId: string,
 ): Promise<PCDAction[]> {
   const ticketsForUser: Record<string, Ticket[]> = {};
 
-  const tickets = await loadTickets();
+  const tickets = loadTickets();
 
   for (const [folder, folderTickets] of Object.entries(tickets)) {
     for (const ticket of folderTickets) {
@@ -120,15 +123,15 @@ async function feedActionsForEmail(
     actions.push({
       type: PCDActionType.DeleteFolder,
       folder,
-      recursive: false
+      recursive: false,
     });
 
     actions.push({
       type: PCDActionType.ReplaceInFolder,
       folder,
       pcds: await Promise.all(
-        tickets.map((ticket) => issueTicketPCD(ticket, semaphoreId))
-      )
+        tickets.map((ticket) => issueTicketPCD(ticket, semaphoreId)),
+      ),
     });
   }
 
@@ -137,7 +140,7 @@ async function feedActionsForEmail(
 
 async function issueTicketPCD(
   ticket: Ticket,
-  semaphoreId: string
+  semaphoreId: string,
 ): Promise<SerializedPCD<EdDSATicketPCD>> {
   const ticketData: ITicketData = {
     ...ticket,
@@ -146,22 +149,22 @@ async function issueTicketPCD(
     isRevoked: false,
     attendeeSemaphoreId: semaphoreId,
     timestampConsumed: 0,
-    timestampSigned: Date.now()
+    timestampSigned: Date.now(),
   };
 
   const pcd = await EdDSATicketPCDPackage.prove({
     ticket: {
       value: ticketData,
-      argumentType: ArgumentTypeName.Object
+      argumentType: ArgumentTypeName.Object,
     },
     privateKey: {
       value: process.env.SERVER_PRIVATE_KEY,
-      argumentType: ArgumentTypeName.String
+      argumentType: ArgumentTypeName.String,
     },
     id: {
       value: undefined,
-      argumentType: ArgumentTypeName.String
-    }
+      argumentType: ArgumentTypeName.String,
+    },
   });
 
   return EdDSATicketPCDPackage.serialize(pcd);

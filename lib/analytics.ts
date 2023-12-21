@@ -38,4 +38,5 @@ export type ALLOWED_ANALYTICS_EVENTS =
   | "post_created"
   | "post_deleted"
   | "role_created"
-  | "role_deleted";
+  | "role_deleted"
+  | "invite_sent";

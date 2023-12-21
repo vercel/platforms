@@ -1,9 +1,11 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
-import Posts from "@/components/posts";
+// import Posts from "@/components/posts";
 // import CreatePostButton from "@/components/create-post-button";
-import CityOverviewStats from "@/components/city-overview-stats";
+// import CityOverviewStats from "@/components/city-overview-stats";
+import CityDashboardKPIs from "@/components/analytics/city-dashboard-kpis";
+import PageHeader from "@/components/dashboard-header";
 
 export default async function SitePosts({
   params,
@@ -29,13 +31,9 @@ export default async function SitePosts({
 
   return (
     <div className="flex flex-col space-y-6">
-      <div className="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
-        <div className="col-span-1 flex flex-col space-y-6">
-          <h1 className="font-serif text-3xl font-light dark:text-white">
-            Last edited
-          </h1>
-          <Posts organizationId={data.id} />
-        </div>
+      <div className="flex flex-col">
+        <PageHeader title="Overview" ActionButton={null} />
+        <CityDashboardKPIs org={data} />
       </div>
     </div>
   );

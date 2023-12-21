@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { createPost } from "@/lib/actions";
 import { useParams, useRouter } from "next/navigation";
-import CreateButton from "./primary-button";
+import CreateButton from "./buttons/primary-button";
 
 export default function CreatePostButton() {
   const router = useRouter();

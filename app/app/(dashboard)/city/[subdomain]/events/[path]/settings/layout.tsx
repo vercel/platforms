@@ -9,9 +9,10 @@ export default async function EventSettingsLayout({
   params,
   children,
 }: {
-  params: { subdomain: string, path: string };
+  params: { subdomain?: string, domain?: string, path: string };
   children: ReactNode;
 }) {
+  const subdomain = params.subdomain || params.domain || undefined;
   const session = await getSession();
   if (!session) {
     redirect("/login");

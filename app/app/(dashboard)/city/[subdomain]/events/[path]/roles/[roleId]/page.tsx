@@ -63,7 +63,7 @@ export default async function EventRolesPage({
     <div className="flex flex-col space-y-6">
       <PageHeader title={`${role.name}`} ActionButton={<div />} />
       <div className="grid gap-4 md:grid-cols-4">
-        <RoleCard role={role} event={event} />
+        <RoleCard role={role} event={event} org={event.organization} />
       </div>
 
       <Form

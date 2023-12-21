@@ -56,7 +56,7 @@ export default async function SocialLandingPageFeed({
       <h4 className="mx-5 mb-3 mt-3 font-bold tracking-tight text-gray-750 dark:text-gray-400 md:my-5 md:text-lg">
         {"Latest"}
       </h4>
-      <div className="grid grid-cols-1 space-y-3 gap-2 px-5 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid grid-cols-1 space-y-3 gap-2 px-5 md:grid-cols-2 xl:grid-cols-3">
         {feed.map((eventOrDoc) => {
           if ("content" in eventOrDoc) {
             // Handle Post

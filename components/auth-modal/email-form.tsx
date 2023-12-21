@@ -4,7 +4,7 @@ import LoadingDots from "@/components/icons/loading-dots";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
-import PrimaryButton from "../primary-button";
+import PrimaryButton from "../buttons/primary-button";
 import { MailIcon } from "lucide-react";
 
 interface EmailFormProps

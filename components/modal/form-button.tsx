@@ -1,5 +1,5 @@
 import { useFormStatus } from "react-dom";
-import PrimaryButton from "../primary-button";
+import PrimaryButton from "../buttons/primary-button";
 import { cn } from "@/lib/utils";
 
 export default function FormButton({

@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import PrimaryButton from "@/components/primary-button";
+import PrimaryButton from "@/components/buttons/primary-button";
 import {
   AccommodationUnit,
   Place,

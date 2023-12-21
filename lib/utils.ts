@@ -1,4 +1,4 @@
-import { Bed } from "@prisma/client";
+import { Bed, Organization } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -74,4 +74,13 @@ export const calcRoomCapacity = (roomWithBedsType: RoomWithBedsType) =>
 
 export function calcAccommodationUnitCapacity(rooms: RoomWithBedsType[]) {
   return rooms.reduce((total, room) => total + calcRoomCapacity(room), 0);
+}
+
+
+export const FORA_BASE_URL = process.env.NEXT_PUBLIC_ROOT_DOMAIN === 'localhost:3000' ? `http://localhost:3000` : `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+export const FORA_APP_URL = process.env.NEXT_PUBLIC_ROOT_DOMAIN === 'localhost:3000' ? `http://app.localhost:3000` : `https://app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+export const FORA_API_URL = process.env.NEXT_PUBLIC_ROOT_DOMAIN === 'localhost:3000' ? `http://api.localhost:3000` : `https://api.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+
+export const getCityUrl = (org: Organization) => {
+  return process.env.NEXT_PUBLIC_ROOT_DOMAIN === 'localhost:3000' ? `http://${org.subdomain}.localhost:3000` : `https://${org.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 }

@@ -26,7 +26,7 @@ import { useParams, useRouter } from "next/navigation";
 import { CreateAccommodationUnitSchema } from "@/lib/schema";
 import { createAccommodationUnit, upsertPlace } from "@/lib/actions";
 import { useFormStatus } from "react-dom";
-import PrimaryButton from "../primary-button";
+import PrimaryButton from "../buttons/primary-button";
 import { Place } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { Textarea } from "../ui/textarea";

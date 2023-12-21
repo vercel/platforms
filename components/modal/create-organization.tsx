@@ -10,7 +10,7 @@ import { useModal } from "./provider";
 import va from "@vercel/analytics";
 import { useEffect, useState } from "react";
 import { Organization } from "@prisma/client";
-import PrimaryButton from "../primary-button";
+import PrimaryButton from "../buttons/primary-button";
 import FormButton from "./form-button";
 import { track } from "@/lib/analytics";
 
@@ -54,7 +54,7 @@ export default function CreateOrganizationModal() {
           },
         )
       }
-      className="w-full rounded-md bg-gray-200/80 backdrop-blur-lg  dark:bg-gray-900/80 md:max-w-md md:border md:border-gray-400 md:shadow dark:md:border-gray-700"
+      className="w-full rounded-md bg-gray-200/50 backdrop-blur-xl  dark:bg-gray-900/50 md:max-w-md md:border md:border-gray-400 md:shadow dark:md:border-gray-700"
     >
       <div className="relative flex flex-col space-y-4 p-5 md:p-10">
         <h2 className="font-serif text-2xl text-gray-750 dark:text-gray-100">

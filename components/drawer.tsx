@@ -181,23 +181,23 @@ export default function Drawer({ children }: { children: ReactNode }) {
           icon: <Users2 width={18} />,
         },
         {
-          name: "Events",
-          href: `/city/${subdomain}/events`,
-          isActive: segments.includes("events"),
-          icon: <Ticket width={18} />,
-        },
-        {
-          name: "Housing",
-          href: `/city/${subdomain}/housing`,
-          isActive: segments.includes("housing"),
-          icon: <BedSingle width={18} />,
-        },
-        {
           name: "Campaigns",
           href: `/city/${subdomain}/campaigns`,
           isActive: segments.includes("campaigns"),
           icon: <CircleDollarSign width={18} />,
         },
+        {
+          name: "Events",
+          href: `/city/${subdomain}/events`,
+          isActive: segments.includes("events"),
+          icon: <Ticket width={18} />,
+        },
+        // {
+        //   name: "Housing",
+        //   href: `/city/${subdomain}/housing`,
+        //   isActive: segments.includes("housing"),
+        //   icon: <BedSingle width={18} />,
+        // },
         {
           name: "Forms",
           href: `/city/${subdomain}/forms`,
@@ -210,12 +210,12 @@ export default function Drawer({ children }: { children: ReactNode }) {
           isActive: segments.includes("docs"),
           icon: <Newspaper width={18} />,
         },
-        {
-          name: "Analytics",
-          href: `/city/${subdomain}/analytics`,
-          isActive: segments.includes("analytics"),
-          icon: <BarChart3 width={18} />,
-        },
+        // {
+        //   name: "Analytics",
+        //   href: `/city/${subdomain}/analytics`,
+        //   isActive: segments.includes("analytics"),
+        //   icon: <BarChart3 width={18} />,
+        // },
         {
           name: "Settings",
           href: `/city/${subdomain}/settings`,

@@ -20,7 +20,7 @@ import { CreatePlaceSchema } from "@/lib/schema";
 import { createPlace } from "@/lib/actions";
 import { Feature, Point, Polygon } from "geojson";
 import { useFormStatus } from "react-dom";
-import PrimaryButton from "../primary-button";
+import PrimaryButton from "../buttons/primary-button";
 import { GeocodeInput } from "../geocode-input";
 
 export default function CreatePlaceModal({

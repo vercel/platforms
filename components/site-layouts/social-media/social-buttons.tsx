@@ -20,15 +20,15 @@ export default async function SocialButtons({
         <span className="text-md mr-1 font-bold text-gray-850 dark:text-gray-200">
           {uniqueOrgRoleHolders}
         </span>
-        <span>Citizens</span>
+        <span>Members</span>
       </button>
 
-      <button className="mr-5 flex items-center justify-center rounded-md border border-transparent text-sm font-medium ">
+      {/* <button className="mr-5 flex items-center justify-center rounded-md border border-transparent text-sm font-medium ">
         <span className="text-md mr-1 font-bold text-gray-850 dark:text-gray-200">
           {uniqueEventRoleHolders}
         </span>
         <span>Visited</span>
-      </button>
+      </button> */}
 
       {/* <button className="mr-5 flex items-center justify-center rounded-md border border-transparent text-sm font-medium ">
         <span className="italic text-md mr-1 font-bold text-gray-850 dark:text-gray-200">
