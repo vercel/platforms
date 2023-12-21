@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
-import CampaignPageContent from "@/components/campaign-page-content";
+import CampaignDashboard from "@/components/campaign-dashboard";
 import { PathParamsContext } from "next/dist/shared/lib/hooks-client-context.shared-runtime";
 
 export default async function PublicCampaignPage(
@@ -30,7 +30,7 @@ export default async function PublicCampaignPage(
 
   return (
     <div className="px-24 py-12">
-      <CampaignPageContent
+      <CampaignDashboard
         campaignId={params.id}
         subdomain={params.subdomain}
         isPublic={true}

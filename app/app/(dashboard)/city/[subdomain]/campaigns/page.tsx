@@ -30,20 +30,6 @@ export default async function CampaignsPage({
   const campaigns = await prisma.campaign.findMany({
     where: {
       organizationId: organization.id,
-    },
-    select: {
-      id: true,
-      name: true,
-      thresholdWei: true,
-      deployed: true,
-      contributions: true,
-      content: true,
-      createdAt: true,
-      updatedAt: true,
-      timeDeployed: true,
-      deployedAddress: true,
-      sponsorEthAddress: true,
-      organizationId: true,
     }
   });
 

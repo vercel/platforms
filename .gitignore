@@ -7,3 +7,4 @@
 **.git
 .vercel
 docker-compose.yml
+tsconfig.tsbuildinfo
