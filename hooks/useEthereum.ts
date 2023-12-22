@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Campaign } from "@prisma/client";
 import { launchCampaign } from "@/lib/actions";
 import { withCampaignAuth } from "@/lib/auth";
-
+import { useEffect, useState } from "react";
 
 interface LaunchCampaignData {
   id: string;
@@ -18,28 +18,52 @@ interface Params {
 }
 
 export default function useEthereum() {
-  const connectToWallet = async (): Promise<ethers.Signer> => {
+  const [signer, setSigner] = useState<ethers.Signer | null>(null);
+
+  useEffect(() => {
+    const handleAccountsChanged = async (accounts: string[]) => {
+      if (accounts.length === 0) {
+        console.log('Please connect to MetaMask.');
+      } else {
+        await connectToWallet();
+      }
+    };
+
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      }
+    };
+  }, []);
+
+  const connectToWallet = async () => {
     if (!window.ethereum) {
       throw new Error("Please install MetaMask or another wallet.");
     }
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
-    return provider.getSigner();
+    const newSigner = await provider.getSigner();
+    setSigner(newSigner);
+    return newSigner;
   };
 
   const launch = async (campaign: Campaign, params: Params): Promise<void> => {
     try {
-      const signer = await connectToWallet();
+      const currentSigner = signer || await connectToWallet();
 
       const campaignABI = CampaignContract.abi;
       const campaignBytecode = CampaignContract.bytecode;
 
-      const creatorAddress = await signer.getAddress();
+      const creatorAddress = await currentSigner.getAddress();
       const thresholdWei = campaign.thresholdWei;
       const name = campaign.name;
 
-      const campaignFactory = new ethers.ContractFactory(campaignABI, campaignBytecode, signer);
+      const campaignFactory = new ethers.ContractFactory(campaignABI, campaignBytecode, currentSigner);
       const campaignInstance = await campaignFactory.deploy(creatorAddress, thresholdWei, name);
       await campaignInstance.waitForDeployment();
 
@@ -63,7 +87,7 @@ export default function useEthereum() {
 
   const contribute = async (amount: string, campaign: Campaign): Promise<void> => {
     try {
-      const signer = await connectToWallet();
+      await connectToWallet();
 
       if (!campaign.deployed) {
         throw new Error("Campaign isn't deployed yet");
@@ -85,7 +109,7 @@ export default function useEthereum() {
 
   const withdraw = async (amount: string, campaign: Campaign): Promise<void> => {
     try {
-      const signer = await connectToWallet();
+      await connectToWallet();
 
       if (!campaign.deployed) {
         throw new Error("Campaign isn't deployed yet");
@@ -103,7 +127,7 @@ export default function useEthereum() {
   };
 
   const getContributionTotal = async (contractAddr: string) => {
-    const signer = await connectToWallet();
+    await connectToWallet();
 
     const campaignABI = CampaignContract.abi;
     const campaignInstance = new ethers.Contract(contractAddr, campaignABI, signer);
