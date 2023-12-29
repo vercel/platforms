@@ -29,6 +29,7 @@
     "next": "14.0.2",
     "next-auth": "4.24.5",
     "next-mdx-remote": "^4.4.1",
+    "next-themes": "^0.2.1",
     "novel": "^0.1.22",
     "openai-edge": "^1.2.2",
     "react": "^18.2.0",
