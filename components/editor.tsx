@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import LoadingDots from "./icons/loading-dots";
 import { ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
 
 type PostWithSite = Post & { site: { subdomain: string | null } | null };
 
@@ -16,27 +17,41 @@ export default function Editor({ post }: { post: PostWithSite }) {
   let [isPendingSaving, startTransitionSaving] = useTransition();
   let [isPendingPublishing, startTransitionPublishing] = useTransition();
   const [data, setData] = useState<PostWithSite>(post);
-  const [hydrated, setHydrated] = useState(false);
 
   const url = process.env.NEXT_PUBLIC_VERCEL_ENV
     ? `https://${data.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/${data.slug}`
     : `http://${data.site?.subdomain}.localhost:3000/${data.slug}`;
 
   // listen to CMD + S and override the default behavior
+  // useEffect(() => {
+  //   const onKeyDown = (e: KeyboardEvent) => {
+  //     if (e.metaKey && e.key === "s") {
+  //       e.preventDefault();
+  //       startTransitionSaving(async () => {
+  //         await updatePost(data);
+  //       });
+  //     }
+  //   };
+  //   document.addEventListener("keydown", onKeyDown);
+  //   return () => {
+  //     document.removeEventListener("keydown", onKeyDown);
+  //   };
+  // }, [data, startTransitionSaving]);
+
+  const [debouncedData] = useDebounce(data, 1000);
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.metaKey && e.key === "s") {
-        e.preventDefault();
-        startTransitionSaving(async () => {
-          await updatePost(data);
-        });
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [data, startTransitionSaving]);
+    if (
+      data.title === post.title &&
+      data.description === post.description &&
+      data.content === post.content
+    ) {
+      return;
+    }
+    startTransitionSaving(async () => {
+      await updatePost(data);
+      setData((prev) => ({ ...prev, updatedAt: new Date() }));
+    });
+  }, [debouncedData]);
 
   return (
     <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 dark:border-stone-700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
@@ -112,18 +127,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
             content: editor?.storage.markdown.getMarkdown(),
           }));
         }}
-        onDebouncedUpdate={() => {
-          if (
-            data.title === post.title &&
-            data.description === post.description &&
-            data.content === post.content
-          ) {
-            return;
-          }
-          startTransitionSaving(async () => {
-            await updatePost(data);
-          });
-        }}
+        disableLocalStorage={true}
       />
     </div>
   );
