@@ -74,7 +74,7 @@ export default function Nav({ children }: { children: ReactNode }) {
         setSiteId(id);
       });
     }
-  }, [segments, id]);
+  }, [id]);
 
   const tabs = useMemo(() => {
     if (segments[0] === "site" && id) {
