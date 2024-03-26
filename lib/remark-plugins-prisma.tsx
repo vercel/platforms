@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { visit } from "unist-util-visit";
+import type { Example, PrismaClient } from "@prisma/client";
 import { ReactNode } from "react";
-import { DrizzleClient } from "./db/db";
-import { SelectExample } from "./db/schema";
 
 export function replaceLinks({
   href,
@@ -69,7 +68,7 @@ export function replaceTweets() {
     });
 }
 
-export function replaceExamples(drizzle: DrizzleClient) {
+export function replaceExamples(prisma: PrismaClient) {
   return (tree: any) =>
     new Promise<void>(async (resolve, reject) => {
       const nodesToChange = new Array();
@@ -83,7 +82,7 @@ export function replaceExamples(drizzle: DrizzleClient) {
       });
       for (const { node } of nodesToChange) {
         try {
-          const data = await getExamples(node, drizzle);
+          const data = await getExamples(node, prisma);
           node.attributes = [
             {
               type: "mdxJsxAttribute",
@@ -100,17 +99,17 @@ export function replaceExamples(drizzle: DrizzleClient) {
     });
 }
 
-async function getExamples(node: any, drizzle: DrizzleClient) {
+async function getExamples(node: any, prisma: PrismaClient) {
   const names = node?.attributes[0].value.split(",");
 
-  // changed to | undefined (was null)
-  const data = new Array<SelectExample | undefined>();
+  const data = new Array<Example | null>();
 
   for (let i = 0; i < names.length; i++) {
-    const results = await drizzle.query.examples.findFirst({
-      where: (examples, { eq }) => (eq(examples.id, parseInt(names[i]))),
-    })
-
+    const results = await prisma.example.findUnique({
+      where: {
+        id: parseInt(names[i]),
+      },
+    });
     data.push(results);
   }
 

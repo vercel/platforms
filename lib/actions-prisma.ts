@@ -1,19 +1,20 @@
 "use server";
 
-import { getSession } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { Post, Site } from "@prisma/client";
 import { revalidateTag } from "next/cache";
-import db from "./db/db";
-import { SelectPost, SelectSite, posts, sites, users } from "./db/schema";
+import { withPostAuth, withSiteAuth } from "./auth";
+import { getSession } from "@/lib/auth";
 import {
   addDomainToVercel,
+  // getApexDomain,
   removeDomainFromVercelProject,
+  // removeDomainFromVercelTeam,
   validDomainRegex,
 } from "@/lib/domains";
-import { withPostAuth, withSiteAuth } from "./auth";
+import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
-import { eq } from "drizzle-orm";
-import { put } from "@vercel/blob";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -32,16 +33,18 @@ export const createSite = async (formData: FormData) => {
   const subdomain = formData.get("subdomain") as string;
 
   try {
-    const [response] = await db.insert(sites).values({
-      name,
-      description,
-      subdomain,
-      userId: session.user.id,
-      updatedAt: new Date(),
-    }).returning()
-    console.log(1)
-
-    // unnecessary await
+    const response = await prisma.site.create({
+      data: {
+        name,
+        description,
+        subdomain,
+        user: {
+          connect: {
+            id: session.user.id,
+          },
+        },
+      },
+    });
     await revalidateTag(
       `${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
     );
@@ -60,7 +63,7 @@ export const createSite = async (formData: FormData) => {
 };
 
 export const updateSite = withSiteAuth(
-  async (formData: FormData, site: SelectSite, key: string) => {
+  async (formData: FormData, site: Site, key: string) => {
     const value = formData.get(key) as string;
 
     try {
@@ -74,10 +77,14 @@ export const updateSite = withSiteAuth(
 
           // if the custom domain is valid, we need to add it to Vercel
         } else if (validDomainRegex.test(value)) {
-          response = await db.update(sites).set({
-            customDomain:value
-          }).where(eq(sites.id, site.id)).returning().then((res) => res[0])
-
+          response = await prisma.site.update({
+            where: {
+              id: site.id,
+            },
+            data: {
+              customDomain: value,
+            },
+          });
           await Promise.all([
             addDomainToVercel(value),
             // Optional: add www subdomain as well and redirect to apex domain
@@ -86,10 +93,14 @@ export const updateSite = withSiteAuth(
 
           // empty value means the user wants to remove the custom domain
         } else if (value === "") {
-
-          response = await db.update(sites).set({
-            customDomain:null
-          }).where(eq(sites.id, site.id)).returning().then((res) => res[0])
+          response = await prisma.site.update({
+            where: {
+              id: site.id,
+            },
+            data: {
+              customDomain: null,
+            },
+          });
         }
 
         // if the site had a different customDomain before, we need to remove it from Vercel
@@ -146,16 +157,25 @@ export const updateSite = withSiteAuth(
 
         const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
-        response = await db.update(sites).set({
-          [key]:url,
-          ...(blurhash && { imageBlurhash: blurhash })
-        }).where(eq(sites.id, site.id)).returning().then((res) => res[0])
+        response = await prisma.site.update({
+          where: {
+            id: site.id,
+          },
+          data: {
+            [key]: url,
+            ...(blurhash && { imageBlurhash: blurhash }),
+          },
+        });
       } else {
-        response = await db.update(sites).set({
-          [key]:value
-        }).where(eq(sites.id, site.id)).returning().then((res) => res[0])
+        response = await prisma.site.update({
+          where: {
+            id: site.id,
+          },
+          data: {
+            [key]: value,
+          },
+        });
       }
-
       console.log(
         "Updated site data! Revalidating tags: ",
         `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
@@ -182,10 +202,13 @@ export const updateSite = withSiteAuth(
   },
 );
 
-export const deleteSite = withSiteAuth(async (_: FormData, site: SelectSite) => {
+export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
   try {
-    const [response] = await db.delete(sites).where(eq(sites.id, site.id)).returning()
-
+    const response = await prisma.site.delete({
+      where: {
+        id: site.id,
+      },
+    });
     await revalidateTag(
       `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
     );
@@ -200,29 +223,30 @@ export const deleteSite = withSiteAuth(async (_: FormData, site: SelectSite) => 
 });
 
 export const getSiteFromPostId = async (postId: string) => {
-  const post = await db.query.posts.findFirst({
-    where: eq(posts.id, postId),
-    columns: {
-      siteId: true
-    }
-  })
-
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      siteId: true,
+    },
+  });
   return post?.siteId;
 };
 
-export const createPost = withSiteAuth(async (_: FormData, site: SelectSite) => {
+export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
   const session = await getSession();
   if (!session?.user.id) {
     return {
       error: "Not authenticated",
     };
   }
-
-  const [response] = await db.insert(posts).values({
-    siteId: site.id,
-    userId: session.user.id,
-    updatedAt: new Date(),
-  }).returning()
+  const response = await prisma.post.create({
+    data: {
+      siteId: site.id,
+      userId: session.user.id,
+    },
+  });
 
   await revalidateTag(
     `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
@@ -233,35 +257,37 @@ export const createPost = withSiteAuth(async (_: FormData, site: SelectSite) => 
 });
 
 // creating a separate function for this because we're not using FormData
-export const updatePost = async (data: SelectPost) => {
+export const updatePost = async (data: Post) => {
   const session = await getSession();
   if (!session?.user.id) {
     return {
       error: "Not authenticated",
     };
   }
-
-  const post = await db.query.posts.findFirst({
-    where: eq(posts.id, data.id),
-    with: {
-      site:true
-    }
-  })
-
-
+  const post = await prisma.post.findUnique({
+    where: {
+      id: data.id,
+    },
+    include: {
+      site: true,
+    },
+  });
   if (!post || post.userId !== session.user.id) {
     return {
       error: "Post not found",
     };
   }
-
   try {
-    const [response] = await db.update(posts).set({
-      title: data.title,
-      description: data.description,
-      content: data.content,
-      updatedAt: new Date(),
-    }).where(eq(posts.id, data.id)).returning()
+    const response = await prisma.post.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        title: data.title,
+        description: data.description,
+        content: data.content,
+      },
+    });
 
     await revalidateTag(
       `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
@@ -286,8 +312,8 @@ export const updatePost = async (data: SelectPost) => {
 export const updatePostMetadata = withPostAuth(
   async (
     formData: FormData,
-    post: SelectPost & {
-      site: SelectSite;
+    post: Post & {
+      site: Site;
     },
     key: string,
   ) => {
@@ -304,15 +330,25 @@ export const updatePostMetadata = withPostAuth(
         });
 
         const blurhash = await getBlurDataURL(url);
-        response = await db.update(posts).set({
-          image: url,
-          imageBlurhash: blurhash,
-        }).where(eq(posts.id, post.id)).returning().then((res) => res[0])
 
+        response = await prisma.post.update({
+          where: {
+            id: post.id,
+          },
+          data: {
+            image: url,
+            imageBlurhash: blurhash,
+          },
+        });
       } else {
-        response = await db.update(posts).set({
-          [key]: key === "published" ? value === "true" : value
-        }).where(eq(posts.id, post.id)).returning().then((res) => res[0])
+        response = await prisma.post.update({
+          where: {
+            id: post.id,
+          },
+          data: {
+            [key]: key === "published" ? value === "true" : value,
+          },
+        });
       }
 
       await revalidateTag(
@@ -342,12 +378,16 @@ export const updatePostMetadata = withPostAuth(
   },
 );
 
-export const deletePost = withPostAuth(async (_: FormData, post: SelectPost) => {
+export const deletePost = withPostAuth(async (_: FormData, post: Post) => {
   try {
-    const [response] = await db.delete(posts).where(eq(posts.id, post.id)).returning({
-      siteId: posts.siteId
-    })
-
+    const response = await prisma.post.delete({
+      where: {
+        id: post.id,
+      },
+      select: {
+        siteId: true,
+      },
+    });
     return response;
   } catch (error: any) {
     return {
@@ -370,10 +410,14 @@ export const editUser = async (
   const value = formData.get(key) as string;
 
   try {
-    const [response] = await db.update(users).set({
-      [key]: value
-    }).where(eq(users.id, session.user.id)).returning()
-    
+    const response = await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        [key]: value,
+      },
+    });
     return response;
   } catch (error: any) {
     if (error.code === "P2002") {

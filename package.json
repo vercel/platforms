@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^0.8.1",
     "@next-auth/prisma-adapter": "^1.0.7",
+    "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^5.5.2",
     "@tremor/react": "^3.11.1",
     "@upstash/ratelimit": "^0.4.4",
@@ -20,6 +22,7 @@
     "ai": "^2.2.22",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
+    "drizzle-orm": "^0.30.4",
     "focus-trap-react": "^10.2.3",
     "framer-motion": "^10.16.4",
     "gray-matter": "^4.0.3",
@@ -51,6 +54,7 @@
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "autoprefixer": "^10.4.16",
+    "drizzle-kit": "^0.20.14",
     "eslint": "8.53.0",
     "eslint-config-next": "^14.0.2",
     "postcss": "^8.4.31",
