@@ -3,10 +3,6 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import PostCard from "./post-card";
 import Image from "next/image";
-import db from "@/lib/db/db";
-import { posts, sites, users } from "@/lib/db/schema";
-import { eq, and, desc, getTableColumns } from "drizzle-orm";
-import { withLimit } from "@/lib/utils";
 
 export default async function Posts({
   siteId,
@@ -19,17 +15,23 @@ export default async function Posts({
   if (!session?.user) {
     redirect("/login");
   }
-  
-  const query =  db.select({ site: sites, ...getTableColumns(posts)}).from(posts)
-  .leftJoin(sites, eq(posts.siteId, sites.id))
-  .where(and(eq(posts.userId, session.user.id), siteId ? eq(sites.id, siteId) : undefined))
-  .orderBy(desc(posts.updatedAt))
+  const posts = await prisma.post.findMany({
+    where: {
+      userId: session.user.id as string,
+      ...(siteId ? { siteId } : {}),
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+    include: {
+      site: true,
+    },
+    ...(limit ? { take: limit } : {}),
+  });
 
-  const postsResult = limit ? await withLimit(query.$dynamic(), limit) : await query
-
-  return postsResult.length > 0 ? (
+  return posts.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {postsResult.map((post) => (
+      {posts.map((post) => (
         <PostCard key={post.id} data={post} />
       ))}
     </div>

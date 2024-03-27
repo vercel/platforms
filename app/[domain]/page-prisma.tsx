@@ -6,17 +6,18 @@ import { placeholderBlurhash, toDateString } from "@/lib/utils";
 import BlogCard from "@/components/blog-card";
 import { getPostsForSite, getSiteData } from "@/lib/fetchers";
 import Image from "next/image";
-import db from "@/lib/db/db";
 
 export async function generateStaticParams() {
-  const allSites = await db.query.sites.findMany({
-      // feel free to remove this filter if you want to generate paths for all sites
-    where: (sites, { eq }) => eq(sites.subdomain, 'demo'),
-    columns: {
+  const allSites = await prisma.site.findMany({
+    select: {
       subdomain: true,
       customDomain: true,
-    }
-  })
+    },
+    // feel free to remove this filter if you want to generate paths for all sites
+    where: {
+      subdomain: "demo",
+    },
+  });
 
   const allPaths = allSites
     .flatMap(({ subdomain, customDomain }) => [

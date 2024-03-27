@@ -3,7 +3,6 @@ import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import SiteSettingsNav from "./nav";
-import db from "@/lib/db/db";
 
 export default async function SiteAnalyticsLayout({
   params,
@@ -16,9 +15,11 @@ export default async function SiteAnalyticsLayout({
   if (!session) {
     redirect("/login");
   }
-  const data = await db.query.sites.findFirst({
-    where: (sites, { eq }) => eq(sites.id, decodeURIComponent(params.id)),
-  })
+  const data = await prisma.site.findUnique({
+    where: {
+      id: decodeURIComponent(params.id),
+    },
+  });
 
   if (!data || data.userId !== session.user.id) {
     notFound();

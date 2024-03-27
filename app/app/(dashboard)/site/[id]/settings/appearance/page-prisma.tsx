@@ -1,16 +1,17 @@
 import prisma from "@/lib/prisma";
 import Form from "@/components/form";
 import { updateSite } from "@/lib/actions";
-import db from "@/lib/db/db";
 
 export default async function SiteSettingsAppearance({
   params,
 }: {
   params: { id: string };
 }) {
-  const data = await db.query.sites.findFirst({
-    where: (sites, { eq }) => eq(sites.id, decodeURIComponent(params.id)),
-  })
+  const data = await prisma.site.findUnique({
+    where: {
+      id: decodeURIComponent(params.id),
+    },
+  });
 
   return (
     <div className="flex flex-col space-y-6">

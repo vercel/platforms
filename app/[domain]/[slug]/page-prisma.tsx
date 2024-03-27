@@ -5,9 +5,6 @@ import BlogCard from "@/components/blog-card";
 import BlurImage from "@/components/blur-image";
 import MDX from "@/components/mdx";
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
-import db from "@/lib/db/db";
-import { posts, sites } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 
 export async function generateMetadata({
   params,
@@ -50,15 +47,23 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  const allPosts = await db.select({
-    slug: posts.slug,
-    site: {
-      subdomain: sites.subdomain,
-      customDomain: sites.customDomain,
+  const allPosts = await prisma.post.findMany({
+    select: {
+      slug: true,
+      site: {
+        select: {
+          subdomain: true,
+          customDomain: true,
+        },
+      },
     },
-  }).from(posts)
-  .leftJoin(sites, eq(posts.siteId, sites.id))
-  .where(eq(sites.subdomain, 'demo')) // feel free to remove this filter if you want to generate paths for all posts
+    // feel free to remove this filter if you want to generate paths for all posts
+    where: {
+      site: {
+        subdomain: "demo",
+      },
+    },
+  });
 
   const allPaths = allPosts
     .flatMap(({ site, slug }) => [
@@ -108,7 +113,7 @@ export default async function SitePostPage({
           href={
             data.site?.user?.username
               ? `https://twitter.com/${data.site.user.username}`
-              : `https://github.com/${data.site?.user?.ghUsername}`
+              : `https://github.com/${data.site?.user?.gh_username}`
           }
           rel="noreferrer"
           target="_blank"
