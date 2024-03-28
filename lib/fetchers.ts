@@ -64,10 +64,10 @@ export async function getPostData(domain: string, slug: string) {
       .leftJoin(users, eq(users.id, sites.userId))
       .where(and(eq(posts.slug, slug), eq(posts.published, true), subdomain ? eq(sites.subdomain, subdomain) : eq(sites.customDomain, domain)))
       .then((res) => res.length > 0 ? {
-        ...res[0].Post,
-        site: res[0].Site ? {
-          ...res[0].Site,
-          user: res[0].User
+        ...res[0].post,
+        site: res[0].site ? {
+          ...res[0].user,
+          user: res[0].user
         } : null
       } : null)
 

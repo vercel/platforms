@@ -1,8 +1,8 @@
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import db from "./db/db";
 import { Adapter } from "next-auth/adapters";
+import { createDrizzleAdapter } from "./drizzle-adapter";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: `/login`,
     error: "/login", // Error code passed in query string as ?error=
   },
-  adapter: DrizzleAdapter(db) as Adapter,
+  adapter: createDrizzleAdapter(db) as Adapter,
   session: { strategy: "jwt" },
   cookies: {
     sessionToken: {

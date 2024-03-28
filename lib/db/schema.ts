@@ -1,4 +1,4 @@
-import { pgTable, uniqueIndex, index, foreignKey, text, timestamp, serial, integer, boolean } from "drizzle-orm/pg-core"
+import { pgTable, uniqueIndex, index, foreignKey, text, timestamp, serial, integer, boolean, primaryKey } from "drizzle-orm/pg-core"
 import { relations, sql } from "drizzle-orm"
 import { createId } from '@paralleldrive/cuid2';
 
@@ -14,6 +14,7 @@ export const sessions = pgTable("session", {
 		userIdIdx: index("Session_userId_idx").on(table.userId),
 	}
 });
+ 
 
 export const verificationTokens = pgTable("verificationToken", {
 	identifier: text("identifier").notNull(),
@@ -37,7 +38,7 @@ export const users = pgTable("user", {
 	emailVerified: timestamp("emailVerified", { precision: 3, mode: 'date' }),
 	image: text("image"),
 	createdAt: timestamp("createdAt", { precision: 3, mode: 'date' }).defaultNow().notNull(),
-	updatedAt: timestamp("updatedAt", { precision: 3, mode: 'date' }).notNull(),
+	updatedAt: timestamp("updatedAt", { precision: 3, mode: 'date' }).notNull().$onUpdate(() => new Date())
 },
 (table) => {
 	return {
@@ -79,6 +80,7 @@ export const accounts = pgTable("account", {
 	}
 });
 
+
 export const sites = pgTable("site", {
 	id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
 	name: text("name"),
@@ -91,7 +93,7 @@ export const sites = pgTable("site", {
 	customDomain: text("customDomain"),
 	message404: text("message404").default("Blimey! You''ve found a page that doesn''t exist."),
 	createdAt: timestamp("createdAt", { precision: 3, mode: 'date' }).defaultNow().notNull(),
-	updatedAt: timestamp("updatedAt", { precision: 3, mode: 'date' }).notNull(),
+	updatedAt: timestamp("updatedAt", { precision: 3, mode: 'date' }).notNull().$onUpdate(() => new Date()),
 	userId: text("userId").references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 },
 (table) => {
@@ -111,7 +113,7 @@ export const posts = pgTable("post", {
 	image: text("image").default('https://public.blob.vercel-storage.com/eEZHAoPTOBSYGBE3/hxfcV5V-eInX3jbVUhjAt1suB7zB88uGd1j20b.png'),
 	imageBlurhash: text("imageBlurhash").default('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAhCAYAAACbffiEAAAACXBIWXMAABYlAAAWJQFJUiTwAAABfUlEQVR4nN3XyZLDIAwE0Pz/v3q3r55JDlSBplsIEI49h76k4opexCK/juP4eXjOT149f2Tf9ySPgcjCc7kdpBTgDPKByKK2bTPFEdMO0RDrusJ0wLRBGCIuelmWJAjkgPGDSIQEMBDCfA2CEPM80+Qwl0JkNxBimiaYGOTUlXYI60YoehzHJDEm7kxjV3whOQTD3AaCuhGKHoYhyb+CBMwjIAFz647kTqyapdV4enGINuDJMSScPmijSwjCaHeLcT77C7EC0C1ugaCTi2HYfAZANgj6Z9A8xY5eiYghDMNQBJNCWhASot0jGsSCUiHWZcSGQjaWWCDaGMOWnsCcn2QhVkRuxqqNxMSdUSElCDbp1hbNOsa6Ugxh7xXauF4DyM1m5BLtCylBXgaxvPXVwEoOBjeIFVODtW74oj1yBQah3E8tyz3SkpolKS9Geo9YMD1QJR1Go4oJkgO1pgbNZq0AOUPChyjvh7vlXaQa+X1UXwKxgHokB2XPxbX+AnijwIU4ahazAAAAAElFTkSuQmCC'),
 	createdAt: timestamp("createdAt", { precision: 3, mode: 'date' }).defaultNow().notNull(),
-	updatedAt: timestamp("updatedAt", { precision: 3, mode: 'date' }).notNull(),
+	updatedAt: timestamp("updatedAt", { precision: 3, mode: 'date' }).notNull().$onUpdate(() => new Date()),
 	published: boolean("published").default(false).notNull(),
 	siteId: text("siteId").references(() => sites.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 	userId: text("userId").references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" } ),
