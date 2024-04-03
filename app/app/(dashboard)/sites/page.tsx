@@ -3,8 +3,16 @@ import Sites from "@/components/sites";
 import PlaceholderCard from "@/components/placeholder-card";
 import CreateSiteButton from "@/components/create-site-button";
 import CreateSiteModal from "@/components/modal/create-site";
+import { fetcher } from "@/lib/utils";
 
-export default function AllSites({ params }: { params: { id: string } }) {
+export default async function AllSites({ params }: { params: { id: string } }) {
+  const baseUrl = process.env.NEXTAUTH_URL;
+
+  const sites:any[] = await fetcher(`${baseUrl}/api/site`
+  ,{cache: 'no-store'}
+  // , {next: {revalidate: 1}}
+  );
+
   return (
     <div className="flex max-w-screen-xl flex-col space-y-12 p-8">
       <div className="flex flex-col space-y-6">
@@ -26,7 +34,7 @@ export default function AllSites({ params }: { params: { id: string } }) {
           }
         >
           {/* @ts-expect-error Server Component */}
-          <Sites siteId={decodeURIComponent(params.id)} />
+          <Sites siteId={decodeURIComponent(params.id)} sites = {sites} />
         </Suspense>
       </div>
     </div>

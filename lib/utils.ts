@@ -8,9 +8,15 @@ export async function fetcher<JSON = any>(
   input: RequestInfo,
   init?: RequestInit,
 ): Promise<JSON> {
-  const response = await fetch(input, { ...init, cache: "no-store" });
+  const response = await fetch(input, init);
+  let respData = await response.json();
+  if(!response.ok) {
 
-  return response.json();
+    const msg = respData?.message || response.statusText;
+    throw new Error(msg);
+    
+  }
+  return respData;
 }
 
 export const capitalize = (s: string) => {

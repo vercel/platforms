@@ -4,22 +4,12 @@ import prisma from "@/lib/prisma";
 import SiteCard from "./site-card";
 import Image from "next/image";
 
-export default async function Sites({ limit }: { limit?: number }) {
+export default async function Sites({ limit, sites:siteList }: { limit?: number, sites?: any[] }) {
   const session = await getSession();
   if (!session) {
     redirect("/login");
   }
-  const sites = await prisma.site.findMany({
-    where: {
-      user: {
-        id: session.user.id as string,
-      },
-    },
-    orderBy: {
-      createdAt: "asc",
-    },
-    ...(limit ? { take: limit } : {}),
-  });
+  const sites = siteList || [];  
 
   return sites.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
