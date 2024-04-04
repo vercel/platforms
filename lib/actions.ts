@@ -39,7 +39,6 @@ export const createSite = async (formData: FormData) => {
       userId: session.user.id,
       updatedAt: new Date(),
     }).returning()
-    console.log(1)
 
     // unnecessary await
     await revalidateTag(
