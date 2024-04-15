@@ -1,4 +1,3 @@
-import prisma from "@/lib/prisma";
 import Form from "@/components/form";
 import { updateSite } from "@/lib/actions";
 import db from "@/lib/db/db";
