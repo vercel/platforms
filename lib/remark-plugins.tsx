@@ -108,8 +108,8 @@ async function getExamples(node: any, drizzle: DrizzleClient) {
 
   for (let i = 0; i < names.length; i++) {
     const results = await drizzle.query.examples.findFirst({
-      where: (examples, { eq }) => (eq(examples.id, parseInt(names[i]))),
-    })
+      where: (examples, { eq }) => eq(examples.id, parseInt(names[i])),
+    });
 
     data.push(results);
   }

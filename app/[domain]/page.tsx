@@ -9,13 +9,13 @@ import db from "@/lib/db/db";
 
 export async function generateStaticParams() {
   const allSites = await db.query.sites.findMany({
-      // feel free to remove this filter if you want to generate paths for all sites
-    where: (sites, { eq }) => eq(sites.subdomain, 'demo'),
+    // feel free to remove this filter if you want to generate paths for all sites
+    where: (sites, { eq }) => eq(sites.subdomain, "demo"),
     columns: {
       subdomain: true,
       customDomain: true,
-    }
-  })
+    },
+  });
 
   const allPaths = allSites
     .flatMap(({ subdomain, customDomain }) => [
@@ -64,10 +64,10 @@ export default async function SiteHomePage({
                 />
               </div>
               <div className="mx-auto mt-10 w-5/6 lg:w-full">
-                <h2 className="my-10 font-title text-4xl dark:text-white md:text-6xl">
+                <h2 className="my-10 font-title text-4xl md:text-6xl dark:text-white">
                   {posts[0].title}
                 </h2>
-                <p className="w-full text-base dark:text-white md:text-lg lg:w-2/3">
+                <p className="w-full text-base md:text-lg lg:w-2/3 dark:text-white">
                   {posts[0].description}
                 </p>
                 <div className="flex w-full items-center justify-start space-x-4">
@@ -86,11 +86,11 @@ export default async function SiteHomePage({
                       </div>
                     )}
                   </div>
-                  <p className="ml-3 inline-block whitespace-nowrap align-middle text-sm font-semibold dark:text-white md:text-base">
+                  <p className="ml-3 inline-block whitespace-nowrap align-middle text-sm font-semibold md:text-base dark:text-white">
                     {data.user?.name}
                   </p>
                   <div className="h-6 border-l border-stone-600 dark:border-stone-400" />
-                  <p className="m-auto my-5 w-10/12 text-sm font-light text-stone-500 dark:text-stone-400 md:text-base">
+                  <p className="m-auto my-5 w-10/12 text-sm font-light text-stone-500 md:text-base dark:text-stone-400">
                     {toDateString(posts[0].createdAt)}
                   </p>
                 </div>
@@ -122,7 +122,7 @@ export default async function SiteHomePage({
 
       {posts.length > 1 && (
         <div className="mx-5 mb-20 max-w-screen-xl lg:mx-24 2xl:mx-auto">
-          <h2 className="mb-10 font-title text-4xl dark:text-white md:text-5xl">
+          <h2 className="mb-10 font-title text-4xl md:text-5xl dark:text-white">
             More stories
           </h2>
           <div className="grid w-full grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 xl:grid-cols-3">

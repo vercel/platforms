@@ -13,11 +13,13 @@ export async function getSiteData(domain: string) {
   return await unstable_cache(
     async () => {
       return await db.query.sites.findFirst({
-        where: subdomain ? eq(sites.subdomain, subdomain) : eq(sites.customDomain, domain),
+        where: subdomain
+          ? eq(sites.subdomain, subdomain)
+          : eq(sites.customDomain, domain),
         with: {
-          user:true
-        }
-      })
+          user: true,
+        },
+      });
     },
     [`${domain}-metadata`],
     {
@@ -34,16 +36,26 @@ export async function getPostsForSite(domain: string) {
 
   return await unstable_cache(
     async () => {
-      return await db.select({
-        title: posts.title,
-        description: posts.description,
-        slug: posts.slug,
-        image: posts.image,
-        imageBlurhash: posts.imageBlurhash,
-        createdAt: posts.createdAt,
-      }).from(posts).leftJoin(sites, eq(posts.siteId, sites.id))
-      .where(and(eq(posts.published,true), subdomain ? eq(sites.subdomain, subdomain) : eq(sites.customDomain, domain) ))
-      .orderBy(desc(posts.createdAt))
+      return await db
+        .select({
+          title: posts.title,
+          description: posts.description,
+          slug: posts.slug,
+          image: posts.image,
+          imageBlurhash: posts.imageBlurhash,
+          createdAt: posts.createdAt,
+        })
+        .from(posts)
+        .leftJoin(sites, eq(posts.siteId, sites.id))
+        .where(
+          and(
+            eq(posts.published, true),
+            subdomain
+              ? eq(sites.subdomain, subdomain)
+              : eq(sites.customDomain, domain),
+          ),
+        )
+        .orderBy(desc(posts.createdAt));
     },
     [`${domain}-posts`],
     {
@@ -60,30 +72,58 @@ export async function getPostData(domain: string, slug: string) {
 
   return await unstable_cache(
     async () => {
-      const data = await db.select().from(posts).leftJoin(sites, eq(sites.id, posts.siteId))
-      .leftJoin(users, eq(users.id, sites.userId))
-      .where(and(eq(posts.slug, slug), eq(posts.published, true), subdomain ? eq(sites.subdomain, subdomain) : eq(sites.customDomain, domain)))
-      .then((res) => res.length > 0 ? {
-        ...res[0].post,
-        site: res[0].site ? {
-          ...res[0].user,
-          user: res[0].user
-        } : null
-      } : null)
+      const data = await db
+        .select()
+        .from(posts)
+        .leftJoin(sites, eq(sites.id, posts.siteId))
+        .leftJoin(users, eq(users.id, sites.userId))
+        .where(
+          and(
+            eq(posts.slug, slug),
+            eq(posts.published, true),
+            subdomain
+              ? eq(sites.subdomain, subdomain)
+              : eq(sites.customDomain, domain),
+          ),
+        )
+        .then((res) =>
+          res.length > 0
+            ? {
+                ...res[0].post,
+                site: res[0].site
+                  ? {
+                      ...res[0].user,
+                      user: res[0].user,
+                    }
+                  : null,
+              }
+            : null,
+        );
 
       if (!data) return null;
 
       const [mdxSource, adjacentPosts] = await Promise.all([
         getMdxSource(data.content!),
-        db.select({
-          slug: posts.slug,
-          title: posts.title,
-          createdAt: posts.createdAt,
-          description: posts.description,
-          image: posts.image,
-          imageBlurhash: posts.imageBlurhash,
-        }).from(posts).leftJoin(sites, eq(sites.id, posts.siteId))
-        .where(and(eq(posts.published,true), not(eq(posts.id, data.id)), subdomain ? eq(sites.subdomain, subdomain) : eq(sites.customDomain, domain))),
+        db
+          .select({
+            slug: posts.slug,
+            title: posts.title,
+            createdAt: posts.createdAt,
+            description: posts.description,
+            image: posts.image,
+            imageBlurhash: posts.imageBlurhash,
+          })
+          .from(posts)
+          .leftJoin(sites, eq(sites.id, posts.siteId))
+          .where(
+            and(
+              eq(posts.published, true),
+              not(eq(posts.id, data.id)),
+              subdomain
+                ? eq(sites.subdomain, subdomain)
+                : eq(sites.customDomain, domain),
+            ),
+          ),
       ]);
 
       return {

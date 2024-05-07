@@ -18,13 +18,22 @@ export default async function Posts({
   if (!session?.user) {
     redirect("/login");
   }
-  
-  const query =  db.select({ site: sites, ...getTableColumns(posts)}).from(posts)
-  .leftJoin(sites, eq(posts.siteId, sites.id))
-  .where(and(eq(posts.userId, session.user.id), siteId ? eq(sites.id, siteId) : undefined))
-  .orderBy(desc(posts.updatedAt))
 
-  const postsResult = limit ? await withLimit(query.$dynamic(), limit) : await query
+  const query = db
+    .select({ site: sites, ...getTableColumns(posts) })
+    .from(posts)
+    .leftJoin(sites, eq(posts.siteId, sites.id))
+    .where(
+      and(
+        eq(posts.userId, session.user.id),
+        siteId ? eq(sites.id, siteId) : undefined,
+      ),
+    )
+    .orderBy(desc(posts.updatedAt));
+
+  const postsResult = limit
+    ? await withLimit(query.$dynamic(), limit)
+    : await query;
 
   return postsResult.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

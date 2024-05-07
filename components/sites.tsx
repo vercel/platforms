@@ -12,13 +12,18 @@ export default async function Sites({ limit }: { limit?: number }) {
   if (!session) {
     redirect("/login");
   }
-  const query = db.select({
-    ...getTableColumns(sites)
-  }).from(sites).leftJoin(users, eq(sites.userId, users.id))
-  .where(eq(users.id, session.user.id))
-  .orderBy(asc(sites.createdAt))
+  const query = db
+    .select({
+      ...getTableColumns(sites),
+    })
+    .from(sites)
+    .leftJoin(users, eq(sites.userId, users.id))
+    .where(eq(users.id, session.user.id))
+    .orderBy(asc(sites.createdAt));
 
-  const sitesResult = limit ? await withLimit(query.$dynamic(), limit): await query
+  const sitesResult = limit
+    ? await withLimit(query.$dynamic(), limit)
+    : await query;
 
   return sitesResult.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -41,4 +46,3 @@ export default async function Sites({ limit }: { limit?: number }) {
     </div>
   );
 }
-

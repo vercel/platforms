@@ -32,13 +32,16 @@ export const createSite = async (formData: FormData) => {
   const subdomain = formData.get("subdomain") as string;
 
   try {
-    const [response] = await db.insert(sites).values({
-      name,
-      description,
-      subdomain,
-      userId: session.user.id,
-      updatedAt: new Date(),
-    }).returning()
+    const [response] = await db
+      .insert(sites)
+      .values({
+        name,
+        description,
+        subdomain,
+        userId: session.user.id,
+        updatedAt: new Date(),
+      })
+      .returning();
 
     // unnecessary await
     await revalidateTag(
@@ -73,9 +76,14 @@ export const updateSite = withSiteAuth(
 
           // if the custom domain is valid, we need to add it to Vercel
         } else if (validDomainRegex.test(value)) {
-          response = await db.update(sites).set({
-            customDomain:value
-          }).where(eq(sites.id, site.id)).returning().then((res) => res[0])
+          response = await db
+            .update(sites)
+            .set({
+              customDomain: value,
+            })
+            .where(eq(sites.id, site.id))
+            .returning()
+            .then((res) => res[0]);
 
           await Promise.all([
             addDomainToVercel(value),
@@ -85,10 +93,14 @@ export const updateSite = withSiteAuth(
 
           // empty value means the user wants to remove the custom domain
         } else if (value === "") {
-
-          response = await db.update(sites).set({
-            customDomain:null
-          }).where(eq(sites.id, site.id)).returning().then((res) => res[0])
+          response = await db
+            .update(sites)
+            .set({
+              customDomain: null,
+            })
+            .where(eq(sites.id, site.id))
+            .returning()
+            .then((res) => res[0]);
         }
 
         // if the site had a different customDomain before, we need to remove it from Vercel
@@ -145,14 +157,24 @@ export const updateSite = withSiteAuth(
 
         const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
-        response = await db.update(sites).set({
-          [key]:url,
-          ...(blurhash && { imageBlurhash: blurhash })
-        }).where(eq(sites.id, site.id)).returning().then((res) => res[0])
+        response = await db
+          .update(sites)
+          .set({
+            [key]: url,
+            ...(blurhash && { imageBlurhash: blurhash }),
+          })
+          .where(eq(sites.id, site.id))
+          .returning()
+          .then((res) => res[0]);
       } else {
-        response = await db.update(sites).set({
-          [key]:value
-        }).where(eq(sites.id, site.id)).returning().then((res) => res[0])
+        response = await db
+          .update(sites)
+          .set({
+            [key]: value,
+          })
+          .where(eq(sites.id, site.id))
+          .returning()
+          .then((res) => res[0]);
       }
 
       console.log(
@@ -181,55 +203,65 @@ export const updateSite = withSiteAuth(
   },
 );
 
-export const deleteSite = withSiteAuth(async (_: FormData, site: SelectSite) => {
-  try {
-    const [response] = await db.delete(sites).where(eq(sites.id, site.id)).returning()
+export const deleteSite = withSiteAuth(
+  async (_: FormData, site: SelectSite) => {
+    try {
+      const [response] = await db
+        .delete(sites)
+        .where(eq(sites.id, site.id))
+        .returning();
 
-    await revalidateTag(
-      `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
-    );
-    response.customDomain &&
-      (await revalidateTag(`${site.customDomain}-metadata`));
-    return response;
-  } catch (error: any) {
-    return {
-      error: error.message,
-    };
-  }
-});
+      await revalidateTag(
+        `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+      );
+      response.customDomain &&
+        (await revalidateTag(`${site.customDomain}-metadata`));
+      return response;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
 
 export const getSiteFromPostId = async (postId: string) => {
   const post = await db.query.posts.findFirst({
     where: eq(posts.id, postId),
     columns: {
-      siteId: true
-    }
-  })
+      siteId: true,
+    },
+  });
 
   return post?.siteId;
 };
 
-export const createPost = withSiteAuth(async (_: FormData, site: SelectSite) => {
-  const session = await getSession();
-  if (!session?.user.id) {
-    return {
-      error: "Not authenticated",
-    };
-  }
+export const createPost = withSiteAuth(
+  async (_: FormData, site: SelectSite) => {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
 
-  const [response] = await db.insert(posts).values({
-    siteId: site.id,
-    userId: session.user.id,
-    updatedAt: new Date(),
-  }).returning()
+    const [response] = await db
+      .insert(posts)
+      .values({
+        siteId: site.id,
+        userId: session.user.id,
+        updatedAt: new Date(),
+      })
+      .returning();
 
-  await revalidateTag(
-    `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
-  );
-  site.customDomain && (await revalidateTag(`${site.customDomain}-posts`));
+    await revalidateTag(
+      `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
+    );
+    site.customDomain && (await revalidateTag(`${site.customDomain}-posts`));
 
-  return response;
-});
+    return response;
+  },
+);
 
 // creating a separate function for this because we're not using FormData
 export const updatePost = async (data: SelectPost) => {
@@ -243,10 +275,9 @@ export const updatePost = async (data: SelectPost) => {
   const post = await db.query.posts.findFirst({
     where: eq(posts.id, data.id),
     with: {
-      site:true
-    }
-  })
-
+      site: true,
+    },
+  });
 
   if (!post || post.userId !== session.user.id) {
     return {
@@ -255,12 +286,16 @@ export const updatePost = async (data: SelectPost) => {
   }
 
   try {
-    const [response] = await db.update(posts).set({
-      title: data.title,
-      description: data.description,
-      content: data.content,
-      updatedAt: new Date(),
-    }).where(eq(posts.id, data.id)).returning()
+    const [response] = await db
+      .update(posts)
+      .set({
+        title: data.title,
+        description: data.description,
+        content: data.content,
+        updatedAt: new Date(),
+      })
+      .where(eq(posts.id, data.id))
+      .returning();
 
     await revalidateTag(
       `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
@@ -303,15 +338,24 @@ export const updatePostMetadata = withPostAuth(
         });
 
         const blurhash = await getBlurDataURL(url);
-        response = await db.update(posts).set({
-          image: url,
-          imageBlurhash: blurhash,
-        }).where(eq(posts.id, post.id)).returning().then((res) => res[0])
-
+        response = await db
+          .update(posts)
+          .set({
+            image: url,
+            imageBlurhash: blurhash,
+          })
+          .where(eq(posts.id, post.id))
+          .returning()
+          .then((res) => res[0]);
       } else {
-        response = await db.update(posts).set({
-          [key]: key === "published" ? value === "true" : value
-        }).where(eq(posts.id, post.id)).returning().then((res) => res[0])
+        response = await db
+          .update(posts)
+          .set({
+            [key]: key === "published" ? value === "true" : value,
+          })
+          .where(eq(posts.id, post.id))
+          .returning()
+          .then((res) => res[0]);
       }
 
       await revalidateTag(
@@ -341,19 +385,24 @@ export const updatePostMetadata = withPostAuth(
   },
 );
 
-export const deletePost = withPostAuth(async (_: FormData, post: SelectPost) => {
-  try {
-    const [response] = await db.delete(posts).where(eq(posts.id, post.id)).returning({
-      siteId: posts.siteId
-    })
+export const deletePost = withPostAuth(
+  async (_: FormData, post: SelectPost) => {
+    try {
+      const [response] = await db
+        .delete(posts)
+        .where(eq(posts.id, post.id))
+        .returning({
+          siteId: posts.siteId,
+        });
 
-    return response;
-  } catch (error: any) {
-    return {
-      error: error.message,
-    };
-  }
-});
+      return response;
+    } catch (error: any) {
+      return {
+        error: error.message,
+      };
+    }
+  },
+);
 
 export const editUser = async (
   formData: FormData,
@@ -369,10 +418,14 @@ export const editUser = async (
   const value = formData.get(key) as string;
 
   try {
-    const [response] = await db.update(users).set({
-      [key]: value
-    }).where(eq(users.id, session.user.id)).returning()
-    
+    const [response] = await db
+      .update(users)
+      .set({
+        [key]: value,
+      })
+      .where(eq(users.id, session.user.id))
+      .returning();
+
     return response;
   } catch (error: any) {
     if (error.code === "P2002") {

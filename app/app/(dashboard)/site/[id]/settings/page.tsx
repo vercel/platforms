@@ -10,7 +10,7 @@ export default async function SiteSettingsIndex({
 }) {
   const data = await db.query.sites.findFirst({
     where: (sites, { eq }) => eq(sites.id, decodeURIComponent(params.id)),
-  })
+  });
 
   return (
     <div className="flex flex-col space-y-6">

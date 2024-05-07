@@ -5,7 +5,7 @@ import type { SelectPost } from "@/lib/db/schema";
 
 interface BlogCardProps {
   data: Pick<
-  SelectPost,
+    SelectPost,
     "slug" | "image" | "imageBlurhash" | "title" | "description" | "createdAt"
   >;
 }

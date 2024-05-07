@@ -3,6 +3,7 @@ import GitHubProvider from "next-auth/providers/github";
 import db from "./db/db";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { Adapter } from "next-auth/adapters";
+import { accounts, sessions, users, verificationTokens } from "./db/schema";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 export const authOptions: NextAuthOptions = {
@@ -26,7 +27,12 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: `/login`,
     error: "/login", // Error code passed in query string as ?error=
   },
-  adapter: DrizzleAdapter(db) as Adapter,
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
+  }) as Adapter,
   session: { strategy: "jwt" },
   cookies: {
     sessionToken: {
@@ -89,8 +95,8 @@ export function withSiteAuth(action: any) {
     }
 
     const site = await db.query.sites.findFirst({
-      where: (sites, { eq }) => eq(sites.id, siteId)
-    })
+      where: (sites, { eq }) => eq(sites.id, siteId),
+    });
 
     if (!site || site.userId !== session.user.id) {
       return {
@@ -118,9 +124,9 @@ export function withPostAuth(action: any) {
     const post = await db.query.posts.findFirst({
       where: (posts, { eq }) => eq(posts.id, postId),
       with: {
-        site: true
-      }
-    })
+        site: true,
+      },
+    });
 
     if (!post || post.userId !== session.user.id) {
       return {

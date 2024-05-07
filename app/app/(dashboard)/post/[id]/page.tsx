@@ -14,11 +14,11 @@ export default async function PostPage({ params }: { params: { id: string } }) {
     with: {
       site: {
         columns: {
-          subdomain:true
-        }
-      }
-    }
-  })
+          subdomain: true,
+        },
+      },
+    },
+  });
   if (!data || data.userId !== session.user.id) {
     notFound();
   }

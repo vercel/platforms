@@ -11,7 +11,10 @@ export default async function OverviewSitesCTA() {
   if (!session) {
     return 0;
   }
-  const [sitesResult] = await db.select({count: count()}).from(sites).where(eq(sites.userId, session.user.id))
+  const [sitesResult] = await db
+    .select({ count: count() })
+    .from(sites)
+    .where(eq(sites.userId, session.user.id));
 
   return sitesResult.count > 0 ? (
     <Link
