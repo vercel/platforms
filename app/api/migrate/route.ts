@@ -6,50 +6,36 @@
 */
 
 import { NextResponse } from "next/server";
-// import prisma from "@/lib/prisma";
+// import db from "@/lib/db/db";
 
 export async function GET() {
-  //   Download data from old database
-  //  const users = await prisma.user.findMany();
-  //  const accounts = await prisma.account.findMany();
-  //  const sites = await prisma.site.findMany();
-  //  const posts = await prisma.post.findMany();
-  //  const examples = await prisma.example.findMany();
+  //  Download data from old database
+  //  const usersResult = await db.query.users.findMany();
+  //  const accountsResult = await db.query.accounts.findMany();
+  //  const sitesResult = await db.query.sites.findMany();
+  //  const postsResult = await db.query.posts.findMany();;
+  //  const examplesResult = await db.query.examples.findMany();;
 
-  //  fs.writeFileSync("users.json", JSON.stringify(users));
-  //  fs.writeFileSync("accounts.json", JSON.stringify(accounts));
-  //   fs.writeFileSync("sites.json", JSON.stringify(sites));
-  //   fs.writeFileSync("posts.json", JSON.stringify(posts));
-  //   fs.writeFileSync("examples.json", JSON.stringify(examples));
+  //  fs.writeFileSync("users.json", JSON.stringify(usersResult));
+  //  fs.writeFileSync("accounts.json", JSON.stringify(accountsResult));
+  //   fs.writeFileSync("sites.json", JSON.stringify(sitesResult));
+  //   fs.writeFileSync("posts.json", JSON.stringify(postsResult));
+  //   fs.writeFileSync("examples.json", JSON.stringify(examplesResult));
 
   // Upload data to new database
-  //   const users = JSON.parse(fs.readFileSync("users.json", "utf8"));
-  //   const accounts = JSON.parse(fs.readFileSync("accounts.json", "utf8"));
-  //   const sites = JSON.parse(fs.readFileSync("sites.json", "utf8"));
-  //   const posts = JSON.parse(fs.readFileSync("posts.json", "utf8"));
-  //   const examples = JSON.parse(fs.readFileSync("examples.json", "utf8"));
+  //   const parsedUsers = JSON.parse(fs.readFileSync("users.json", "utf8"));
+  //   const parsedAccounts = JSON.parse(fs.readFileSync("accounts.json", "utf8"));
+  //   const parsedSites = JSON.parse(fs.readFileSync("sites.json", "utf8"));
+  //   const parsedPosts = JSON.parse(fs.readFileSync("posts.json", "utf8"));
+  //   const parsedExamples = JSON.parse(fs.readFileSync("examples.json", "utf8"));
 
   //   const response = await Promise.all([
-  //     prisma.user.createMany({
-  //       data: users,
-  //       skipDuplicates: true,
-  //     }),
-  //     prisma.account.createMany({
-  //       data: accounts,
-  //       skipDuplicates: true,
-  //     }),
-  //     prisma.site.createMany({
-  //       data: sites,
-  //       skipDuplicates: true,
-  //     }),
-  //     prisma.post.createMany({
-  //       data: posts,
-  //       skipDuplicates: true,
-  //     }),
-  //   prisma.example.createMany({
-  //     data: examples,
-  //     skipDuplicates: true,
-  //   })
+  //     db.insert(users).values(parsedUsers),
+  //     db.insert(accounts).values(parsedAccounts),
+  //     db.insert(sites).values(parsedSites),
+  //     db.insert(posts).values(parsedPosts),
+  //     db.insert(examples).values(parsedExamples)
+  //   ]);
 
   return NextResponse.json({ response: "ok" });
 }

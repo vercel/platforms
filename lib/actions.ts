@@ -1,19 +1,19 @@
 "use server";
 
 import { getSession } from "@/lib/auth";
-import { revalidateTag } from "next/cache";
-import db from "./db/db";
-import { SelectPost, SelectSite, posts, sites, users } from "./db/schema";
 import {
   addDomainToVercel,
   removeDomainFromVercelProject,
   validDomainRegex,
 } from "@/lib/domains";
-import { withPostAuth, withSiteAuth } from "./auth";
-import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
-import { eq } from "drizzle-orm";
 import { put } from "@vercel/blob";
+import { eq } from "drizzle-orm";
+import { customAlphabet } from "nanoid";
+import { revalidateTag } from "next/cache";
+import { withPostAuth, withSiteAuth } from "./auth";
+import db from "./db/db";
+import { SelectPost, SelectSite, posts, sites, users } from "./db/schema";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -39,7 +39,6 @@ export const createSite = async (formData: FormData) => {
         description,
         subdomain,
         userId: session.user.id,
-        updatedAt: new Date(),
       })
       .returning();
 
@@ -111,20 +110,8 @@ export const updateSite = withSiteAuth(
 
           // first, we need to check if the apex domain is being used by other sites
           const apexDomain = getApexDomain(`https://${site.customDomain}`);
-          const domainCount = await prisma.site.count({
-            where: {
-              OR: [
-                {
-                  customDomain: apexDomain,
-                },
-                {
-                  customDomain: {
-                    endsWith: `.${apexDomain}`,
-                  },
-                },
-              ],
-            },
-          });
+          const domainCount = await db.select({ count: count() }).from(sites).where(or(eq(sites.customDomain, apexDomain), ilike(sites.customDomain, `%.${apexDomain}`))).then((res) => res[0].count);
+
 
           // if the apex domain is being used by other sites
           // we should only remove it from our Vercel project
@@ -250,7 +237,6 @@ export const createPost = withSiteAuth(
       .values({
         siteId: site.id,
         userId: session.user.id,
-        updatedAt: new Date(),
       })
       .returning();
 
@@ -292,7 +278,6 @@ export const updatePost = async (data: SelectPost) => {
         title: data.title,
         description: data.description,
         content: data.content,
-        updatedAt: new Date(),
       })
       .where(eq(posts.id, data.id))
       .returning();

@@ -61,7 +61,7 @@ export const verificationTokens = pgTable(
 );
 
 export const examples = pgTable("example", {
-  id: serial("id").primaryKey().notNull(),
+  id: serial("id").primaryKey(),
   name: text("name"),
   description: text("description"),
   domainCount: integer("domain_count"),
