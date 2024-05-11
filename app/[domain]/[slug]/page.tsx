@@ -109,7 +109,7 @@ export default async function SitePostPage({
           href={
             data.site?.user?.username
               ? `https://twitter.com/${data.site.user.username}`
-              : `https://github.com/${data.site?.user?.ghUsername}`
+              : `https://github.com/${data.site?.user?.gh_username}`
           }
           rel="noreferrer"
           target="_blank"

@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^1.0.1",
+    "@auth/drizzle-adapter": "^1.1.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@tremor/react": "^3.11.1",
     "@upstash/ratelimit": "^0.4.4",

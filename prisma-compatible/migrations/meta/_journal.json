@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1715440394028,
+      "tag": "0000_bright_black_queen",
+      "breakpoints": true
+    }
+  ]
+}

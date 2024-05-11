@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@auth/drizzle-adapter':
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^1.1.0
+    version: 1.1.0
   '@paralleldrive/cuid2':
     specifier: ^2.2.2
     version: 2.2.2
@@ -175,8 +175,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.25
     dev: false
 
-  /@auth/core@0.30.0:
-    resolution: {integrity: sha512-8AE4m/nk+4EIiVCJwxZAsJeAQuzpEC8M8768mmKVn60CGDdupKQkVhxbRlm5Qh7eNRCoFFME+0DvtaX2aXrYaA==}
+  /@auth/core@0.31.0:
+    resolution: {integrity: sha512-UKk3psvA1cRbk4/c9CkpWB8mdWrkKvzw0DmEYRsWolUQytQ2cRqx+hYuV6ZCsngw/xbj9hpmkZmAZEyq2g4fMg==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
       '@simplewebauthn/server': ^9.0.2
@@ -198,10 +198,10 @@ packages:
       preact-render-to-string: 5.2.3(preact@10.11.3)
     dev: false
 
-  /@auth/drizzle-adapter@1.0.1:
-    resolution: {integrity: sha512-E4np2F48p930q+YeQ5ipZPv/L+9gmQcB7g6NQQyux2wtanRNOXNW4TG8wMjSRfTzccNq161YZ8Fm5le/5snkGQ==}
+  /@auth/drizzle-adapter@1.1.0:
+    resolution: {integrity: sha512-ZC83ne3Ulkxh2II2T5qazgrqc1AmWbbPzs3oR+C93DMlIV8DPIgEaw4cmbV/kesO9xO+Gt7HpkctmOa2B26A1Q==}
     dependencies:
-      '@auth/core': 0.30.0
+      '@auth/core': 0.31.0
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
