@@ -90,17 +90,12 @@
       "indexes": {
         "VerificationToken_token_key": {
           "name": "VerificationToken_token_key",
-          "columns": [
-            "token"
-          ],
+          "columns": ["token"],
           "isUnique": true
         },
         "VerificationToken_identifier_token_key": {
           "name": "VerificationToken_identifier_token_key",
-          "columns": [
-            "identifier",
-            "token"
-          ],
+          "columns": ["identifier", "token"],
           "isUnique": true
         }
       },
@@ -223,9 +218,7 @@
       "indexes": {
         "User_email_key": {
           "name": "User_email_key",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         }
       },
@@ -331,17 +324,12 @@
       "indexes": {
         "Account_userId_idx": {
           "name": "Account_userId_idx",
-          "columns": [
-            "userId"
-          ],
+          "columns": ["userId"],
           "isUnique": false
         },
         "Account_provider_providerAccountId_key": {
           "name": "Account_provider_providerAccountId_key",
-          "columns": [
-            "provider",
-            "providerAccountId"
-          ],
+          "columns": ["provider", "providerAccountId"],
           "isUnique": true
         }
       },
@@ -351,12 +339,8 @@
           "tableFrom": "Account",
           "tableTo": "User",
           "schemaTo": "public",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -396,16 +380,12 @@
       "indexes": {
         "Session_sessionToken_key": {
           "name": "Session_sessionToken_key",
-          "columns": [
-            "sessionToken"
-          ],
+          "columns": ["sessionToken"],
           "isUnique": true
         },
         "Session_userId_idx": {
           "name": "Session_userId_idx",
-          "columns": [
-            "userId"
-          ],
+          "columns": ["userId"],
           "isUnique": false
         }
       },
@@ -415,12 +395,8 @@
           "tableFrom": "Session",
           "tableTo": "User",
           "schemaTo": "public",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -520,23 +496,17 @@
       "indexes": {
         "Site_subdomain_key": {
           "name": "Site_subdomain_key",
-          "columns": [
-            "subdomain"
-          ],
+          "columns": ["subdomain"],
           "isUnique": true
         },
         "Site_customDomain_key": {
           "name": "Site_customDomain_key",
-          "columns": [
-            "customDomain"
-          ],
+          "columns": ["customDomain"],
           "isUnique": true
         },
         "Site_userId_idx": {
           "name": "Site_userId_idx",
-          "columns": [
-            "userId"
-          ],
+          "columns": ["userId"],
           "isUnique": false
         }
       },
@@ -546,12 +516,8 @@
           "tableFrom": "Site",
           "tableTo": "User",
           "schemaTo": "public",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -643,24 +609,17 @@
       "indexes": {
         "Post_siteId_idx": {
           "name": "Post_siteId_idx",
-          "columns": [
-            "siteId"
-          ],
+          "columns": ["siteId"],
           "isUnique": false
         },
         "Post_userId_idx": {
           "name": "Post_userId_idx",
-          "columns": [
-            "userId"
-          ],
+          "columns": ["userId"],
           "isUnique": false
         },
         "Post_slug_siteId_key": {
           "name": "Post_slug_siteId_key",
-          "columns": [
-            "slug",
-            "siteId"
-          ],
+          "columns": ["slug", "siteId"],
           "isUnique": true
         }
       },
@@ -670,12 +629,8 @@
           "tableFrom": "Post",
           "tableTo": "Site",
           "schemaTo": "public",
-          "columnsFrom": [
-            "siteId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["siteId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -684,12 +639,8 @@
           "tableFrom": "Post",
           "tableTo": "User",
           "schemaTo": "public",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }

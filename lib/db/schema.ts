@@ -9,7 +9,7 @@ import {
   serial,
   text,
   timestamp,
-  uniqueIndex
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("user", {
