@@ -1,10 +1,8 @@
 {
-  "id": "00000000-0000-0000-0000-000000000000",
-  "prevId": "",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "_prisma_migrations": {
+    "public._prisma_migrations": {
       "name": "_prisma_migrations",
       "schema": "",
       "columns": {
@@ -64,7 +62,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "VerificationToken": {
+    "public.VerificationToken": {
       "name": "VerificationToken",
       "schema": "",
       "columns": {
@@ -103,7 +101,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Example": {
+    "public.Example": {
       "name": "Example",
       "schema": "",
       "columns": {
@@ -155,7 +153,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "User": {
+    "public.User": {
       "name": "User",
       "schema": "",
       "columns": {
@@ -226,7 +224,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Account": {
+    "public.Account": {
       "name": "Account",
       "schema": "",
       "columns": {
@@ -337,18 +335,18 @@
         "Account_userId_fkey": {
           "name": "Account_userId_fkey",
           "tableFrom": "Account",
+          "columnsFrom": ["userId"],
           "tableTo": "User",
           "schemaTo": "public",
-          "columnsFrom": ["userId"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Session": {
+    "public.Session": {
       "name": "Session",
       "schema": "",
       "columns": {
@@ -393,18 +391,18 @@
         "Session_userId_fkey": {
           "name": "Session_userId_fkey",
           "tableFrom": "Session",
+          "columnsFrom": ["userId"],
           "tableTo": "User",
           "schemaTo": "public",
-          "columnsFrom": ["userId"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Site": {
+    "public.Site": {
       "name": "Site",
       "schema": "",
       "columns": {
@@ -514,18 +512,18 @@
         "Site_userId_fkey": {
           "name": "Site_userId_fkey",
           "tableFrom": "Site",
+          "columnsFrom": ["userId"],
           "tableTo": "User",
           "schemaTo": "public",
-          "columnsFrom": ["userId"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Post": {
+    "public.Post": {
       "name": "Post",
       "schema": "",
       "columns": {
@@ -627,22 +625,22 @@
         "Post_siteId_fkey": {
           "name": "Post_siteId_fkey",
           "tableFrom": "Post",
+          "columnsFrom": ["siteId"],
           "tableTo": "Site",
           "schemaTo": "public",
-          "columnsFrom": ["siteId"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         },
         "Post_userId_fkey": {
           "name": "Post_userId_fkey",
           "tableFrom": "Post",
+          "columnsFrom": ["userId"],
           "tableTo": "User",
           "schemaTo": "public",
-          "columnsFrom": ["userId"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -655,5 +653,7 @@
     "schemas": {},
     "tables": {},
     "columns": {}
-  }
+  },
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": ""
 }
