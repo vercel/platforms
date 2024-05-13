@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import Editor from "@/components/editor";
-import db from "@/lib/db/db";
+import db from "@/lib/db";
 
 export default async function PostPage({ params }: { params: { id: string } }) {
   const session = await getSession();

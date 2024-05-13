@@ -12,8 +12,8 @@ import { eq } from "drizzle-orm";
 import { customAlphabet } from "nanoid";
 import { revalidateTag } from "next/cache";
 import { withPostAuth, withSiteAuth } from "./auth";
-import db from "./db/db";
-import { SelectPost, SelectSite, posts, sites, users } from "./db/schema";
+import db from "./db";
+import { SelectPost, SelectSite, posts, sites, users } from "./schema";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",

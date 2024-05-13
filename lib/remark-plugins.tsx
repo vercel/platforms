@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { visit } from "unist-util-visit";
 import { ReactNode } from "react";
-import { DrizzleClient } from "./db/db";
-import { SelectExample } from "./db/schema";
+import { DrizzleClient } from "./db";
+import { SelectExample } from "./schema";
 
 export function replaceLinks({
   href,

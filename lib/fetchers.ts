@@ -1,7 +1,7 @@
 import { unstable_cache } from "next/cache";
-import db from "./db/db";
+import db from "./db";
 import { and, desc, eq, not } from "drizzle-orm";
-import { posts, sites, users } from "./db/schema";
+import { posts, sites, users } from "./schema";
 import { serialize } from "next-mdx-remote/serialize";
 import { replaceExamples, replaceTweets } from "@/lib/remark-plugins";
 

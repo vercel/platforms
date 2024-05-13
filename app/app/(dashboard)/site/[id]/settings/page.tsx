@@ -1,7 +1,7 @@
 import Form from "@/components/form";
 import { updateSite } from "@/lib/actions";
 import DeleteSiteForm from "@/components/form/delete-site-form";
-import db from "@/lib/db/db";
+import db from "@/lib/db";
 
 export default async function SiteSettingsIndex({
   params,

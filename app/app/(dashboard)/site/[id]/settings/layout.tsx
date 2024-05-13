@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import SiteSettingsNav from "./nav";
-import db from "@/lib/db/db";
+import db from "@/lib/db";
 
 export default async function SiteAnalyticsLayout({
   params,

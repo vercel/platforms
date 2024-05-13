@@ -1,7 +1,7 @@
 import Link from "next/link";
 import BlurImage from "./blur-image";
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
-import type { SelectPost } from "@/lib/db/schema";
+import type { SelectPost } from "@/lib/schema";
 
 interface BlogCardProps {
   data: Pick<

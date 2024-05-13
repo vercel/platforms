@@ -1,11 +1,8 @@
 import { getSession } from "@/lib/auth";
+import db from "@/lib/db";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import PostCard from "./post-card";
-import Image from "next/image";
-import db from "@/lib/db/db";
-import { posts, sites, users } from "@/lib/db/schema";
-import { eq, and, desc, getTableColumns } from "drizzle-orm";
-import { withLimit } from "@/lib/utils";
 
 export default async function Posts({
   siteId,
@@ -19,25 +16,22 @@ export default async function Posts({
     redirect("/login");
   }
 
-  const query = db
-    .select({ site: sites, ...getTableColumns(posts) })
-    .from(posts)
-    .leftJoin(sites, eq(posts.siteId, sites.id))
-    .where(
+  const posts = await db.query.posts.findMany({
+    where: (posts, { and, eq }) =>
       and(
         eq(posts.userId, session.user.id),
-        siteId ? eq(sites.id, siteId) : undefined,
+        siteId ? eq(posts.siteId, siteId) : undefined,
       ),
-    )
-    .orderBy(desc(posts.updatedAt));
+    with: {
+      site: true,
+    },
+    orderBy: (posts, { desc }) => desc(posts.updatedAt),
+    ...(limit ? { limit } : {}),
+  });
 
-  const postsResult = limit
-    ? await withLimit(query.$dynamic(), limit)
-    : await query;
-
-  return postsResult.length > 0 ? (
+  return posts.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {postsResult.map((post) => (
+      {posts.map((post) => (
         <PostCard key={post.id} data={post} />
       ))}
     </div>

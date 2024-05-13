@@ -2,7 +2,7 @@ import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import Posts from "@/components/posts";
 import CreatePostButton from "@/components/create-post-button";
-import db from "@/lib/db/db";
+import db from "@/lib/db";
 
 export default async function SitePosts({
   params,

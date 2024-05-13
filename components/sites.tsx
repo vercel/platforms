@@ -1,33 +1,24 @@
 import { getSession } from "@/lib/auth";
+import db from "@/lib/db";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import SiteCard from "./site-card";
-import Image from "next/image";
-import db from "@/lib/db/db";
-import { sites, users } from "@/lib/db/schema";
-import { asc, eq, getTableColumns } from "drizzle-orm";
-import { withLimit } from "@/lib/utils";
 
 export default async function Sites({ limit }: { limit?: number }) {
   const session = await getSession();
   if (!session) {
     redirect("/login");
   }
-  const query = db
-    .select({
-      ...getTableColumns(sites),
-    })
-    .from(sites)
-    .leftJoin(users, eq(sites.userId, users.id))
-    .where(eq(users.id, session.user.id))
-    .orderBy(asc(sites.createdAt));
 
-  const sitesResult = limit
-    ? await withLimit(query.$dynamic(), limit)
-    : await query;
+  const sites = await db.query.sites.findMany({
+    where: (sites, { eq }) => eq(sites.userId, session.user.id),
+    orderBy: (sites, { asc }) => asc(sites.createdAt),
+    ...(limit ? { limit } : {}),
+  });
 
-  return sitesResult.length > 0 ? (
+  return sites.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {sitesResult.map((site) => (
+      {sites.map((site) => (
         <SiteCard key={site.id} data={site} />
       ))}
     </div>

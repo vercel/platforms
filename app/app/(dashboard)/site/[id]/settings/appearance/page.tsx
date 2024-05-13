@@ -1,6 +1,6 @@
 import Form from "@/components/form";
 import { updateSite } from "@/lib/actions";
-import db from "@/lib/db/db";
+import db from "@/lib/db";
 
 export default async function SiteSettingsAppearance({
   params,

@@ -4,8 +4,8 @@ import BlogCard from "@/components/blog-card";
 import BlurImage from "@/components/blur-image";
 import MDX from "@/components/mdx";
 import { placeholderBlurhash, toDateString } from "@/lib/utils";
-import db from "@/lib/db/db";
-import { posts, sites } from "@/lib/db/schema";
+import db from "@/lib/db";
+import { posts, sites } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 
 export async function generateMetadata({
