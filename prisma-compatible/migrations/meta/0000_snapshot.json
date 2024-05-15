@@ -1,4 +1,6 @@
 {
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -335,12 +337,12 @@
         "Account_userId_fkey": {
           "name": "Account_userId_fkey",
           "tableFrom": "Account",
-          "columnsFrom": ["userId"],
           "tableTo": "User",
           "schemaTo": "public",
+          "columnsFrom": ["userId"],
           "columnsTo": ["id"],
-          "onUpdate": "cascade",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -391,12 +393,12 @@
         "Session_userId_fkey": {
           "name": "Session_userId_fkey",
           "tableFrom": "Session",
-          "columnsFrom": ["userId"],
           "tableTo": "User",
           "schemaTo": "public",
+          "columnsFrom": ["userId"],
           "columnsTo": ["id"],
-          "onUpdate": "cascade",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -512,12 +514,12 @@
         "Site_userId_fkey": {
           "name": "Site_userId_fkey",
           "tableFrom": "Site",
-          "columnsFrom": ["userId"],
           "tableTo": "User",
           "schemaTo": "public",
+          "columnsFrom": ["userId"],
           "columnsTo": ["id"],
-          "onUpdate": "cascade",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -625,22 +627,22 @@
         "Post_siteId_fkey": {
           "name": "Post_siteId_fkey",
           "tableFrom": "Post",
-          "columnsFrom": ["siteId"],
           "tableTo": "Site",
           "schemaTo": "public",
+          "columnsFrom": ["siteId"],
           "columnsTo": ["id"],
-          "onUpdate": "cascade",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         },
         "Post_userId_fkey": {
           "name": "Post_userId_fkey",
           "tableFrom": "Post",
-          "columnsFrom": ["userId"],
           "tableTo": "User",
           "schemaTo": "public",
+          "columnsFrom": ["userId"],
           "columnsTo": ["id"],
-          "onUpdate": "cascade",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -654,6 +656,7 @@
     "tables": {},
     "columns": {}
   },
-  "id": "00000000-0000-0000-0000-000000000000",
-  "prevId": ""
+  "internal": {
+    "tables": {}
+  }
 }

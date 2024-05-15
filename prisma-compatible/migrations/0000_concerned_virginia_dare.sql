@@ -96,19 +96,6 @@ CREATE TABLE IF NOT EXISTS "Post" (
 	"userId" text
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_token_key" ON "VerificationToken" ("token");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_identifier_token_key" ON "VerificationToken" ("identifier","token");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "User_email_key" ON "User" ("email");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "Account_userId_idx" ON "Account" ("userId");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "Account_provider_providerAccountId_key" ON "Account" ("provider","providerAccountId");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "Session_sessionToken_key" ON "Session" ("sessionToken");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "Session_userId_idx" ON "Session" ("userId");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "Site_subdomain_key" ON "Site" ("subdomain");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "Site_customDomain_key" ON "Site" ("customDomain");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "Site_userId_idx" ON "Site" ("userId");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "Post_siteId_idx" ON "Post" ("siteId");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "Post_userId_idx" ON "Post" ("userId");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "Post_slug_siteId_key" ON "Post" ("slug","siteId");--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
@@ -138,3 +125,18 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_token_key" ON "VerificationToken" ("token");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_identifier_token_key" ON "VerificationToken" ("identifier","token");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "User_email_key" ON "User" ("email");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "Account_userId_idx" ON "Account" ("userId");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "Account_provider_providerAccountId_key" ON "Account" ("provider","providerAccountId");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "Session_sessionToken_key" ON "Session" ("sessionToken");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "Session_userId_idx" ON "Session" ("userId");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "Site_subdomain_key" ON "Site" ("subdomain");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "Site_customDomain_key" ON "Site" ("customDomain");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "Site_userId_idx" ON "Site" ("userId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "Post_siteId_idx" ON "Post" ("siteId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "Post_userId_idx" ON "Post" ("userId");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "Post_slug_siteId_key" ON "Post" ("slug","siteId");
+
