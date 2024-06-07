@@ -12,7 +12,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-export const users = pgTable("user", {
+export const users = pgTable("users", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => createId()),
@@ -59,7 +59,7 @@ export const verificationTokens = pgTable(
   },
 );
 
-export const examples = pgTable("example", {
+export const examples = pgTable("examples", {
   id: serial("id").primaryKey(),
   name: text("name"),
   description: text("description"),
@@ -100,7 +100,7 @@ export const accounts = pgTable(
 );
 
 export const sites = pgTable(
-  "site",
+  "sites",
   {
     id: text("id")
       .primaryKey()
@@ -139,7 +139,7 @@ export const sites = pgTable(
 );
 
 export const posts = pgTable(
-  "post",
+  "posts",
   {
     id: text("id")
       .primaryKey()
