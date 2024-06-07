@@ -73,7 +73,11 @@ export async function getPostData(domain: string, slug: string) {
   return await unstable_cache(
     async () => {
       const data = await db
-        .select()
+        .select({
+          post: posts,
+          site: sites,
+          user: users,
+        })
         .from(posts)
         .leftJoin(sites, eq(sites.id, posts.siteId))
         .leftJoin(users, eq(users.id, sites.userId))
@@ -92,7 +96,7 @@ export async function getPostData(domain: string, slug: string) {
                 ...res[0].post,
                 site: res[0].site
                   ? {
-                      ...res[0].user,
+                      ...res[0].site,
                       user: res[0].user,
                     }
                   : null,

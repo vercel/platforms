@@ -49,7 +49,7 @@ export const users = pgTable(
     name: text("name"),
     username: text("username"),
     gh_username: text("gh_username"),
-    email: text("email"), // set notNull() because for next-auth adapter email type column is non-nullable and generate migration
+    email: text("email").notNull(),
     emailVerified: timestamp("emailVerified", { precision: 3, mode: "date" }),
     image: text("image"),
     createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
