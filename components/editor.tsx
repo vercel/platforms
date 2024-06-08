@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { Post } from "@prisma/client";
 import { updatePost, updatePostMetadata } from "@/lib/actions";
 import { Editor as NovelEditor } from "novel";
 import TextareaAutosize from "react-textarea-autosize";
@@ -9,8 +8,9 @@ import { cn } from "@/lib/utils";
 import LoadingDots from "./icons/loading-dots";
 import { ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import type { SelectPost } from "@/lib/schema";
 
-type PostWithSite = Post & { site: { subdomain: string | null } | null };
+type PostWithSite = SelectPost & { site: { subdomain: string | null } | null };
 
 export default function Editor({ post }: { post: PostWithSite }) {
   let [isPendingSaving, startTransitionSaving] = useTransition();
@@ -39,7 +39,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
   }, [data, startTransitionSaving]);
 
   return (
-    <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 dark:border-stone-700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
+    <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg dark:border-stone-700">
       <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
         {data.published && (
           <a

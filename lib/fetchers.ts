@@ -1,5 +1,7 @@
 import { unstable_cache } from "next/cache";
-import prisma from "@/lib/prisma";
+import db from "./db";
+import { and, desc, eq, not } from "drizzle-orm";
+import { posts, sites, users } from "./schema";
 import { serialize } from "next-mdx-remote/serialize";
 import { replaceExamples, replaceTweets } from "@/lib/remark-plugins";
 
@@ -10,9 +12,13 @@ export async function getSiteData(domain: string) {
 
   return await unstable_cache(
     async () => {
-      return prisma.site.findUnique({
-        where: subdomain ? { subdomain } : { customDomain: domain },
-        include: { user: true },
+      return await db.query.sites.findFirst({
+        where: subdomain
+          ? eq(sites.subdomain, subdomain)
+          : eq(sites.customDomain, domain),
+        with: {
+          user: true,
+        },
       });
     },
     [`${domain}-metadata`],
@@ -30,25 +36,26 @@ export async function getPostsForSite(domain: string) {
 
   return await unstable_cache(
     async () => {
-      return prisma.post.findMany({
-        where: {
-          site: subdomain ? { subdomain } : { customDomain: domain },
-          published: true,
-        },
-        select: {
-          title: true,
-          description: true,
-          slug: true,
-          image: true,
-          imageBlurhash: true,
-          createdAt: true,
-        },
-        orderBy: [
-          {
-            createdAt: "desc",
-          },
-        ],
-      });
+      return await db
+        .select({
+          title: posts.title,
+          description: posts.description,
+          slug: posts.slug,
+          image: posts.image,
+          imageBlurhash: posts.imageBlurhash,
+          createdAt: posts.createdAt,
+        })
+        .from(posts)
+        .leftJoin(sites, eq(posts.siteId, sites.id))
+        .where(
+          and(
+            eq(posts.published, true),
+            subdomain
+              ? eq(sites.subdomain, subdomain)
+              : eq(sites.customDomain, domain),
+          ),
+        )
+        .orderBy(desc(posts.createdAt));
     },
     [`${domain}-posts`],
     {
@@ -65,42 +72,62 @@ export async function getPostData(domain: string, slug: string) {
 
   return await unstable_cache(
     async () => {
-      const data = await prisma.post.findFirst({
-        where: {
-          site: subdomain ? { subdomain } : { customDomain: domain },
-          slug,
-          published: true,
-        },
-        include: {
-          site: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      });
+      const data = await db
+        .select({
+          post: posts,
+          site: sites,
+          user: users,
+        })
+        .from(posts)
+        .leftJoin(sites, eq(sites.id, posts.siteId))
+        .leftJoin(users, eq(users.id, sites.userId))
+        .where(
+          and(
+            eq(posts.slug, slug),
+            eq(posts.published, true),
+            subdomain
+              ? eq(sites.subdomain, subdomain)
+              : eq(sites.customDomain, domain),
+          ),
+        )
+        .then((res) =>
+          res.length > 0
+            ? {
+                ...res[0].post,
+                site: res[0].site
+                  ? {
+                      ...res[0].site,
+                      user: res[0].user,
+                    }
+                  : null,
+              }
+            : null,
+        );
 
       if (!data) return null;
 
       const [mdxSource, adjacentPosts] = await Promise.all([
         getMdxSource(data.content!),
-        prisma.post.findMany({
-          where: {
-            site: subdomain ? { subdomain } : { customDomain: domain },
-            published: true,
-            NOT: {
-              id: data.id,
-            },
-          },
-          select: {
-            slug: true,
-            title: true,
-            createdAt: true,
-            description: true,
-            image: true,
-            imageBlurhash: true,
-          },
-        }),
+        db
+          .select({
+            slug: posts.slug,
+            title: posts.title,
+            createdAt: posts.createdAt,
+            description: posts.description,
+            image: posts.image,
+            imageBlurhash: posts.imageBlurhash,
+          })
+          .from(posts)
+          .leftJoin(sites, eq(sites.id, posts.siteId))
+          .where(
+            and(
+              eq(posts.published, true),
+              not(eq(posts.id, data.id)),
+              subdomain
+                ? eq(sites.subdomain, subdomain)
+                : eq(sites.customDomain, domain),
+            ),
+          ),
       ]);
 
       return {
@@ -125,7 +152,7 @@ async function getMdxSource(postContents: string) {
   // Serialize the content string into MDX
   const mdxSource = await serialize(content, {
     mdxOptions: {
-      remarkPlugins: [replaceTweets, () => replaceExamples(prisma)],
+      remarkPlugins: [replaceTweets, () => replaceExamples(db)],
     },
   });
 

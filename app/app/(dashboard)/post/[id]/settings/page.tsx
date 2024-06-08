@@ -1,9 +1,9 @@
 import { getSession } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Form from "@/components/form";
 import { updatePostMetadata } from "@/lib/actions";
 import DeletePostForm from "@/components/form/delete-post-form";
+import db from "@/lib/db";
 
 export default async function PostSettings({
   params,
@@ -14,10 +14,8 @@ export default async function PostSettings({
   if (!session) {
     redirect("/login");
   }
-  const data = await prisma.post.findUnique({
-    where: {
-      id: decodeURIComponent(params.id),
-    },
+  const data = await db.query.posts.findFirst({
+    where: (posts, { eq }) => eq(posts.id, decodeURIComponent(params.id)),
   });
   if (!data || data.userId !== session.user.id) {
     notFound();

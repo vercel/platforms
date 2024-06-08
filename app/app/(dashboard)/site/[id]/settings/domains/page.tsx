@@ -1,16 +1,14 @@
-import prisma from "@/lib/prisma";
 import Form from "@/components/form";
 import { updateSite } from "@/lib/actions";
+import db from "@/lib/db";
 
 export default async function SiteSettingsDomains({
   params,
 }: {
   params: { id: string };
 }) {
-  const data = await prisma.site.findUnique({
-    where: {
-      id: decodeURIComponent(params.id),
-    },
+  const data = await db.query.sites.findFirst({
+    where: (sites, { eq }) => eq(sites.id, decodeURIComponent(params.id)),
   });
 
   return (
