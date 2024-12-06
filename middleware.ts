@@ -19,7 +19,7 @@ export default async function middleware(req: NextRequest) {
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
   let hostname = req.headers
-    .get("host")!
+    .get("x-forwarded-host")!
     .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
 
   // special case for Vercel preview deployment URLs
