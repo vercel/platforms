@@ -69,12 +69,12 @@ export default function Nav({ children }: { children: ReactNode }) {
   const [siteId, setSiteId] = useState<string | null>();
 
   useEffect(() => {
-    if (segments[0] === "post" && id) {
+    if (segments[0] === "post" && id && !siteId) {
       getSiteFromPostId(id).then((id) => {
         setSiteId(id);
       });
     }
-  }, [segments, id]);
+  }, [segments, id, siteId]);
 
   const tabs = useMemo(() => {
     if (segments[0] === "site" && id) {
