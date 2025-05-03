@@ -1,5 +1,71 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { type NextRequest, NextResponse } from 'next/server';
+import { rootDomain } from '@/lib/utils';
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const url = request.url;
+  let subdomain: string | null = null;
+
+  if (url.includes('localhost') || url.includes('127.0.0.1')) {
+    // Try to extract subdomain from the full URL for local development
+    // This handles cases where browsers normalize the hostname
+    const fullUrlMatch = url.match(/http:\/\/([^.]+)\.localhost/);
+    if (fullUrlMatch && fullUrlMatch[1]) {
+      subdomain = fullUrlMatch[1];
+    } else {
+      // Standard host header approach as fallback
+      const host = request.headers.get('host') || '';
+      const hostname = host.split(':')[0];
+
+      if (hostname.includes('.localhost')) {
+        subdomain = hostname.split('.')[0];
+      }
+    }
+  } else {
+    // Production/non-localhost handling
+    const host = request.headers.get('host') || '';
+    const hostname = host.split(':')[0];
+    const rootDomainFormatted = rootDomain.split(':')[0];
+
+    // Handle preview deployment URLs (tenant---branch-name.vercel.app)
+    const isPreviewDeployment =
+      hostname.includes('---') && hostname.endsWith('.vercel.app');
+
+    if (isPreviewDeployment) {
+      // Extract subdomain from preview URL (format: tenant---branch-name.vercel.app)
+      const parts = hostname.split('---');
+      if (parts.length > 0) {
+        subdomain = parts[0];
+      }
+    } else {
+      // Regular subdomain detection
+      const isSubdomain =
+        hostname !== rootDomainFormatted &&
+        hostname !== `www.${rootDomainFormatted}` &&
+        hostname.endsWith(`.${rootDomainFormatted}`);
+
+      if (isSubdomain) {
+        subdomain = hostname.replace(`.${rootDomainFormatted}`, '');
+      }
+    }
+  }
+
+  // If we have a subdomain (either from regular URL or preview deployment)
+  if (subdomain) {
+    // Block access to admin page from subdomains
+    if (pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    // For the root path on a subdomain, rewrite to the subdomain page
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
+    }
+  }
+
+  // On the root domain, allow normal access
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
@@ -7,67 +73,9 @@ export const config = {
      * Match all paths except for:
      * 1. /api routes
      * 2. /_next (Next.js internals)
-     * 3. /_static (inside /public)
+     * 3. /examples (inside /public)
      * 4. all root files inside /public (e.g. /favicon.ico)
      */
-    "/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)",
-  ],
+    '/((?!api|_next|examples|[\\w-]+\\.\\w+).*)'
+  ]
 };
-
-export default async function middleware(req: NextRequest) {
-  const url = req.nextUrl;
-
-  // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
-  let hostname = req.headers
-    .get("host")!
-    .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
-
-  // special case for Vercel preview deployment URLs
-  if (
-    hostname.includes("---") &&
-    hostname.endsWith(`.${process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX}`)
-  ) {
-    hostname = `${hostname.split("---")[0]}.${
-      process.env.NEXT_PUBLIC_ROOT_DOMAIN
-    }`;
-  }
-
-  const searchParams = req.nextUrl.searchParams.toString();
-  // Get the pathname of the request (e.g. /, /about, /blog/first-post)
-  const path = `${url.pathname}${
-    searchParams.length > 0 ? `?${searchParams}` : ""
-  }`;
-
-  // rewrites for app pages
-  if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
-    const session = await getToken({ req });
-    if (!session && path !== "/login") {
-      return NextResponse.redirect(new URL("/login", req.url));
-    } else if (session && path == "/login") {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-    return NextResponse.rewrite(
-      new URL(`/app${path === "/" ? "" : path}`, req.url),
-    );
-  }
-
-  // special case for `vercel.pub` domain
-  if (hostname === "vercel.pub") {
-    return NextResponse.redirect(
-      "https://vercel.com/blog/platforms-starter-kit",
-    );
-  }
-
-  // rewrite root application to `/home` folder
-  if (
-    hostname === "localhost:3000" ||
-    hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
-  ) {
-    return NextResponse.rewrite(
-      new URL(`/home${path === "/" ? "" : path}`, req.url),
-    );
-  }
-
-  // rewrite everything else to `/[domain]/[slug] dynamic route
-  return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url));
-}
