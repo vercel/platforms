@@ -48,7 +48,7 @@ A production-ready example of a multi-tenant application built with Next.js 15, 
    Create a `.env.local` file in the root directory with:
 
    ```
-   KV_REST_API_TOKEN=your_redis_url
+   KV_REST_API_URL=your_redis_url
    KV_REST_API_TOKEN=your_redis_token
    ```
 
