@@ -134,11 +134,13 @@ export function SubdomainForm() {
 
   return (
     <form action={action} className="space-y-4">
-      <SubdomainInput defaultValue={state.subdomain} />
+      <SubdomainInput defaultValue={state?.subdomain} />
 
-      <IconPicker icon={icon} setIcon={setIcon} defaultValue={state.icon} />
+      <IconPicker icon={icon} setIcon={setIcon} defaultValue={state?.icon} />
 
-      {state.error && <div className="text-sm text-red-500">{state.error}</div>}
+      {state?.error && (
+        <div className="text-sm text-red-500">{state.error}</div>
+      )}
 
       <Button type="submit" className="w-full" disabled={isPending || !icon}>
         {isPending ? 'Creating...' : 'Create Subdomain'}
