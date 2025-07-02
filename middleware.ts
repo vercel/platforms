@@ -52,7 +52,9 @@ export async function middleware(request: NextRequest) {
 
     // For the root path on a subdomain, rewrite to the subdomain page
     if (pathname === '/') {
-      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
+      const url = request.nextUrl.clone();
+      url.pathname = `/s/${subdomain}`;
+      return NextResponse.rewrite(url);
     }
   }
 
@@ -68,6 +70,6 @@ export const config = {
      * 2. /_next (Next.js internals)
      * 3. all root files inside /public (e.g. /favicon.ico)
      */
-    '/((?!api|_next|[\\w-]+\\.\\w+).*)'
-  ]
+    '/((?!api|_next|[\\w-]+\\.\\w+).*)',
+  ],
 };
