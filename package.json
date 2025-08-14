@@ -11,6 +11,8 @@
     "@radix-ui/react-popover": "^1.1.13",
     "@radix-ui/react-slot": "^1.2.2",
     "@upstash/redis": "^1.34.9",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "frimousse": "^0.2.0",
@@ -28,5 +30,6 @@
     "tailwindcss": "^4.1.6",
     "tw-animate-css": "^1.2.9",
     "typescript": "^5.8.3"
-  }
+  },
+  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184"
 }
