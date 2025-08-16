@@ -47,7 +47,7 @@ A production-ready example of a multi-tenant application built with Next.js 15, 
 3. Set up environment variables:
    Create a `.env.local` file in the root directory with:
 
-   ```javascript
+   ```bash
    KV_REST_API_URL=your_redis_url
    KV_REST_API_TOKEN=your_redis_token
    ```
@@ -61,7 +61,7 @@ A production-ready example of a multi-tenant application built with Next.js 15, 
 5. Access the application:
    - Main site: <http://localhost:3000>
    - Admin panel: <http://localhost:3000/admin>
-   - Tenants: http://[tenant-name].localhost:3000
+   - Tenants: <http://[tenant-name].localhost:3000>
 
 ## Multi-Tenant Architecture
 
