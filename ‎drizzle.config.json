@@ -1,0 +1,8 @@
+{
+  "schema": "./drizzle/schema.ts",
+  "out": "./drizzle/migrations",
+  "dialect": "postgresql",
+  "dbCredentials": {
+    "url": "$DATABASE_URL"
+  }
+}
