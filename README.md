@@ -45,12 +45,18 @@ A production-ready example of a multi-tenant application built with Next.js 15, 
    ```
 
 3. Set up environment variables:
-   Create a `.env.local` file in the root directory with:
+   Create a `.env.local` file in the root directory with your Upstash
+   connection details:
 
    ```
-   KV_REST_API_URL=your_redis_url
-   KV_REST_API_TOKEN=your_redis_token
+   KV_REST_API_URL=your_redis_rest_url
+   KV_REST_API_TOKEN=your_redis_rest_token
+   NEXT_PUBLIC_ROOT_DOMAIN=localhost:3000    # override for custom domains in dev
    ```
+
+   The first two values come from the Upstash Redis project dashboard. The
+   optional `NEXT_PUBLIC_ROOT_DOMAIN` lets you preview tenant URLs using a
+   different base domain when running locally.
 
 4. Start the development server:
 
