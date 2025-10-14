@@ -50,6 +50,7 @@
     "@types/node": "^22.15.17",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
+    "ignore-loader": "^0.1.2",
     "tailwindcss": "^4.1.6",
     "tw-animate-css": "^1.2.9",
     "typescript": "^5.8.3"

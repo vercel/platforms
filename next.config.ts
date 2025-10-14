@@ -6,6 +6,23 @@ const nextConfig: NextConfig = {
   experimental: {
     // Enable experimental features if needed
   },
+  
+  // Exclude Supabase functions from build
+  webpack: (config, { isServer }) => {
+    // Exclude Supabase functions directory from compilation
+    config.module.rules.push({
+      test: /[\\/]supabase[\\/]functions[\\/]/,
+      loader: 'ignore-loader',
+    });
+    
+    // Also exclude from file resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+    };
+    
+    return config;
+  },
+  
   // Ensure proper handling of Vercel Analytics and Speed Insights
   // headers: async () => {
   //   return [

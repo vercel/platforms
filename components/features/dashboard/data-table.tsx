@@ -295,8 +295,36 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 // ----------------------
 // Main Table Component
 // ----------------------
-export function DataTable() {
-  const [data, setData] = React.useState(() => sampleData)
+interface DataTableProps {
+  data?: Array<{
+    id: number;
+    header: string;
+    type: string;
+    status: string;
+    target: string;
+    limit: string;
+    reviewer: string;
+  }>;
+}
+
+export function DataTable({ data: externalData }: DataTableProps = {}) {
+  // Use external data if provided, otherwise use sample data
+  const [data, setData] = React.useState(() => {
+    if (externalData && externalData.length > 0) {
+      return externalData.map(item => ({
+        id: item.id,
+        name: item.header,
+        role: item.type,
+        status: item.status === 'Done' ? 'Active' : item.status === 'In Process' ? 'Idle' : 'Error',
+        accuracy: `${Math.floor(Math.random() * 10) + 90}.${Math.floor(Math.random() * 9)}%`, // Random accuracy
+        latency: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 9)}s`, // Random latency
+        owner: item.reviewer === 'Assign reviewer' ? 'Unassigned' : item.reviewer,
+        lastRunStatus: item.status === 'Done' ? 'Success' : item.status === 'In Process' ? 'Pending' : 'Failed',
+        nextRunTime: `Today, ${Math.floor(Math.random() * 12) + 9}:${Math.floor(Math.random() * 6)}0`,
+      }))
+    }
+    return sampleData
+  })
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
