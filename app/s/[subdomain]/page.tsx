@@ -7,5 +7,5 @@ export default async function SubdomainIndex({
 }) {
   const { subdomain } = await params;
 
-  redirect(`/s/${subdomain}/dashboard`);
+  redirect(`/s/${subdomain}/insights`);
 }

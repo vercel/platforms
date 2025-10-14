@@ -19,6 +19,7 @@ import {
 import { usePathname } from "next/navigation"
 import { Search } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import Image from "next/image"
 
 export type BusinessShellProps = {
   subdomain: string;
@@ -70,6 +71,13 @@ export default function BusinessShell({ subdomain, emoji, children }: BusinessSh
           
           {/* Right side spacer to balance the header */}
           <div className="flex items-center gap-2 px-4">
+            <Image
+              src="/images/logo.svg"
+              alt="Logo"
+              width={140}
+              height={60}
+              className="h-8 w-auto"
+            />
             <ThemeToggle />
           </div>
         </header>

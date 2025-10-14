@@ -43,8 +43,8 @@ export function AppSidebar({ subdomain, ...props }: AppSidebarProps) {
   // This is sample data.
   const data = {
     user: {
-      name: "shadcn",
-      email: "m@example.com",
+      name: "Johnathan Smith",
+      email: "jsmith@acme.com",
       avatar: "/avatars/shadcn.jpg",
     },
     teams: [
@@ -57,10 +57,10 @@ export function AppSidebar({ subdomain, ...props }: AppSidebarProps) {
     navMain: [
       
       {
-        title: "Business ROI",
-        url: `/s/${subdomain}/business-roi`,
+        title: "Insights",
+        url: `/s/${subdomain}/insights`,
         icon: SquareTerminal,
-        isActive: pathname === `/s/${subdomain}/business-roi`,
+        isActive: pathname === `/s/${subdomain}/insights`,
       },
      {
         title: 'Workflows',

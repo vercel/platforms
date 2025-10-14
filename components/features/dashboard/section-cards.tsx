@@ -1,4 +1,4 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+import { IconCpu, IconAlertTriangle, IconRocket, IconClock } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
 import {
@@ -13,88 +13,97 @@ import {
 export function SectionCards() {
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      {/* 1. Agent Performance */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+          <CardDescription>Agent Success Rate</CardDescription>
+          <CardTitle className="text-2xl text-primary font-semibold tabular-nums @[250px]/card:text-3xl">
+            94.2%
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
+            <Badge className="bg-primary text-primary-foreground" variant="outline">
+              <IconRocket className="mr-1" />
+              +3.1%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <IconTrendingUp className="size-4" />
+          <div className="flex gap-2 font-medium">
+            Improved task accuracy <IconRocket className="size-4" />
           </div>
           <div className="text-muted-foreground">
-            Visitors for the last 6 months
+            Based on last 500 executions
           </div>
         </CardFooter>
       </Card>
+
+      {/* 2. System Efficiency */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
+          <CardDescription>Avg Response Time</CardDescription>
+          <CardTitle className="text-2xl text-secondary font-semibold tabular-nums @[250px]/card:text-3xl">
+            1.8s
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown />
-              -20%
+            <Badge className="bg-secondary text-secondary-foreground" variant="outline">
+              <IconClock className="mr-1" />
+              -0.4s
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period <IconTrendingDown className="size-4" />
+          <div className="flex gap-2 font-medium">
+            Faster than last week <IconClock className="size-4" />
+          </div>
+          <div className="text-muted-foreground">Latency trend improving</div>
+        </CardFooter>
+      </Card>
+
+      {/* 3. Active Agents */}
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>Active Agents</CardDescription>
+          <CardTitle className="text-2xl text-primary font-semibold tabular-nums @[250px]/card:text-3xl">
+            28
+          </CardTitle>
+          <CardAction>
+            <Badge className="bg-primary text-primary-foreground" variant="outline">
+              <IconCpu className="mr-1" />
+              +2 new
+            </Badge>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="flex gap-2 font-medium">
+            Deployment stable <IconCpu className="size-4" />
           </div>
           <div className="text-muted-foreground">
-            Acquisition needs attention
+            Running across all clusters
           </div>
         </CardFooter>
       </Card>
+
+      {/* 4. Issues & Alerts */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
+          <CardDescription >System Alerts</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-destructive">
+            3
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
+            <Badge variant="destructive">
+              <IconAlertTriangle className="mr-1" />
+              +1
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <IconTrendingUp className="size-4" />
+          <div className="flex gap-2 font-medium text-destructive">
+            Check logs immediately <IconAlertTriangle className="size-4" />
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
-        </CardFooter>
-      </Card>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +4.5%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase <IconTrendingUp className="size-4" />
+          <div className="text-muted-foreground">
+            1 agent timeout, 2 auth errors
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
         </CardFooter>
       </Card>
     </div>
