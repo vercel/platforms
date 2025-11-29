@@ -16,7 +16,10 @@ function extractSubdomain(request: NextRequest): string | null {
 
     // Fallback to host header approach
     if (hostname.includes('.localhost')) {
-      return hostname.split('.')[0];
+      return hostname
+        .split('.')
+        .filter((e) => e !== 'localhost')
+        .join('.')
     }
 
     return null;
@@ -41,7 +44,7 @@ function extractSubdomain(request: NextRequest): string | null {
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
   const subdomain = extractSubdomain(request);
 
   if (subdomain) {
@@ -50,10 +53,13 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // For the root path on a subdomain, rewrite to the subdomain page
-    if (pathname === '/') {
-      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
-    }
+    // Rewrite to the subdomain page
+    return NextResponse.rewrite(new URL(`/s/${subdomain}${pathname}${search}`, request.url))
+  }
+
+  // Catch forced browsing of /s/[domain]
+  if (pathname.startsWith('/s/')) {
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
   // On the root domain, allow normal access
