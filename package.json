@@ -17,7 +17,7 @@
     "clsx": "^2.1.1",
     "frimousse": "^0.2.0",
     "lucide-react": "^0.510.0",
-    "next": "15.3.2",
+    "next": "^15.3.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwind-merge": "^3.3.0"
