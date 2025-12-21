@@ -56,6 +56,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Block access to the subdomain pages from the root domain
+  if (pathname.startsWith('/s/')) {
+    return NextResponse.rewrite(new URL('/404', request.url))
+  }
+
   // On the root domain, allow normal access
   return NextResponse.next();
 }
