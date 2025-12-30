@@ -22,8 +22,9 @@ import {
 } from '@/components/ui/emoji-picker';
 import { createSubdomainAction } from '@/app/actions';
 import { rootDomain } from '@/lib/utils';
+import { useSearchParams } from 'next/navigation';
 
-type CreateState = {
+export type CreateState = {
   error?: string;
   success?: boolean;
   subdomain?: string;
@@ -132,9 +133,12 @@ export function SubdomainForm() {
     {}
   );
 
+  const searchParams = useSearchParams();
+  const subdomain = state?.subdomain ?? searchParams.get('subdomain') ?? '';
+
   return (
     <form action={action} className="space-y-4">
-      <SubdomainInput defaultValue={state?.subdomain} />
+      <SubdomainInput defaultValue={subdomain} />
 
       <IconPicker icon={icon} setIcon={setIcon} defaultValue={state?.icon} />
 
