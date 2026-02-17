@@ -15,7 +15,7 @@ A production-ready example of a multi-tenant application built with Next.js 15, 
 
 ## Tech Stack
 
-- [Next.js 15](https://nextjs.org/) with App Router
+- [Next.js 16](https://nextjs.org/) with App Router
 - [React 19](https://react.dev/)
 - [Upstash Redis](https://upstash.com/) for data storage
 - [Tailwind 4](https://tailwindcss.com/) for styling
