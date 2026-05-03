@@ -56,6 +56,14 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect /pep routes — require pep_auth cookie matching PEP_SECRET
+  if (pathname.startsWith('/pep') && pathname !== '/pep/login') {
+    const pepAuth = request.cookies.get('pep_auth')?.value
+    if (!pepAuth || pepAuth !== process.env.PEP_SECRET) {
+      return NextResponse.redirect(new URL('/pep/login', request.url))
+    }
+  }
+
   // On the root domain, allow normal access
   return NextResponse.next();
 }

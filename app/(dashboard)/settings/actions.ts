@@ -3,6 +3,17 @@
 import { revalidatePath } from 'next/cache'
 import { supabase } from '@/lib/supabase'
 
+// Account
+export async function updateAccountName(accountId: string, name: string) {
+  const { error } = await supabase
+    .from('accounts')
+    .update({ name: name.trim() })
+    .eq('id', accountId)
+  if (error) throw new Error(error.message)
+  revalidatePath('/settings')
+  revalidatePath('/pep')
+}
+
 // Jersey Colors
 export async function addJerseyColor(name: string, color: string) {
   const { error } = await supabase.from('jersey_colors').insert({ name: name.trim(), color })

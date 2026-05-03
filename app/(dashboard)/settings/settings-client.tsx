@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
+  updateAccountName,
   addJerseyColor,
   removeJerseyColor,
   addLocation,
@@ -50,17 +51,20 @@ const colorPresets = [
 ]
 
 export function SettingsClient({
+  account,
   coaches,
   groups,
   jerseyColors,
   locations,
 }: {
+  account: { id: string; name: string }
   coaches: CoachRow[]
   groups: GroupRow[]
   jerseyColors: JerseyColorRow[]
   locations: LocationRow[]
 }) {
   const [isPending, startTransition] = useTransition()
+  const [academyName, setAcademyName] = useState(account.name)
 
   // UI state
   const [expandedGroups, setExpandedGroups] = useState<string[]>([])
@@ -213,7 +217,20 @@ export function SettingsClient({
                   <FieldGroup>
                     <Field>
                       <FieldLabel>Academy Name</FieldLabel>
-                      <Input placeholder="Enter academy name" defaultValue="Elite Soccer Academy" />
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Enter academy name"
+                          value={academyName}
+                          onChange={e => setAcademyName(e.target.value)}
+                        />
+                        <Button
+                          size="sm"
+                          disabled={isPending || !academyName.trim() || academyName === account.name}
+                          onClick={() => startTransition(() => updateAccountName(account.id, academyName))}
+                        >
+                          Save
+                        </Button>
+                      </div>
                     </Field>
                     <Field>
                       <FieldLabel>Home Field Address</FieldLabel>

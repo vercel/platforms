@@ -1,15 +1,16 @@
 import { supabase } from "@/lib/supabase"
+import { getActiveAccountId } from "@/lib/account"
 import { GameDayClient, type GameDayRow } from "./game-day-client"
 
 export default async function GameDayPage() {
-  const { data: raw } = await supabase
+  const accountId = await getActiveAccountId()
+
+  const q = supabase
     .from("game_days")
-    .select(`
-      id, name, start_date, end_date, status,
-      locations(name),
-      game_day_groups(games(home_team, away_team))
-    `)
+    .select(`id, name, start_date, end_date, status, locations(name), game_day_groups(games(home_team, away_team))`)
     .order("start_date", { ascending: false })
+
+  const { data: raw } = await (accountId ? q.eq("account_id", accountId) : q)
 
   const gameDays: GameDayRow[] = (raw ?? []).map((gd: any) => {
     const allGames = (gd.game_day_groups ?? []).flatMap((gdg: any) => gdg.games ?? [])
