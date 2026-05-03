@@ -27,6 +27,16 @@ export type GameDayRow = {
   player_count: number
 }
 
+export type WizardGroup = {
+  id: string
+  name: string
+  leadCoachId: string | null
+  teams: Array<{ id: string; name: string }>
+}
+
+export type WizardCoach = { id: string; name: string }
+export type WizardLocation = { id: string; name: string; address: string | null }
+
 type Filter = "active" | "past" | "all"
 
 function statusBadge(status: GameDayRow["status"]) {
@@ -50,7 +60,15 @@ function formatDateRange(start: string, end: string | null): string {
   return `${format(s, "MMM d")} – ${format(e, "MMM d, yyyy")}`
 }
 
-export function GameDayClient({ gameDays }: { gameDays: GameDayRow[] }) {
+type Props = {
+  gameDays: GameDayRow[]
+  groups: WizardGroup[]
+  coaches: WizardCoach[]
+  locations: WizardLocation[]
+  accountId: string | null
+}
+
+export function GameDayClient({ gameDays, groups, coaches, locations, accountId }: Props) {
   const router = useRouter()
   const [filter, setFilter] = useState<Filter>("active")
 
@@ -67,7 +85,12 @@ export function GameDayClient({ gameDays }: { gameDays: GameDayRow[] }) {
           <h1 className="text-3xl font-bold tracking-tight">Game Day</h1>
           <p className="text-muted-foreground">View and manage your game day records</p>
         </div>
-        <NewGameDayWizard />
+        <NewGameDayWizard
+          groups={groups}
+          coaches={coaches}
+          locations={locations}
+          accountId={accountId}
+        />
       </div>
 
       <div className="flex items-center gap-4">

@@ -32,7 +32,8 @@
     "sonner": "^1.7.4",
     "tailwind-merge": "^3.3.0",
     "tw-animate-css": "latest",
-    "vaul": "^1.1.2"
+    "vaul": "^1.1.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.6",

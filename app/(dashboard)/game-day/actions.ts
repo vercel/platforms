@@ -1,0 +1,123 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { supabase } from '@/lib/supabase'
+
+export interface NewTeamInput {
+  groupId: string
+  name: string
+}
+
+export interface GameInput {
+  date: string | null
+  time: string | null
+  homeTeam: string
+  awayTeam: string
+  field: string | null
+  locationId: string | null
+  newLocation: { name: string; address: string } | null
+  buildHomeRoster: boolean
+  buildAwayRoster: boolean
+}
+
+export interface GroupInput {
+  groupId: string
+  leadCoachId: string | null
+  games: GameInput[]
+}
+
+export interface CreateGameDayInput {
+  name: string
+  status: 'draft' | 'active'
+  accountId: string | null
+  groups: GroupInput[]
+  newTeams: NewTeamInput[]
+}
+
+export async function createGameDay(input: CreateGameDayInput): Promise<string> {
+  const { name, status, accountId, groups, newTeams } = input
+
+  // Insert new teams
+  if (newTeams.length > 0) {
+    const { error } = await supabase.from('teams').insert(
+      newTeams.map(t => ({ name: t.name, group_id: t.groupId, account_id: accountId }))
+    )
+    if (error) throw new Error(`Failed to create teams: ${error.message}`)
+  }
+
+  // Insert new locations and map name → id
+  const locationIdMap = new Map<string, string>()
+  const allGames = groups.flatMap(g => g.games)
+  const newLocs = Array.from(
+    new Map(
+      allGames
+        .filter(g => g.newLocation != null)
+        .map(g => [g.newLocation!.name, g.newLocation!])
+    ).values()
+  )
+
+  if (newLocs.length > 0) {
+    const { data, error } = await supabase
+      .from('locations')
+      .insert(newLocs.map(l => ({ name: l.name, address: l.address || null, account_id: accountId })))
+      .select('id, name')
+    if (error) throw new Error(`Failed to create locations: ${error.message}`)
+    data?.forEach(l => locationIdMap.set(l.name, l.id))
+  }
+
+  // Derive start/end dates from game dates
+  const dates = allGames.map(g => g.date).filter(Boolean).sort() as string[]
+  const startDate = dates[0] ?? new Date().toISOString().slice(0, 10)
+  const endDate = dates.length > 1 && dates[dates.length - 1] !== startDate
+    ? dates[dates.length - 1]
+    : null
+
+  // Insert game_day
+  const { data: gameDay, error: gdError } = await supabase
+    .from('game_days')
+    .insert({ name, status, start_date: startDate, end_date: endDate, account_id: accountId })
+    .select('id')
+    .single()
+  if (gdError) throw new Error(`Failed to create game day: ${gdError.message}`)
+
+  // Insert game_day_groups and games sequentially
+  for (const group of groups) {
+    const { data: gdg, error: gdgError } = await supabase
+      .from('game_day_groups')
+      .insert({
+        game_day_id: gameDay.id,
+        group_id: group.groupId,
+        lead_coach_id: group.leadCoachId || null,
+        roster_status: 'draft',
+        account_id: accountId,
+      })
+      .select('id')
+      .single()
+    if (gdgError) throw new Error(`Failed to create game day group: ${gdgError.message}`)
+
+    if (group.games.length > 0) {
+      const { error: gError } = await supabase.from('games').insert(
+        group.games.map(game => {
+          const locId = game.locationId
+            ?? (game.newLocation ? locationIdMap.get(game.newLocation.name) ?? null : null)
+          return {
+            game_day_group_id: gdg.id,
+            game_date: game.date || null,
+            game_time: game.time || null,
+            home_team: game.homeTeam,
+            away_team: game.awayTeam,
+            field: game.field || null,
+            location_id: locId,
+            build_home_roster: game.buildHomeRoster,
+            build_away_roster: game.buildAwayRoster,
+            account_id: accountId,
+          }
+        })
+      )
+      if (gError) throw new Error(`Failed to create games: ${gError.message}`)
+    }
+  }
+
+  revalidatePath('/game-day')
+  return gameDay.id
+}
