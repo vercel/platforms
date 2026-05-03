@@ -1,4 +1,4 @@
-import { redis } from '@/lib/redis';
+import { supabase } from '@/lib/supabase';
 
 export function isValidIcon(str: string) {
   if (str.length > 10) {
@@ -6,56 +6,48 @@ export function isValidIcon(str: string) {
   }
 
   try {
-    // Primary validation: Check if the string contains at least one emoji character
-    // This regex pattern matches most emoji Unicode ranges
     const emojiPattern = /[\p{Emoji}]/u;
     if (emojiPattern.test(str)) {
       return true;
     }
   } catch (error) {
-    // If the regex fails (e.g., in environments that don't support Unicode property escapes),
-    // fall back to a simpler validation
     console.warn(
       'Emoji regex validation failed, using fallback validation',
       error
     );
   }
 
-  // Fallback validation: Check if the string is within a reasonable length
-  // This is less secure but better than no validation
   return str.length >= 1 && str.length <= 10;
 }
 
-type SubdomainData = {
-  emoji: string;
-  createdAt: number;
-};
-
 export async function getSubdomainData(subdomain: string) {
   const sanitizedSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
-  const data = await redis.get<SubdomainData>(
-    `subdomain:${sanitizedSubdomain}`
-  );
-  return data;
+
+  const { data } = await supabase
+    .from('subdomains')
+    .select('emoji, created_at')
+    .eq('name', sanitizedSubdomain)
+    .single();
+
+  if (!data) return null;
+
+  return {
+    emoji: data.emoji as string,
+    createdAt: new Date(data.created_at as string).getTime()
+  };
 }
 
 export async function getAllSubdomains() {
-  const keys = await redis.keys('subdomain:*');
+  const { data } = await supabase
+    .from('subdomains')
+    .select('name, emoji, created_at')
+    .order('created_at', { ascending: false });
 
-  if (!keys.length) {
-    return [];
-  }
+  if (!data) return [];
 
-  const values = await redis.mget<SubdomainData[]>(...keys);
-
-  return keys.map((key, index) => {
-    const subdomain = key.replace('subdomain:', '');
-    const data = values[index];
-
-    return {
-      subdomain,
-      emoji: data?.emoji || '❓',
-      createdAt: data?.createdAt || Date.now()
-    };
-  });
+  return data.map(row => ({
+    subdomain: row.name as string,
+    emoji: row.emoji as string,
+    createdAt: new Date(row.created_at as string).getTime()
+  }));
 }

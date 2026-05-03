@@ -1,6 +1,6 @@
 'use server';
 
-import { redis } from '@/lib/redis';
+import { supabase } from '@/lib/supabase';
 import { isValidIcon } from '@/lib/subdomains';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -38,22 +38,21 @@ export async function createSubdomainAction(
     };
   }
 
-  const subdomainAlreadyExists = await redis.get(
-    `subdomain:${sanitizedSubdomain}`
-  );
-  if (subdomainAlreadyExists) {
-    return {
-      subdomain,
-      icon,
-      success: false,
-      error: 'This subdomain is already taken'
-    };
-  }
+  const { error } = await supabase
+    .from('subdomains')
+    .insert({ name: sanitizedSubdomain, emoji: icon });
 
-  await redis.set(`subdomain:${sanitizedSubdomain}`, {
-    emoji: icon,
-    createdAt: Date.now()
-  });
+  if (error) {
+    if (error.code === '23505') {
+      return {
+        subdomain,
+        icon,
+        success: false,
+        error: 'This subdomain is already taken'
+      };
+    }
+    return { subdomain, icon, success: false, error: 'Failed to create subdomain' };
+  }
 
   redirect(`${protocol}://${sanitizedSubdomain}.${rootDomain}`);
 }
@@ -63,7 +62,7 @@ export async function deleteSubdomainAction(
   formData: FormData
 ) {
   const subdomain = formData.get('subdomain');
-  await redis.del(`subdomain:${subdomain}`);
+  await supabase.from('subdomains').delete().eq('name', subdomain);
   revalidatePath('/admin');
   return { success: 'Domain deleted successfully' };
 }
