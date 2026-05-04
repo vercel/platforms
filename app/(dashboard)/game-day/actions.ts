@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { supabase } from '@/lib/supabase'
+import { requireRole } from '@/lib/auth'
 
 export interface NewTeamInput {
   groupId: string
@@ -35,6 +36,7 @@ export interface CreateGameDayInput {
 }
 
 export async function createGameDay(input: CreateGameDayInput): Promise<string> {
+  await requireRole('admin')
   const { name, status, accountId, groups, newTeams } = input
 
   // Insert new teams

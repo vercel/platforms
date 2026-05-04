@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { GameDayTabs, type GroupGamesRow, type GameRow } from "@/components/game-day-tabs"
+import { getUserAccount } from "@/lib/auth"
+import { can } from "@/lib/roles"
 import { format, parseISO } from "date-fns"
 
 interface Props {
@@ -37,6 +39,9 @@ function fmtDate(d: string): string {
 
 export default async function GameDayDetailPage({ params }: Props) {
   const { id } = await params
+
+  const user = await getUserAccount()
+  const canEdit = user ? can.createGameDay(user.role) : false
 
   const [{ data: gameDay }, { data: groupsRaw }, { data: coaches }, { data: jerseyColors }] =
     await Promise.all([
@@ -127,6 +132,7 @@ export default async function GameDayDetailPage({ params }: Props) {
         groupGames={groupGames}
         coaches={coaches ?? []}
         jerseyColors={jerseyColors ?? []}
+        canEdit={canEdit}
       />
     </div>
   )

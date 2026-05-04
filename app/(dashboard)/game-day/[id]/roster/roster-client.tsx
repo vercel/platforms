@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ArrowLeft, Save, GripVertical, UserX, MoreHorizontal,
-  History, StickyNote, Copy,
+  History, StickyNote, Copy, FileDown,
 } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
@@ -400,10 +400,24 @@ export function RosterClient({
             <p className="text-sm text-muted-foreground">{gameDayName}</p>
           </div>
         </div>
-        <Button variant="outline" onClick={handleSave} disabled={isPending}>
-          <Save className="mr-2 size-4" />
-          {isPending ? 'Saving…' : 'Save'}
-        </Button>
+        <div className="flex items-center gap-2">
+          {currentGroup && (
+            <Button variant="outline" asChild>
+              <a
+                href={`/game-day/${gameDayId}/groups/${currentGroup.id}/pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FileDown className="mr-2 size-4" />
+                Download PDF
+              </a>
+            </Button>
+          )}
+          <Button variant="outline" onClick={handleSave} disabled={isPending}>
+            <Save className="mr-2 size-4" />
+            {isPending ? 'Saving…' : 'Save'}
+          </Button>
+        </div>
       </div>
 
       {/* Group tabs */}

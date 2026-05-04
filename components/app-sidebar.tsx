@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Trophy, Settings, User, Users } from "lucide-react"
+import { Home, Trophy, Settings, User, Users, CalendarDays } from "lucide-react"
 
 import {
   Sidebar,
@@ -27,6 +27,11 @@ const mainNavItems = [
     title: "Game Day",
     url: "/game-day",
     icon: Trophy,
+  },
+  {
+    title: "My Schedule",
+    url: "/my-schedule",
+    icon: CalendarDays,
   },
   {
     title: "Players",

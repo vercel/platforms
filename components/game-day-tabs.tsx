@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input"
-import { Pencil, Users, Check, FileText, Send, RefreshCw, Calendar, ChevronDown } from "lucide-react"
+import { Pencil, Users, Check, FileText, Send, RefreshCw, Calendar, ChevronDown, FileDown } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +62,7 @@ interface GameDayTabsProps {
   groupGames: GroupGamesRow[]
   coaches: { id: string; name: string }[]
   jerseyColors: { id: string; name: string; color: string }[]
+  canEdit?: boolean
 }
 
 function parseTime(time: string): number {
@@ -261,7 +262,7 @@ function CoachEditor({
   )
 }
 
-export function GameDayTabs({ gameDayId, gameDayName, groupGames, coaches, jerseyColors }: GameDayTabsProps) {
+export function GameDayTabs({ gameDayId, gameDayName, groupGames, coaches, jerseyColors, canEdit = true }: GameDayTabsProps) {
   const [gameData, setGameData] = useState<GroupGamesRow[]>(groupGames)
   const [, startTransition] = useTransition()
 
@@ -353,10 +354,12 @@ export function GameDayTabs({ gameDayId, gameDayName, groupGames, coaches, jerse
                     </div>
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                       <span>Group Lead: {group.groupLead}</span>
-                      <Button variant="ghost" size="icon" className="size-6">
-                        <Pencil className="size-3" />
-                        <span className="sr-only">Edit Group Lead</span>
-                      </Button>
+                      {canEdit && (
+                        <Button variant="ghost" size="icon" className="size-6">
+                          <Pencil className="size-3" />
+                          <span className="sr-only">Edit Group Lead</span>
+                        </Button>
+                      )}
                     </div>
                     {group.rosterStatus === "published" && group.publishedAt && group.publishedBy && (
                       <p className="text-xs text-muted-foreground">
@@ -365,13 +368,25 @@ export function GameDayTabs({ gameDayId, gameDayName, groupGames, coaches, jerse
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" title="Roster" asChild>
+                    <Button variant="ghost" size="icon" title="View Roster" asChild>
                       <Link href={`/game-day/${gameDayId}/roster?group=${group.groupName}`}>
                         <Users className="size-4" />
                         <span className="sr-only">View Roster</span>
                       </Link>
                     </Button>
-                    {group.rosterStatus === "draft" ? (
+                    {group.rosterStatus === "published" && (
+                      <Button variant="ghost" size="icon" title="Download PDF" asChild>
+                        <a
+                          href={`/game-day/${gameDayId}/groups/${group.id}/pdf`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <FileDown className="size-4" />
+                          <span className="sr-only">Download PDF</span>
+                        </a>
+                      </Button>
+                    )}
+                    {canEdit && (group.rosterStatus === "draft" ? (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button size="sm">
@@ -411,7 +426,7 @@ export function GameDayTabs({ gameDayId, gameDayName, groupGames, coaches, jerse
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    )}
+                    ))}
                   </div>
                 </div>
 
@@ -449,19 +464,35 @@ export function GameDayTabs({ gameDayId, gameDayName, groupGames, coaches, jerse
                             <TableCell className="text-muted-foreground">{game.facility}</TableCell>
                             <TableCell className="text-muted-foreground">{game.field}</TableCell>
                             <TableCell>
-                              <CoachEditor
-                                value={game.coach}
-                                coaches={coaches}
-                                onSave={(id, name) => updateCoach(game.id, id, name)}
-                              />
+                              {canEdit ? (
+                                <CoachEditor
+                                  value={game.coach}
+                                  coaches={coaches}
+                                  onSave={(id, name) => updateCoach(game.id, id, name)}
+                                />
+                              ) : (
+                                <span className="text-sm">{game.coach || '—'}</span>
+                              )}
                             </TableCell>
                             <TableCell>
-                              <JerseyEditor
-                                value={game.jersey}
-                                color={game.jerseyColor}
-                                jerseyColors={jerseyColors}
-                                onSave={(id, name, color) => updateJersey(game.id, id, name, color)}
-                              />
+                              {canEdit ? (
+                                <JerseyEditor
+                                  value={game.jersey}
+                                  color={game.jerseyColor}
+                                  jerseyColors={jerseyColors}
+                                  onSave={(id, name, color) => updateJersey(game.id, id, name, color)}
+                                />
+                              ) : (
+                                <Badge variant="outline" className="flex items-center gap-1.5 w-fit">
+                                  {game.jerseyColor && (
+                                    <span
+                                      className="size-2.5 rounded-full border"
+                                      style={{ backgroundColor: game.jerseyColor }}
+                                    />
+                                  )}
+                                  {game.jersey || '—'}
+                                </Badge>
+                              )}
                             </TableCell>
                           </TableRow>
                         )
@@ -524,19 +555,35 @@ export function GameDayTabs({ gameDayId, gameDayName, groupGames, coaches, jerse
                             <TableCell className="text-muted-foreground">{game.facility}</TableCell>
                             <TableCell className="text-muted-foreground">{game.field}</TableCell>
                             <TableCell>
-                              <GroupEditor
-                                value={game.groupName}
-                                groups={allGroups}
-                                onSave={(id, name) => updateGroup(game.id, game.groupName, id, name)}
-                              />
+                              {canEdit ? (
+                                <GroupEditor
+                                  value={game.groupName}
+                                  groups={allGroups}
+                                  onSave={(id, name) => updateGroup(game.id, game.groupName, id, name)}
+                                />
+                              ) : (
+                                <span className="text-sm">{game.groupName}</span>
+                              )}
                             </TableCell>
                             <TableCell>
-                              <JerseyEditor
-                                value={game.jersey}
-                                color={game.jerseyColor}
-                                jerseyColors={jerseyColors}
-                                onSave={(id, name, color) => updateJersey(game.id, id, name, color)}
-                              />
+                              {canEdit ? (
+                                <JerseyEditor
+                                  value={game.jersey}
+                                  color={game.jerseyColor}
+                                  jerseyColors={jerseyColors}
+                                  onSave={(id, name, color) => updateJersey(game.id, id, name, color)}
+                                />
+                              ) : (
+                                <Badge variant="outline" className="flex items-center gap-1.5 w-fit">
+                                  {game.jerseyColor && (
+                                    <span
+                                      className="size-2.5 rounded-full border"
+                                      style={{ backgroundColor: game.jerseyColor }}
+                                    />
+                                  )}
+                                  {game.jersey || '—'}
+                                </Badge>
+                              )}
                             </TableCell>
                           </TableRow>
                         )
