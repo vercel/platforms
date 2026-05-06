@@ -2,12 +2,15 @@
 
 import { revalidatePath } from 'next/cache'
 import { supabase } from '@/lib/supabase'
+import { requireRole } from '@/lib/auth'
 
 export async function saveRoster(
   gameDayId: string,
   assignments: { gameId: string; playerId: string; notes?: string }[],
   unavailablePlayerIds: string[]
 ) {
+  const { accountId } = await requireRole('coach')
+
   // Fetch all game_day_groups for this game day, with their game IDs and group_id
   const { data: gdgs, error: gdgErr } = await supabase
     .from('game_day_groups')
@@ -53,8 +56,9 @@ export async function saveRoster(
       player_id: a.playerId,
       is_unavailable: false,
       notes: a.notes ?? null,
+      account_id: accountId,
     })),
-    ...unavailableEntries,
+    ...unavailableEntries.map(e => ({ ...e, account_id: accountId })),
   ]
 
   if (entries.length > 0) {

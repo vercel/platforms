@@ -1,4 +1,5 @@
 import { cache } from 'react'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from './supabase-server'
 import { supabase as adminClient } from './supabase'
@@ -21,11 +22,20 @@ export const getUserAccount = cache(async (): Promise<UserAccount | null> => {
     const { data: { user } } = await client.auth.getUser()
     if (!user) return null
 
-    const { data: member } = await adminClient
+    const cookieStore = await cookies()
+    const activeAccountId = cookieStore.get('active_account_id')?.value
+
+    let query = adminClient
       .from('account_members')
       .select('account_id, role')
       .eq('user_id', user.id)
-      .maybeSingle()
+
+    if (activeAccountId) {
+      query = query.eq('account_id', activeAccountId)
+    }
+
+    const { data: members } = await query.limit(1)
+    const member = members?.[0] ?? null
 
     if (!member) return null
 

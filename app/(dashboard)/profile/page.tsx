@@ -35,7 +35,7 @@ export default function ProfilePage() {
               <AvatarFallback className="text-2xl">PG</AvatarFallback>
             </Avatar>
             <CardTitle className="mt-4">Pro Gamer</CardTitle>
-            <CardDescription>player@gamehub.com</CardDescription>
+            <CardDescription>player@academypoolpro.com</CardDescription>
             <div className="flex gap-2 pt-2">
               <Badge>Level 42</Badge>
               <Badge variant="secondary">Elite</Badge>

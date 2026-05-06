@@ -16,6 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   updateAccountName,
+  addCoach,
+  removeCoach,
   addJerseyColor,
   removeJerseyColor,
   addLocation,
@@ -73,6 +75,17 @@ export function SettingsClient({
   const [customColorValue, setCustomColorValue] = useState('#000000')
   const [showCustomInput, setShowCustomInput] = useState(false)
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
+
+  // Coach add form
+  const [isAddingCoach, setIsAddingCoach] = useState(false)
+  const [newCoach, setNewCoach] = useState({ name: '', email: '' })
+
+  function handleAddCoach() {
+    if (!newCoach.name.trim() || !newCoach.email.trim()) return
+    startTransition(() => addCoach(newCoach.name, newCoach.email))
+    setNewCoach({ name: '', email: '' })
+    setIsAddingCoach(false)
+  }
 
   // Location add form
   const [isAddingLocation, setIsAddingLocation] = useState(false)
@@ -407,12 +420,55 @@ export function SettingsClient({
                 <CardTitle>Coaches</CardTitle>
                 <CardDescription>Manage coaching staff for your academy</CardDescription>
               </div>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setIsAddingCoach(true)} disabled={isAddingCoach}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Coach
               </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col gap-4">
+              {isAddingCoach && (
+                <div className="rounded-lg border bg-muted/30 p-4">
+                  <h4 className="mb-4 text-sm font-medium">New Coach</h4>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Field>
+                      <FieldLabel>Name</FieldLabel>
+                      <Input
+                        placeholder="Coach name"
+                        value={newCoach.name}
+                        onChange={e => setNewCoach({ ...newCoach, name: e.target.value })}
+                        autoFocus
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Email</FieldLabel>
+                      <Input
+                        type="email"
+                        placeholder="coach@example.com"
+                        value={newCoach.email}
+                        onChange={e => setNewCoach({ ...newCoach, email: e.target.value })}
+                        onKeyDown={e => { if (e.key === 'Enter') handleAddCoach() }}
+                      />
+                    </Field>
+                  </div>
+                  <div className="mt-4 flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { setIsAddingCoach(false); setNewCoach({ name: '', email: '' }) }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleAddCoach}
+                      disabled={!newCoach.name.trim() || !newCoach.email.trim() || isPending}
+                    >
+                      Add Coach
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
@@ -420,18 +476,24 @@ export function SettingsClient({
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Groups</TableHead>
-                      <TableHead className="w-[100px]">Actions</TableHead>
+                      <TableHead className="w-[80px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {coaches.map(coach => {
+                    {coaches.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="py-6 text-center text-sm text-muted-foreground">
+                          No coaches added yet. Click &quot;Add Coach&quot; to get started.
+                        </TableCell>
+                      </TableRow>
+                    ) : coaches.map(coach => {
                       const coachGroups = groups.filter(g =>
                         g.assignedCoaches.some(c => c.id === coach.id)
                       )
                       return (
                         <TableRow key={coach.id}>
                           <TableCell className="font-medium">{coach.name}</TableCell>
-                          <TableCell>{coach.email}</TableCell>
+                          <TableCell className="text-muted-foreground">{coach.email}</TableCell>
                           <TableCell>
                             {coachGroups.length > 0 ? (
                               <div className="flex flex-wrap gap-1.5">
@@ -454,14 +516,14 @@ export function SettingsClient({
                             )}
                           </TableCell>
                           <TableCell>
-                            <div className="flex gap-1">
-                              <Button variant="ghost" size="icon">
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon">
-                                <Archive className="h-4 w-4" />
-                              </Button>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => startTransition(() => removeCoach(coach.id))}
+                              disabled={isPending}
+                            >
+                              <Archive className="h-4 w-4" />
+                            </Button>
                           </TableCell>
                         </TableRow>
                       )

@@ -4,6 +4,23 @@ import { revalidatePath } from 'next/cache'
 import { supabase } from '@/lib/supabase'
 import { requireRole } from '@/lib/auth'
 
+// Coaches
+export async function addCoach(name: string, email: string) {
+  const { accountId } = await requireRole('admin')
+  const { error } = await supabase
+    .from('coaches')
+    .insert({ name: name.trim(), email: email.trim().toLowerCase(), account_id: accountId })
+  if (error) throw new Error(error.message)
+  revalidatePath('/settings')
+}
+
+export async function removeCoach(id: string) {
+  await requireRole('admin')
+  const { error } = await supabase.from('coaches').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/settings')
+}
+
 // Account
 export async function updateAccountName(accountId: string, name: string) {
   await requireRole('admin')
@@ -18,8 +35,10 @@ export async function updateAccountName(accountId: string, name: string) {
 
 // Jersey Colors
 export async function addJerseyColor(name: string, color: string) {
-  await requireRole('admin')
-  const { error } = await supabase.from('jersey_colors').insert({ name: name.trim(), color })
+  const { accountId } = await requireRole('admin')
+  const { error } = await supabase
+    .from('jersey_colors')
+    .insert({ name: name.trim(), color, account_id: accountId })
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
@@ -33,11 +52,12 @@ export async function removeJerseyColor(id: string) {
 
 // Locations
 export async function addLocation(name: string, address: string, alternateNames: string[]) {
-  await requireRole('admin')
+  const { accountId } = await requireRole('admin')
   const { error } = await supabase.from('locations').insert({
     name: name.trim(),
     address: address.trim() || null,
     alternate_names: alternateNames,
+    account_id: accountId,
   })
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
@@ -52,23 +72,23 @@ export async function removeLocation(id: string) {
 
 // Groups
 export async function addGroup(name: string, leadCoachId: string, teamNames: string[]) {
-  await requireRole('admin')
+  const { accountId } = await requireRole('admin')
   const { data: group, error: groupError } = await supabase
     .from('groups')
-    .insert({ name: name.trim(), lead_coach_id: leadCoachId })
+    .insert({ name: name.trim(), lead_coach_id: leadCoachId, account_id: accountId })
     .select('id')
     .single()
   if (groupError) throw new Error(groupError.message)
 
   const { error: coachError } = await supabase
     .from('group_coaches')
-    .insert({ group_id: group.id, coach_id: leadCoachId })
+    .insert({ group_id: group.id, coach_id: leadCoachId, account_id: accountId })
   if (coachError) throw new Error(coachError.message)
 
   if (teamNames.length > 0) {
     const { error: teamsError } = await supabase
       .from('teams')
-      .insert(teamNames.map(n => ({ group_id: group.id, name: n.trim() })))
+      .insert(teamNames.map(n => ({ group_id: group.id, name: n.trim(), account_id: accountId })))
     if (teamsError) throw new Error(teamsError.message)
   }
 

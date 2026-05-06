@@ -1,8 +1,9 @@
 "use client"
 
+import { useTransition } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Trophy, Settings, User, Users, CalendarDays } from "lucide-react"
+import { Trophy, User, ChevronsUpDown, Check } from "lucide-react"
 
 import {
   Sidebar,
@@ -16,54 +17,49 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { switchUserAccount } from "@/app/(dashboard)/actions"
 
 const mainNavItems = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Game Day",
-    url: "/game-day",
-    icon: Trophy,
-  },
-  {
-    title: "My Schedule",
-    url: "/my-schedule",
-    icon: CalendarDays,
-  },
-  {
-    title: "Players",
-    url: "/players",
-    icon: Users,
-  },
-  {
-    title: "Academy Settings",
-    url: "/settings",
-    icon: Settings,
-  },
+  { title: "Game Day",         url: "/game-day" },
+  { title: "My Schedule",      url: "/my-schedule" },
+  { title: "Players",          url: "/players" },
+  { title: "Academy Settings", url: "/settings" },
 ]
 
-const footerNavItems = [
-  {
-    title: "Profile",
-    url: "/profile",
-    icon: User,
-  },
-]
+interface AppSidebarProps {
+  accounts?: { id: string; name: string }[]
+  activeAccountId?: string
+}
 
-export function AppSidebar() {
+export function AppSidebar({ accounts = [], activeAccountId }: AppSidebarProps) {
   const pathname = usePathname()
+  const [isPending, startTransition] = useTransition()
+
+  const activeAccount = accounts.find(a => a.id === activeAccountId)
+
+  function handleSwitch(accountId: string) {
+    if (accountId === activeAccountId) return
+    startTransition(() => { switchUserAccount(accountId) })
+  }
 
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-1">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Trophy className="size-4" />
-          </div>
-          <span className="text-lg font-semibold tracking-tight">GameHub</span>
+        <div className="px-3 py-2">
+          <span
+            className="text-xl tracking-wide"
+            style={{ fontFamily: 'var(--font-brand)' }}
+          >
+            Academy Pool Pro
+          </span>
         </div>
       </SidebarHeader>
       <SidebarSeparator />
@@ -79,7 +75,6 @@ export function AppSidebar() {
                     tooltip={item.title}
                   >
                     <Link href={item.url}>
-                      <item.icon />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -92,20 +87,54 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarSeparator className="mx-0" />
         <SidebarMenu>
-          {footerNavItems.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.url}
-                tooltip={item.title}
-              >
-                <Link href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/profile"}
+              tooltip="Profile"
+            >
+              <Link href="/profile">
+                <User />
+                <span>Profile</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          {accounts.length > 1 && (
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip="Switch academy"
+                    disabled={isPending}
+                    className="data-[state=open]:bg-sidebar-accent"
+                  >
+                    <Trophy className="shrink-0" />
+                    <span className="truncate">{activeAccount?.name ?? "Select academy"}</span>
+                    <ChevronsUpDown className="ml-auto shrink-0 opacity-50" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="start" className="w-56">
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">
+                    Switch academy
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {accounts.map((account) => (
+                    <DropdownMenuItem
+                      key={account.id}
+                      onSelect={() => handleSwitch(account.id)}
+                      className="gap-2"
+                    >
+                      <span className="truncate">{account.name}</span>
+                      {account.id === activeAccountId && (
+                        <Check className="ml-auto size-4 shrink-0" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </SidebarMenuItem>
-          ))}
+          )}
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>

@@ -33,10 +33,27 @@ export default async function DashboardLayout({
   // Real authenticated user (null when Pep admin is impersonating)
   const userAccount = activeAccountId ? null : await getUserAccount()
 
+  // Fetch all accounts this user belongs to (for account switcher)
+  let userAccounts: { id: string; name: string }[] = []
+  if (userAccount) {
+    const { data: memberships } = await supabase
+      .from('account_members')
+      .select('account_id')
+      .eq('user_id', userAccount.userId)
+    const accountIds = (memberships ?? []).map((m: any) => m.account_id)
+    if (accountIds.length > 0) {
+      const { data: accountsData } = await supabase
+        .from('accounts')
+        .select('id, name')
+        .in('id', accountIds)
+      userAccounts = accountsData ?? []
+    }
+  }
+
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar accounts={userAccounts} activeAccountId={userAccount?.accountId} />
         <SidebarInset>
           {/* Pep impersonation banner */}
           {activeAccountName && (
@@ -55,7 +72,7 @@ export default async function DashboardLayout({
             </div>
           )}
 
-          <header className="flex h-14 shrink-0 items-center justify-between border-b px-4">
+          <header className="flex h-14 shrink-0 items-center justify-between border-b px-4" style={{ backgroundColor: 'rgb(250, 250, 250)' }}>
             <div className="flex items-center gap-2">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
