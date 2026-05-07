@@ -1,25 +1,25 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Field, FieldLabel } from '@/components/ui/field'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Plus, MoreHorizontal, Archive, RotateCcw, Users } from 'lucide-react'
-import { addPlayer, archivePlayer, restorePlayer } from './actions'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Plus, MoreHorizontal, Archive, RotateCcw, Pencil, ChevronLeft, ChevronRight, Check } from 'lucide-react'
+import { addPlayer, updatePlayer, archivePlayer, restorePlayer, setPlayerLevel } from './actions'
 
 export type PlayerRow = {
   id: string
@@ -27,7 +27,9 @@ export type PlayerRow = {
   last_name: string
   group_id: string
   status: 'active' | 'archived'
+  player_level_id: string | null
   groups: { name: string } | null
+  player_levels: { name: string; color: string | null } | null
 }
 
 export type GroupRow = {
@@ -35,203 +37,465 @@ export type GroupRow = {
   name: string
 }
 
-function formatName(player: PlayerRow) {
-  return `${player.first_name} ${player.last_name.charAt(0)}.`
+export type PlayerLevelRow = {
+  id: string
+  name: string
+  rank: number
+  color: string | null
+}
+
+const PAGE_SIZE_OPTIONS = [25, 50, 100]
+
+function LevelCell({
+  player,
+  playerLevels,
+  onSelect,
+}: {
+  player: PlayerRow
+  playerLevels: PlayerLevelRow[]
+  onSelect: (playerId: string, levelId: string | null) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const level = player.player_levels
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className="flex items-center gap-1.5 rounded px-1.5 py-1 text-sm transition-colors hover:bg-muted focus:outline-none">
+          {level ? (
+            <>
+              {level.color && (
+                <span
+                  className="inline-block size-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: level.color }}
+                />
+              )}
+              <span className="text-foreground">{level.name}</span>
+            </>
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-44 p-1" align="start">
+        <div className="flex flex-col">
+          <button
+            className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
+            onClick={() => { onSelect(player.id, null); setOpen(false) }}
+          >
+            <span className="size-4" />
+            — None —
+          </button>
+          {playerLevels.map(l => (
+            <button
+              key={l.id}
+              className="flex items-center gap-2 rounded px-2 py-1.5 text-sm transition-colors hover:bg-muted"
+              onClick={() => { onSelect(player.id, l.id); setOpen(false) }}
+            >
+              {player.player_level_id === l.id
+                ? <Check className="size-4 shrink-0 text-primary" />
+                : <span className="size-4 shrink-0" />
+              }
+              {l.color && (
+                <span
+                  className="inline-block size-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: l.color }}
+                />
+              )}
+              {l.name}
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
 }
 
 export function PlayersClient({
   players,
   groups,
+  playerLevels,
 }: {
   players: PlayerRow[]
   groups: GroupRow[]
+  playerLevels: PlayerLevelRow[]
 }) {
-  const [showArchived, setShowArchived] = useState(false)
-  const [addingToGroup, setAddingToGroup] = useState<string | null>(null)
-  const [newFirstName, setNewFirstName] = useState('')
-  const [newLastName, setNewLastName] = useState('')
   const [isPending, startTransition] = useTransition()
 
-  const filtered = players.filter(p =>
-    showArchived ? p.status === 'archived' : p.status === 'active'
-  )
+  // Filters
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
+  const [showArchived, setShowArchived] = useState(false)
 
-  const byGroup = (groupId: string) => filtered.filter(p => p.group_id === groupId)
+  // Pagination
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
 
-  const groupsWithArchived = groups.filter(g => byGroup(g.id).length > 0)
+  // Add dialog
+  const [addOpen, setAddOpen] = useState(false)
+  const [addForm, setAddForm] = useState({ firstName: '', lastName: '', groupId: groups[0]?.id ?? '', levelId: '' })
+
+  // Edit dialog
+  const [editPlayer, setEditPlayer] = useState<PlayerRow | null>(null)
+  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', groupId: '', levelId: '' })
+
+  // --- Filtering ---
+  const filtered = useMemo(() => {
+    return players
+      .filter(p => (showArchived ? p.status === 'archived' : p.status === 'active'))
+      .filter(p => !selectedGroupId || p.group_id === selectedGroupId)
+      .sort((a, b) => a.last_name.localeCompare(b.last_name) || a.first_name.localeCompare(b.first_name))
+  }, [players, showArchived, selectedGroupId])
+
+  // --- Pagination ---
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const safePage = Math.min(page, totalPages)
+  const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
+
+  function setFilter(groupId: string | null) {
+    setSelectedGroupId(groupId)
+    setPage(1)
+  }
+
+  function setSize(size: number) {
+    setPageSize(size)
+    setPage(1)
+  }
+
+  // --- Add ---
+  function handleAdd() {
+    if (!addForm.firstName.trim() || !addForm.lastName.trim() || !addForm.groupId) return
+    startTransition(async () => {
+      await addPlayer(addForm.groupId, addForm.firstName, addForm.lastName)
+      setAddOpen(false)
+      setAddForm({ firstName: '', lastName: '', groupId: groups[0]?.id ?? '', levelId: '' })
+    })
+  }
+
+  // --- Inline level ---
+  function handleSetLevel(playerId: string, levelId: string | null) {
+    startTransition(() => setPlayerLevel(playerId, levelId))
+  }
+
+  // --- Edit ---
+  function openEdit(player: PlayerRow) {
+    setEditPlayer(player)
+    setEditForm({
+      firstName: player.first_name,
+      lastName: player.last_name,
+      groupId: player.group_id,
+      levelId: player.player_level_id ?? '',
+    })
+  }
+
+  function handleEdit() {
+    if (!editPlayer || !editForm.firstName.trim() || !editForm.lastName.trim()) return
+    startTransition(async () => {
+      await updatePlayer(
+        editPlayer.id,
+        editForm.firstName,
+        editForm.lastName,
+        editForm.groupId,
+        editForm.levelId || undefined,
+      )
+      setEditPlayer(null)
+    })
+  }
 
   const activeCount = players.filter(p => p.status === 'active').length
   const archivedCount = players.filter(p => p.status === 'archived').length
 
-  function handleAdd(groupId: string) {
-    if (!newFirstName.trim() || !newLastName.trim()) return
-    startTransition(async () => {
-      await addPlayer(groupId, newFirstName, newLastName)
-      setNewFirstName('')
-      setNewLastName('')
-      setAddingToGroup(null)
-    })
-  }
-
-  function handleCancel() {
-    setNewFirstName('')
-    setNewLastName('')
-    setAddingToGroup(null)
-  }
-
-  function handleKeyDown(e: React.KeyboardEvent, groupId: string) {
-    if (e.key === 'Enter' && newFirstName.trim() && newLastName.trim()) handleAdd(groupId)
-    else if (e.key === 'Escape') handleCancel()
-  }
-
-  function renderTable(groupPlayers: PlayerRow[], group: GroupRow) {
-    const isAdding = addingToGroup === group.id
-
-    return (
-      <div key={group.id} className="flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">{group.name}</h2>
-          <Badge variant="secondary">{groupPlayers.length}</Badge>
-        </div>
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-20 text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {groupPlayers.map(player => (
-                <TableRow key={player.id}>
-                  <TableCell className="font-medium">{formatName(player)}</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-8">
-                          <MoreHorizontal className="size-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {player.status === 'active' ? (
-                          <DropdownMenuItem
-                            onClick={() => startTransition(() => archivePlayer(player.id))}
-                          >
-                            <Archive className="mr-2 size-4" />
-                            Archive
-                          </DropdownMenuItem>
-                        ) : (
-                          <DropdownMenuItem
-                            onClick={() => startTransition(() => restorePlayer(player.id))}
-                          >
-                            <RotateCcw className="mr-2 size-4" />
-                            Restore
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-
-              {!showArchived && (
-                isAdding ? (
-                  <TableRow>
-                    <TableCell colSpan={2}>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          placeholder="First name"
-                          value={newFirstName}
-                          onChange={e => setNewFirstName(e.target.value)}
-                          onKeyDown={e => handleKeyDown(e, group.id)}
-                          className="h-8 w-32"
-                          autoFocus
-                          disabled={isPending}
-                        />
-                        <Input
-                          placeholder="Last name"
-                          value={newLastName}
-                          onChange={e => setNewLastName(e.target.value)}
-                          onKeyDown={e => handleKeyDown(e, group.id)}
-                          className="h-8 w-32"
-                          disabled={isPending}
-                        />
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleAdd(group.id)}
-                          disabled={!newFirstName.trim() || !newLastName.trim() || isPending}
-                        >
-                          Save
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={handleCancel} disabled={isPending}>
-                          Cancel
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={2}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start text-muted-foreground"
-                        onClick={() => setAddingToGroup(group.id)}
-                      >
-                        <Plus className="mr-2 size-4" />
-                        Add player
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                )
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col gap-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Players</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Players</h1>
           <p className="text-muted-foreground">
             {showArchived
               ? `${archivedCount} archived player${archivedCount !== 1 ? 's' : ''}`
               : `${activeCount} active player${activeCount !== 1 ? 's' : ''}`}
           </p>
         </div>
-        <Button
-          variant={showArchived ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setShowArchived(!showArchived)}
-        >
-          <Archive className="mr-2 size-4" />
-          {showArchived ? 'Show Active' : 'Show Archived'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={showArchived ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => { setShowArchived(!showArchived); setPage(1) }}
+          >
+            <Archive className="mr-2 size-4" />
+            {showArchived ? 'Show Active' : 'Show Archived'}
+          </Button>
+          {!showArchived && (
+            <Button size="sm" onClick={() => setAddOpen(true)}>
+              <Plus className="mr-2 size-4" />
+              Add Player
+            </Button>
+          )}
+        </div>
       </div>
 
-      {showArchived ? (
-        groupsWithArchived.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
-            <Users className="size-12 text-muted-foreground/50" />
-            <h3 className="mt-4 text-lg font-semibold">No archived players</h3>
-            <p className="mt-2 text-sm text-muted-foreground">No archived players to display.</p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-6">
-            {groupsWithArchived.map(g => renderTable(byGroup(g.id), g))}
-          </div>
-        )
-      ) : (
-        <div className="flex flex-col gap-6">
-          {groups.map(g => renderTable(byGroup(g.id), g))}
+      {/* Group filter chips */}
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant={selectedGroupId === null ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilter(null)}
+        >
+          All Groups
+        </Button>
+        {groups.map(g => (
+          <Button
+            key={g.id}
+            variant={selectedGroupId === g.id ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilter(g.id)}
+          >
+            {g.name}
+          </Button>
+        ))}
+      </div>
+
+      {/* Table */}
+      <div className="rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>First Name</TableHead>
+              <TableHead>Last</TableHead>
+              <TableHead>Age Group</TableHead>
+              <TableHead>Level</TableHead>
+              <TableHead className="w-16 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginated.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
+                  No players found.
+                </TableCell>
+              </TableRow>
+            ) : paginated.map(player => (
+              <TableRow key={player.id}>
+                <TableCell className="font-medium">{player.first_name}</TableCell>
+                <TableCell>{player.last_name.slice(0, 2)}.</TableCell>
+                <TableCell>
+                  <Badge variant="secondary">{player.groups?.name ?? '—'}</Badge>
+                </TableCell>
+                <TableCell>
+                  <LevelCell player={player} playerLevels={playerLevels} onSelect={handleSetLevel} />
+                </TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-8">
+                        <MoreHorizontal className="size-4" />
+                        <span className="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => openEdit(player)}>
+                        <Pencil className="mr-2 size-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      {player.status === 'active' ? (
+                        <DropdownMenuItem
+                          onClick={() => startTransition(() => archivePlayer(player.id))}
+                        >
+                          <Archive className="mr-2 size-4" />
+                          Archive
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem
+                          onClick={() => startTransition(() => restorePlayer(player.id))}
+                        >
+                          <RotateCcw className="mr-2 size-4" />
+                          Restore
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination footer */}
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <span>Rows per page:</span>
+          <Select value={String(pageSize)} onValueChange={v => setSize(Number(v))}>
+            <SelectTrigger className="h-8 w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PAGE_SIZE_OPTIONS.map(n => (
+                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      )}
+        <div className="flex items-center gap-3">
+          <span>
+            {filtered.length === 0 ? '0 players' : `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, filtered.length)} of ${filtered.length}`}
+          </span>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8"
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={safePage <= 1}
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8"
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={safePage >= totalPages}
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Add Player Dialog */}
+      <Dialog open={addOpen} onOpenChange={open => { setAddOpen(open); if (!open) setAddForm({ firstName: '', lastName: '', groupId: groups[0]?.id ?? '', levelId: '' }) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Player</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-2">
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>First Name</FieldLabel>
+                <Input
+                  value={addForm.firstName}
+                  onChange={e => setAddForm(f => ({ ...f, firstName: e.target.value }))}
+                  autoFocus
+                />
+              </Field>
+              <Field>
+                <FieldLabel>Last Name</FieldLabel>
+                <Input
+                  value={addForm.lastName}
+                  onChange={e => setAddForm(f => ({ ...f, lastName: e.target.value }))}
+                  onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
+                />
+              </Field>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>Age Group</FieldLabel>
+                <Select value={addForm.groupId} onValueChange={v => setAddForm(f => ({ ...f, groupId: v }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {groups.map(g => (
+                      <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel>Level</FieldLabel>
+                <Select value={addForm.levelId || '_none'} onValueChange={v => setAddForm(f => ({ ...f, levelId: v === '_none' ? '' : v }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">— None —</SelectItem>
+                    {playerLevels.map(l => (
+                      <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
+            <Button
+              onClick={handleAdd}
+              disabled={!addForm.firstName.trim() || !addForm.lastName.trim() || !addForm.groupId || isPending}
+            >
+              Add Player
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Player Dialog */}
+      <Dialog open={!!editPlayer} onOpenChange={open => { if (!open) setEditPlayer(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Player</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-2">
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>First Name</FieldLabel>
+                <Input
+                  value={editForm.firstName}
+                  onChange={e => setEditForm(f => ({ ...f, firstName: e.target.value }))}
+                  autoFocus
+                />
+              </Field>
+              <Field>
+                <FieldLabel>Last Name</FieldLabel>
+                <Input
+                  value={editForm.lastName}
+                  onChange={e => setEditForm(f => ({ ...f, lastName: e.target.value }))}
+                  onKeyDown={e => { if (e.key === 'Enter') handleEdit() }}
+                />
+              </Field>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>Age Group</FieldLabel>
+                <Select value={editForm.groupId} onValueChange={v => setEditForm(f => ({ ...f, groupId: v }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {groups.map(g => (
+                      <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel>Level</FieldLabel>
+                <Select value={editForm.levelId || '_none'} onValueChange={v => setEditForm(f => ({ ...f, levelId: v === '_none' ? '' : v }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">— None —</SelectItem>
+                    {playerLevels.map(l => (
+                      <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditPlayer(null)}>Cancel</Button>
+            <Button
+              onClick={handleEdit}
+              disabled={!editForm.firstName.trim() || !editForm.lastName.trim() || isPending}
+            >
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -11,6 +11,7 @@ export const can = {
   manageSettings:   (role: Role) => atLeast(role, 'admin'),
   manageCoaches:    (role: Role) => atLeast(role, 'admin'),
   createGameDay:    (role: Role) => atLeast(role, 'admin'),
+  editGame:         (role: Role, canEditGames?: boolean) => atLeast(role, 'admin') || (role === 'coach' && !!canEditGames),
   manageRosters:    (role: Role) => atLeast(role, 'coach'),
   managePlayers:    (role: Role) => atLeast(role, 'coach'),
   manageMembers:    (role: Role) => atLeast(role, 'admin'),

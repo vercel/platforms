@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useEffect, useTransition, useMemo } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +25,8 @@ export type PlayerInfo = {
   first_name: string
   last_name: string
   group_id: string
+  player_level_id: string | null
+  player_levels: { id: string; name: string; rank: number; color: string | null } | null
 }
 
 export type GameInfo = {
@@ -57,6 +59,38 @@ type DraggedPlayer = { player: PlayerInfo; source: DragSource }
 
 function fmt(p: PlayerInfo) {
   return `${p.first_name} ${p.last_name.charAt(0)}.`
+}
+
+// ── PlayerChip ─────────────────────────────────────────────────────────────
+
+function PlayerChip({
+  player,
+  onDragStart,
+  onDragEnd,
+}: {
+  player: PlayerInfo
+  onDragStart: (p: PlayerInfo, src: DragSource) => void
+  onDragEnd: () => void
+}) {
+  const levelColor = player.player_levels?.color
+
+  return (
+    <div
+      draggable
+      onDragStart={() => onDragStart(player, 'available')}
+      onDragEnd={onDragEnd}
+      className="flex cursor-grab items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm shadow-sm transition-colors hover:bg-muted active:cursor-grabbing"
+    >
+      <GripVertical className="size-4 text-muted-foreground shrink-0" />
+      {levelColor && (
+        <span
+          className="inline-block size-2 shrink-0 rounded-full"
+          style={{ backgroundColor: levelColor }}
+        />
+      )}
+      <span className="flex-1">{fmt(player)}</span>
+    </div>
+  )
 }
 
 // ── GameCard ───────────────────────────────────────────────────────────────
@@ -280,6 +314,23 @@ export function RosterClient({
   const assignedIds = assignments.flatMap(a => a.playerIds)
   const availablePlayers = groupPlayers.filter(p => !assignedIds.includes(p.id) && !unavailable.includes(p.id))
   const unavailablePlayers = groupPlayers.filter(p => unavailable.includes(p.id))
+
+  // Group available players by level rank for the sidebar
+  const availableByLevel = useMemo(() => {
+    const withLevel = availablePlayers.filter(p => p.player_levels)
+    const withoutLevel = availablePlayers.filter(p => !p.player_levels)
+    const uniqueLevels = [...new Map(
+      withLevel.map(p => [p.player_levels!.id, p.player_levels!])
+    ).values()].sort((a, b) => a.rank - b.rank)
+    const groups: { label: string | null; players: PlayerInfo[] }[] = uniqueLevels.map(level => ({
+      label: level.name,
+      players: withLevel.filter(p => p.player_levels?.id === level.id),
+    }))
+    if (withoutLevel.length > 0) {
+      groups.push({ label: null, players: withoutLevel })
+    }
+    return groups
+  }, [availablePlayers])
 
   function getPlayersForGame(gameId: string): PlayerInfo[] {
     const a = assignments.find(a => a.gameId === gameId)
@@ -521,20 +572,38 @@ export function RosterClient({
             <div className="flex-1 overflow-auto p-2">
               {availablePlayers.length === 0 ? (
                 <p className="py-8 text-center text-sm text-muted-foreground">All players assigned</p>
-              ) : (
+              ) : availableByLevel.length === 1 && availableByLevel[0].label === null ? (
+                // No levels defined — flat list
                 <div className="flex flex-col gap-1.5">
-                  {availablePlayers.map(player => (
-                    <div
-                      key={player.id}
-                      draggable
-                      onDragStart={() => onDragStart(player, 'available')}
-                      onDragEnd={onDragEnd}
-                      className="flex cursor-grab items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm shadow-sm transition-colors hover:bg-muted active:cursor-grabbing"
-                    >
-                      <GripVertical className="size-4 text-muted-foreground" />
-                      <span className="flex-1">{fmt(player)}</span>
-                    </div>
+                  {availableByLevel[0].players.map(player => (
+                    <PlayerChip key={player.id} player={player} onDragStart={onDragStart} onDragEnd={onDragEnd} />
                   ))}
+                </div>
+              ) : (
+                // Grouped by level
+                <div className="flex flex-col gap-3">
+                  {availableByLevel.map(group => {
+                    const groupColor = group.players[0]?.player_levels?.color ?? null
+                    return (
+                    <div key={group.label ?? '__none'}>
+                      <p className="mb-1.5 flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {group.label !== null && groupColor && (
+                          <span
+                            className="inline-block size-2 shrink-0 rounded-full"
+                            style={{ backgroundColor: groupColor }}
+                          />
+                        )}
+                        {group.label ?? 'Unleveled'}
+                        <span className="ml-0.5 font-normal normal-case tracking-normal">({group.players.length})</span>
+                      </p>
+                      <div className="flex flex-col gap-1">
+                        {group.players.map(player => (
+                          <PlayerChip key={player.id} player={player} onDragStart={onDragStart} onDragEnd={onDragEnd} />
+                        ))}
+                      </div>
+                    </div>
+                    )
+                  })}
                 </div>
               )}
             </div>

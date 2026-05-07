@@ -62,7 +62,6 @@ export function AppSidebar({ accounts = [], activeAccountId }: AppSidebarProps) 
           </span>
         </div>
       </SidebarHeader>
-      <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>

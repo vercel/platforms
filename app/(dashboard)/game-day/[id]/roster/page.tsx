@@ -63,7 +63,7 @@ export default async function RosterPage({ params, searchParams }: Props) {
     allGroupIds.length > 0
       ? supabase
           .from('players')
-          .select('id, first_name, last_name, group_id')
+          .select('id, first_name, last_name, group_id, player_level_id, player_levels(id, name, rank, color)')
           .in('group_id', allGroupIds)
           .eq('status', 'active')
           .order('last_name')

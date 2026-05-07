@@ -13,6 +13,7 @@ export interface UserAccount {
   role: Role
   email: string | null
   displayName: string | null
+  canEditGames: boolean
 }
 
 // Cached per-request — multiple calls in the same render resolve once.
@@ -27,7 +28,7 @@ export const getUserAccount = cache(async (): Promise<UserAccount | null> => {
 
     let query = adminClient
       .from('account_members')
-      .select('account_id, role')
+      .select('account_id, role, can_edit_games')
       .eq('user_id', user.id)
 
     if (activeAccountId) {
@@ -45,6 +46,7 @@ export const getUserAccount = cache(async (): Promise<UserAccount | null> => {
       role: member.role as Role,
       email: user.email ?? null,
       displayName: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
+      canEditGames: member.can_edit_games ?? false,
     }
   } catch {
     return null
@@ -65,6 +67,17 @@ export async function requireRole(minRole: Role): Promise<UserAccount> {
   const account = await requireAuth()
   if (ROLE_RANK[account.role] < ROLE_RANK[minRole]) {
     throw new Error(`This action requires the ${minRole} role or higher.`)
+  }
+  return account
+}
+
+// Use in server actions that require game-edit permission (admin+ or coach with can_edit_games).
+export async function requireEditGame(): Promise<UserAccount> {
+  const account = await requireAuth()
+  const isAdmin = ROLE_RANK[account.role] >= ROLE_RANK['admin']
+  const isCoachWithPerm = account.role === 'coach' && account.canEditGames
+  if (!isAdmin && !isCoachWithPerm) {
+    throw new Error('You do not have permission to edit games.')
   }
   return account
 }

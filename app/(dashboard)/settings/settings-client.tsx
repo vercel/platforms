@@ -10,12 +10,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
 import { Badge } from '@/components/ui/badge'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { Plus, Pencil, Archive, ChevronDown, ChevronRight, Users, Upload, X, MapPin, Star, Check, Palette } from 'lucide-react'
+import { Plus, Pencil, Archive, ChevronDown, ChevronRight, Users, Upload, X, MapPin, Star, Check, Palette, ChevronUp, GripVertical } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Switch } from '@/components/ui/switch'
 import {
   updateAccountName,
+  updateAccountAddress,
+  updateBrandColors,
+  uploadAccountLogo,
+  removeAccountLogo,
   addCoach,
   removeCoach,
   addJerseyColor,
@@ -23,9 +28,15 @@ import {
   addLocation,
   removeLocation,
   addGroup,
+  updateCoachGameEditPermission,
+  addPlayerLevel,
+  removePlayerLevel,
+  movePlayerLevel,
+  updatePlayerLevelColor,
 } from './actions'
 
-export type CoachRow = { id: string; name: string; email: string }
+export type CoachRow = { id: string; name: string; email: string; memberId?: string; canEditGames: boolean }
+export type PlayerLevelRow = { id: string; name: string; rank: number; color: string | null }
 export type TeamRow = { id: string; name: string; archived: boolean }
 export type GroupRow = {
   id: string
@@ -36,6 +47,16 @@ export type GroupRow = {
 }
 export type JerseyColorRow = { id: string; name: string; color: string }
 export type LocationRow = { id: string; name: string; address: string | null; alternate_names: string[] }
+
+function isValidHex(value: string): boolean {
+  return /^#[0-9a-fA-F]{6}$/.test(value) || /^#[0-9a-fA-F]{3}$/.test(value)
+}
+
+const levelColorPresets = [
+  '#EF4444', '#F97316', '#EAB308', '#22C55E',
+  '#14B8A6', '#3B82F6', '#6366F1', '#A855F7',
+  '#EC4899', '#6B7280',
+]
 
 const colorPresets = [
   { name: 'White',  color: '#FFFFFF' },
@@ -52,21 +73,39 @@ const colorPresets = [
   { name: 'Gold',   color: '#CA8A04' },
 ]
 
+export type AccountRow = {
+  id: string
+  name: string
+  address: string | null
+  logo_url: string | null
+  brand_color_primary: string | null
+  brand_color_secondary: string | null
+}
+
 export function SettingsClient({
   account,
   coaches,
   groups,
   jerseyColors,
   locations,
+  playerLevels,
 }: {
-  account: { id: string; name: string }
+  account: AccountRow
   coaches: CoachRow[]
   groups: GroupRow[]
   jerseyColors: JerseyColorRow[]
   locations: LocationRow[]
+  playerLevels: PlayerLevelRow[]
 }) {
   const [isPending, startTransition] = useTransition()
   const [academyName, setAcademyName] = useState(account.name)
+  const [academyAddress, setAcademyAddress] = useState(account.address ?? '')
+  const [logoUrl, setLogoUrl] = useState<string | null>(account.logo_url)
+  const [logoUploading, setLogoUploading] = useState(false)
+
+  // Brand colors
+  const [primaryColor, setPrimaryColor] = useState(account.brand_color_primary ?? '')
+  const [secondaryColor, setSecondaryColor] = useState(account.brand_color_secondary ?? '')
 
   // UI state
   const [expandedGroups, setExpandedGroups] = useState<string[]>([])
@@ -74,7 +113,17 @@ export function SettingsClient({
   const [customColorName, setCustomColorName] = useState('')
   const [customColorValue, setCustomColorValue] = useState('#000000')
   const [showCustomInput, setShowCustomInput] = useState(false)
-  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+
+  // Player level add form
+  const [newLevelName, setNewLevelName] = useState('')
+  const [isAddingLevel, setIsAddingLevel] = useState(false)
+
+  function handleAddLevel() {
+    if (!newLevelName.trim()) return
+    startTransition(() => addPlayerLevel(newLevelName))
+    setNewLevelName('')
+    setIsAddingLevel(false)
+  }
 
   // Coach add form
   const [isAddingCoach, setIsAddingCoach] = useState(false)
@@ -189,29 +238,36 @@ export function SettingsClient({
             </CardHeader>
             <CardContent className="flex flex-col gap-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
+                {/* Logo */}
                 <div className="flex flex-col items-center gap-3">
                   <FieldLabel>Academy Logo</FieldLabel>
                   <div className="relative">
                     <Avatar className="size-24">
                       <AvatarImage src={logoUrl || undefined} alt="Academy logo" />
-                      <AvatarFallback className="bg-muted text-2xl">ESA</AvatarFallback>
+                      <AvatarFallback className="bg-muted text-2xl font-bold">
+                        {account.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     {logoUrl && (
                       <Button
                         variant="destructive"
                         size="icon"
                         className="absolute -right-2 -top-2 size-6"
-                        onClick={() => setLogoUrl(null)}
+                        disabled={isPending}
+                        onClick={() => startTransition(async () => {
+                          await removeAccountLogo(account.id)
+                          setLogoUrl(null)
+                        })}
                       >
                         <X className="size-3" />
                       </Button>
                     )}
                   </div>
                   <label htmlFor="logo-upload">
-                    <Button variant="outline" size="sm" asChild>
+                    <Button variant="outline" size="sm" asChild disabled={logoUploading}>
                       <span>
                         <Upload className="mr-2 size-4" />
-                        Upload Logo
+                        {logoUploading ? 'Uploading…' : 'Upload Logo'}
                       </span>
                     </Button>
                     <input
@@ -219,13 +275,27 @@ export function SettingsClient({
                       type="file"
                       accept="image/*"
                       className="sr-only"
-                      onChange={e => {
+                      onChange={async e => {
                         const file = e.target.files?.[0]
-                        if (file) setLogoUrl(URL.createObjectURL(file))
+                        if (!file) return
+                        setLogoUrl(URL.createObjectURL(file))
+                        setLogoUploading(true)
+                        try {
+                          const fd = new FormData()
+                          fd.append('logo', file)
+                          const url = await uploadAccountLogo(fd)
+                          setLogoUrl(url)
+                        } finally {
+                          setLogoUploading(false)
+                          e.target.value = ''
+                        }
                       }}
                     />
                   </label>
+                  <p className="text-xs text-muted-foreground">Max 2 MB</p>
                 </div>
+
+                {/* Name + Address */}
                 <div className="flex-1">
                   <FieldGroup>
                     <Field>
@@ -247,13 +317,102 @@ export function SettingsClient({
                     </Field>
                     <Field>
                       <FieldLabel>Home Field Address</FieldLabel>
-                      <Textarea
-                        placeholder="Enter the full address of your home field"
-                        defaultValue={'123 Sports Complex Drive\nSpringfield, IL 62701'}
-                        rows={3}
-                      />
+                      <div className="flex flex-col gap-2">
+                        <Textarea
+                          placeholder="Enter the full address of your home field"
+                          value={academyAddress}
+                          onChange={e => setAcademyAddress(e.target.value)}
+                          rows={3}
+                        />
+                        <div className="flex justify-end">
+                          <Button
+                            size="sm"
+                            disabled={isPending || academyAddress === (account.address ?? '')}
+                            onClick={() => startTransition(() => updateAccountAddress(account.id, academyAddress))}
+                          >
+                            Save Address
+                          </Button>
+                        </div>
+                      </div>
                     </Field>
                   </FieldGroup>
+                </div>
+              </div>
+
+              {/* Brand colors */}
+              <div className="border-t pt-6">
+                <div className="mb-4">
+                  <h3 className="text-sm font-medium">Brand Colors</h3>
+                  <p className="text-sm text-muted-foreground">Primary and secondary colors for your academy</p>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="w-20 text-sm font-medium">Primary</span>
+                    <div className="flex items-center gap-2 flex-1">
+                      <input
+                        type="color"
+                        value={isValidHex(primaryColor) ? primaryColor : '#000000'}
+                        onChange={e => setPrimaryColor(e.target.value)}
+                        className="size-9 cursor-pointer rounded border p-0.5"
+                        title="Pick a color"
+                      />
+                      <Input
+                        className="w-44 font-mono text-sm"
+                        placeholder="#000000 or rgb(0,0,0)"
+                        value={primaryColor}
+                        onChange={e => setPrimaryColor(e.target.value)}
+                        spellCheck={false}
+                      />
+                      {primaryColor && (
+                        <span
+                          className="inline-block size-6 rounded-full border"
+                          style={{ backgroundColor: primaryColor }}
+                          title="Preview"
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-20 text-sm font-medium">Secondary</span>
+                    <div className="flex items-center gap-2 flex-1">
+                      <input
+                        type="color"
+                        value={isValidHex(secondaryColor) ? secondaryColor : '#000000'}
+                        onChange={e => setSecondaryColor(e.target.value)}
+                        className="size-9 cursor-pointer rounded border p-0.5"
+                        title="Pick a color"
+                      />
+                      <Input
+                        className="w-44 font-mono text-sm"
+                        placeholder="#000000 or rgb(0,0,0)"
+                        value={secondaryColor}
+                        onChange={e => setSecondaryColor(e.target.value)}
+                        spellCheck={false}
+                      />
+                      {secondaryColor && (
+                        <span
+                          className="inline-block size-6 rounded-full border"
+                          style={{ backgroundColor: secondaryColor }}
+                          title="Preview"
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex justify-end pt-1">
+                    <Button
+                      size="sm"
+                      disabled={
+                        isPending ||
+                        (primaryColor === (account.brand_color_primary ?? '') &&
+                          secondaryColor === (account.brand_color_secondary ?? ''))
+                      }
+                      onClick={() => startTransition(() =>
+                        updateBrandColors(account.id, primaryColor || null, secondaryColor || null)
+                      )}
+                    >
+                      Save Colors
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -405,9 +564,128 @@ export function SettingsClient({
                 )}
               </div>
 
-              <div className="flex gap-2 border-t pt-4">
-                <Button>Save Changes</Button>
+              {/* Player Levels */}
+              <div className="border-t pt-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Player Levels</h3>
+                    <p className="text-sm text-muted-foreground">Ability levels ranked from best to lowest</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsAddingLevel(true)}
+                    disabled={isAddingLevel}
+                  >
+                    <Plus className="mr-2 size-4" />
+                    Add Level
+                  </Button>
+                </div>
+
+                {isAddingLevel && (
+                  <div className="mb-3 flex items-center gap-2 rounded-lg border bg-muted/30 p-3">
+                    <Input
+                      placeholder="Level name (e.g. Elite, Advanced)"
+                      value={newLevelName}
+                      onChange={e => setNewLevelName(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleAddLevel() }}
+                      className="flex-1"
+                      autoFocus
+                    />
+                    <Button size="sm" onClick={handleAddLevel} disabled={!newLevelName.trim() || isPending}>
+                      Add
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => { setIsAddingLevel(false); setNewLevelName('') }}>
+                      Cancel
+                    </Button>
+                  </div>
+                )}
+
+                {playerLevels.length === 0 && !isAddingLevel ? (
+                  <p className="rounded-md border border-dashed py-4 text-center text-sm text-muted-foreground">
+                    No levels defined yet. Click &quot;Add Level&quot; to get started.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    {playerLevels.map((level, idx) => (
+                      <div
+                        key={level.id}
+                        className="flex items-center gap-3 rounded-lg border bg-background px-3 py-2"
+                      >
+                        <GripVertical className="size-4 text-muted-foreground shrink-0" />
+                        {/* Color swatch */}
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button
+                              className="size-5 rounded-full border-2 border-muted shrink-0 hover:scale-110 transition-transform"
+                              style={{ backgroundColor: level.color ?? '#e5e7eb' }}
+                              title="Change color"
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent className="w-52 p-3" align="start">
+                            <p className="mb-2 text-xs font-medium text-muted-foreground">Tag color</p>
+                            <div className="grid grid-cols-5 gap-2">
+                              {levelColorPresets.map(hex => (
+                                <button
+                                  key={hex}
+                                  className="size-8 rounded-full border-2 transition-all hover:scale-110"
+                                  style={{
+                                    backgroundColor: hex,
+                                    borderColor: level.color === hex ? hex : 'transparent',
+                                    outline: level.color === hex ? `2px solid ${hex}` : undefined,
+                                    outlineOffset: level.color === hex ? '2px' : undefined,
+                                  }}
+                                  disabled={isPending}
+                                  onClick={() => startTransition(() => updatePlayerLevelColor(level.id, hex))}
+                                />
+                              ))}
+                            </div>
+                            {level.color && (
+                              <button
+                                className="mt-2 w-full rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
+                                onClick={() => startTransition(() => updatePlayerLevelColor(level.id, null))}
+                              >
+                                Remove color
+                              </button>
+                            )}
+                          </PopoverContent>
+                        </Popover>
+                        <span className="flex-1 text-sm font-medium">{level.name}</span>
+                        <div className="flex items-center gap-0.5">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                            disabled={idx === 0 || isPending}
+                            onClick={() => startTransition(() => movePlayerLevel(level.id, 'up'))}
+                          >
+                            <ChevronUp className="size-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                            disabled={idx === playerLevels.length - 1 || isPending}
+                            onClick={() => startTransition(() => movePlayerLevel(level.id, 'down'))}
+                          >
+                            <ChevronDown className="size-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 hover:text-destructive"
+                            disabled={isPending}
+                            onClick={() => startTransition(() => removePlayerLevel(level.id))}
+                          >
+                            <X className="size-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
+
             </CardContent>
           </Card>
         </TabsContent>
@@ -476,13 +754,14 @@ export function SettingsClient({
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Groups</TableHead>
+                      <TableHead className="w-28">Edit Games</TableHead>
                       <TableHead className="w-[80px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {coaches.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={4} className="py-6 text-center text-sm text-muted-foreground">
+                        <TableCell colSpan={5} className="py-6 text-center text-sm text-muted-foreground">
                           No coaches added yet. Click &quot;Add Coach&quot; to get started.
                         </TableCell>
                       </TableRow>
@@ -513,6 +792,21 @@ export function SettingsClient({
                               </div>
                             ) : (
                               <span className="text-sm text-muted-foreground">No groups assigned</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {coach.memberId ? (
+                              <Switch
+                                checked={coach.canEditGames}
+                                disabled={isPending}
+                                onCheckedChange={checked =>
+                                  startTransition(() =>
+                                    updateCoachGameEditPermission(coach.memberId!, checked)
+                                  )
+                                }
+                              />
+                            ) : (
+                              <span className="text-xs text-muted-foreground">No login</span>
                             )}
                           </TableCell>
                           <TableCell>

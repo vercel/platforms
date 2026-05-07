@@ -41,9 +41,9 @@ export default async function GameDayDetailPage({ params }: Props) {
   const { id } = await params
 
   const user = await getUserAccount()
-  const canEdit = user ? can.createGameDay(user.role) : false
+  const canEdit = user ? can.editGame(user.role, user.canEditGames) : false
 
-  const [{ data: gameDay }, { data: groupsRaw }, { data: coaches }, { data: jerseyColors }] =
+  const [{ data: gameDay }, { data: groupsRaw }, { data: coaches }, { data: jerseyColors }, { data: locations }] =
     await Promise.all([
       supabase
         .from("game_days")
@@ -54,12 +54,12 @@ export default async function GameDayDetailPage({ params }: Props) {
         .from("game_day_groups")
         .select(`
           id, roster_status, published_at,
-          groups(name),
+          groups(name, group_coaches(coaches(id, name))),
           lead_coach:coaches!game_day_groups_lead_coach_id_fkey(id, name),
           publisher:coaches!game_day_groups_published_by_fkey(id, name),
           games(
-            id, game_date, game_time, home_team, away_team, field, format,
-            locations(name),
+            id, game_date, game_time, home_team, away_team, field, format, location_id,
+            locations(id, name),
             coach:coaches(id, name),
             jersey_color:jersey_colors(id, name, color)
           )
@@ -68,15 +68,36 @@ export default async function GameDayDetailPage({ params }: Props) {
         .order("groups(name)"),
       supabase.from("coaches").select("id, name").order("name"),
       supabase.from("jersey_colors").select("id, name, color").order("name"),
+      supabase.from("locations").select("id, name").order("name"),
     ])
 
   if (!gameDay) notFound()
+
+  // Fetch rostered player counts per game
+  const allGameIds = (groupsRaw ?? []).flatMap((gdg: any) =>
+    (gdg.games ?? []).map((g: any) => g.id)
+  )
+  const { data: rosterEntries } = allGameIds.length > 0
+    ? await supabase
+        .from("roster_entries")
+        .select("game_id")
+        .eq("is_unavailable", false)
+        .in("game_id", allGameIds)
+    : { data: [] }
+
+  const rosterCountByGame: Record<string, number> = {}
+  for (const entry of rosterEntries ?? []) {
+    const gameId = (entry as any).game_id
+    rosterCountByGame[gameId] = (rosterCountByGame[gameId] ?? 0) + 1
+  }
 
   // Transform DB shape into GameDayTabs props
   const groupGames: GroupGamesRow[] = (groupsRaw ?? []).map((gdg: any) => ({
     id: gdg.id,
     groupName: gdg.groups?.name ?? "",
     groupLead: gdg.lead_coach?.name ?? "",
+    groupLeadId: gdg.lead_coach?.id ?? "",
+    groupCoaches: (gdg.groups?.group_coaches ?? []).map((gc: any) => gc.coaches).filter(Boolean),
     rosterStatus: gdg.roster_status,
     publishedAt: gdg.published_at
       ? format(new Date(gdg.published_at), "MMM d, yyyy 'at' h:mm a")
@@ -89,6 +110,7 @@ export default async function GameDayDetailPage({ params }: Props) {
       homeTeam: g.home_team,
       awayTeam: g.away_team,
       location: g.locations?.name ?? "",
+      locationId: g.location_id ?? "",
       facility: g.locations?.name ?? "",
       field: g.field ?? "",
       coach: g.coach?.name ?? "",
@@ -97,6 +119,9 @@ export default async function GameDayDetailPage({ params }: Props) {
       jerseyColor: g.jersey_color?.color,
       jerseyColorId: g.jersey_color?.id,
       format: g.format ?? "",
+      rosterCount: rosterCountByGame[g.id] ?? 0,
+      rawDate: g.game_date ?? "",
+      rawTime: g.game_time ? g.game_time.slice(0, 5) : "",
     })),
   }))
 
@@ -132,6 +157,7 @@ export default async function GameDayDetailPage({ params }: Props) {
         groupGames={groupGames}
         coaches={coaches ?? []}
         jerseyColors={jerseyColors ?? []}
+        locations={locations ?? []}
         canEdit={canEdit}
       />
     </div>
