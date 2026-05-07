@@ -111,14 +111,30 @@ function LevelCell({
   )
 }
 
+function fmtLastRostered(dateStr: string): string {
+  const date = new Date(dateStr + 'T00:00:00')
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const diffMs = today.getTime() - date.getTime()
+  const diffDays = Math.round(diffMs / 86400000)
+  if (diffDays === 0) return 'Today'
+  if (diffDays === 1) return 'Yesterday'
+  if (diffDays < 7) return `${diffDays}d ago`
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`
+  if (diffDays < 365) return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
 export function PlayersClient({
   players,
   groups,
   playerLevels,
+  lastRosteredMap = {},
 }: {
   players: PlayerRow[]
   groups: GroupRow[]
   playerLevels: PlayerLevelRow[]
+  lastRosteredMap?: Record<string, string>
 }) {
   const [isPending, startTransition] = useTransition()
 
@@ -264,13 +280,14 @@ export function PlayersClient({
               <TableHead>Last</TableHead>
               <TableHead>Age Group</TableHead>
               <TableHead>Level</TableHead>
+              <TableHead>Last Rostered</TableHead>
               <TableHead className="w-16 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginated.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
+                <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
                   No players found.
                 </TableCell>
               </TableRow>
@@ -283,6 +300,12 @@ export function PlayersClient({
                 </TableCell>
                 <TableCell>
                   <LevelCell player={player} playerLevels={playerLevels} onSelect={handleSetLevel} />
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {lastRosteredMap[player.id]
+                    ? fmtLastRostered(lastRosteredMap[player.id])
+                    : <span className="text-xs">—</span>
+                  }
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>

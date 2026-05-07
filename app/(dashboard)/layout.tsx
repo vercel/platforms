@@ -21,13 +21,15 @@ export default async function DashboardLayout({
 
   // Pep impersonation banner
   let activeAccountName: string | null = null
+  let activeAccountLogoUrl: string | null = null
   if (activeAccountId) {
     const { data } = await supabase
       .from('accounts')
-      .select('name')
+      .select('name, logo_url')
       .eq('id', activeAccountId)
       .single()
     activeAccountName = data?.name ?? null
+    activeAccountLogoUrl = data?.logo_url ?? null
   }
 
   // Real authenticated user (null when Pep admin is impersonating)
@@ -35,6 +37,7 @@ export default async function DashboardLayout({
 
   // Fetch all accounts this user belongs to (for account switcher)
   let userAccounts: { id: string; name: string }[] = []
+  let activeAccountLogoUrlForUser: string | null = null
   if (userAccount) {
     const { data: memberships } = await supabase
       .from('account_members')
@@ -44,16 +47,20 @@ export default async function DashboardLayout({
     if (accountIds.length > 0) {
       const { data: accountsData } = await supabase
         .from('accounts')
-        .select('id, name')
+        .select('id, name, logo_url')
         .in('id', accountIds)
-      userAccounts = accountsData ?? []
+      userAccounts = (accountsData ?? []).map(({ id, name }) => ({ id, name }))
+      const active = (accountsData ?? []).find((a: any) => a.id === userAccount.accountId)
+      activeAccountLogoUrlForUser = active?.logo_url ?? null
     }
   }
+
+  const logoUrl = activeAccountLogoUrl ?? activeAccountLogoUrlForUser
 
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <AppSidebar accounts={userAccounts} activeAccountId={userAccount?.accountId} />
+        <AppSidebar accounts={userAccounts} activeAccountId={userAccount?.accountId} logoUrl={logoUrl} />
         <SidebarInset>
           {/* Pep impersonation banner */}
           {activeAccountName && (

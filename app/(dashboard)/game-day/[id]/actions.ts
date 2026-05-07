@@ -43,7 +43,7 @@ interface GameData {
   locationId: string
   coachId: string
   jerseyColorId: string
-  format: string
+  gameFormatId: string
 }
 
 export async function addGame(gameDayGroupId: string, gameDayId: string, data: GameData) {
@@ -59,7 +59,7 @@ export async function addGame(gameDayGroupId: string, gameDayId: string, data: G
     location_id: data.locationId || null,
     coach_id: data.coachId || null,
     jersey_color_id: data.jerseyColorId || null,
-    format: data.format || null,
+    game_format_id: data.gameFormatId || null,
   })
   if (error) throw new Error(error.message)
   revalidatePath(`/game-day/${gameDayId}`)
@@ -88,7 +88,7 @@ export async function updateGame(gameId: string, gameDayId: string, data: GameDa
       location_id: data.locationId || null,
       coach_id: data.coachId || null,
       jersey_color_id: data.jerseyColorId || null,
-      format: data.format || null,
+      game_format_id: data.gameFormatId || null,
     })
     .eq('id', gameId)
   if (error) throw new Error(error.message)

@@ -194,6 +194,62 @@ export async function updateCoachGameEditPermission(memberId: string, canEditGam
   revalidatePath('/settings')
 }
 
+// Game Formats
+export async function addGameFormat(name: string) {
+  const { accountId } = await requireRole('admin')
+  const { data: existing } = await supabase
+    .from('game_formats')
+    .select('rank')
+    .eq('account_id', accountId)
+    .order('rank', { ascending: false })
+    .limit(1)
+  const nextRank = (existing?.[0]?.rank ?? 0) + 1
+  const { error } = await supabase.from('game_formats').insert({
+    name: name.trim(),
+    rank: nextRank,
+    account_id: accountId,
+  })
+  if (error) throw new Error(error.message)
+  revalidatePath('/settings')
+}
+
+export async function removeGameFormat(id: string) {
+  await requireRole('admin')
+  const { error } = await supabase.from('game_formats').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/settings')
+}
+
+export async function moveGameFormat(id: string, direction: 'up' | 'down') {
+  const { accountId } = await requireRole('admin')
+  const { data: formats } = await supabase
+    .from('game_formats')
+    .select('id, rank')
+    .eq('account_id', accountId)
+    .order('rank')
+  if (!formats) return
+  const idx = formats.findIndex(f => f.id === id)
+  if (idx === -1) return
+  const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+  if (swapIdx < 0 || swapIdx >= formats.length) return
+  const [a, b] = [formats[idx], formats[swapIdx]]
+  await Promise.all([
+    supabase.from('game_formats').update({ rank: b.rank }).eq('id', a.id),
+    supabase.from('game_formats').update({ rank: a.rank }).eq('id', b.id),
+  ])
+  revalidatePath('/settings')
+}
+
+export async function setGroupDefaultFormat(groupId: string, formatId: string | null) {
+  await requireRole('admin')
+  const { error } = await supabase
+    .from('groups')
+    .update({ default_game_format_id: formatId })
+    .eq('id', groupId)
+  if (error) throw new Error(error.message)
+  revalidatePath('/settings')
+}
+
 // Groups
 export async function addGroup(name: string, leadCoachId: string, teamNames: string[]) {
   const { accountId } = await requireRole('admin')

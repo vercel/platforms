@@ -18,11 +18,29 @@ export default async function PlayersPage() {
     accountId ? levelQ.eq('account_id', accountId)  : levelQ,
   ])
 
+  // Build last-rostered-date map: player_id → most recent game_date (active roster entries only)
+  const playerIds = (players ?? []).map(p => p.id)
+  const lastRosteredMap: Record<string, string> = {}
+  if (playerIds.length > 0) {
+    const { data: rosterData } = await supabase
+      .from('roster_entries')
+      .select('player_id, games(game_date)')
+      .in('player_id', playerIds)
+      .eq('is_unavailable', false)
+    for (const entry of (rosterData ?? [])) {
+      const gameDate = (entry.games as any)?.game_date as string | undefined
+      if (gameDate && (!lastRosteredMap[entry.player_id] || gameDate > lastRosteredMap[entry.player_id])) {
+        lastRosteredMap[entry.player_id] = gameDate
+      }
+    }
+  }
+
   return (
     <PlayersClient
       players={players ?? []}
       groups={groups ?? []}
       playerLevels={playerLevels ?? []}
+      lastRosteredMap={lastRosteredMap}
     />
   )
 }

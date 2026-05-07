@@ -3,6 +3,7 @@
 import { useTransition } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Image from "next/image"
 import { Trophy, User, ChevronsUpDown, Check } from "lucide-react"
 
 import {
@@ -37,9 +38,10 @@ const mainNavItems = [
 interface AppSidebarProps {
   accounts?: { id: string; name: string }[]
   activeAccountId?: string
+  logoUrl?: string | null
 }
 
-export function AppSidebar({ accounts = [], activeAccountId }: AppSidebarProps) {
+export function AppSidebar({ accounts = [], activeAccountId, logoUrl }: AppSidebarProps) {
   const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
 
@@ -61,6 +63,19 @@ export function AppSidebar({ accounts = [], activeAccountId }: AppSidebarProps) 
             Academy Pool Pro
           </span>
         </div>
+        {logoUrl && (
+          <div className="border-t px-3 py-3">
+            <div className="relative h-10 w-full">
+              <Image
+                src={logoUrl}
+                alt="Academy logo"
+                fill
+                className="object-contain object-left"
+                unoptimized
+              />
+            </div>
+          </div>
+        )}
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

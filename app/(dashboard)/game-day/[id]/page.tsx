@@ -43,7 +43,7 @@ export default async function GameDayDetailPage({ params }: Props) {
   const user = await getUserAccount()
   const canEdit = user ? can.editGame(user.role, user.canEditGames) : false
 
-  const [{ data: gameDay }, { data: groupsRaw }, { data: coaches }, { data: jerseyColors }, { data: locations }] =
+  const [{ data: gameDay }, { data: groupsRaw }, { data: coaches }, { data: jerseyColors }, { data: locations }, { data: gameFormats }] =
     await Promise.all([
       supabase
         .from("game_days")
@@ -54,14 +54,15 @@ export default async function GameDayDetailPage({ params }: Props) {
         .from("game_day_groups")
         .select(`
           id, roster_status, published_at,
-          groups(name, group_coaches(coaches(id, name))),
+          groups(name, default_game_format_id, group_coaches(coaches(id, name))),
           lead_coach:coaches!game_day_groups_lead_coach_id_fkey(id, name),
           publisher:coaches!game_day_groups_published_by_fkey(id, name),
           games(
-            id, game_date, game_time, home_team, away_team, field, format, location_id,
+            id, game_date, game_time, home_team, away_team, field, location_id, game_format_id,
             locations(id, name),
             coach:coaches(id, name),
-            jersey_color:jersey_colors(id, name, color)
+            jersey_color:jersey_colors(id, name, color),
+            game_format:game_formats(id, name)
           )
         `)
         .eq("game_day_id", id)
@@ -69,6 +70,7 @@ export default async function GameDayDetailPage({ params }: Props) {
       supabase.from("coaches").select("id, name").order("name"),
       supabase.from("jersey_colors").select("id, name, color").order("name"),
       supabase.from("locations").select("id, name").order("name"),
+      supabase.from("game_formats").select("id, name").order("rank"),
     ])
 
   if (!gameDay) notFound()
@@ -98,6 +100,7 @@ export default async function GameDayDetailPage({ params }: Props) {
     groupLead: gdg.lead_coach?.name ?? "",
     groupLeadId: gdg.lead_coach?.id ?? "",
     groupCoaches: (gdg.groups?.group_coaches ?? []).map((gc: any) => gc.coaches).filter(Boolean),
+    defaultGameFormatId: gdg.groups?.default_game_format_id ?? null,
     rosterStatus: gdg.roster_status,
     publishedAt: gdg.published_at
       ? format(new Date(gdg.published_at), "MMM d, yyyy 'at' h:mm a")
@@ -118,7 +121,8 @@ export default async function GameDayDetailPage({ params }: Props) {
       jersey: g.jersey_color?.name ?? "",
       jerseyColor: g.jersey_color?.color,
       jerseyColorId: g.jersey_color?.id,
-      format: g.format ?? "",
+      gameFormatId: g.game_format_id ?? "",
+      gameFormatName: g.game_format?.name ?? "",
       rosterCount: rosterCountByGame[g.id] ?? 0,
       rawDate: g.game_date ?? "",
       rawTime: g.game_time ? g.game_time.slice(0, 5) : "",
@@ -158,6 +162,7 @@ export default async function GameDayDetailPage({ params }: Props) {
         coaches={coaches ?? []}
         jerseyColors={jerseyColors ?? []}
         locations={locations ?? []}
+        gameFormats={gameFormats ?? []}
         canEdit={canEdit}
       />
     </div>

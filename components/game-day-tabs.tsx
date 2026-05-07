@@ -66,7 +66,8 @@ export interface GameRow {
   jersey: string
   jerseyColor?: string
   jerseyColorId?: string
-  format: string
+  gameFormatId?: string
+  gameFormatName?: string
   rosterCount: number
   rawDate?: string
   rawTime?: string
@@ -78,6 +79,7 @@ export interface GroupGamesRow {
   groupLead: string
   groupLeadId?: string
   groupCoaches: { id: string; name: string }[]
+  defaultGameFormatId?: string | null
   rosterStatus: "draft" | "published"
   publishedAt?: string
   publishedBy?: string
@@ -91,6 +93,7 @@ interface GameDayTabsProps {
   coaches: { id: string; name: string }[]
   jerseyColors: { id: string; name: string; color: string }[]
   locations: { id: string; name: string }[]
+  gameFormats: { id: string; name: string }[]
   canEdit?: boolean
 }
 
@@ -103,12 +106,12 @@ interface GameFormState {
   field: string
   coachId: string
   jerseyColorId: string
-  format: string
+  gameFormatId: string
 }
 
 const EMPTY_FORM: GameFormState = {
   date: '', time: '', homeTeam: '', awayTeam: '',
-  locationId: '', field: '', coachId: '', jerseyColorId: '', format: '',
+  locationId: '', field: '', coachId: '', jerseyColorId: '', gameFormatId: '',
 }
 
 function parseTime(time: string): number {
@@ -385,6 +388,7 @@ function GameFormDialog({
   coaches,
   jerseyColors,
   locations,
+  gameFormats,
 }: {
   open: boolean
   mode: 'add' | 'edit'
@@ -396,6 +400,7 @@ function GameFormDialog({
   coaches: { id: string; name: string }[]
   jerseyColors: { id: string; name: string; color: string }[]
   locations: { id: string; name: string }[]
+  gameFormats: { id: string; name: string }[]
 }) {
   const isValid = !!form.date && !!form.time && !!form.homeTeam.trim() && !!form.awayTeam.trim()
 
@@ -501,14 +506,25 @@ function GameFormDialog({
               </Select>
             </Field>
           </div>
-          <Field>
-            <FieldLabel>Format</FieldLabel>
-            <Input
-              value={form.format}
-              onChange={e => onFormChange('format', e.target.value)}
-              placeholder="e.g. 7v7"
-            />
-          </Field>
+          {gameFormats.length > 0 && (
+            <Field>
+              <FieldLabel>Format</FieldLabel>
+              <Select
+                value={form.gameFormatId || '_none'}
+                onValueChange={v => onFormChange('gameFormatId', v === '_none' ? '' : v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select format" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_none">— None —</SelectItem>
+                  {gameFormats.map(f => (
+                    <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
@@ -522,7 +538,7 @@ function GameFormDialog({
 }
 
 export function GameDayTabs({
-  gameDayId, gameDayName, groupGames, coaches, jerseyColors, locations, canEdit = true,
+  gameDayId, gameDayName, groupGames, coaches, jerseyColors, locations, gameFormats, canEdit = true,
 }: GameDayTabsProps) {
   const router = useRouter()
   const [gameData, setGameData] = useState<GroupGamesRow[]>(groupGames)
@@ -545,10 +561,11 @@ export function GameDayTabs({
   }
 
   function openAddDialog(groupId: string) {
+    const group = gameData.find(g => g.id === groupId)
     setDialogMode('add')
     setAddGroupId(groupId)
     setEditGameId('')
-    setGameForm(EMPTY_FORM)
+    setGameForm({ ...EMPTY_FORM, gameFormatId: group?.defaultGameFormatId ?? '' })
     setDialogOpen(true)
   }
 
@@ -565,7 +582,7 @@ export function GameDayTabs({
       field: game.field,
       coachId: game.coachId ?? '',
       jerseyColorId: game.jerseyColorId ?? '',
-      format: game.format,
+      gameFormatId: game.gameFormatId ?? '',
     })
     setDialogOpen(true)
   }
@@ -582,7 +599,7 @@ export function GameDayTabs({
           locationId: gameForm.locationId,
           coachId: gameForm.coachId,
           jerseyColorId: gameForm.jerseyColorId,
-          format: gameForm.format,
+          gameFormatId: gameForm.gameFormatId,
         })
       } else {
         await updateGame(editGameId, gameDayId, {
@@ -594,7 +611,7 @@ export function GameDayTabs({
           locationId: gameForm.locationId,
           coachId: gameForm.coachId,
           jerseyColorId: gameForm.jerseyColorId,
-          format: gameForm.format,
+          gameFormatId: gameForm.gameFormatId,
         })
       }
       setDialogOpen(false)
@@ -683,7 +700,7 @@ export function GameDayTabs({
               const multipleDays = hasMultipleDays(group.games)
               const sortedGames = sortGamesByDateAndTime(group.games)
               const shownDates = new Set<string>()
-              const colSpan = 8 + (multipleDays ? 1 : 0) + (canEdit ? 1 : 0)
+              const colSpan = 8 + (multipleDays ? 1 : 0) + (canEdit ? 1 : 0) + (gameFormats.length > 0 ? 1 : 0)
 
               return (
                 <div key={group.id} className="flex flex-col gap-3">
@@ -795,6 +812,7 @@ export function GameDayTabs({
                           <TableHead>Coach</TableHead>
                           <TableHead className="w-20">Rostered</TableHead>
                           <TableHead className="w-32">Jersey</TableHead>
+                          {gameFormats.length > 0 && <TableHead className="w-24">Format</TableHead>}
                           {canEdit && <TableHead className="w-12 text-right">Actions</TableHead>}
                         </TableRow>
                       </TableHeader>
@@ -853,6 +871,13 @@ export function GameDayTabs({
                                   </Badge>
                                 )}
                               </TableCell>
+                              {gameFormats.length > 0 && (
+                                <TableCell>
+                                  {game.gameFormatName
+                                    ? <Badge variant="secondary" className="text-xs">{game.gameFormatName}</Badge>
+                                    : <span className="text-muted-foreground text-sm">—</span>}
+                                </TableCell>
+                              )}
                               {canEdit && (
                                 <TableCell className="text-right">
                                   <DropdownMenu>
@@ -926,6 +951,7 @@ export function GameDayTabs({
                           <TableHead>Group</TableHead>
                           <TableHead className="w-20">Rostered</TableHead>
                           <TableHead className="w-32">Jersey</TableHead>
+                          {gameFormats.length > 0 && <TableHead className="w-24">Format</TableHead>}
                           {canEdit && <TableHead className="w-12 text-right">Actions</TableHead>}
                         </TableRow>
                       </TableHeader>
@@ -984,6 +1010,13 @@ export function GameDayTabs({
                                   </Badge>
                                 )}
                               </TableCell>
+                              {gameFormats.length > 0 && (
+                                <TableCell>
+                                  {game.gameFormatName
+                                    ? <Badge variant="secondary" className="text-xs">{game.gameFormatName}</Badge>
+                                    : <span className="text-muted-foreground text-sm">—</span>}
+                                </TableCell>
+                              )}
                               {canEdit && (
                                 <TableCell className="text-right">
                                   <DropdownMenu>
@@ -1026,6 +1059,7 @@ export function GameDayTabs({
         coaches={coaches}
         jerseyColors={jerseyColors}
         locations={locations}
+        gameFormats={gameFormats}
       />
     </>
   )

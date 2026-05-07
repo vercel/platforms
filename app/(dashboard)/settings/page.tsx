@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { getActiveAccountId } from '@/lib/account'
-import { SettingsClient, type GroupRow, type CoachRow } from './settings-client'
+import { SettingsClient, type GroupRow, type CoachRow, type GameFormatRow } from './settings-client'
 
 
 export default async function SettingsPage() {
@@ -8,8 +8,9 @@ export default async function SettingsPage() {
 
   const coachQ    = supabase.from('coaches').select('id, name, email').order('name')
   const levelQ    = supabase.from('player_levels').select('id, name, rank, color').order('rank')
+  const formatQ   = supabase.from('game_formats').select('id, name, rank').order('rank')
   const groupQ    = supabase.from('groups').select(`
-    id, name,
+    id, name, default_game_format_id,
     lead:coaches!groups_lead_coach_id_fkey(id, name),
     group_coaches(coaches(id, name)),
     teams(id, name, archived)
@@ -21,6 +22,7 @@ export default async function SettingsPage() {
   const [
     { data: coaches },
     { data: playerLevels },
+    { data: gameFormats },
     { data: groupsRaw },
     { data: jerseyColors },
     { data: locations },
@@ -28,6 +30,7 @@ export default async function SettingsPage() {
   ] = await Promise.all([
     accountId ? coachQ.eq('account_id', accountId)    : coachQ,
     accountId ? levelQ.eq('account_id', accountId)    : levelQ,
+    accountId ? formatQ.eq('account_id', accountId)   : formatQ,
     accountId ? groupQ.eq('account_id', accountId)    : groupQ,
     accountId ? jerseyQ.eq('account_id', accountId)   : jerseyQ,
     accountId ? locationQ.eq('account_id', accountId) : locationQ,
@@ -73,6 +76,7 @@ export default async function SettingsPage() {
     lead: g.lead ?? null,
     assignedCoaches: (g.group_coaches ?? []).map((gc: any) => gc.coaches).filter(Boolean),
     teams: g.teams ?? [],
+    defaultGameFormatId: g.default_game_format_id ?? null,
   }))
 
   const account = (accountData as any) ?? { id: '', name: '', address: null, logo_url: null, brand_color_primary: null, brand_color_secondary: null }
@@ -85,6 +89,7 @@ export default async function SettingsPage() {
       jerseyColors={jerseyColors ?? []}
       locations={locations ?? []}
       playerLevels={playerLevels ?? []}
+      gameFormats={(gameFormats ?? []) as GameFormatRow[]}
     />
   )
 }

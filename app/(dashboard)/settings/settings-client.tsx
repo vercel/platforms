@@ -33,10 +33,15 @@ import {
   removePlayerLevel,
   movePlayerLevel,
   updatePlayerLevelColor,
+  addGameFormat,
+  removeGameFormat,
+  moveGameFormat,
+  setGroupDefaultFormat,
 } from './actions'
 
 export type CoachRow = { id: string; name: string; email: string; memberId?: string; canEditGames: boolean }
 export type PlayerLevelRow = { id: string; name: string; rank: number; color: string | null }
+export type GameFormatRow = { id: string; name: string; rank: number }
 export type TeamRow = { id: string; name: string; archived: boolean }
 export type GroupRow = {
   id: string
@@ -44,6 +49,7 @@ export type GroupRow = {
   lead: { id: string; name: string } | null
   assignedCoaches: { id: string; name: string }[]
   teams: TeamRow[]
+  defaultGameFormatId: string | null
 }
 export type JerseyColorRow = { id: string; name: string; color: string }
 export type LocationRow = { id: string; name: string; address: string | null; alternate_names: string[] }
@@ -89,6 +95,7 @@ export function SettingsClient({
   jerseyColors,
   locations,
   playerLevels,
+  gameFormats,
 }: {
   account: AccountRow
   coaches: CoachRow[]
@@ -96,6 +103,7 @@ export function SettingsClient({
   jerseyColors: JerseyColorRow[]
   locations: LocationRow[]
   playerLevels: PlayerLevelRow[]
+  gameFormats: GameFormatRow[]
 }) {
   const [isPending, startTransition] = useTransition()
   const [academyName, setAcademyName] = useState(account.name)
@@ -117,6 +125,17 @@ export function SettingsClient({
   // Player level add form
   const [newLevelName, setNewLevelName] = useState('')
   const [isAddingLevel, setIsAddingLevel] = useState(false)
+
+  // Game format add form
+  const [newFormatName, setNewFormatName] = useState('')
+  const [isAddingFormat, setIsAddingFormat] = useState(false)
+
+  function handleAddFormat() {
+    if (!newFormatName.trim()) return
+    startTransition(() => addGameFormat(newFormatName))
+    setNewFormatName('')
+    setIsAddingFormat(false)
+  }
 
   function handleAddLevel() {
     if (!newLevelName.trim()) return
@@ -686,6 +705,91 @@ export function SettingsClient({
                 )}
               </div>
 
+              {/* Game Formats */}
+              <div className="border-t pt-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Game Formats</h3>
+                    <p className="text-sm text-muted-foreground">Formats used in games (e.g. 7v7, 9v9)</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsAddingFormat(true)}
+                    disabled={isAddingFormat}
+                  >
+                    <Plus className="mr-2 size-4" />
+                    Add Format
+                  </Button>
+                </div>
+
+                {isAddingFormat && (
+                  <div className="mb-3 flex items-center gap-2 rounded-lg border bg-muted/30 p-3">
+                    <Input
+                      placeholder="Format name (e.g. 7v7, 9v9, 11v11)"
+                      value={newFormatName}
+                      onChange={e => setNewFormatName(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleAddFormat() }}
+                      className="flex-1"
+                      autoFocus
+                    />
+                    <Button size="sm" onClick={handleAddFormat} disabled={!newFormatName.trim() || isPending}>
+                      Add
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => { setIsAddingFormat(false); setNewFormatName('') }}>
+                      Cancel
+                    </Button>
+                  </div>
+                )}
+
+                {gameFormats.length === 0 && !isAddingFormat ? (
+                  <p className="rounded-md border border-dashed py-4 text-center text-sm text-muted-foreground">
+                    No formats defined yet. Click &quot;Add Format&quot; to get started.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    {gameFormats.map((fmt, idx) => (
+                      <div
+                        key={fmt.id}
+                        className="flex items-center gap-3 rounded-lg border bg-background px-3 py-2"
+                      >
+                        <GripVertical className="size-4 text-muted-foreground shrink-0" />
+                        <span className="flex-1 text-sm font-medium">{fmt.name}</span>
+                        <div className="flex items-center gap-0.5">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                            disabled={idx === 0 || isPending}
+                            onClick={() => startTransition(() => moveGameFormat(fmt.id, 'up'))}
+                          >
+                            <ChevronUp className="size-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                            disabled={idx === gameFormats.length - 1 || isPending}
+                            onClick={() => startTransition(() => moveGameFormat(fmt.id, 'down'))}
+                          >
+                            <ChevronDown className="size-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 hover:text-destructive"
+                            disabled={isPending}
+                            onClick={() => startTransition(() => removeGameFormat(fmt.id))}
+                          >
+                            <X className="size-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
             </CardContent>
           </Card>
         </TabsContent>
@@ -989,6 +1093,29 @@ export function SettingsClient({
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <div className="border-t bg-muted/30 p-4">
+                          {gameFormats.length > 0 && (
+                            <div className="mb-4 flex items-center gap-3">
+                              <span className="text-sm font-medium w-36 shrink-0">Default Game Format</span>
+                              <Select
+                                value={group.defaultGameFormatId ?? '_none'}
+                                onValueChange={v =>
+                                  startTransition(() =>
+                                    setGroupDefaultFormat(group.id, v === '_none' ? null : v)
+                                  )
+                                }
+                              >
+                                <SelectTrigger className="w-48">
+                                  <SelectValue placeholder="None" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="_none">— None —</SelectItem>
+                                  {gameFormats.map(fmt => (
+                                    <SelectItem key={fmt.id} value={fmt.id}>{fmt.name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
                           <h4 className="mb-3 text-sm font-medium">Teams</h4>
                           <div className="rounded-md border bg-background">
                             <Table>
