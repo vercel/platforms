@@ -16,9 +16,9 @@ export interface Game {
 
 export type RosterStatus = "draft" | "published"
 
-export interface GroupGames {
-  groupName: string
-  groupLead: string
+export interface PoolGames {
+  poolName: string
+  poolLead: string
   rosterStatus: RosterStatus
   publishedAt?: string
   publishedBy?: string
@@ -34,7 +34,7 @@ export interface GameDay {
   playerCount: number
   location?: string
   description?: string
-  groupGames: GroupGames[]
+  poolGames: PoolGames[]
 }
 
 export const gameDays: GameDay[] = [
@@ -47,10 +47,10 @@ export const gameDays: GameDay[] = [
     playerCount: 48,
     location: "Central Park Arena",
     description: "Spring tournament qualifier round",
-    groupGames: [
+    poolGames: [
       {
-        groupName: "U10",
-        groupLead: "Mike Johnson",
+        poolName:"U10",
+        poolLead:"Mike Johnson",
         rosterStatus: "published",
         publishedAt: "Apr 30, 2026 at 2:15 PM",
         publishedBy: "Mike Johnson",
@@ -60,8 +60,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U12",
-        groupLead: "David Chen",
+        poolName:"U12",
+        poolLead:"David Chen",
         rosterStatus: "published",
         publishedAt: "Apr 30, 2026 at 3:45 PM",
         publishedBy: "David Chen",
@@ -81,10 +81,10 @@ export const gameDays: GameDay[] = [
     playerCount: 96,
     location: "Downtown Sports Complex",
     description: "Regional championship weekend event",
-    groupGames: [
+    poolGames: [
       {
-        groupName: "U8",
-        groupLead: "Emily Davis",
+        poolName:"U8",
+        poolLead:"Emily Davis",
         rosterStatus: "published",
         publishedAt: "Apr 27, 2026 at 10:00 AM",
         publishedBy: "Emily Davis",
@@ -94,8 +94,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U10",
-        groupLead: "Mike Johnson",
+        poolName:"U10",
+        poolLead:"Mike Johnson",
         rosterStatus: "published",
         publishedAt: "Apr 27, 2026 at 11:30 AM",
         publishedBy: "Mike Johnson",
@@ -105,8 +105,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U14",
-        groupLead: "David Chen",
+        poolName:"U14",
+        poolLead:"David Chen",
         rosterStatus: "published",
         publishedAt: "Apr 27, 2026 at 1:00 PM",
         publishedBy: "David Chen",
@@ -126,10 +126,10 @@ export const gameDays: GameDay[] = [
     playerCount: 72,
     location: "Riverside Stadium",
     description: "Friday night showdown - currently in progress",
-    groupGames: [
+    poolGames: [
       {
-        groupName: "U10",
-        groupLead: "Mike Johnson",
+        poolName:"U10",
+        poolLead:"Mike Johnson",
         rosterStatus: "published",
         publishedAt: "May 1, 2026 at 4:30 PM",
         publishedBy: "Mike Johnson",
@@ -139,8 +139,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U12",
-        groupLead: "David Chen",
+        poolName:"U12",
+        poolLead:"David Chen",
         rosterStatus: "draft",
         games: [
           { id: 13, time: "6:00 PM", homeTeam: "Forest Rangers", awayTeam: "Valley Stars", location: "Riverside Stadium", facility: "Riverside Stadium", field: "Field 2", coach: "David Chen", jersey: "Black", format: "9v9" },
@@ -148,8 +148,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U16",
-        groupLead: "Sarah Williams",
+        poolName:"U16",
+        poolLead:"Sarah Williams",
         rosterStatus: "draft",
         games: [
           { id: 15, time: "8:00 PM", homeTeam: "Elite Warriors", awayTeam: "Prime Strikers", location: "Riverside Stadium", facility: "Riverside Stadium", field: "Main Field", coach: "Mike Johnson", jersey: "Blue", format: "11v11" },
@@ -166,10 +166,10 @@ export const gameDays: GameDay[] = [
     playerCount: 40,
     location: "Eastside Community Center",
     description: "Midweek casual competition",
-    groupGames: [
+    poolGames: [
       {
-        groupName: "U10",
-        groupLead: "Emily Davis",
+        poolName:"U10",
+        poolLead:"Emily Davis",
         rosterStatus: "draft",
         games: [
           { id: 16, time: "5:00 PM", homeTeam: "Blazing Comets", awayTeam: "Lunar Legends", location: "Eastside Community Center", facility: "Eastside Community Center", field: "Field 1", coach: "Emily Davis", jersey: "Black", format: "7v7" },
@@ -177,8 +177,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U12",
-        groupLead: "David Chen",
+        poolName:"U12",
+        poolLead:"David Chen",
         rosterStatus: "draft",
         games: [
           { id: 18, time: "5:00 PM", homeTeam: "Meteor Shower", awayTeam: "Nebula Stars", location: "Eastside Community Center", facility: "Eastside Community Center", field: "Field 2", coach: "David Chen", jersey: "Blue", format: "9v9" },
@@ -196,10 +196,10 @@ export const gameDays: GameDay[] = [
     playerCount: 144,
     location: "Grand Arena Convention Center",
     description: "Major league qualifier weekend",
-    groupGames: [
+    poolGames: [
       {
-        groupName: "U10",
-        groupLead: "Mike Johnson",
+        poolName:"U10",
+        poolLead:"Mike Johnson",
         rosterStatus: "draft",
         games: [
           { id: 20, day: "May 10, 2026", time: "8:00 AM", homeTeam: "Alpha Squad", awayTeam: "Beta Force", location: "Grand Arena Convention Center", facility: "Grand Arena Convention Center", field: "Field A", coach: "Mike Johnson", jersey: "Red", format: "7v7" },
@@ -208,8 +208,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U12",
-        groupLead: "David Chen",
+        poolName:"U12",
+        poolLead:"David Chen",
         rosterStatus: "draft",
         games: [
           { id: 23, day: "May 10, 2026", time: "8:00 AM", homeTeam: "Eta Division", awayTeam: "Theta Battalion", location: "Grand Arena Convention Center", facility: "Grand Arena Convention Center", field: "Field B", coach: "David Chen", jersey: "Red", format: "9v9" },
@@ -218,8 +218,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U14",
-        groupLead: "Sarah Williams",
+        poolName:"U14",
+        poolLead:"Sarah Williams",
         rosterStatus: "draft",
         games: [
           { id: 26, day: "May 10, 2026", time: "1:00 PM", homeTeam: "Nu Brigade", awayTeam: "Xi Corps", location: "Grand Arena Convention Center", facility: "Grand Arena Convention Center", field: "Field C", coach: "Sarah Williams", jersey: "Red", format: "11v11" },
@@ -227,8 +227,8 @@ export const gameDays: GameDay[] = [
         ],
       },
       {
-        groupName: "U16",
-        groupLead: "Emily Davis",
+        poolName:"U16",
+        poolLead:"Emily Davis",
         rosterStatus: "draft",
         games: [
           { id: 28, day: "May 10, 2026", time: "1:00 PM", homeTeam: "Rho Squad", awayTeam: "Sigma Team", location: "Grand Arena Convention Center", facility: "Grand Arena Convention Center", field: "Field D", coach: "Mike Johnson", jersey: "Black", format: "11v11" },
@@ -246,10 +246,10 @@ export const gameDays: GameDay[] = [
     playerCount: 24,
     location: "Northside Gym",
     description: "Practice match between local teams",
-    groupGames: [
+    poolGames: [
       {
-        groupName: "U12",
-        groupLead: "David Chen",
+        poolName:"U12",
+        poolLead:"David Chen",
         rosterStatus: "published",
         publishedAt: "Apr 14, 2026 at 9:00 AM",
         publishedBy: "David Chen",

@@ -24,7 +24,7 @@ export type PlayerInfo = {
   id: string
   first_name: string
   last_name: string
-  group_id: string
+  pool_id: string
   player_level_id: string | null
   player_levels: { id: string; name: string; rank: number; color: string | null } | null
 }
@@ -38,10 +38,10 @@ export type GameInfo = {
   field: string
 }
 
-export type GroupData = {
-  id: string        // game_day_group_id
-  groupName: string
-  groupId: string   // groups.id
+export type PoolData = {
+  id: string        // game_day_pool_id
+  poolName: string
+  poolId: string    // pools.id
   games: GameInfo[]
 }
 
@@ -264,17 +264,17 @@ function GameCard({
 export function RosterClient({
   gameDayId,
   gameDayName,
-  groups,
+  pools,
   players,
   initialEntries,
-  initialGroup,
+  initialPool,
 }: {
   gameDayId: string
   gameDayName: string
-  groups: GroupData[]
+  pools: PoolData[]
   players: PlayerInfo[]
   initialEntries: InitialEntry[]
-  initialGroup: string | null
+  initialPool: string | null
 }) {
   const [isPending, startTransition] = useTransition()
 
@@ -297,23 +297,23 @@ export function RosterClient({
   const [assignments, setAssignments] = useState<Assignment[]>(initAssignments)
   const [unavailable, setUnavailable] = useState<string[]>(initUnavailable)
   const [dragged, setDragged] = useState<DraggedPlayer | null>(null)
-  const [activeGroup, setActiveGroup] = useState<string | null>(
-    initialGroup ?? (groups[0]?.groupName ?? null)
+  const [activePool, setActivePool] = useState<string | null>(
+    initialPool ?? (pools[0]?.poolName ?? null)
   )
   const [notes, setNotes] = useState<Note[]>(initNotes)
   const [editingNote, setEditingNote] = useState<{ playerId: string; gameId: string } | null>(null)
   const [noteText, setNoteText] = useState('')
 
   useEffect(() => {
-    if (!activeGroup && groups.length > 0) setActiveGroup(groups[0].groupName)
-  }, [activeGroup, groups])
+    if (!activePool && pools.length > 0) setActivePool(pools[0].poolName)
+  }, [activePool, pools])
 
-  const currentGroup = groups.find(g => g.groupName === activeGroup)
-  const groupPlayers = players.filter(p => p.group_id === currentGroup?.groupId)
+  const currentPool = pools.find(g => g.poolName === activePool)
+  const poolPlayers = players.filter(p => p.pool_id === currentPool?.poolId)
 
   const assignedIds = assignments.flatMap(a => a.playerIds)
-  const availablePlayers = groupPlayers.filter(p => !assignedIds.includes(p.id) && !unavailable.includes(p.id))
-  const unavailablePlayers = groupPlayers.filter(p => unavailable.includes(p.id))
+  const availablePlayers = poolPlayers.filter(p => !assignedIds.includes(p.id) && !unavailable.includes(p.id))
+  const unavailablePlayers = poolPlayers.filter(p => unavailable.includes(p.id))
 
   // Group available players by level rank for the sidebar
   const availableByLevel = useMemo(() => {
@@ -452,10 +452,10 @@ export function RosterClient({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {currentGroup && (
+          {currentPool && (
             <Button variant="outline" asChild>
               <a
-                href={`/game-day/${gameDayId}/groups/${currentGroup.id}/pdf`}
+                href={`/game-day/${gameDayId}/pools/${currentPool.id}/pdf`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -471,16 +471,16 @@ export function RosterClient({
         </div>
       </div>
 
-      {/* Group tabs */}
+      {/* Pool tabs */}
       <div className="flex gap-2 border-b pb-2">
-        {groups.map(g => (
+        {pools.map(g => (
           <Button
             key={g.id}
-            variant={activeGroup === g.groupName ? 'default' : 'ghost'}
+            variant={activePool === g.poolName ? 'default' : 'ghost'}
             size="sm"
-            onClick={() => setActiveGroup(g.groupName)}
+            onClick={() => setActivePool(g.poolName)}
           >
-            {g.groupName}
+            {g.poolName}
           </Button>
         ))}
       </div>
@@ -489,8 +489,8 @@ export function RosterClient({
       <div className="flex flex-1 gap-4 overflow-hidden">
         {/* Games area */}
         <div className="flex-1 overflow-auto">
-          {currentGroup && (() => {
-            const games = currentGroup.games
+          {currentPool && (() => {
+            const games = currentPool.games
             const multiDay = hasMultipleDays(games)
 
             if (multiDay) {

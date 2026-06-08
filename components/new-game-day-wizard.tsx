@@ -82,7 +82,7 @@ interface LocRes {
   address: string
 }
 
-export interface WizardGroup {
+export interface WizardPool {
   id: string
   name: string
   leadCoachId: string | null
@@ -90,7 +90,7 @@ export interface WizardGroup {
 }
 
 interface Props {
-  groups: WizardGroup[]
+  pools: WizardPool[]
   coaches: Array<{ id: string; name: string }>
   locations: Array<{ id: string; name: string; address: string | null }>
   accountId: string | null
@@ -138,7 +138,7 @@ function parseTime(raw: string): string | null {
 }
 
 const REQUIRED_FIELDS = [
-  { key: "group" as const, label: "Group" },
+  { key: "group" as const, label: "Pool" },
   { key: "team1" as const, label: "Home Team" },
   { key: "team2" as const, label: "Away Team" },
 ]
@@ -156,7 +156,7 @@ const LOC_NEW = "__new__"
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function NewGameDayWizard({ groups, coaches, locations, accountId }: Props) {
+export function NewGameDayWizard({ pools, coaches, locations, accountId }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
@@ -173,22 +173,22 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
   const [colMap, setColMap] = useState<ColMap>(BLANK_COL_MAP)
 
   // Step 4 resolution state
-  const [groupRes, setGroupRes] = useState<Record<string, string | null>>({})
+  const [poolRes, setPoolRes] = useState<Record<string, string | null>>({})
   const [teamRes, setTeamRes] = useState<Record<string, TeamRes>>({})
   const [locRes, setLocRes] = useState<Record<string, LocRes>>({})
   const [rosters, setRosters] = useState<Record<number, { home: boolean; away: boolean }>>({})
-  const [groupLeads, setGroupLeads] = useState<Record<string, string>>({})
+  const [poolLeads, setPoolLeads] = useState<Record<string, string>>({})
 
   const resetWizard = () => {
     setStep("details")
     setName("")
     setParsedFile(null)
     setColMap(BLANK_COL_MAP)
-    setGroupRes({})
+    setPoolRes({})
     setTeamRes({})
     setLocRes({})
     setRosters({})
-    setGroupLeads({})
+    setPoolLeads({})
   }
 
   const handleOpenChange = (v: boolean) => {
@@ -202,7 +202,7 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
     const m: ColMap = { ...BLANK_COL_MAP }
     headers.forEach(h => {
       const l = h.toLowerCase()
-      if (!m.group && (l.includes("group") || l.includes("age") || l.includes("division"))) m.group = h
+      if (!m.group && (l.includes("group") || l.includes("pool") || l.includes("age") || l.includes("division"))) m.group = h
       else if (!m.date && l.includes("date")) m.date = h
       else if (!m.time && (l.includes("time") || l.includes("start"))) m.time = h
       else if (!m.team1 && (l.includes("home") || l.includes("team 1") || l.includes("team1"))) m.team1 = h
@@ -283,37 +283,37 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
     }).filter(r => r.group || r.team1 || r.team2)
   }, [parsedFile, colMap])
 
-  const groupedRows = useMemo(() => {
+  const pooledRows = useMemo(() => {
     const map = new Map<string, MappedRow[]>()
     mappedRows.forEach(row => {
-      const key = row.group || "(No Group)"
+      const key = row.group || "(No Pool)"
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(row)
     })
-    return Array.from(map.entries()).map(([rawGroup, rows]) => ({ rawGroup, rows }))
+    return Array.from(map.entries()).map(([rawPool, rows]) => ({ rawPool, rows }))
   }, [mappedRows])
 
   // ── Preview init ──────────────────────────────────────────────────────────
 
   const initPreview = () => {
-    const gRes: Record<string, string | null> = {}
+    const pRes: Record<string, string | null> = {}
     const tRes: Record<string, TeamRes> = {}
     const lRes: Record<string, LocRes> = {}
     const rMap: Record<number, { home: boolean; away: boolean }> = {}
     const leads: Record<string, string> = {}
 
-    groupedRows.forEach(({ rawGroup, rows }) => {
-      const matchedGroup = bestMatch(rawGroup, groups, g => g.name)
-      gRes[rawGroup] = matchedGroup?.id ?? null
-      if (matchedGroup?.leadCoachId) leads[rawGroup] = matchedGroup.leadCoachId
+    pooledRows.forEach(({ rawPool, rows }) => {
+      const matchedPool = bestMatch(rawPool, pools, g => g.name)
+      pRes[rawPool] = matchedPool?.id ?? null
+      if (matchedPool?.leadCoachId) leads[rawPool] = matchedPool.leadCoachId
 
-      const groupTeams = matchedGroup?.teams ?? []
+      const poolTeams = matchedPool?.teams ?? []
 
       rows.forEach(row => {
         for (const rawTeam of [row.team1, row.team2]) {
-          const tKey = `${rawGroup}|||${rawTeam}`
+          const tKey = `${rawPool}|||${rawTeam}`
           if (rawTeam && !tRes[tKey]) {
-            const match = bestMatch(rawTeam, groupTeams, t => t.name)
+            const match = bestMatch(rawTeam, poolTeams, t => t.name)
             tRes[tKey] = match
               ? { action: "existing", teamId: match.id, teamName: match.name }
               : { action: "new", teamName: rawTeam }
@@ -329,35 +329,35 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
       })
     })
 
-    setGroupRes(gRes)
+    setPoolRes(pRes)
     setTeamRes(tRes)
     setLocRes(lRes)
     setRosters(rMap)
-    setGroupLeads(leads)
+    setPoolLeads(leads)
     setStep("preview")
   }
 
   // ── Preview helpers ───────────────────────────────────────────────────────
 
-  const getGroup = (rawGroup: string) => groups.find(g => g.id === groupRes[rawGroup])
-  const hasUnresolvedGroups = groupedRows.some(({ rawGroup }) => !groupRes[rawGroup])
+  const getPool = (rawPool: string) => pools.find(g => g.id === poolRes[rawPool])
+  const hasUnresolvedPools = pooledRows.some(({ rawPool }) => !poolRes[rawPool])
 
-  const updateGroupResolution = (rawGroup: string, gId: string) => {
-    setGroupRes(prev => ({ ...prev, [rawGroup]: gId }))
-    const g = groups.find(g => g.id === gId)
-    if (g?.leadCoachId) setGroupLeads(prev => ({ ...prev, [rawGroup]: g.leadCoachId! }))
-    // Re-resolve teams with new group's team list
-    const gTeams = g?.teams ?? []
+  const updatePoolResolution = (rawPool: string, pId: string) => {
+    setPoolRes(prev => ({ ...prev, [rawPool]: pId }))
+    const p = pools.find(g => g.id === pId)
+    if (p?.leadCoachId) setPoolLeads(prev => ({ ...prev, [rawPool]: p.leadCoachId! }))
+    // Re-resolve teams with new pool's team list
+    const pTeams = p?.teams ?? []
     const uniqueTeams = [...new Set(
-      (groupedRows.find(gr => gr.rawGroup === rawGroup)?.rows ?? [])
+      (pooledRows.find(pr => pr.rawPool === rawPool)?.rows ?? [])
         .flatMap(r => [r.team1, r.team2])
         .filter(Boolean)
     )]
     setTeamRes(prev => {
       const next = { ...prev }
       uniqueTeams.forEach(rawTeam => {
-        const match = bestMatch(rawTeam, gTeams, t => t.name)
-        next[`${rawGroup}|||${rawTeam}`] = match
+        const match = bestMatch(rawTeam, pTeams, t => t.name)
+        next[`${rawPool}|||${rawTeam}`] = match
           ? { action: "existing", teamId: match.id, teamName: match.name }
           : { action: "new", teamName: rawTeam }
       })
@@ -368,30 +368,30 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
   // ── Build save payload ────────────────────────────────────────────────────
 
   const buildPayload = (status: "draft" | "active") => {
-    const newTeams: Array<{ groupId: string; name: string }> = []
+    const newTeams: Array<{ poolId: string; name: string }> = []
 
-    const groupPayloads = groupedRows
-      .filter(({ rawGroup }) => !!groupRes[rawGroup])
-      .map(({ rawGroup, rows }) => {
-        const groupId = groupRes[rawGroup]!
-        const groupTeams = getGroup(rawGroup)?.teams ?? []
+    const poolPayloads = pooledRows
+      .filter(({ rawPool }) => !!poolRes[rawPool])
+      .map(({ rawPool, rows }) => {
+        const poolId = poolRes[rawPool]!
+        const poolTeams = getPool(rawPool)?.teams ?? []
 
         const seenNew = new Set<string>()
         const allTeamNames = [...new Set(rows.flatMap(r => [r.team1, r.team2]).filter(Boolean))]
         allTeamNames.forEach(rawTeam => {
-          const res = teamRes[`${rawGroup}|||${rawTeam}`]
+          const res = teamRes[`${rawPool}|||${rawTeam}`]
           if (res?.action === "new" && !seenNew.has(res.teamName)) {
             seenNew.add(res.teamName)
-            newTeams.push({ groupId, name: res.teamName })
+            newTeams.push({ poolId, name: res.teamName })
           }
         })
 
         return {
-          groupId,
-          leadCoachId: groupLeads[rawGroup] || null,
+          poolId,
+          leadCoachId: poolLeads[rawPool] || null,
           games: rows.map(row => {
             const resolveTeam = (rawTeam: string) =>
-              teamRes[`${rawGroup}|||${rawTeam}`]?.teamName ?? rawTeam
+              teamRes[`${rawPool}|||${rawTeam}`]?.teamName ?? rawTeam
             const lRes = row.facility ? locRes[row.facility] : undefined
             return {
               date: parseDate(row.date),
@@ -408,12 +408,12 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
         }
       })
 
-    // Deduplicate newTeams by groupId+name
+    // Deduplicate newTeams by poolId+name
     const deduped = Array.from(
-      new Map(newTeams.map(t => [`${t.groupId}:${t.name}`, t])).values()
+      new Map(newTeams.map(t => [`${t.poolId}:${t.name}`, t])).values()
     )
 
-    return { name, status, accountId, groups: groupPayloads, newTeams: deduped }
+    return { name, status, accountId, pools: poolPayloads, newTeams: deduped }
   }
 
   const handleSave = (status: "draft" | "active") => {
@@ -645,11 +645,11 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
             {/* Summary badges */}
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{mappedRows.length} games</Badge>
-              <Badge variant="secondary">{groupedRows.length} groups</Badge>
-              {hasUnresolvedGroups && (
+              <Badge variant="secondary">{pooledRows.length} pools</Badge>
+              {hasUnresolvedPools && (
                 <Badge variant="destructive" className="gap-1">
                   <AlertTriangle className="size-3" />
-                  Unresolved groups — must fix before saving
+                  Unresolved pools — must fix before saving
                 </Badge>
               )}
             </div>
@@ -704,44 +704,44 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
               </div>
             )}
 
-            {/* Group sections */}
-            {groupedRows.map(({ rawGroup, rows }) => {
-              const resolvedGroupId = groupRes[rawGroup]
-              const resolvedGroup = getGroup(rawGroup)
-              const groupTeams = resolvedGroup?.teams ?? []
-              const leadId = groupLeads[rawGroup] ?? ""
+            {/* Pool sections */}
+            {pooledRows.map(({ rawPool, rows }) => {
+              const resolvedPoolId = poolRes[rawPool]
+              const resolvedPool = getPool(rawPool)
+              const poolTeams = resolvedPool?.teams ?? []
+              const leadId = poolLeads[rawPool] ?? ""
 
               const uniqueTeams = [...new Set(rows.flatMap(r => [r.team1, r.team2]).filter(Boolean))]
               // Teams that defaulted to "new" — show them so user can optionally link
-              const newTeams = groupTeams.length > 0
-                ? uniqueTeams.filter(t => teamRes[`${rawGroup}|||${t}`]?.action === "new")
+              const newTeams = poolTeams.length > 0
+                ? uniqueTeams.filter(t => teamRes[`${rawPool}|||${t}`]?.action === "new")
                 : []
 
               return (
-                <div key={rawGroup} className="rounded-lg border">
-                  {/* Group header */}
+                <div key={rawPool} className="rounded-lg border">
+                  {/* Pool header */}
                   <div className="flex flex-wrap items-center gap-3 border-b bg-muted/40 px-3 py-2">
                     <div className="flex min-w-0 flex-1 items-center gap-2">
-                      {resolvedGroupId ? (
+                      {resolvedPoolId ? (
                         <Badge className="border-green-300 bg-green-100 text-green-800 shrink-0">
                           <Check className="mr-1 size-3" />
-                          {resolvedGroup?.name}
+                          {resolvedPool?.name}
                         </Badge>
                       ) : (
                         <>
                           <Badge variant="destructive" className="shrink-0 gap-1">
                             <AlertTriangle className="size-3" />
-                            {rawGroup}
+                            {rawPool}
                           </Badge>
                           <Select
-                            value={resolvedGroupId ?? ""}
-                            onValueChange={gId => updateGroupResolution(rawGroup, gId)}
+                            value={resolvedPoolId ?? ""}
+                            onValueChange={pId => updatePoolResolution(rawPool, pId)}
                           >
                             <SelectTrigger className="h-7 w-40 text-xs">
-                              <SelectValue placeholder="Link to group…" />
+                              <SelectValue placeholder="Link to pool…" />
                             </SelectTrigger>
                             <SelectContent>
-                              {groups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                              {pools.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
                             </SelectContent>
                           </Select>
                         </>
@@ -751,7 +751,7 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
                       <span>Lead:</span>
                       <Select
                         value={leadId}
-                        onValueChange={id => setGroupLeads(prev => ({ ...prev, [rawGroup]: id }))}
+                        onValueChange={id => setPoolLeads(prev => ({ ...prev, [rawPool]: id }))}
                       >
                         <SelectTrigger className="h-7 w-36 text-xs">
                           <SelectValue placeholder="Select coach" />
@@ -763,7 +763,7 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
                     </div>
                   </div>
 
-                  {/* New team mapping — only shown when group has existing teams to link against */}
+                  {/* New team mapping — only shown when pool has existing teams to link against */}
                   {newTeams.length > 0 && (
                     <div className="border-b bg-amber-50/50 px-3 py-2">
                       <p className="mb-2 flex items-center gap-1 text-xs font-medium text-amber-700">
@@ -772,7 +772,7 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
                       </p>
                       <div className="flex flex-wrap gap-3">
                         {newTeams.map(rawTeam => {
-                          const tKey = `${rawGroup}|||${rawTeam}`
+                          const tKey = `${rawPool}|||${rawTeam}`
                           const res = teamRes[tKey]
                           return (
                             <div key={rawTeam} className="flex items-center gap-1.5">
@@ -783,7 +783,7 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
                                   if (v === TEAM_NEW) {
                                     setTeamRes(prev => ({ ...prev, [tKey]: { action: "new", teamName: rawTeam } }))
                                   } else {
-                                    const t = groupTeams.find(t => t.id === v)!
+                                    const t = poolTeams.find(t => t.id === v)!
                                     setTeamRes(prev => ({ ...prev, [tKey]: { action: "existing", teamId: v, teamName: t.name } }))
                                   }
                                 }}
@@ -793,7 +793,7 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value={TEAM_NEW} className="text-blue-600">Add as new team</SelectItem>
-                                  {groupTeams.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                                  {poolTeams.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
                                 </SelectContent>
                               </Select>
                             </div>
@@ -820,8 +820,8 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
                       </thead>
                       <tbody>
                         {rows.map(row => {
-                          const t1Res = teamRes[`${rawGroup}|||${row.team1}`]
-                          const t2Res = teamRes[`${rawGroup}|||${row.team2}`]
+                          const t1Res = teamRes[`${rawPool}|||${row.team1}`]
+                          const t2Res = teamRes[`${rawPool}|||${row.team2}`]
                           const lRes = row.facility ? locRes[row.facility] : undefined
                           const roster = rosters[row.idx] ?? { home: false, away: false }
 
@@ -909,13 +909,13 @@ export function NewGameDayWizard({ groups, coaches, locations, accountId }: Prop
                 <Button
                   variant="outline"
                   onClick={() => handleSave("draft")}
-                  disabled={isPending || hasUnresolvedGroups}
+                  disabled={isPending || hasUnresolvedPools}
                 >
                   {isPending ? "Saving…" : "Save as Draft"}
                 </Button>
                 <Button
                   onClick={() => handleSave("active")}
-                  disabled={isPending || hasUnresolvedGroups}
+                  disabled={isPending || hasUnresolvedPools}
                 >
                   {isPending ? "Saving…" : "Release to Leads"}
                 </Button>

@@ -7,14 +7,14 @@ export default async function PlayersPage() {
 
   const playerQ = supabase
     .from('players')
-    .select('id, first_name, last_name, group_id, status, player_level_id, groups(name), player_levels(name, color)')
+    .select('id, first_name, last_name, pool_id, status, player_level_id, pools(name), player_levels(name, color)')
     .order('last_name')
-  const groupQ = supabase.from('groups').select('id, name').order('name')
+  const poolQ = supabase.from('pools').select('id, name').order('name')
   const levelQ = supabase.from('player_levels').select('id, name, rank, color').order('rank')
 
-  const [{ data: players }, { data: groups }, { data: playerLevels }] = await Promise.all([
+  const [{ data: players }, { data: pools }, { data: playerLevels }] = await Promise.all([
     accountId ? playerQ.eq('account_id', accountId) : playerQ,
-    accountId ? groupQ.eq('account_id', accountId)  : groupQ,
+    accountId ? poolQ.eq('account_id', accountId)   : poolQ,
     accountId ? levelQ.eq('account_id', accountId)  : levelQ,
   ])
 
@@ -38,7 +38,7 @@ export default async function PlayersPage() {
   return (
     <PlayersClient
       players={players ?? []}
-      groups={groups ?? []}
+      pools={pools ?? []}
       playerLevels={playerLevels ?? []}
       lastRosteredMap={lastRosteredMap}
     />

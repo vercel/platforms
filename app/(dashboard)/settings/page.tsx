@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { getActiveAccountId } from '@/lib/account'
-import { SettingsClient, type GroupRow, type CoachRow, type GameFormatRow } from './settings-client'
+import { SettingsClient, type PoolRow, type CoachRow, type GameFormatRow } from './settings-client'
 
 
 export default async function SettingsPage() {
@@ -9,10 +9,10 @@ export default async function SettingsPage() {
   const coachQ    = supabase.from('coaches').select('id, name, email').order('name')
   const levelQ    = supabase.from('player_levels').select('id, name, rank, color').order('rank')
   const formatQ   = supabase.from('game_formats').select('id, name, rank').order('rank')
-  const groupQ    = supabase.from('groups').select(`
+  const poolQ     = supabase.from('pools').select(`
     id, name, default_game_format_id,
-    lead:coaches!groups_lead_coach_id_fkey(id, name),
-    group_coaches(coaches(id, name)),
+    lead:coaches!pools_lead_coach_id_fkey(id, name),
+    pool_coaches(coaches(id, name)),
     teams(id, name, archived)
   `).order('name')
   const jerseyQ   = supabase.from('jersey_colors').select('id, name, color').order('name')
@@ -23,7 +23,7 @@ export default async function SettingsPage() {
     { data: coaches },
     { data: playerLevels },
     { data: gameFormats },
-    { data: groupsRaw },
+    { data: poolsRaw },
     { data: jerseyColors },
     { data: locations },
     { data: accountData },
@@ -31,7 +31,7 @@ export default async function SettingsPage() {
     accountId ? coachQ.eq('account_id', accountId)    : coachQ,
     accountId ? levelQ.eq('account_id', accountId)    : levelQ,
     accountId ? formatQ.eq('account_id', accountId)   : formatQ,
-    accountId ? groupQ.eq('account_id', accountId)    : groupQ,
+    accountId ? poolQ.eq('account_id', accountId)     : poolQ,
     accountId ? jerseyQ.eq('account_id', accountId)   : jerseyQ,
     accountId ? locationQ.eq('account_id', accountId) : locationQ,
     accountId ? accountQ.eq('id', accountId).single() : accountQ.limit(1).single(),
@@ -70,11 +70,11 @@ export default async function SettingsPage() {
     })
   })()
 
-  const groups: GroupRow[] = (groupsRaw ?? []).map((g: any) => ({
+  const pools: PoolRow[] = (poolsRaw ?? []).map((g: any) => ({
     id: g.id,
     name: g.name,
     lead: g.lead ?? null,
-    assignedCoaches: (g.group_coaches ?? []).map((gc: any) => gc.coaches).filter(Boolean),
+    assignedCoaches: (g.pool_coaches ?? []).map((gc: any) => gc.coaches).filter(Boolean),
     teams: g.teams ?? [],
     defaultGameFormatId: g.default_game_format_id ?? null,
   }))
@@ -85,7 +85,7 @@ export default async function SettingsPage() {
     <SettingsClient
       account={account}
       coaches={coachesWithPerms}
-      groups={groups}
+      pools={pools}
       jerseyColors={jerseyColors ?? []}
       locations={locations ?? []}
       playerLevels={playerLevels ?? []}

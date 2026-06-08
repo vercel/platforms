@@ -25,14 +25,14 @@ export type PlayerRow = {
   id: string
   first_name: string
   last_name: string
-  group_id: string
+  pool_id: string
   status: 'active' | 'archived'
   player_level_id: string | null
-  groups: { name: string } | null
+  pools: { name: string } | null
   player_levels: { name: string; color: string | null } | null
 }
 
-export type GroupRow = {
+export type PoolRow = {
   id: string
   name: string
 }
@@ -127,19 +127,19 @@ function fmtLastRostered(dateStr: string): string {
 
 export function PlayersClient({
   players,
-  groups,
+  pools,
   playerLevels,
   lastRosteredMap = {},
 }: {
   players: PlayerRow[]
-  groups: GroupRow[]
+  pools: PoolRow[]
   playerLevels: PlayerLevelRow[]
   lastRosteredMap?: Record<string, string>
 }) {
   const [isPending, startTransition] = useTransition()
 
   // Filters
-  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
+  const [selectedPoolId, setSelectedPoolId] = useState<string | null>(null)
   const [showArchived, setShowArchived] = useState(false)
 
   // Pagination
@@ -148,27 +148,27 @@ export function PlayersClient({
 
   // Add dialog
   const [addOpen, setAddOpen] = useState(false)
-  const [addForm, setAddForm] = useState({ firstName: '', lastName: '', groupId: groups[0]?.id ?? '', levelId: '' })
+  const [addForm, setAddForm] = useState({ firstName: '', lastName: '', poolId: pools[0]?.id ?? '', levelId: '' })
 
   // Edit dialog
   const [editPlayer, setEditPlayer] = useState<PlayerRow | null>(null)
-  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', groupId: '', levelId: '' })
+  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', poolId: '', levelId: '' })
 
   // --- Filtering ---
   const filtered = useMemo(() => {
     return players
       .filter(p => (showArchived ? p.status === 'archived' : p.status === 'active'))
-      .filter(p => !selectedGroupId || p.group_id === selectedGroupId)
+      .filter(p => !selectedPoolId || p.pool_id === selectedPoolId)
       .sort((a, b) => a.last_name.localeCompare(b.last_name) || a.first_name.localeCompare(b.first_name))
-  }, [players, showArchived, selectedGroupId])
+  }, [players, showArchived, selectedPoolId])
 
   // --- Pagination ---
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const safePage = Math.min(page, totalPages)
   const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
 
-  function setFilter(groupId: string | null) {
-    setSelectedGroupId(groupId)
+  function setFilter(poolId: string | null) {
+    setSelectedPoolId(poolId)
     setPage(1)
   }
 
@@ -179,11 +179,11 @@ export function PlayersClient({
 
   // --- Add ---
   function handleAdd() {
-    if (!addForm.firstName.trim() || !addForm.lastName.trim() || !addForm.groupId) return
+    if (!addForm.firstName.trim() || !addForm.lastName.trim() || !addForm.poolId) return
     startTransition(async () => {
-      await addPlayer(addForm.groupId, addForm.firstName, addForm.lastName)
+      await addPlayer(addForm.poolId, addForm.firstName, addForm.lastName)
       setAddOpen(false)
-      setAddForm({ firstName: '', lastName: '', groupId: groups[0]?.id ?? '', levelId: '' })
+      setAddForm({ firstName: '', lastName: '', poolId: pools[0]?.id ?? '', levelId: '' })
     })
   }
 
@@ -198,7 +198,7 @@ export function PlayersClient({
     setEditForm({
       firstName: player.first_name,
       lastName: player.last_name,
-      groupId: player.group_id,
+      poolId: player.pool_id,
       levelId: player.player_level_id ?? '',
     })
   }
@@ -210,7 +210,7 @@ export function PlayersClient({
         editPlayer.id,
         editForm.firstName,
         editForm.lastName,
-        editForm.groupId,
+        editForm.poolId,
         editForm.levelId || undefined,
       )
       setEditPlayer(null)
@@ -250,19 +250,19 @@ export function PlayersClient({
         </div>
       </div>
 
-      {/* Group filter chips */}
+      {/* Pool filter chips */}
       <div className="flex flex-wrap gap-2">
         <Button
-          variant={selectedGroupId === null ? 'default' : 'outline'}
+          variant={selectedPoolId === null ? 'default' : 'outline'}
           size="sm"
           onClick={() => setFilter(null)}
         >
-          All Groups
+          All Pools
         </Button>
-        {groups.map(g => (
+        {pools.map(g => (
           <Button
             key={g.id}
-            variant={selectedGroupId === g.id ? 'default' : 'outline'}
+            variant={selectedPoolId === g.id ? 'default' : 'outline'}
             size="sm"
             onClick={() => setFilter(g.id)}
           >
@@ -296,7 +296,7 @@ export function PlayersClient({
                 <TableCell className="font-medium">{player.first_name}</TableCell>
                 <TableCell>{player.last_name.slice(0, 2)}.</TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{player.groups?.name ?? '—'}</Badge>
+                  <Badge variant="secondary">{player.pools?.name ?? '—'}</Badge>
                 </TableCell>
                 <TableCell>
                   <LevelCell player={player} playerLevels={playerLevels} onSelect={handleSetLevel} />
@@ -387,7 +387,7 @@ export function PlayersClient({
       </div>
 
       {/* Add Player Dialog */}
-      <Dialog open={addOpen} onOpenChange={open => { setAddOpen(open); if (!open) setAddForm({ firstName: '', lastName: '', groupId: groups[0]?.id ?? '', levelId: '' }) }}>
+      <Dialog open={addOpen} onOpenChange={open => { setAddOpen(open); if (!open) setAddForm({ firstName: '', lastName: '', poolId: pools[0]?.id ?? '', levelId: '' }) }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add Player</DialogTitle>
@@ -413,13 +413,13 @@ export function PlayersClient({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <Field>
-                <FieldLabel>Age Group</FieldLabel>
-                <Select value={addForm.groupId} onValueChange={v => setAddForm(f => ({ ...f, groupId: v }))}>
+                <FieldLabel>Pool</FieldLabel>
+                <Select value={addForm.poolId} onValueChange={v => setAddForm(f => ({ ...f, poolId: v }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group" />
+                    <SelectValue placeholder="Select pool" />
                   </SelectTrigger>
                   <SelectContent>
-                    {groups.map(g => (
+                    {pools.map(g => (
                       <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
                     ))}
                   </SelectContent>
@@ -445,7 +445,7 @@ export function PlayersClient({
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
             <Button
               onClick={handleAdd}
-              disabled={!addForm.firstName.trim() || !addForm.lastName.trim() || !addForm.groupId || isPending}
+              disabled={!addForm.firstName.trim() || !addForm.lastName.trim() || !addForm.poolId || isPending}
             >
               Add Player
             </Button>
@@ -480,13 +480,13 @@ export function PlayersClient({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <Field>
-                <FieldLabel>Age Group</FieldLabel>
-                <Select value={editForm.groupId} onValueChange={v => setEditForm(f => ({ ...f, groupId: v }))}>
+                <FieldLabel>Pool</FieldLabel>
+                <Select value={editForm.poolId} onValueChange={v => setEditForm(f => ({ ...f, poolId: v }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group" />
+                    <SelectValue placeholder="Select pool" />
                   </SelectTrigger>
                   <SelectContent>
-                    {groups.map(g => (
+                    {pools.map(g => (
                       <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
                     ))}
                   </SelectContent>

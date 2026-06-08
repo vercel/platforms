@@ -37,9 +37,9 @@ type ScheduleGame = {
   location: string | null
 }
 
-type ScheduleGroup = {
-  gdgId: string
-  groupName: string
+type SchedulePool = {
+  gdpId: string
+  poolName: string
   rosterStatus: 'draft' | 'published'
   publishedAt: string | null
   isLead: boolean
@@ -51,7 +51,7 @@ type ScheduleDay = {
   gameDayName: string
   startDate: string
   endDate: string | null
-  groups: Map<string, ScheduleGroup>
+  pools: Map<string, SchedulePool>
 }
 
 export default async function MySchedulePage() {
@@ -88,13 +88,13 @@ export default async function MySchedulePage() {
     )
   }
 
-  // Fetch groups where I'm the lead coach + games where I'm the assigned coach
-  const [{ data: leadGroupsRaw }, { data: assignedGamesRaw }] = await Promise.all([
+  // Fetch pools where I'm the lead coach + games where I'm the assigned coach
+  const [{ data: leadPoolsRaw }, { data: assignedGamesRaw }] = await Promise.all([
     supabase
-      .from('game_day_groups')
+      .from('game_day_pools')
       .select(`
-        id, roster_status, published_at, group_id,
-        groups(name),
+        id, roster_status, published_at, pool_id,
+        pools(name),
         game_days(id, name, start_date, end_date),
         games(id, game_date, game_time, home_team, away_team, field, locations(name))
       `)
@@ -104,11 +104,11 @@ export default async function MySchedulePage() {
       .from('games')
       .select(`
         id, game_date, game_time, home_team, away_team, field,
-        game_day_group_id,
+        game_day_pool_id,
         locations(name),
-        game_day_groups(
+        game_day_pools(
           id, roster_status, published_at,
-          groups(name),
+          pools(name),
           game_days(id, name, start_date, end_date)
         )
       `)
@@ -121,27 +121,27 @@ export default async function MySchedulePage() {
 
   function ensureDay(gameDayId: string, gameDayName: string, startDate: string, endDate: string | null): ScheduleDay {
     if (!dayMap.has(gameDayId)) {
-      dayMap.set(gameDayId, { gameDayId, gameDayName, startDate, endDate, groups: new Map() })
+      dayMap.set(gameDayId, { gameDayId, gameDayName, startDate, endDate, pools: new Map() })
     }
     return dayMap.get(gameDayId)!
   }
 
-  // Lead coach groups — add all games for that group
-  for (const lg of (leadGroupsRaw ?? [])) {
-    const gd = (lg as any).game_days as { id: string; name: string; start_date: string; end_date: string | null } | null
+  // Lead coach pools — add all games for that pool
+  for (const lp of (leadPoolsRaw ?? [])) {
+    const gd = (lp as any).game_days as { id: string; name: string; start_date: string; end_date: string | null } | null
     if (!gd || gd.start_date < today) continue
 
     const day = ensureDay(gd.id, gd.name, gd.start_date, gd.end_date)
-    const groupName = ((lg as any).groups as { name: string } | null)?.name ?? ''
-    const gdgId = lg.id as string
+    const poolName = ((lp as any).pools as { name: string } | null)?.name ?? ''
+    const gdpId = lp.id as string
 
-    day.groups.set(gdgId, {
-      gdgId,
-      groupName,
-      rosterStatus: (lg.roster_status as 'draft' | 'published') ?? 'draft',
-      publishedAt: (lg.published_at as string | null) ?? null,
+    day.pools.set(gdpId, {
+      gdpId,
+      poolName,
+      rosterStatus: (lp.roster_status as 'draft' | 'published') ?? 'draft',
+      publishedAt: (lp.published_at as string | null) ?? null,
       isLead: true,
-      games: ((lg as any).games ?? []).map((g: any) => ({
+      games: ((lp as any).games ?? []).map((g: any) => ({
         id: g.id,
         date: g.game_date ? fmtDate(g.game_date) : null,
         time: g.game_time ? fmtTime(g.game_time) : null,
@@ -153,31 +153,31 @@ export default async function MySchedulePage() {
     })
   }
 
-  // Assigned games — add to the group they belong to, skip if group is already a lead group
+  // Assigned games — add to the pool they belong to, skip if pool is already a lead pool
   for (const ag of (assignedGamesRaw ?? [])) {
-    const gdg = (ag as any).game_day_groups as any
-    if (!gdg) continue
-    const gd = gdg.game_days as { id: string; name: string; start_date: string; end_date: string | null } | null
+    const gdp = (ag as any).game_day_pools as any
+    if (!gdp) continue
+    const gd = gdp.game_days as { id: string; name: string; start_date: string; end_date: string | null } | null
     if (!gd || gd.start_date < today) continue
 
-    const gdgId = gdg.id as string
+    const gdpId = gdp.id as string
     const day = ensureDay(gd.id, gd.name, gd.start_date, gd.end_date)
 
-    if (!day.groups.has(gdgId)) {
-      day.groups.set(gdgId, {
-        gdgId,
-        groupName: (gdg.groups as { name: string } | null)?.name ?? '',
-        rosterStatus: (gdg.roster_status as 'draft' | 'published') ?? 'draft',
-        publishedAt: (gdg.published_at as string | null) ?? null,
+    if (!day.pools.has(gdpId)) {
+      day.pools.set(gdpId, {
+        gdpId,
+        poolName: (gdp.pools as { name: string } | null)?.name ?? '',
+        rosterStatus: (gdp.roster_status as 'draft' | 'published') ?? 'draft',
+        publishedAt: (gdp.published_at as string | null) ?? null,
         isLead: false,
         games: [],
       })
     }
 
-    // Only add this game if it's not already in a lead-coach group
-    const group = day.groups.get(gdgId)!
-    if (!group.isLead && !group.games.find(g => g.id === (ag as any).id)) {
-      group.games.push({
+    // Only add this game if it's not already in a lead-coach pool
+    const pool = day.pools.get(gdpId)!
+    if (!pool.isLead && !pool.games.find(g => g.id === (ag as any).id)) {
+      pool.games.push({
         id: (ag as any).id,
         date: (ag as any).game_date ? fmtDate((ag as any).game_date) : null,
         time: (ag as any).game_time ? fmtTime((ag as any).game_time) : null,
@@ -231,34 +231,34 @@ export default async function MySchedulePage() {
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col gap-6 pt-0">
-                {[...day.groups.values()].map(group => (
-                  <div key={group.gdgId} className="flex flex-col gap-3">
-                    {/* Group header */}
+                {[...day.pools.values()].map(pool => (
+                  <div key={pool.gdpId} className="flex flex-col gap-3">
+                    {/* Pool header */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold">{group.groupName}</h3>
-                        {group.isLead && (
+                        <h3 className="font-semibold">{pool.poolName}</h3>
+                        {pool.isLead && (
                           <Badge variant="outline" className="text-xs">Lead Coach</Badge>
                         )}
                         <Badge
-                          variant={group.rosterStatus === 'published' ? 'default' : 'secondary'}
-                          className={group.rosterStatus === 'published' ? 'bg-green-500/10 text-green-600 hover:bg-green-500/20' : ''}
+                          variant={pool.rosterStatus === 'published' ? 'default' : 'secondary'}
+                          className={pool.rosterStatus === 'published' ? 'bg-green-500/10 text-green-600 hover:bg-green-500/20' : ''}
                         >
                           <FileText className="mr-1 size-3" />
-                          {group.rosterStatus === 'published' ? 'Roster Published' : 'Roster Draft'}
+                          {pool.rosterStatus === 'published' ? 'Roster Published' : 'Roster Draft'}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-1">
                         <Button variant="ghost" size="icon" title="View Roster" asChild>
-                          <Link href={`/game-day/${day.gameDayId}/roster?group=${group.groupName}`}>
+                          <Link href={`/game-day/${day.gameDayId}/roster?pool=${pool.poolName}`}>
                             <Users className="size-4" />
                             <span className="sr-only">View Roster</span>
                           </Link>
                         </Button>
-                        {group.rosterStatus === 'published' && (
+                        {pool.rosterStatus === 'published' && (
                           <Button variant="ghost" size="icon" title="Download PDF" asChild>
                             <a
-                              href={`/game-day/${day.gameDayId}/groups/${group.gdgId}/pdf`}
+                              href={`/game-day/${day.gameDayId}/pools/${pool.gdpId}/pdf`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -271,7 +271,7 @@ export default async function MySchedulePage() {
                     </div>
 
                     {/* Games table */}
-                    {group.games.length > 0 ? (
+                    {pool.games.length > 0 ? (
                       <div className="rounded-lg border">
                         <Table>
                           <TableHeader>
@@ -284,7 +284,7 @@ export default async function MySchedulePage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {group.games
+                            {pool.games
                               .slice()
                               .sort((a, b) => {
                                 if (a.date && b.date && a.date !== b.date) return a.date.localeCompare(b.date)

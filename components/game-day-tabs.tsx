@@ -47,8 +47,8 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
-  updateGameCoach, updateGameJersey, updateGameGroup,
-  updateGroupLead, addGame, updateGame,
+  updateGameCoach, updateGameJersey, updateGamePool,
+  updatePoolLead, addGame, updateGame,
 } from "@/app/(dashboard)/game-day/[id]/actions"
 
 export interface GameRow {
@@ -73,12 +73,12 @@ export interface GameRow {
   rawTime?: string
 }
 
-export interface GroupGamesRow {
+export interface PoolGamesRow {
   id: string
-  groupName: string
-  groupLead: string
-  groupLeadId?: string
-  groupCoaches: { id: string; name: string }[]
+  poolName: string
+  poolLead: string
+  poolLeadId?: string
+  poolCoaches: { id: string; name: string }[]
   defaultGameFormatId?: string | null
   rosterStatus: "draft" | "published"
   publishedAt?: string
@@ -89,7 +89,7 @@ export interface GroupGamesRow {
 interface GameDayTabsProps {
   gameDayId: string
   gameDayName: string
-  groupGames: GroupGamesRow[]
+  poolGames: PoolGamesRow[]
   coaches: { id: string; name: string }[]
   jerseyColors: { id: string; name: string; color: string }[]
   locations: { id: string; name: string }[]
@@ -146,9 +146,9 @@ function hasMultipleDays(games: { day?: string }[]): boolean {
   return new Set(days).size > 1
 }
 
-interface GameWithGroup extends GameRow {
-  groupName: string
-  groupId: string
+interface GameWithPool extends GameRow {
+  poolName: string
+  poolId: string
 }
 
 function JerseyEditor({
@@ -211,13 +211,13 @@ function JerseyEditor({
   )
 }
 
-function GroupEditor({
+function PoolEditor({
   value,
-  groups,
+  pools,
   onSave,
 }: {
   value: string
-  groups: { id: string; groupName: string }[]
+  pools: { id: string; poolName: string }[]
   onSave: (id: string, name: string) => void
 }) {
   const [open, setOpen] = useState(false)
@@ -229,23 +229,23 @@ function GroupEditor({
           <span>{value}</span>
           <Button variant="ghost" size="icon" className="size-6">
             <Pencil className="size-3" />
-            <span className="sr-only">Edit Group</span>
+            <span className="sr-only">Edit Pool</span>
           </Button>
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-32 p-2" align="start">
         <div className="flex flex-col gap-1">
-          {groups.map((group) => (
+          {pools.map((pool) => (
             <button
-              key={group.id}
+              key={pool.id}
               className={cn(
                 "flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-muted",
-                group.groupName === value && "bg-muted"
+                pool.poolName === value && "bg-muted"
               )}
-              onClick={() => { onSave(group.id, group.groupName); setOpen(false) }}
+              onClick={() => { onSave(pool.id, pool.poolName); setOpen(false) }}
             >
-              <span>{group.groupName}</span>
-              {group.groupName === value && <Check className="size-4 text-primary" />}
+              <span>{pool.poolName}</span>
+              {pool.poolName === value && <Check className="size-4 text-primary" />}
             </button>
           ))}
         </div>
@@ -312,23 +312,23 @@ function CoachEditor({
   )
 }
 
-function GroupLeadEditor({
+function PoolLeadEditor({
   value,
   leadId,
-  groupCoaches,
+  poolCoaches,
   allCoaches,
   onSave,
 }: {
   value: string
   leadId?: string
-  groupCoaches: { id: string; name: string }[]
+  poolCoaches: { id: string; name: string }[]
   allCoaches: { id: string; name: string }[]
   onSave: (id: string, name: string) => void
 }) {
   const [open, setOpen] = useState(false)
 
-  const groupCoachIds = new Set(groupCoaches.map(c => c.id))
-  const otherCoaches = allCoaches.filter(c => !groupCoachIds.has(c.id))
+  const poolCoachIds = new Set(poolCoaches.map(c => c.id))
+  const otherCoaches = allCoaches.filter(c => !poolCoachIds.has(c.id))
 
   function Coach({ coach }: { coach: { id: string; name: string } }) {
     return (
@@ -352,21 +352,21 @@ function GroupLeadEditor({
           <span>{value || "—"}</span>
           <Button variant="ghost" size="icon" className="size-6">
             <Pencil className="size-3" />
-            <span className="sr-only">Change Group Lead</span>
+            <span className="sr-only">Change Pool Lead</span>
           </Button>
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-56 p-2" align="start">
         <div className="flex flex-col gap-0.5">
-          {groupCoaches.length > 0 && (
+          {poolCoaches.length > 0 && (
             <>
-              <p className="px-2 py-1 text-xs font-medium text-muted-foreground">Group Coaches</p>
-              {groupCoaches.map(c => <Coach key={c.id} coach={c} />)}
+              <p className="px-2 py-1 text-xs font-medium text-muted-foreground">Pool Coaches</p>
+              {poolCoaches.map(c => <Coach key={c.id} coach={c} />)}
             </>
           )}
           {otherCoaches.length > 0 && (
             <>
-              {groupCoaches.length > 0 && <div className="my-1 border-t" />}
+              {poolCoaches.length > 0 && <div className="my-1 border-t" />}
               <p className="px-2 py-1 text-xs font-medium text-muted-foreground">Other Coaches</p>
               {otherCoaches.map(c => <Coach key={c.id} coach={c} />)}
             </>
@@ -538,21 +538,21 @@ function GameFormDialog({
 }
 
 export function GameDayTabs({
-  gameDayId, gameDayName, groupGames, coaches, jerseyColors, locations, gameFormats, canEdit = true,
+  gameDayId, gameDayName, poolGames, coaches, jerseyColors, locations, gameFormats, canEdit = true,
 }: GameDayTabsProps) {
   const router = useRouter()
-  const [gameData, setGameData] = useState<GroupGamesRow[]>(groupGames)
+  const [gameData, setGameData] = useState<PoolGamesRow[]>(poolGames)
   const [isPending, startTransition] = useTransition()
 
   // Sync local state when server data changes (after add/edit + router.refresh())
   useEffect(() => {
-    setGameData(groupGames)
-  }, [groupGames])
+    setGameData(poolGames)
+  }, [poolGames])
 
   // Game form dialog
   const [dialogOpen, setDialogOpen] = useState(false)
   const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add')
-  const [addGroupId, setAddGroupId] = useState<string>('')
+  const [addPoolId, setAddPoolId] = useState<string>('')
   const [editGameId, setEditGameId] = useState<string>('')
   const [gameForm, setGameForm] = useState<GameFormState>(EMPTY_FORM)
 
@@ -560,19 +560,19 @@ export function GameDayTabs({
     setGameForm(f => ({ ...f, [field]: value }))
   }
 
-  function openAddDialog(groupId: string) {
-    const group = gameData.find(g => g.id === groupId)
+  function openAddDialog(poolId: string) {
+    const pool = gameData.find(g => g.id === poolId)
     setDialogMode('add')
-    setAddGroupId(groupId)
+    setAddPoolId(poolId)
     setEditGameId('')
-    setGameForm({ ...EMPTY_FORM, gameFormatId: group?.defaultGameFormatId ?? '' })
+    setGameForm({ ...EMPTY_FORM, gameFormatId: pool?.defaultGameFormatId ?? '' })
     setDialogOpen(true)
   }
 
   function openEditDialog(game: GameRow) {
     setDialogMode('edit')
     setEditGameId(game.id)
-    setAddGroupId('')
+    setAddPoolId('')
     setGameForm({
       date: game.rawDate ?? '',
       time: game.rawTime ?? '',
@@ -590,7 +590,7 @@ export function GameDayTabs({
   function handleGameSubmit() {
     startTransition(async () => {
       if (dialogMode === 'add') {
-        await addGame(addGroupId, gameDayId, {
+        await addGame(addPoolId, gameDayId, {
           gameDate: gameForm.date,
           gameTime: gameForm.time,
           homeTeam: gameForm.homeTeam,
@@ -619,13 +619,13 @@ export function GameDayTabs({
     })
   }
 
-  const allGroups = gameData.map(g => ({ id: g.id, groupName: g.groupName }))
+  const allPools = gameData.map(g => ({ id: g.id, poolName: g.poolName }))
 
-  const allGamesWithGroup: GameWithGroup[] = gameData.flatMap(group =>
-    group.games.map(game => ({ ...game, groupName: group.groupName, groupId: group.id }))
+  const allGamesWithPool: GameWithPool[] = gameData.flatMap(pool =>
+    pool.games.map(game => ({ ...game, poolName: pool.poolName, poolId: pool.id }))
   )
 
-  const gamesByCoach = allGamesWithGroup.reduce((acc, game) => {
+  const gamesByCoach = allGamesWithPool.reduce((acc, game) => {
     if (!acc[game.coach]) acc[game.coach] = []
     acc[game.coach].push(game)
     return acc
@@ -634,9 +634,9 @@ export function GameDayTabs({
   const coachNames = Object.keys(gamesByCoach).sort()
 
   const updateCoach = (gameId: string, coachId: string, coachName: string) => {
-    setGameData(prev => prev.map(group => ({
-      ...group,
-      games: group.games.map(game =>
+    setGameData(prev => prev.map(pool => ({
+      ...pool,
+      games: pool.games.map(game =>
         game.id === gameId ? { ...game, coach: coachName, coachId } : game
       )
     })))
@@ -644,109 +644,109 @@ export function GameDayTabs({
   }
 
   const updateJersey = (gameId: string, jerseyColorId: string, jerseyName: string, jerseyColor: string) => {
-    setGameData(prev => prev.map(group => ({
-      ...group,
-      games: group.games.map(game =>
+    setGameData(prev => prev.map(pool => ({
+      ...pool,
+      games: pool.games.map(game =>
         game.id === gameId ? { ...game, jersey: jerseyName, jerseyColorId, jerseyColor } : game
       )
     })))
     startTransition(() => updateGameJersey(gameId, jerseyColorId))
   }
 
-  const changeGroupLead = (groupId: string, coachId: string, coachName: string) => {
-    setGameData(prev => prev.map(group =>
-      group.id === groupId
-        ? { ...group, groupLead: coachName, groupLeadId: coachId }
-        : group
+  const changePoolLead = (poolId: string, coachId: string, coachName: string) => {
+    setGameData(prev => prev.map(pool =>
+      pool.id === poolId
+        ? { ...pool, poolLead: coachName, poolLeadId: coachId }
+        : pool
     ))
-    startTransition(() => updateGroupLead(groupId, gameDayId, coachId))
+    startTransition(() => updatePoolLead(poolId, gameDayId, coachId))
   }
 
-  const updateGroup = (gameId: string, oldGroupName: string, newGdgId: string, newGroupName: string) => {
-    if (oldGroupName === newGroupName) return
+  const updatePool = (gameId: string, oldPoolName: string, newGdpId: string, newPoolName: string) => {
+    if (oldPoolName === newPoolName) return
     setGameData(prev => {
       let gameToMove: GameRow | null = null
-      const updated = prev.map(group => {
-        if (group.groupName === oldGroupName) {
-          const game = group.games.find(g => g.id === gameId)
+      const updated = prev.map(pool => {
+        if (pool.poolName === oldPoolName) {
+          const game = pool.games.find(g => g.id === gameId)
           if (game) gameToMove = game
-          return { ...group, games: group.games.filter(g => g.id !== gameId) }
+          return { ...pool, games: pool.games.filter(g => g.id !== gameId) }
         }
-        return group
+        return pool
       })
       if (gameToMove) {
-        return updated.map(group =>
-          group.groupName === newGroupName
-            ? { ...group, games: [...group.games, gameToMove!] }
-            : group
+        return updated.map(pool =>
+          pool.poolName === newPoolName
+            ? { ...pool, games: [...pool.games, gameToMove!] }
+            : pool
         )
       }
       return updated
     })
-    startTransition(() => updateGameGroup(gameId, newGdgId))
+    startTransition(() => updateGamePool(gameId, newGdpId))
   }
 
   return (
     <>
-      <Tabs defaultValue="by-group" className="w-full">
+      <Tabs defaultValue="by-pool" className="w-full">
         <TabsList>
-          <TabsTrigger value="by-group">By Group</TabsTrigger>
+          <TabsTrigger value="by-pool">By Pool</TabsTrigger>
           <TabsTrigger value="by-coach">By Coach</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="by-group" className="mt-6">
+        <TabsContent value="by-pool" className="mt-6">
           <div className="flex flex-col gap-8">
-            {gameData.map((group) => {
-              const multipleDays = hasMultipleDays(group.games)
-              const sortedGames = sortGamesByDateAndTime(group.games)
+            {gameData.map((pool) => {
+              const multipleDays = hasMultipleDays(pool.games)
+              const sortedGames = sortGamesByDateAndTime(pool.games)
               const shownDates = new Set<string>()
               const colSpan = 8 + (multipleDays ? 1 : 0) + (canEdit ? 1 : 0) + (gameFormats.length > 0 ? 1 : 0)
 
               return (
-                <div key={group.id} className="flex flex-col gap-3">
+                <div key={pool.id} className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="text-xl font-semibold">{group.groupName}</h2>
+                        <h2 className="text-xl font-semibold">{pool.poolName}</h2>
                         <Badge
-                          variant={group.rosterStatus === "published" ? "default" : "secondary"}
-                          className={group.rosterStatus === "published" ? "bg-green-500/10 text-green-600 hover:bg-green-500/20" : ""}
+                          variant={pool.rosterStatus === "published" ? "default" : "secondary"}
+                          className={pool.rosterStatus === "published" ? "bg-green-500/10 text-green-600 hover:bg-green-500/20" : ""}
                         >
                           <FileText className="mr-1 size-3" />
-                          {group.rosterStatus === "published" ? "Roster Published" : "Roster Draft"}
+                          {pool.rosterStatus === "published" ? "Roster Published" : "Roster Draft"}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <span>Group Lead:</span>
+                        <span>Pool Lead:</span>
                         {canEdit ? (
-                          <GroupLeadEditor
-                            value={group.groupLead}
-                            leadId={group.groupLeadId}
-                            groupCoaches={group.groupCoaches}
+                          <PoolLeadEditor
+                            value={pool.poolLead}
+                            leadId={pool.poolLeadId}
+                            poolCoaches={pool.poolCoaches}
                             allCoaches={coaches}
-                            onSave={(id, name) => changeGroupLead(group.id, id, name)}
+                            onSave={(id, name) => changePoolLead(pool.id, id, name)}
                           />
                         ) : (
-                          <span className="ml-1">{group.groupLead || "—"}</span>
+                          <span className="ml-1">{pool.poolLead || "—"}</span>
                         )}
                       </div>
-                      {group.rosterStatus === "published" && group.publishedAt && group.publishedBy && (
+                      {pool.rosterStatus === "published" && pool.publishedAt && pool.publishedBy && (
                         <p className="text-xs text-muted-foreground">
-                          Published {group.publishedAt} by {group.publishedBy}
+                          Published {pool.publishedAt} by {pool.publishedBy}
                         </p>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="icon" title="View Roster" asChild>
-                        <Link href={`/game-day/${gameDayId}/roster?group=${group.groupName}`}>
+                        <Link href={`/game-day/${gameDayId}/roster?pool=${pool.poolName}`}>
                           <Users className="size-4" />
                           <span className="sr-only">View Roster</span>
                         </Link>
                       </Button>
-                      {group.rosterStatus === "published" && (
+                      {pool.rosterStatus === "published" && (
                         <Button variant="ghost" size="icon" title="Download PDF" asChild>
                           <a
-                            href={`/game-day/${gameDayId}/groups/${group.id}/pdf`}
+                            href={`/game-day/${gameDayId}/pools/${pool.id}/pdf`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -906,7 +906,7 @@ export function GameDayTabs({
                                 variant="ghost"
                                 size="sm"
                                 className="w-full text-muted-foreground hover:text-foreground"
-                                onClick={() => openAddDialog(group.id)}
+                                onClick={() => openAddDialog(pool.id)}
                               >
                                 <Plus className="mr-2 size-4" />
                                 Add Game
@@ -948,7 +948,7 @@ export function GameDayTabs({
                           <TableHead>Away Team</TableHead>
                           <TableHead>Facility</TableHead>
                           <TableHead className="w-28">Field</TableHead>
-                          <TableHead>Group</TableHead>
+                          <TableHead>Pool</TableHead>
                           <TableHead className="w-20">Rostered</TableHead>
                           <TableHead className="w-32">Jersey</TableHead>
                           {gameFormats.length > 0 && <TableHead className="w-24">Format</TableHead>}
@@ -976,13 +976,13 @@ export function GameDayTabs({
                               <TableCell className="text-muted-foreground">{game.field}</TableCell>
                               <TableCell>
                                 {canEdit ? (
-                                  <GroupEditor
-                                    value={game.groupName}
-                                    groups={allGroups}
-                                    onSave={(id, name) => updateGroup(game.id, game.groupName, id, name)}
+                                  <PoolEditor
+                                    value={game.poolName}
+                                    pools={allPools}
+                                    onSave={(id, name) => updatePool(game.id, game.poolName, id, name)}
                                   />
                                 ) : (
-                                  <span className="text-sm">{game.groupName}</span>
+                                  <span className="text-sm">{game.poolName}</span>
                                 )}
                               </TableCell>
                               <TableCell className="text-sm tabular-nums">

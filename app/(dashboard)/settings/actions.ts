@@ -240,35 +240,35 @@ export async function moveGameFormat(id: string, direction: 'up' | 'down') {
   revalidatePath('/settings')
 }
 
-export async function setGroupDefaultFormat(groupId: string, formatId: string | null) {
+export async function setPoolDefaultFormat(poolId: string, formatId: string | null) {
   await requireRole('admin')
   const { error } = await supabase
-    .from('groups')
+    .from('pools')
     .update({ default_game_format_id: formatId })
-    .eq('id', groupId)
+    .eq('id', poolId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
 
-// Groups
-export async function addGroup(name: string, leadCoachId: string, teamNames: string[]) {
+// Pools
+export async function addPool(name: string, leadCoachId: string, teamNames: string[]) {
   const { accountId } = await requireRole('admin')
-  const { data: group, error: groupError } = await supabase
-    .from('groups')
+  const { data: pool, error: poolError } = await supabase
+    .from('pools')
     .insert({ name: name.trim(), lead_coach_id: leadCoachId, account_id: accountId })
     .select('id')
     .single()
-  if (groupError) throw new Error(groupError.message)
+  if (poolError) throw new Error(poolError.message)
 
   const { error: coachError } = await supabase
-    .from('group_coaches')
-    .insert({ group_id: group.id, coach_id: leadCoachId, account_id: accountId })
+    .from('pool_coaches')
+    .insert({ pool_id: pool.id, coach_id: leadCoachId, account_id: accountId })
   if (coachError) throw new Error(coachError.message)
 
   if (teamNames.length > 0) {
     const { error: teamsError } = await supabase
       .from('teams')
-      .insert(teamNames.map(n => ({ group_id: group.id, name: n.trim(), account_id: accountId })))
+      .insert(teamNames.map(n => ({ pool_id: pool.id, name: n.trim(), account_id: accountId })))
     if (teamsError) throw new Error(teamsError.message)
   }
 

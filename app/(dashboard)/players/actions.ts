@@ -4,12 +4,12 @@ import { revalidatePath } from 'next/cache'
 import { supabase } from '@/lib/supabase'
 import { requireRole } from '@/lib/auth'
 
-export async function addPlayer(groupId: string, firstName: string, lastName: string) {
+export async function addPlayer(poolId: string, firstName: string, lastName: string) {
   const { accountId } = await requireRole('coach')
   const { error } = await supabase.from('players').insert({
     first_name: firstName.trim(),
     last_name: lastName.trim(),
-    group_id: groupId,
+    pool_id: poolId,
     account_id: accountId,
     status: 'active',
   })
@@ -21,7 +21,7 @@ export async function updatePlayer(
   playerId: string,
   firstName: string,
   lastName: string,
-  groupId: string,
+  poolId: string,
   levelId?: string
 ) {
   await requireRole('coach')
@@ -30,7 +30,7 @@ export async function updatePlayer(
     .update({
       first_name: firstName.trim(),
       last_name: lastName.trim(),
-      group_id: groupId,
+      pool_id: poolId,
       player_level_id: levelId || null,
     })
     .eq('id', playerId)

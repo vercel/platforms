@@ -27,7 +27,7 @@ import {
   removeJerseyColor,
   addLocation,
   removeLocation,
-  addGroup,
+  addPool,
   updateCoachGameEditPermission,
   addPlayerLevel,
   removePlayerLevel,
@@ -36,14 +36,14 @@ import {
   addGameFormat,
   removeGameFormat,
   moveGameFormat,
-  setGroupDefaultFormat,
+  setPoolDefaultFormat,
 } from './actions'
 
 export type CoachRow = { id: string; name: string; email: string; memberId?: string; canEditGames: boolean }
 export type PlayerLevelRow = { id: string; name: string; rank: number; color: string | null }
 export type GameFormatRow = { id: string; name: string; rank: number }
 export type TeamRow = { id: string; name: string; archived: boolean }
-export type GroupRow = {
+export type PoolRow = {
   id: string
   name: string
   lead: { id: string; name: string } | null
@@ -91,7 +91,7 @@ export type AccountRow = {
 export function SettingsClient({
   account,
   coaches,
-  groups,
+  pools,
   jerseyColors,
   locations,
   playerLevels,
@@ -99,7 +99,7 @@ export function SettingsClient({
 }: {
   account: AccountRow
   coaches: CoachRow[]
-  groups: GroupRow[]
+  pools: PoolRow[]
   jerseyColors: JerseyColorRow[]
   locations: LocationRow[]
   playerLevels: PlayerLevelRow[]
@@ -116,7 +116,7 @@ export function SettingsClient({
   const [secondaryColor, setSecondaryColor] = useState(account.brand_color_secondary ?? '')
 
   // UI state
-  const [expandedGroups, setExpandedGroups] = useState<string[]>([])
+  const [expandedPools, setExpandedPools] = useState<string[]>([])
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
   const [customColorName, setCustomColorName] = useState('')
   const [customColorValue, setCustomColorValue] = useState('#000000')
@@ -159,11 +159,11 @@ export function SettingsClient({
   const [isAddingLocation, setIsAddingLocation] = useState(false)
   const [newLocation, setNewLocation] = useState({ name: '', address: '', alternateNames: '' })
 
-  // Group add form
-  const [isAddingGroup, setIsAddingGroup] = useState(false)
-  const [newGroupName, setNewGroupName] = useState('')
-  const [newGroupLead, setNewGroupLead] = useState('')
-  const [newGroupTeams, setNewGroupTeams] = useState<string[]>([])
+  // Pool add form
+  const [isAddingPool, setIsAddingPool] = useState(false)
+  const [newPoolName, setNewPoolName] = useState('')
+  const [newPoolLead, setNewPoolLead] = useState('')
+  const [newPoolTeams, setNewPoolTeams] = useState<string[]>([])
   const [newTeamInput, setNewTeamInput] = useState('')
 
   // Jersey color handlers
@@ -202,33 +202,33 @@ export function SettingsClient({
     startTransition(() => removeLocation(id))
   }
 
-  // Group handlers
-  function handleAddTeamToNewGroup() {
+  // Pool handlers
+  function handleAddTeamToNewPool() {
     if (newTeamInput.trim()) {
-      setNewGroupTeams([...newGroupTeams, newTeamInput.trim()])
+      setNewPoolTeams([...newPoolTeams, newTeamInput.trim()])
       setNewTeamInput('')
     }
   }
 
-  function handleAddGroup() {
-    if (!newGroupName.trim() || !newGroupLead) return
-    startTransition(() => addGroup(newGroupName, newGroupLead, newGroupTeams))
-    setNewGroupName('')
-    setNewGroupLead('')
-    setNewGroupTeams([])
-    setIsAddingGroup(false)
+  function handleAddPool() {
+    if (!newPoolName.trim() || !newPoolLead) return
+    startTransition(() => addPool(newPoolName, newPoolLead, newPoolTeams))
+    setNewPoolName('')
+    setNewPoolLead('')
+    setNewPoolTeams([])
+    setIsAddingPool(false)
   }
 
-  function handleCancelAddGroup() {
-    setNewGroupName('')
-    setNewGroupLead('')
-    setNewGroupTeams([])
+  function handleCancelAddPool() {
+    setNewPoolName('')
+    setNewPoolLead('')
+    setNewPoolTeams([])
     setNewTeamInput('')
-    setIsAddingGroup(false)
+    setIsAddingPool(false)
   }
 
-  function toggleGroup(id: string) {
-    setExpandedGroups(prev =>
+  function togglePool(id: string) {
+    setExpandedPools(prev =>
       prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]
     )
   }
@@ -244,7 +244,7 @@ export function SettingsClient({
         <TabsList>
           <TabsTrigger value="details">Academy Details</TabsTrigger>
           <TabsTrigger value="coaches">Coaches</TabsTrigger>
-          <TabsTrigger value="groups">Groups</TabsTrigger>
+          <TabsTrigger value="pools">Pools</TabsTrigger>
           <TabsTrigger value="locations">Locations</TabsTrigger>
         </TabsList>
 
@@ -857,7 +857,7 @@ export function SettingsClient({
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Groups</TableHead>
+                      <TableHead>Pools</TableHead>
                       <TableHead className="w-28">Edit Games</TableHead>
                       <TableHead className="w-[80px]">Actions</TableHead>
                     </TableRow>
@@ -870,7 +870,7 @@ export function SettingsClient({
                         </TableCell>
                       </TableRow>
                     ) : coaches.map(coach => {
-                      const coachGroups = groups.filter(g =>
+                      const coachPools = pools.filter(g =>
                         g.assignedCoaches.some(c => c.id === coach.id)
                       )
                       return (
@@ -878,9 +878,9 @@ export function SettingsClient({
                           <TableCell className="font-medium">{coach.name}</TableCell>
                           <TableCell className="text-muted-foreground">{coach.email}</TableCell>
                           <TableCell>
-                            {coachGroups.length > 0 ? (
+                            {coachPools.length > 0 ? (
                               <div className="flex flex-wrap gap-1.5">
-                                {coachGroups.map(g => {
+                                {coachPools.map(g => {
                                   const isLead = g.lead?.id === coach.id
                                   return (
                                     <Badge
@@ -895,7 +895,7 @@ export function SettingsClient({
                                 })}
                               </div>
                             ) : (
-                              <span className="text-sm text-muted-foreground">No groups assigned</span>
+                              <span className="text-sm text-muted-foreground">No pools assigned</span>
                             )}
                           </TableCell>
                           <TableCell>
@@ -933,38 +933,38 @@ export function SettingsClient({
           </Card>
         </TabsContent>
 
-        {/* ── GROUPS ── */}
-        <TabsContent value="groups" className="mt-4">
+        {/* ── POOLS ── */}
+        <TabsContent value="pools" className="mt-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Groups</CardTitle>
-                <CardDescription>Manage groups and their teams</CardDescription>
+                <CardTitle>Pools</CardTitle>
+                <CardDescription>Manage pools and their teams</CardDescription>
               </div>
-              <Button size="sm" onClick={() => setIsAddingGroup(true)}>
+              <Button size="sm" onClick={() => setIsAddingPool(true)}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add Group
+                Add Pool
               </Button>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-4">
-                {isAddingGroup && (
+                {isAddingPool && (
                   <div className="rounded-lg border bg-muted/30 p-4">
-                    <h4 className="mb-4 text-sm font-medium">New Group</h4>
+                    <h4 className="mb-4 text-sm font-medium">New Pool</h4>
                     <div className="flex flex-col gap-4">
                       <div className="grid gap-4 sm:grid-cols-2">
                         <Field>
-                          <FieldLabel>Group Name</FieldLabel>
+                          <FieldLabel>Pool Name</FieldLabel>
                           <Input
                             placeholder="e.g. U10, Varsity, Development"
-                            value={newGroupName}
-                            onChange={e => setNewGroupName(e.target.value)}
+                            value={newPoolName}
+                            onChange={e => setNewPoolName(e.target.value)}
                             autoFocus
                           />
                         </Field>
                         <Field>
-                          <FieldLabel>Group Lead</FieldLabel>
-                          <Select value={newGroupLead} onValueChange={setNewGroupLead}>
+                          <FieldLabel>Pool Lead</FieldLabel>
+                          <Select value={newPoolLead} onValueChange={setNewPoolLead}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a coach" />
                             </SelectTrigger>
@@ -981,9 +981,9 @@ export function SettingsClient({
 
                       <div>
                         <FieldLabel className="mb-2">Teams</FieldLabel>
-                        {newGroupTeams.length > 0 && (
+                        {newPoolTeams.length > 0 && (
                           <div className="mb-3 flex flex-wrap gap-2">
-                            {newGroupTeams.map((team, i) => (
+                            {newPoolTeams.map((team, i) => (
                               <Badge key={i} variant="secondary" className="py-1 pl-2 pr-1">
                                 {team}
                                 <Button
@@ -991,7 +991,7 @@ export function SettingsClient({
                                   size="icon"
                                   className="ml-1 size-4 hover:bg-destructive/20"
                                   onClick={() =>
-                                    setNewGroupTeams(newGroupTeams.filter((_, j) => j !== i))
+                                    setNewPoolTeams(newPoolTeams.filter((_, j) => j !== i))
                                   }
                                 >
                                   <X className="size-3" />
@@ -1008,7 +1008,7 @@ export function SettingsClient({
                             onKeyDown={e => {
                               if (e.key === 'Enter') {
                                 e.preventDefault()
-                                handleAddTeamToNewGroup()
+                                handleAddTeamToNewPool()
                               }
                             }}
                             className="flex-1"
@@ -1017,7 +1017,7 @@ export function SettingsClient({
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={handleAddTeamToNewGroup}
+                            onClick={handleAddTeamToNewPool}
                             disabled={!newTeamInput.trim()}
                           >
                             <Plus className="mr-1 size-4" />
@@ -1030,54 +1030,54 @@ export function SettingsClient({
                       </div>
 
                       <div className="flex justify-end gap-2 border-t pt-2">
-                        <Button variant="outline" size="sm" onClick={handleCancelAddGroup}>
+                        <Button variant="outline" size="sm" onClick={handleCancelAddPool}>
                           Cancel
                         </Button>
                         <Button
                           size="sm"
-                          onClick={handleAddGroup}
-                          disabled={!newGroupName.trim() || !newGroupLead || isPending}
+                          onClick={handleAddPool}
+                          disabled={!newPoolName.trim() || !newPoolLead || isPending}
                         >
-                          Create Group
+                          Create Pool
                         </Button>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {groups.map(group => (
+                {pools.map(pool => (
                   <Collapsible
-                    key={group.id}
-                    open={expandedGroups.includes(group.id)}
-                    onOpenChange={() => toggleGroup(group.id)}
+                    key={pool.id}
+                    open={expandedPools.includes(pool.id)}
+                    onOpenChange={() => togglePool(pool.id)}
                   >
                     <div className="rounded-lg border">
                       <CollapsibleTrigger asChild>
                         <div className="flex cursor-pointer items-center justify-between p-4 hover:bg-muted/50">
                           <div className="flex items-center gap-3">
-                            {expandedGroups.includes(group.id) ? (
+                            {expandedPools.includes(pool.id) ? (
                               <ChevronDown className="h-4 w-4 text-muted-foreground" />
                             ) : (
                               <ChevronRight className="h-4 w-4 text-muted-foreground" />
                             )}
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold">{group.name}</span>
-                                <Badge variant="outline">{group.teams.length} teams</Badge>
+                                <span className="font-semibold">{pool.name}</span>
+                                <Badge variant="outline">{pool.teams.length} teams</Badge>
                                 <Badge variant="secondary">
                                   <Users className="mr-1 h-3 w-3" />
-                                  {group.assignedCoaches.length} coaches
+                                  {pool.assignedCoaches.length} coaches
                                 </Badge>
                               </div>
                               <div className="mt-1 text-sm text-muted-foreground">
-                                {group.lead && (
+                                {pool.lead && (
                                   <>
-                                    <span className="font-medium">Lead:</span> {group.lead.name}
+                                    <span className="font-medium">Lead:</span> {pool.lead.name}
                                     <span className="mx-2">|</span>
                                   </>
                                 )}
                                 <span className="font-medium">Coaches:</span>{' '}
-                                {group.assignedCoaches.map(c => c.name).join(', ')}
+                                {pool.assignedCoaches.map(c => c.name).join(', ')}
                               </div>
                             </div>
                           </div>
@@ -1097,10 +1097,10 @@ export function SettingsClient({
                             <div className="mb-4 flex items-center gap-3">
                               <span className="text-sm font-medium w-36 shrink-0">Default Game Format</span>
                               <Select
-                                value={group.defaultGameFormatId ?? '_none'}
+                                value={pool.defaultGameFormatId ?? '_none'}
                                 onValueChange={v =>
                                   startTransition(() =>
-                                    setGroupDefaultFormat(group.id, v === '_none' ? null : v)
+                                    setPoolDefaultFormat(pool.id, v === '_none' ? null : v)
                                   )
                                 }
                               >
@@ -1126,7 +1126,7 @@ export function SettingsClient({
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {group.teams
+                                {pool.teams
                                   .filter(t => !t.archived)
                                   .map(team => (
                                     <TableRow key={team.id}>

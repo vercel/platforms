@@ -7,11 +7,11 @@ export default async function GameDayPage() {
 
   const gdQ = supabase
     .from("game_days")
-    .select(`id, name, start_date, end_date, status, locations(name), game_day_groups(games(home_team, away_team))`)
+    .select(`id, name, start_date, end_date, status, locations(name), game_day_pools(games(home_team, away_team))`)
     .order("start_date", { ascending: false })
 
-  const groupQ = supabase
-    .from("groups")
+  const poolQ = supabase
+    .from("pools")
     .select("id, name, lead_coach_id, teams(id, name, archived)")
     .order("name")
 
@@ -20,18 +20,18 @@ export default async function GameDayPage() {
 
   const [
     { data: raw },
-    { data: groupsRaw },
+    { data: poolsRaw },
     { data: coaches },
     { data: locationsRaw },
   ] = await Promise.all([
     accountId ? gdQ.eq("account_id", accountId) : gdQ,
-    accountId ? groupQ.eq("account_id", accountId) : groupQ,
+    accountId ? poolQ.eq("account_id", accountId) : poolQ,
     accountId ? coachQ.eq("account_id", accountId) : coachQ,
     accountId ? locationQ.eq("account_id", accountId) : locationQ,
   ])
 
   const gameDays: GameDayRow[] = (raw ?? []).map((gd: any) => {
-    const allGames = (gd.game_day_groups ?? []).flatMap((gdg: any) => gdg.games ?? [])
+    const allGames = (gd.game_day_pools ?? []).flatMap((gdp: any) => gdp.games ?? [])
     const teamNames = new Set<string>([
       ...allGames.map((g: any) => g.home_team),
       ...allGames.map((g: any) => g.away_team),
@@ -48,7 +48,7 @@ export default async function GameDayPage() {
     }
   })
 
-  const groups = (groupsRaw ?? []).map((g: any) => ({
+  const pools = (poolsRaw ?? []).map((g: any) => ({
     id: g.id,
     name: g.name,
     leadCoachId: g.lead_coach_id ?? null,
@@ -66,7 +66,7 @@ export default async function GameDayPage() {
   return (
     <GameDayClient
       gameDays={gameDays}
-      groups={groups}
+      pools={pools}
       coaches={coaches ?? []}
       locations={locations}
       accountId={accountId}

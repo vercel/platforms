@@ -11,34 +11,34 @@ export async function saveRoster(
 ) {
   const { accountId } = await requireRole('coach')
 
-  // Fetch all game_day_groups for this game day, with their game IDs and group_id
-  const { data: gdgs, error: gdgErr } = await supabase
-    .from('game_day_groups')
-    .select('id, group_id, games(id)')
+  // Fetch all game_day_pools for this game day, with their game IDs and pool_id
+  const { data: gdps, error: gdpErr } = await supabase
+    .from('game_day_pools')
+    .select('id, pool_id, games(id)')
     .eq('game_day_id', gameDayId)
 
-  if (gdgErr) throw new Error(gdgErr.message)
-  if (!gdgs) return
+  if (gdpErr) throw new Error(gdpErr.message)
+  if (!gdps) return
 
-  const groupIdToGameIds: Record<string, string[]> = {}
+  const poolIdToGameIds: Record<string, string[]> = {}
   const allGameIds: string[] = []
 
-  for (const gdg of gdgs) {
-    const gameIds = (gdg.games as { id: string }[]).map(g => g.id)
-    groupIdToGameIds[gdg.group_id] = gameIds
+  for (const gdp of gdps) {
+    const gameIds = (gdp.games as { id: string }[]).map(g => g.id)
+    poolIdToGameIds[gdp.pool_id] = gameIds
     allGameIds.push(...gameIds)
   }
 
-  // For unavailable players, look up their group_id so we know which games to mark them in
+  // For unavailable players, look up their pool_id so we know which games to mark them in
   const unavailableEntries: { game_id: string; player_id: string; is_unavailable: boolean; notes: null }[] = []
   if (unavailablePlayerIds.length > 0) {
-    const { data: playerGroups } = await supabase
+    const { data: playerPools } = await supabase
       .from('players')
-      .select('id, group_id')
+      .select('id, pool_id')
       .in('id', unavailablePlayerIds)
 
-    for (const pg of playerGroups ?? []) {
-      const gameIds = groupIdToGameIds[pg.group_id] ?? []
+    for (const pg of playerPools ?? []) {
+      const gameIds = poolIdToGameIds[pg.pool_id] ?? []
       for (const gameId of gameIds) {
         unavailableEntries.push({ game_id: gameId, player_id: pg.id, is_unavailable: true, notes: null })
       }

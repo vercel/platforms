@@ -24,11 +24,11 @@ export async function updateGameJersey(gameId: string, jerseyColorId: string) {
   revalidatePath('/game-day')
 }
 
-export async function updateGameGroup(gameId: string, gameDayGroupId: string) {
+export async function updateGamePool(gameId: string, gameDayPoolId: string) {
   await requireRole('coach')
   const { error } = await supabase
     .from('games')
-    .update({ game_day_group_id: gameDayGroupId })
+    .update({ game_day_pool_id: gameDayPoolId })
     .eq('id', gameId)
   if (error) throw new Error(error.message)
   revalidatePath('/game-day')
@@ -46,10 +46,10 @@ interface GameData {
   gameFormatId: string
 }
 
-export async function addGame(gameDayGroupId: string, gameDayId: string, data: GameData) {
+export async function addGame(gameDayPoolId: string, gameDayId: string, data: GameData) {
   const { accountId } = await requireEditGame()
   const { error } = await supabase.from('games').insert({
-    game_day_group_id: gameDayGroupId,
+    game_day_pool_id: gameDayPoolId,
     account_id: accountId,
     game_date: data.gameDate,
     game_time: data.gameTime,
@@ -65,12 +65,12 @@ export async function addGame(gameDayGroupId: string, gameDayId: string, data: G
   revalidatePath(`/game-day/${gameDayId}`)
 }
 
-export async function updateGroupLead(gameDayGroupId: string, gameDayId: string, coachId: string) {
+export async function updatePoolLead(gameDayPoolId: string, gameDayId: string, coachId: string) {
   await requireEditGame()
   const { error } = await supabase
-    .from('game_day_groups')
+    .from('game_day_pools')
     .update({ lead_coach_id: coachId })
-    .eq('id', gameDayGroupId)
+    .eq('id', gameDayPoolId)
   if (error) throw new Error(error.message)
   revalidatePath(`/game-day/${gameDayId}`)
 }

@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { RosterClient, type GroupData, type PlayerInfo, type InitialEntry } from './roster-client'
+import { RosterClient, type PoolData, type PlayerInfo, type InitialEntry } from './roster-client'
 import { format, parseISO } from 'date-fns'
 
 interface Props {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ group?: string }>
+  searchParams: Promise<{ pool?: string }>
 }
 
 function fmtDate(d: string): string {
@@ -21,31 +21,31 @@ function fmtTime(t: string): string {
 
 export default async function RosterPage({ params, searchParams }: Props) {
   const { id } = await params
-  const { group } = await searchParams
+  const { pool } = await searchParams
 
   const [
     { data: gameDay },
-    { data: gdgs },
+    { data: gdps },
   ] = await Promise.all([
     supabase.from('game_days').select('id, name').eq('id', id).single(),
     supabase
-      .from('game_day_groups')
+      .from('game_day_pools')
       .select(`
-        id, group_id,
-        groups(name),
+        id, pool_id,
+        pools(name),
         games(id, game_date, game_time, home_team, away_team, field)
       `)
       .eq('game_day_id', id)
-      .order('groups(name)'),
+      .order('pools(name)'),
   ])
 
   if (!gameDay) notFound()
 
-  const groups: GroupData[] = (gdgs ?? []).map((gdg: any) => ({
-    id: gdg.id,
-    groupName: gdg.groups?.name ?? '',
-    groupId: gdg.group_id,
-    games: (gdg.games ?? []).map((g: any) => ({
+  const pools: PoolData[] = (gdps ?? []).map((gdp: any) => ({
+    id: gdp.id,
+    poolName: gdp.pools?.name ?? '',
+    poolId: gdp.pool_id,
+    games: (gdp.games ?? []).map((g: any) => ({
       id: g.id,
       day: g.game_date ? fmtDate(g.game_date) : undefined,
       time: fmtTime(g.game_time),
@@ -55,16 +55,16 @@ export default async function RosterPage({ params, searchParams }: Props) {
     })),
   }))
 
-  // Collect all group_ids and game_ids
-  const allGroupIds = groups.map(g => g.groupId)
-  const allGameIds = groups.flatMap(g => g.games.map(game => game.id))
+  // Collect all pool_ids and game_ids
+  const allPoolIds = pools.map(g => g.poolId)
+  const allGameIds = pools.flatMap(g => g.games.map(game => game.id))
 
   const [{ data: playersRaw }, { data: entriesRaw }] = await Promise.all([
-    allGroupIds.length > 0
+    allPoolIds.length > 0
       ? supabase
           .from('players')
-          .select('id, first_name, last_name, group_id, player_level_id, player_levels(id, name, rank, color)')
-          .in('group_id', allGroupIds)
+          .select('id, first_name, last_name, pool_id, player_level_id, player_levels(id, name, rank, color)')
+          .in('pool_id', allPoolIds)
           .eq('status', 'active')
           .order('last_name')
       : Promise.resolve({ data: [] }),
@@ -83,10 +83,10 @@ export default async function RosterPage({ params, searchParams }: Props) {
     <RosterClient
       gameDayId={id}
       gameDayName={gameDay.name}
-      groups={groups}
+      pools={pools}
       players={players}
       initialEntries={initialEntries}
-      initialGroup={group ?? null}
+      initialPool={pool ?? null}
     />
   )
 }

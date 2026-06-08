@@ -27,7 +27,7 @@ export type GameDayRow = {
   player_count: number
 }
 
-export type WizardGroup = {
+export type WizardPool = {
   id: string
   name: string
   leadCoachId: string | null
@@ -62,13 +62,13 @@ function formatDateRange(start: string, end: string | null): string {
 
 type Props = {
   gameDays: GameDayRow[]
-  groups: WizardGroup[]
+  pools: WizardPool[]
   coaches: WizardCoach[]
   locations: WizardLocation[]
   accountId: string | null
 }
 
-export function GameDayClient({ gameDays, groups, coaches, locations, accountId }: Props) {
+export function GameDayClient({ gameDays, pools, coaches, locations, accountId }: Props) {
   const router = useRouter()
   const [filter, setFilter] = useState<Filter>("active")
 
@@ -86,7 +86,7 @@ export function GameDayClient({ gameDays, groups, coaches, locations, accountId 
           <p className="text-muted-foreground">View and manage your game day records</p>
         </div>
         <NewGameDayWizard
-          groups={groups}
+          pools={pools}
           coaches={coaches}
           locations={locations}
           accountId={accountId}

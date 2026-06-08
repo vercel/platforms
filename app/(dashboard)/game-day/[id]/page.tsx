@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { supabase } from "@/lib/supabase"
-import { GameDayTabs, type GroupGamesRow, type GameRow } from "@/components/game-day-tabs"
+import { GameDayTabs, type PoolGamesRow, type GameRow } from "@/components/game-day-tabs"
 import { getUserAccount } from "@/lib/auth"
 import { can } from "@/lib/roles"
 import { format, parseISO } from "date-fns"
@@ -43,7 +43,7 @@ export default async function GameDayDetailPage({ params }: Props) {
   const user = await getUserAccount()
   const canEdit = user ? can.editGame(user.role, user.canEditGames) : false
 
-  const [{ data: gameDay }, { data: groupsRaw }, { data: coaches }, { data: jerseyColors }, { data: locations }, { data: gameFormats }] =
+  const [{ data: gameDay }, { data: poolsRaw }, { data: coaches }, { data: jerseyColors }, { data: locations }, { data: gameFormats }] =
     await Promise.all([
       supabase
         .from("game_days")
@@ -51,12 +51,12 @@ export default async function GameDayDetailPage({ params }: Props) {
         .eq("id", id)
         .single(),
       supabase
-        .from("game_day_groups")
+        .from("game_day_pools")
         .select(`
           id, roster_status, published_at,
-          groups(name, default_game_format_id, group_coaches(coaches(id, name))),
-          lead_coach:coaches!game_day_groups_lead_coach_id_fkey(id, name),
-          publisher:coaches!game_day_groups_published_by_fkey(id, name),
+          pools(name, default_game_format_id, pool_coaches(coaches(id, name))),
+          lead_coach:coaches!game_day_pools_lead_coach_id_fkey(id, name),
+          publisher:coaches!game_day_pools_published_by_fkey(id, name),
           games(
             id, game_date, game_time, home_team, away_team, field, location_id, game_format_id,
             locations(id, name),
@@ -66,7 +66,7 @@ export default async function GameDayDetailPage({ params }: Props) {
           )
         `)
         .eq("game_day_id", id)
-        .order("groups(name)"),
+        .order("pools(name)"),
       supabase.from("coaches").select("id, name").order("name"),
       supabase.from("jersey_colors").select("id, name, color").order("name"),
       supabase.from("locations").select("id, name").order("name"),
@@ -76,8 +76,8 @@ export default async function GameDayDetailPage({ params }: Props) {
   if (!gameDay) notFound()
 
   // Fetch rostered player counts per game
-  const allGameIds = (groupsRaw ?? []).flatMap((gdg: any) =>
-    (gdg.games ?? []).map((g: any) => g.id)
+  const allGameIds = (poolsRaw ?? []).flatMap((gdp: any) =>
+    (gdp.games ?? []).map((g: any) => g.id)
   )
   const { data: rosterEntries } = allGameIds.length > 0
     ? await supabase
@@ -94,19 +94,19 @@ export default async function GameDayDetailPage({ params }: Props) {
   }
 
   // Transform DB shape into GameDayTabs props
-  const groupGames: GroupGamesRow[] = (groupsRaw ?? []).map((gdg: any) => ({
-    id: gdg.id,
-    groupName: gdg.groups?.name ?? "",
-    groupLead: gdg.lead_coach?.name ?? "",
-    groupLeadId: gdg.lead_coach?.id ?? "",
-    groupCoaches: (gdg.groups?.group_coaches ?? []).map((gc: any) => gc.coaches).filter(Boolean),
-    defaultGameFormatId: gdg.groups?.default_game_format_id ?? null,
-    rosterStatus: gdg.roster_status,
-    publishedAt: gdg.published_at
-      ? format(new Date(gdg.published_at), "MMM d, yyyy 'at' h:mm a")
+  const poolGames: PoolGamesRow[] = (poolsRaw ?? []).map((gdp: any) => ({
+    id: gdp.id,
+    poolName: gdp.pools?.name ?? "",
+    poolLead: gdp.lead_coach?.name ?? "",
+    poolLeadId: gdp.lead_coach?.id ?? "",
+    poolCoaches: (gdp.pools?.pool_coaches ?? []).map((gc: any) => gc.coaches).filter(Boolean),
+    defaultGameFormatId: gdp.pools?.default_game_format_id ?? null,
+    rosterStatus: gdp.roster_status,
+    publishedAt: gdp.published_at
+      ? format(new Date(gdp.published_at), "MMM d, yyyy 'at' h:mm a")
       : undefined,
-    publishedBy: gdg.publisher?.name,
-    games: (gdg.games ?? []).map((g: any): GameRow => ({
+    publishedBy: gdp.publisher?.name,
+    games: (gdp.games ?? []).map((g: any): GameRow => ({
       id: g.id,
       day: g.game_date ? fmtDate(g.game_date) : undefined,
       time: fmtTime(g.game_time),
@@ -158,7 +158,7 @@ export default async function GameDayDetailPage({ params }: Props) {
       <GameDayTabs
         gameDayId={gameDay.id}
         gameDayName={gameDay.name}
-        groupGames={groupGames}
+        poolGames={poolGames}
         coaches={coaches ?? []}
         jerseyColors={jerseyColors ?? []}
         locations={locations ?? []}

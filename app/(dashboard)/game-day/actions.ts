@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { requireRole } from '@/lib/auth'
 
 export interface NewTeamInput {
-  groupId: string
+  poolId: string
   name: string
 }
 
@@ -21,8 +21,8 @@ export interface GameInput {
   buildAwayRoster: boolean
 }
 
-export interface GroupInput {
-  groupId: string
+export interface PoolInput {
+  poolId: string
   leadCoachId: string | null
   games: GameInput[]
 }
@@ -31,25 +31,25 @@ export interface CreateGameDayInput {
   name: string
   status: 'draft' | 'active'
   accountId: string | null
-  groups: GroupInput[]
+  pools: PoolInput[]
   newTeams: NewTeamInput[]
 }
 
 export async function createGameDay(input: CreateGameDayInput): Promise<string> {
   await requireRole('admin')
-  const { name, status, accountId, groups, newTeams } = input
+  const { name, status, accountId, pools, newTeams } = input
 
   // Insert new teams
   if (newTeams.length > 0) {
     const { error } = await supabase.from('teams').insert(
-      newTeams.map(t => ({ name: t.name, group_id: t.groupId, account_id: accountId }))
+      newTeams.map(t => ({ name: t.name, pool_id: t.poolId, account_id: accountId }))
     )
     if (error) throw new Error(`Failed to create teams: ${error.message}`)
   }
 
   // Insert new locations and map name → id
   const locationIdMap = new Map<string, string>()
-  const allGames = groups.flatMap(g => g.games)
+  const allGames = pools.flatMap(g => g.games)
   const newLocs = Array.from(
     new Map(
       allGames
@@ -82,28 +82,28 @@ export async function createGameDay(input: CreateGameDayInput): Promise<string> 
     .single()
   if (gdError) throw new Error(`Failed to create game day: ${gdError.message}`)
 
-  // Insert game_day_groups and games sequentially
-  for (const group of groups) {
-    const { data: gdg, error: gdgError } = await supabase
-      .from('game_day_groups')
+  // Insert game_day_pools and games sequentially
+  for (const pool of pools) {
+    const { data: gdp, error: gdpError } = await supabase
+      .from('game_day_pools')
       .insert({
         game_day_id: gameDay.id,
-        group_id: group.groupId,
-        lead_coach_id: group.leadCoachId || null,
+        pool_id: pool.poolId,
+        lead_coach_id: pool.leadCoachId || null,
         roster_status: 'draft',
         account_id: accountId,
       })
       .select('id')
       .single()
-    if (gdgError) throw new Error(`Failed to create game day group: ${gdgError.message}`)
+    if (gdpError) throw new Error(`Failed to create game day pool: ${gdpError.message}`)
 
-    if (group.games.length > 0) {
+    if (pool.games.length > 0) {
       const { error: gError } = await supabase.from('games').insert(
-        group.games.map(game => {
+        pool.games.map(game => {
           const locId = game.locationId
             ?? (game.newLocation ? locationIdMap.get(game.newLocation.name) ?? null : null)
           return {
-            game_day_group_id: gdg.id,
+            game_day_pool_id: gdp.id,
             game_date: game.date || null,
             game_time: game.time || null,
             home_team: game.homeTeam,

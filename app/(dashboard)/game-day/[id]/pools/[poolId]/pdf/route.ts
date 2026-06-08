@@ -18,34 +18,34 @@ function fmtTime(t: string) {
 
 export async function GET(
   _req: Request,
-  { params }: { params: Promise<{ id: string; groupId: string }> },
+  { params }: { params: Promise<{ id: string; poolId: string }> },
 ) {
-  const { id: gameDayId, groupId } = await params
+  const { id: gameDayId, poolId } = await params
 
-  const [{ data: gameDay }, { data: gdg }] = await Promise.all([
+  const [{ data: gameDay }, { data: gdp }] = await Promise.all([
     supabase
       .from('game_days')
       .select('name, accounts(name, logo_url)')
       .eq('id', gameDayId)
       .single(),
     supabase
-      .from('game_day_groups')
+      .from('game_day_pools')
       .select(`
         id,
-        groups(name),
-        lead_coach:coaches!game_day_groups_lead_coach_id_fkey(name),
+        pools(name),
+        lead_coach:coaches!game_day_pools_lead_coach_id_fkey(name),
         games(id, game_date, game_time, home_team, away_team, field, locations(name))
       `)
-      .eq('id', groupId)
+      .eq('id', poolId)
       .single(),
   ])
 
-  if (!gameDay || !gdg) {
+  if (!gameDay || !gdp) {
     return new NextResponse('Not found', { status: 404 })
   }
 
   const account = (gameDay as any).accounts as { name: string; logo_url: string | null } | null
-  const rawGames = ((gdg as any).games ?? []) as any[]
+  const rawGames = ((gdp as any).games ?? []) as any[]
   const gameIds = rawGames.map((g: any) => g.id as string)
 
   const { data: entriesRaw } = gameIds.length > 0
@@ -82,8 +82,8 @@ export async function GET(
     ),
   }))
 
-  const groupName = ((gdg as any).groups as { name: string } | null)?.name ?? ''
-  const leadCoach = ((gdg as any).lead_coach as { name: string } | null)?.name ?? null
+  const poolName = ((gdp as any).pools as { name: string } | null)?.name ?? ''
+  const leadCoach = ((gdp as any).lead_coach as { name: string } | null)?.name ?? null
   const gameDayName = (gameDay as any).name as string
 
   const buffer = await renderToBuffer(
@@ -91,13 +91,13 @@ export async function GET(
       academyName: account?.name ?? 'Academy',
       logoUrl: account?.logo_url ?? null,
       gameDayName,
-      groupName,
+      groupName: poolName,
       leadCoach,
       games,
     })
   )
 
-  const safeName = `${gameDayName} - ${groupName || 'Roster'}`.replace(/[^\w\s-]/g, '')
+  const safeName = `${gameDayName} - ${poolName || 'Roster'}`.replace(/[^\w\s-]/g, '')
 
   return new NextResponse(buffer, {
     headers: {
