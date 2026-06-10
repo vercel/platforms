@@ -4,7 +4,7 @@ import { useTransition } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
-import { Trophy, User, ChevronsUpDown, Check } from "lucide-react"
+import { User, ChevronsUpDown, Check, Trophy, ShieldCheck, UserRound } from "lucide-react"
 
 import {
   Sidebar,
@@ -26,30 +26,53 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { switchUserAccount } from "@/app/(dashboard)/actions"
+import { switchUserAccount, setActiveRole } from "@/app/(dashboard)/actions"
+import type { Role } from "@/lib/roles"
 
-const mainNavItems = [
+const ADMIN_NAV = [
   { title: "Game Day",         url: "/game-day" },
-  { title: "My Schedule",      url: "/my-schedule" },
   { title: "Players",          url: "/players" },
   { title: "Academy Settings", url: "/settings" },
+]
+
+const COACH_NAV = [
+  { title: "Game Day",    url: "/game-day" },
+  { title: "My Schedule", url: "/my-schedule" },
+  { title: "Players",     url: "/players" },
 ]
 
 interface AppSidebarProps {
   accounts?: { id: string; name: string }[]
   activeAccountId?: string
   logoUrl?: string | null
+  actualRole?: Role
+  activeRole?: Role
+  canSwitchRole?: boolean
 }
 
-export function AppSidebar({ accounts = [], activeAccountId, logoUrl }: AppSidebarProps) {
+export function AppSidebar({
+  accounts = [],
+  activeAccountId,
+  logoUrl,
+  actualRole,
+  activeRole,
+  canSwitchRole = false,
+}: AppSidebarProps) {
   const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
 
   const activeAccount = accounts.find(a => a.id === activeAccountId)
+  const isCoachView = activeRole === 'coach'
+  const navItems = isCoachView ? COACH_NAV : ADMIN_NAV
 
   function handleSwitch(accountId: string) {
     if (accountId === activeAccountId) return
     startTransition(() => { switchUserAccount(accountId) })
+  }
+
+  function handleSetRole(role: Role) {
+    if (role === activeRole) return
+    startTransition(() => { setActiveRole(role, pathname) })
   }
 
   return (
@@ -77,11 +100,12 @@ export function AppSidebar({ accounts = [], activeAccountId, logoUrl }: AppSideb
           </div>
         )}
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavItems.map((item) => (
+              {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
@@ -98,9 +122,55 @@ export function AppSidebar({ accounts = [], activeAccountId, logoUrl }: AppSideb
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
         <SidebarSeparator className="mx-0" />
         <SidebarMenu>
+
+          {/* Role selector — only shown when user can switch between admin and coach view */}
+          {canSwitchRole && (
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip="Switch view"
+                    disabled={isPending}
+                    className="data-[state=open]:bg-sidebar-accent"
+                  >
+                    {isCoachView
+                      ? <UserRound className="shrink-0" />
+                      : <ShieldCheck className="shrink-0" />
+                    }
+                    <span>{isCoachView ? 'Coach View' : 'Admin View'}</span>
+                    <ChevronsUpDown className="ml-auto shrink-0 opacity-50" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="start" className="w-52">
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">
+                    View as
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onSelect={() => handleSetRole(actualRole ?? 'admin')}
+                    className="gap-2"
+                  >
+                    <ShieldCheck className="size-4 shrink-0 text-muted-foreground" />
+                    <span>Admin View</span>
+                    {!isCoachView && <Check className="ml-auto size-4 shrink-0" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => handleSetRole('coach')}
+                    className="gap-2"
+                  >
+                    <UserRound className="size-4 shrink-0 text-muted-foreground" />
+                    <span>Coach View</span>
+                    {isCoachView && <Check className="ml-auto size-4 shrink-0" />}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          )}
+
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
@@ -149,6 +219,7 @@ export function AppSidebar({ accounts = [], activeAccountId, logoUrl }: AppSideb
               </DropdownMenu>
             </SidebarMenuItem>
           )}
+
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
