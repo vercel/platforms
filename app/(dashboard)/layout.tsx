@@ -57,10 +57,25 @@ export default async function DashboardLayout({
 
   const logoUrl = activeAccountLogoUrl ?? activeAccountLogoUrlForUser
 
+  // Role selector: show only when user is admin+ AND has a coach record
+  const ROLE_RANK: Record<string, number> = { owner: 4, admin: 3, coach: 2, viewer: 1 }
+  const canSwitchRole = !!(
+    userAccount &&
+    ROLE_RANK[userAccount.role] >= ROLE_RANK['admin'] &&
+    userAccount.coachId
+  )
+
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <AppSidebar accounts={userAccounts} activeAccountId={userAccount?.accountId} logoUrl={logoUrl} />
+        <AppSidebar
+          accounts={userAccounts}
+          activeAccountId={userAccount?.accountId}
+          logoUrl={logoUrl}
+          actualRole={userAccount?.role}
+          activeRole={userAccount?.activeRole}
+          canSwitchRole={canSwitchRole}
+        />
         <SidebarInset>
           {/* Pep impersonation banner */}
           {activeAccountName && (

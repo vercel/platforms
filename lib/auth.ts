@@ -10,7 +10,9 @@ const ROLE_RANK: Record<Role, number> = { owner: 4, admin: 3, coach: 2, viewer: 
 export interface UserAccount {
   userId: string
   accountId: string
-  role: Role
+  role: Role        // actual role from DB
+  activeRole: Role  // currently viewed role (may be lower than role)
+  coachId: string | null
   email: string | null
   displayName: string | null
   canEditGames: boolean
@@ -35,15 +37,34 @@ export const getUserAccount = cache(async (): Promise<UserAccount | null> => {
       query = query.eq('account_id', activeAccountId)
     }
 
-    const { data: members } = await query.limit(1)
-    const member = members?.[0] ?? null
+    // Run member lookup and coach lookup in parallel
+    const [{ data: members }, { data: coachRows }] = await Promise.all([
+      query.limit(1),
+      user.email
+        ? adminClient.from('coaches').select('id, account_id').eq('email', user.email)
+        : Promise.resolve({ data: [] as { id: string; account_id: string }[] }),
+    ])
 
+    const member = members?.[0] ?? null
     if (!member) return null
+
+    const actualRole = member.role as Role
+    const coachId = (coachRows ?? []).find(c => c.account_id === member.account_id)?.id ?? null
+
+    // Respect active_view_role cookie if it's a valid downgrade from actual role
+    const viewRoleCookie = cookieStore.get('active_view_role')?.value as Role | undefined
+    const activeRole = (
+      viewRoleCookie &&
+      ROLE_RANK[viewRoleCookie] !== undefined &&
+      ROLE_RANK[viewRoleCookie] <= ROLE_RANK[actualRole]
+    ) ? viewRoleCookie : actualRole
 
     return {
       userId: user.id,
       accountId: member.account_id,
-      role: member.role as Role,
+      role: actualRole,
+      activeRole,
+      coachId,
       email: user.email ?? null,
       displayName: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
       canEditGames: member.can_edit_games ?? false,
