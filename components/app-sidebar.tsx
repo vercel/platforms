@@ -4,7 +4,7 @@ import { useTransition } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
-import { User, ChevronsUpDown, Check, Trophy, ShieldCheck, UserRound } from "lucide-react"
+import { User, ChevronsUpDown, Check, Trophy, ShieldCheck, UserRound, Wrench } from "lucide-react"
 
 import {
   Sidebar,
@@ -48,6 +48,7 @@ interface AppSidebarProps {
   actualRole?: Role
   activeRole?: Role
   canSwitchRole?: boolean
+  isSystemAdmin?: boolean
 }
 
 export function AppSidebar({
@@ -57,6 +58,7 @@ export function AppSidebar({
   actualRole,
   activeRole,
   canSwitchRole = false,
+  isSystemAdmin = false,
 }: AppSidebarProps) {
   const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
@@ -64,6 +66,9 @@ export function AppSidebar({
   const activeAccount = accounts.find(a => a.id === activeAccountId)
   const isCoachView = activeRole === 'coach'
   const navItems = isCoachView ? COACH_NAV : ADMIN_NAV
+
+  // The context selector renders if the user can switch role views OR is a system admin.
+  const showSelector = canSwitchRole || isSystemAdmin
 
   function handleSwitch(accountId: string) {
     if (accountId === activeAccountId) return
@@ -127,8 +132,8 @@ export function AppSidebar({
         <SidebarSeparator className="mx-0" />
         <SidebarMenu>
 
-          {/* Role selector — only shown when user can switch between admin and coach view */}
-          {canSwitchRole && (
+          {/* Context selector — switch role view and/or jump to the Pep system panel */}
+          {showSelector && (
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -146,26 +151,45 @@ export function AppSidebar({
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="top" align="start" className="w-52">
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    View as
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onSelect={() => handleSetRole(actualRole ?? 'admin')}
-                    className="gap-2"
-                  >
-                    <ShieldCheck className="size-4 shrink-0 text-muted-foreground" />
-                    <span>Admin View</span>
-                    {!isCoachView && <Check className="ml-auto size-4 shrink-0" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => handleSetRole('coach')}
-                    className="gap-2"
-                  >
-                    <UserRound className="size-4 shrink-0 text-muted-foreground" />
-                    <span>Coach View</span>
-                    {isCoachView && <Check className="ml-auto size-4 shrink-0" />}
-                  </DropdownMenuItem>
+                  {canSwitchRole && (
+                    <>
+                      <DropdownMenuLabel className="text-xs text-muted-foreground">
+                        View as
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onSelect={() => handleSetRole(actualRole ?? 'admin')}
+                        className="gap-2"
+                      >
+                        <ShieldCheck className="size-4 shrink-0 text-muted-foreground" />
+                        <span>Admin View</span>
+                        {!isCoachView && <Check className="ml-auto size-4 shrink-0" />}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onSelect={() => handleSetRole('coach')}
+                        className="gap-2"
+                      >
+                        <UserRound className="size-4 shrink-0 text-muted-foreground" />
+                        <span>Coach View</span>
+                        {isCoachView && <Check className="ml-auto size-4 shrink-0" />}
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {isSystemAdmin && (
+                    <>
+                      {canSwitchRole && <DropdownMenuSeparator />}
+                      <DropdownMenuLabel className="text-xs text-muted-foreground">
+                        System
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild className="gap-2">
+                        <Link href="/pep">
+                          <Wrench className="size-4 shrink-0 text-muted-foreground" />
+                          <span>Pep</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>
