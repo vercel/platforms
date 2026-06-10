@@ -36,8 +36,8 @@ export interface CreateGameDayInput {
 }
 
 export async function createGameDay(input: CreateGameDayInput): Promise<string> {
-  await requireRole('admin')
-  const { name, status, accountId, pools, newTeams } = input
+  const { accountId } = await requireRole('admin')
+  const { name, status, pools, newTeams } = input
 
   // Insert new teams
   if (newTeams.length > 0) {

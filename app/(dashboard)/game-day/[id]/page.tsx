@@ -109,7 +109,7 @@ export default async function GameDayDetailPage({ params }: Props) {
     games: (gdp.games ?? []).map((g: any): GameRow => ({
       id: g.id,
       day: g.game_date ? fmtDate(g.game_date) : undefined,
-      time: fmtTime(g.game_time),
+      time: g.game_time ? fmtTime(g.game_time) : "",
       homeTeam: g.home_team,
       awayTeam: g.away_team,
       location: g.locations?.name ?? "",

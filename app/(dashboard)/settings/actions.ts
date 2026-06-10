@@ -15,15 +15,15 @@ export async function addCoach(name: string, email: string) {
 }
 
 export async function removeCoach(id: string) {
-  await requireRole('admin')
-  const { error } = await supabase.from('coaches').delete().eq('id', id)
+  const { accountId } = await requireRole('admin')
+  const { error } = await supabase.from('coaches').delete().eq('id', id).eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
 
 // Account
-export async function updateAccountName(accountId: string, name: string) {
-  await requireRole('admin')
+export async function updateAccountName(_accountId: string, name: string) {
+  const { accountId } = await requireRole('admin')
   const { error } = await supabase
     .from('accounts')
     .update({ name: name.trim() })
@@ -33,8 +33,8 @@ export async function updateAccountName(accountId: string, name: string) {
   revalidatePath('/pep')
 }
 
-export async function updateAccountAddress(accountId: string, address: string) {
-  await requireRole('admin')
+export async function updateAccountAddress(_accountId: string, address: string) {
+  const { accountId } = await requireRole('admin')
   const { error } = await supabase
     .from('accounts')
     .update({ address: address.trim() || null })
@@ -43,8 +43,8 @@ export async function updateAccountAddress(accountId: string, address: string) {
   revalidatePath('/settings')
 }
 
-export async function updateBrandColors(accountId: string, primary: string | null, secondary: string | null) {
-  await requireRole('admin')
+export async function updateBrandColors(_accountId: string, primary: string | null, secondary: string | null) {
+  const { accountId } = await requireRole('admin')
   const { error } = await supabase
     .from('accounts')
     .update({
@@ -83,8 +83,8 @@ export async function uploadAccountLogo(formData: FormData): Promise<string> {
   return publicUrl
 }
 
-export async function removeAccountLogo(accountId: string) {
-  await requireRole('admin')
+export async function removeAccountLogo(_accountId: string) {
+  const { accountId } = await requireRole('admin')
   const { error } = await supabase
     .from('accounts')
     .update({ logo_url: null })
@@ -104,8 +104,8 @@ export async function addJerseyColor(name: string, color: string) {
 }
 
 export async function removeJerseyColor(id: string) {
-  await requireRole('admin')
-  const { error } = await supabase.from('jersey_colors').delete().eq('id', id)
+  const { accountId } = await requireRole('admin')
+  const { error } = await supabase.from('jersey_colors').delete().eq('id', id).eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
@@ -124,8 +124,8 @@ export async function addLocation(name: string, address: string, alternateNames:
 }
 
 export async function removeLocation(id: string) {
-  await requireRole('admin')
-  const { error } = await supabase.from('locations').delete().eq('id', id)
+  const { accountId } = await requireRole('admin')
+  const { error } = await supabase.from('locations').delete().eq('id', id).eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
@@ -150,15 +150,15 @@ export async function addPlayerLevel(name: string) {
 }
 
 export async function removePlayerLevel(id: string) {
-  await requireRole('admin')
-  const { error } = await supabase.from('player_levels').delete().eq('id', id)
+  const { accountId } = await requireRole('admin')
+  const { error } = await supabase.from('player_levels').delete().eq('id', id).eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
 
 export async function updatePlayerLevelColor(id: string, color: string | null) {
-  await requireRole('admin')
-  const { error } = await supabase.from('player_levels').update({ color }).eq('id', id)
+  const { accountId } = await requireRole('admin')
+  const { error } = await supabase.from('player_levels').update({ color }).eq('id', id).eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
@@ -185,11 +185,12 @@ export async function movePlayerLevel(id: string, direction: 'up' | 'down') {
 
 // Permissions
 export async function updateCoachGameEditPermission(memberId: string, canEditGames: boolean) {
-  await requireRole('admin')
+  const { accountId } = await requireRole('admin')
   const { error } = await supabase
     .from('account_members')
     .update({ can_edit_games: canEditGames })
     .eq('id', memberId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
@@ -214,8 +215,8 @@ export async function addGameFormat(name: string) {
 }
 
 export async function removeGameFormat(id: string) {
-  await requireRole('admin')
-  const { error } = await supabase.from('game_formats').delete().eq('id', id)
+  const { accountId } = await requireRole('admin')
+  const { error } = await supabase.from('game_formats').delete().eq('id', id).eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }
@@ -241,11 +242,12 @@ export async function moveGameFormat(id: string, direction: 'up' | 'down') {
 }
 
 export async function setPoolDefaultFormat(poolId: string, formatId: string | null) {
-  await requireRole('admin')
+  const { accountId } = await requireRole('admin')
   const { error } = await supabase
     .from('pools')
     .update({ default_game_format_id: formatId })
     .eq('id', poolId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/settings')
 }

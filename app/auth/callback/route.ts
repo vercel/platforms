@@ -6,7 +6,8 @@ import { supabase as adminClient } from '@/lib/supabase'
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/game-day'
+  const rawNext = searchParams.get('next') ?? ''
+  const next = rawNext.startsWith('/') ? rawNext : '/game-day'
 
   if (!code) {
     return NextResponse.redirect(new URL('/login?error=Missing+auth+code', origin))

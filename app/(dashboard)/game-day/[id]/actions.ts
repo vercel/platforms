@@ -5,31 +5,34 @@ import { supabase } from '@/lib/supabase'
 import { requireRole, requireEditGame } from '@/lib/auth'
 
 export async function updateGameCoach(gameId: string, coachId: string) {
-  await requireRole('coach')
+  const { accountId } = await requireRole('coach')
   const { error } = await supabase
     .from('games')
     .update({ coach_id: coachId })
     .eq('id', gameId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/game-day')
 }
 
 export async function updateGameJersey(gameId: string, jerseyColorId: string) {
-  await requireRole('coach')
+  const { accountId } = await requireRole('coach')
   const { error } = await supabase
     .from('games')
     .update({ jersey_color_id: jerseyColorId })
     .eq('id', gameId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/game-day')
 }
 
 export async function updateGamePool(gameId: string, gameDayPoolId: string) {
-  await requireRole('coach')
+  const { accountId } = await requireRole('coach')
   const { error } = await supabase
     .from('games')
     .update({ game_day_pool_id: gameDayPoolId })
     .eq('id', gameId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/game-day')
 }
@@ -66,17 +69,18 @@ export async function addGame(gameDayPoolId: string, gameDayId: string, data: Ga
 }
 
 export async function updatePoolLead(gameDayPoolId: string, gameDayId: string, coachId: string) {
-  await requireEditGame()
+  const { accountId } = await requireEditGame()
   const { error } = await supabase
     .from('game_day_pools')
     .update({ lead_coach_id: coachId })
     .eq('id', gameDayPoolId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath(`/game-day/${gameDayId}`)
 }
 
 export async function updateGame(gameId: string, gameDayId: string, data: GameData) {
-  await requireEditGame()
+  const { accountId } = await requireEditGame()
   const { error } = await supabase
     .from('games')
     .update({
@@ -91,6 +95,7 @@ export async function updateGame(gameId: string, gameDayId: string, data: GameDa
       game_format_id: data.gameFormatId || null,
     })
     .eq('id', gameId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath(`/game-day/${gameDayId}`)
 }

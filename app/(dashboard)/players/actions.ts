@@ -24,7 +24,7 @@ export async function updatePlayer(
   poolId: string,
   levelId?: string
 ) {
-  await requireRole('coach')
+  const { accountId } = await requireRole('coach')
   const { error } = await supabase
     .from('players')
     .update({
@@ -34,36 +34,40 @@ export async function updatePlayer(
       player_level_id: levelId || null,
     })
     .eq('id', playerId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/players')
 }
 
 export async function archivePlayer(playerId: string) {
-  await requireRole('coach')
+  const { accountId } = await requireRole('coach')
   const { error } = await supabase
     .from('players')
     .update({ status: 'archived' })
     .eq('id', playerId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/players')
 }
 
 export async function setPlayerLevel(playerId: string, levelId: string | null) {
-  await requireRole('coach')
+  const { accountId } = await requireRole('coach')
   const { error } = await supabase
     .from('players')
     .update({ player_level_id: levelId })
     .eq('id', playerId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/players')
 }
 
 export async function restorePlayer(playerId: string) {
-  await requireRole('coach')
+  const { accountId } = await requireRole('coach')
   const { error } = await supabase
     .from('players')
     .update({ status: 'active' })
     .eq('id', playerId)
+    .eq('account_id', accountId)
   if (error) throw new Error(error.message)
   revalidatePath('/players')
 }

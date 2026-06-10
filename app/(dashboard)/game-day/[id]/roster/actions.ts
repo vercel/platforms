@@ -11,6 +11,15 @@ export async function saveRoster(
 ) {
   const { accountId } = await requireRole('coach')
 
+  // Verify the game day belongs to the caller's account
+  const { data: gameDayCheck } = await supabase
+    .from('game_days')
+    .select('id')
+    .eq('id', gameDayId)
+    .eq('account_id', accountId)
+    .maybeSingle()
+  if (!gameDayCheck) throw new Error('Game day not found')
+
   // Fetch all game_day_pools for this game day, with their game IDs and pool_id
   const { data: gdps, error: gdpErr } = await supabase
     .from('game_day_pools')
@@ -21,12 +30,10 @@ export async function saveRoster(
   if (!gdps) return
 
   const poolIdToGameIds: Record<string, string[]> = {}
-  const allGameIds: string[] = []
 
   for (const gdp of gdps) {
     const gameIds = (gdp.games as { id: string }[]).map(g => g.id)
     poolIdToGameIds[gdp.pool_id] = gameIds
-    allGameIds.push(...gameIds)
   }
 
   // For unavailable players, look up their pool_id so we know which games to mark them in
@@ -45,9 +52,13 @@ export async function saveRoster(
     }
   }
 
-  // Delete all existing roster entries for this game day's games, then re-insert
-  if (allGameIds.length > 0) {
-    await supabase.from('roster_entries').delete().in('game_id', allGameIds)
+  // Delete only the roster entries for games being saved in this operation
+  const scopedGameIds = [...new Set([
+    ...assignments.map(a => a.gameId),
+    ...unavailableEntries.map(e => e.game_id),
+  ])]
+  if (scopedGameIds.length > 0) {
+    await supabase.from('roster_entries').delete().in('game_id', scopedGameIds)
   }
 
   const entries = [
@@ -67,4 +78,5 @@ export async function saveRoster(
   }
 
   revalidatePath('/game-day')
+  revalidatePath(`/game-day/${gameDayId}`)
 }

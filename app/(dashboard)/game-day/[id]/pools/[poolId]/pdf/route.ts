@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { createElement } from 'react'
 import { supabase } from '@/lib/supabase'
+import { getUserAccount } from '@/lib/auth'
 import { RosterPDF, type PDFGame } from '@/components/pdf/roster-pdf'
 import { format, parseISO } from 'date-fns'
 
@@ -20,6 +21,11 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string; poolId: string }> },
 ) {
+  const userAccount = await getUserAccount()
+  if (!userAccount) {
+    return new NextResponse('Unauthorized', { status: 401 })
+  }
+
   const { id: gameDayId, poolId } = await params
 
   const [{ data: gameDay }, { data: gdp }] = await Promise.all([
@@ -27,6 +33,7 @@ export async function GET(
       .from('game_days')
       .select('name, accounts(name, logo_url)')
       .eq('id', gameDayId)
+      .eq('account_id', userAccount.accountId)
       .single(),
     supabase
       .from('game_day_pools')
@@ -37,6 +44,7 @@ export async function GET(
         games(id, game_date, game_time, home_team, away_team, field, locations(name))
       `)
       .eq('id', poolId)
+      .eq('game_day_id', gameDayId)
       .single(),
   ])
 

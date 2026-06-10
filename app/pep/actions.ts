@@ -36,8 +36,12 @@ export async function createAccount(formData: FormData) {
 }
 
 export async function switchAccount(formData: FormData) {
-  const accountId = formData.get('accountId') as string
   const cookieStore = await cookies()
+  const pepAuth = cookieStore.get('pep_auth')?.value
+  if (!pepAuth || pepAuth !== process.env.PEP_SECRET) {
+    redirect('/pep/login')
+  }
+  const accountId = formData.get('accountId') as string
   cookieStore.set('pep_account_id', accountId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
