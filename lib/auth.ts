@@ -74,12 +74,47 @@ export const getUserAccount = cache(async (): Promise<UserAccount | null> => {
   }
 })
 
+export interface SystemAdmin {
+  id: string
+  email: string
+  name: string | null
+}
+
+// Returns the system_admins row for the logged-in user, or null.
+// Cached per-request. System admins are matched by email (like coach auto-link).
+export const getSystemAdmin = cache(async (): Promise<SystemAdmin | null> => {
+  try {
+    const client = await createSupabaseServer()
+    const { data: { user } } = await client.auth.getUser()
+    if (!user?.email) return null
+
+    // Stored emails are lowercased on insert; match case-insensitively.
+    const { data } = await adminClient
+      .from('system_admins')
+      .select('id, email, name')
+      .eq('email', user.email.toLowerCase())
+      .maybeSingle()
+
+    return data ?? null
+  } catch {
+    return null
+  }
+})
+
 // Use in server components and actions that require authentication.
 // Redirects to /login if the user has no session or no account membership.
 export async function requireAuth(): Promise<UserAccount> {
   const account = await getUserAccount()
   if (!account) redirect('/login')
   return account
+}
+
+// Use in /pep server components and pep server actions.
+// Redirects non-admins away rather than throwing, so the panel stays hidden.
+export async function requireSystemAdmin(): Promise<SystemAdmin> {
+  const admin = await getSystemAdmin()
+  if (!admin) redirect('/game-day')
+  return admin
 }
 
 // Use in server actions that require a minimum role level.

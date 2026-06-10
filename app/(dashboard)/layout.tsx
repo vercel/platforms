@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { supabase } from '@/lib/supabase'
-import { getUserAccount } from '@/lib/auth'
+import { getUserAccount, getSystemAdmin } from '@/lib/auth'
 import { roleLabel } from '@/lib/roles'
 import { exitAccount } from '@/app/pep/actions'
 import { signOut } from '@/app/login/actions'
@@ -17,7 +17,12 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const cookieStore = await cookies()
-  const activeAccountId = cookieStore.get('pep_account_id')?.value ?? null
+  // Only honor the impersonation cookie when the logged-in user is a verified
+  // system admin — otherwise a forged cookie would leak another account's name/logo.
+  const pepAccountIdCookie = cookieStore.get('pep_account_id')?.value ?? null
+  const activeAccountId = pepAccountIdCookie && (await getSystemAdmin())
+    ? pepAccountIdCookie
+    : null
 
   // Pep impersonation banner
   let activeAccountName: string | null = null
@@ -65,6 +70,10 @@ export default async function DashboardLayout({
     userAccount.coachId
   )
 
+  // Pep option in the selector: show when the logged-in user is a system admin
+  // (only relevant outside impersonation, where userAccount is present).
+  const isSystemAdmin = userAccount ? !!(await getSystemAdmin()) : false
+
   return (
     <TooltipProvider>
       <SidebarProvider>
@@ -75,6 +84,7 @@ export default async function DashboardLayout({
           actualRole={userAccount?.role}
           activeRole={userAccount?.activeRole}
           canSwitchRole={canSwitchRole}
+          isSystemAdmin={isSystemAdmin}
         />
         <SidebarInset>
           {/* Pep impersonation banner */}

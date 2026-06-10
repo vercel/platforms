@@ -42,32 +42,14 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // ── Pep (system admin) — cookie-based auth, skip Supabase ───────────────
-  if (pathname.startsWith('/pep')) {
-    if (pathname !== '/pep/login') {
-      const pepAuth = request.cookies.get('pep_auth')?.value
-      if (!pepAuth || pepAuth !== process.env.PEP_SECRET) {
-        return NextResponse.redirect(new URL('/pep/login', request.url))
-      }
-    }
-    return NextResponse.next()
-  }
-
   // ── Public routes — no auth needed ──────────────────────────────────────
   if (pathname.startsWith('/auth') || pathname.startsWith('/s/')) {
     return NextResponse.next()
   }
 
-  // ── Pep admin viewing the dashboard — allow without Supabase session ────
-  // When a Pep admin logs in as an account, they land on dashboard routes.
-  // They have pep_auth + pep_account_id cookies but no Supabase session.
-  const pepAuth = request.cookies.get('pep_auth')?.value
-  const pepAccountId = request.cookies.get('pep_account_id')?.value
-  if (pepAuth === process.env.PEP_SECRET && pepAccountId) {
-    return NextResponse.next()
-  }
-
   // ── Supabase session check (refreshes token if needed) ──────────────────
+  // /pep flows through here too: it requires a logged-in user, and the
+  // /pep layout authorizes system admins via requireSystemAdmin().
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(

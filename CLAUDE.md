@@ -77,8 +77,9 @@ NEXT_PUBLIC_SUPABASE_URL=https://fomanzxevxoghyzwbqim.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>       ← browser-safe, used by SSR and browser clients
 SUPABASE_ANON_KEY=<anon-key>                   ← same value, legacy name
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>   ← never expose to browser
-PEP_SECRET=<secret>                            ← protects the /pep system admin panel
 ```
+
+(The old `PEP_SECRET` env var was retired — Pep access is now identity-based via the `system_admins` table.)
 
 Supabase project ref: `fomanzxevxoghyzwbqim`
 
@@ -89,7 +90,7 @@ Top-level tenant is an **account**:
 - `account_members(id, account_id, user_id, role)` — links `auth.users` to an account
 - Every data table has `account_id uuid NOT NULL REFERENCES accounts(id)`
 - RLS is enabled on all tables but currently bypassed (service role key)
-- `getActiveAccountId()` in `lib/account.ts` returns the active account — checks `pep_account_id` cookie first (Pep impersonation), then the real user's `account_members` row
+- `getActiveAccountId()` in `lib/account.ts` returns the active account — checks the `pep_account_id` cookie first (Pep impersonation, **only honored when the logged-in user is a verified system admin**), then the real user's `account_members` row
 
 ### Authentication
 
@@ -99,7 +100,7 @@ Supabase Auth. Implemented and active.
 - **OAuth flow**: clicking Google/Facebook hits a route handler → Supabase returns a redirect URL → user goes to provider → redirected back to `/auth/callback`
 - **Callback** (`app/auth/callback/route.ts`): exchanges code for session, then auto-links: if `user.email` matches a `coaches.email` row, creates `account_members` with role `coach`
 - **Logout**: `signOut()` in `app/login/actions.ts`
-- **Pep bypass**: middleware skips Supabase auth for requests that have a valid `pep_auth` cookie + `pep_account_id` cookie, so the system admin can impersonate accounts without a personal Supabase session
+- **Pep access**: identity-based. A system admin logs in normally (Supabase), and their email is matched against the `system_admins` table (`getSystemAdmin()` in `lib/auth.ts`). `/pep` requires a logged-in session in middleware; the `/pep` page authorizes via `requireSystemAdmin()`. Impersonation sets the `pep_account_id` cookie while keeping the admin's own Supabase session.
 
 ### Authorization (Roles)
 
@@ -121,9 +122,11 @@ export async function addGroup(...) {
 ```
 
 **Auth helpers** (`lib/auth.ts`):
-- `getUserAccount()` — cached per request; returns `{ userId, accountId, role, email, displayName }` or null
+- `getUserAccount()` — cached per request; returns `{ userId, accountId, role, activeRole, coachId, email, displayName, canEditGames }` or null
 - `requireAuth()` — redirects to `/login` if no session
 - `requireRole(minRole)` — redirects if no session, throws an Error if role is insufficient
+- `getSystemAdmin()` — cached per request; returns the `system_admins` row matching the logged-in user's email, or null
+- `requireSystemAdmin()` — redirects to `/game-day` if the user is not a system admin (used by `/pep`)
 
 **Permission checks** (`lib/roles.ts` → `can.*`):
 ```typescript
@@ -152,6 +155,7 @@ All tables have `account_id uuid NOT NULL REFERENCES accounts(id)`. Schema chang
 | `game_day_groups` | Group's participation in a game day; `roster_status` (draft/published) |
 | `games` | Individual games; `game_date`, `game_time`, `field`, `build_home_roster`, `build_away_roster`; FKs to coach, jersey_color, location |
 | `roster_entries` | Player assignments per game; `is_unavailable`, `notes` |
+| `system_admins` | Global (no `account_id`); grants Pep access. `email` (unique), `name`. Matched against the logged-in user's email. |
 
 **FK disambiguation** — `game_day_groups` has two coach FKs; always use hint syntax:
 ```typescript
@@ -177,7 +181,7 @@ app/(dashboard)/game-day/actions.ts             ← createGameDay
 app/(dashboard)/game-day/[id]/actions.ts        ← game field edits (coach, jersey, group)
 app/(dashboard)/game-day/[id]/roster/actions.ts ← roster save
 app/login/actions.ts                            ← signInWithEmail, signOut
-app/pep/actions.ts                              ← pepLogin, pepLogout, createAccount, switchAccount, exitAccount
+app/pep/actions.ts                              ← createAccount, switchAccount, exitAccount, addSystemAdmin, updateSystemAdminName, removeSystemAdmin
 ```
 
 Every action:
@@ -189,12 +193,13 @@ Client components call actions inside `startTransition` from `useTransition`.
 
 ### Pep — System Admin Panel
 
-`/pep` is a password-protected system admin panel (not a user-facing feature):
-- Login at `/pep/login` — checks the `PEP_SECRET` env var
-- Lists all accounts, lets admin create new accounts
-- "Log in as" button sets `pep_account_id` cookie, redirecting to the dashboard in that account's context
+`/pep` is a system admin panel (not a user-facing feature). Access is **identity-based**: a system admin logs in normally, and their email must match a row in the `system_admins` table.
+- No separate login — `requireSystemAdmin()` authorizes the `/pep` page; non-admins are redirected to `/game-day`
+- System admins reach `/pep` via the **Pep** entry in the sidebar context selector (only shown to system admins)
+- Lists all accounts, lets admins create new accounts
+- Manages the `system_admins` list: add (by email + optional name), edit name, remove. The last remaining admin cannot be removed (lockout protection)
+- "Log in as" button sets the `pep_account_id` cookie, redirecting to the dashboard in that account's context
 - Dashboard layout shows an amber "Viewing as [Account]" banner with an Exit button when impersonating
-- Pep admin bypass in middleware: valid `pep_auth` + `pep_account_id` cookies skip Supabase auth
 
 ---
 
