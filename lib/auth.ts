@@ -88,10 +88,11 @@ export const getSystemAdmin = cache(async (): Promise<SystemAdmin | null> => {
     const { data: { user } } = await client.auth.getUser()
     if (!user?.email) return null
 
+    // Stored emails are lowercased on insert; match case-insensitively.
     const { data } = await adminClient
       .from('system_admins')
       .select('id, email, name')
-      .eq('email', user.email)
+      .eq('email', user.email.toLowerCase())
       .maybeSingle()
 
     return data ?? null

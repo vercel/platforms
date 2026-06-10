@@ -17,7 +17,12 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const cookieStore = await cookies()
-  const activeAccountId = cookieStore.get('pep_account_id')?.value ?? null
+  // Only honor the impersonation cookie when the logged-in user is a verified
+  // system admin — otherwise a forged cookie would leak another account's name/logo.
+  const pepAccountIdCookie = cookieStore.get('pep_account_id')?.value ?? null
+  const activeAccountId = pepAccountIdCookie && (await getSystemAdmin())
+    ? pepAccountIdCookie
+    : null
 
   // Pep impersonation banner
   let activeAccountName: string | null = null
