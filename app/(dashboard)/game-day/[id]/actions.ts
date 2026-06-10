@@ -1,0 +1,101 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { supabase } from '@/lib/supabase'
+import { requireRole, requireEditGame } from '@/lib/auth'
+
+export async function updateGameCoach(gameId: string, coachId: string) {
+  const { accountId } = await requireRole('coach')
+  const { error } = await supabase
+    .from('games')
+    .update({ coach_id: coachId })
+    .eq('id', gameId)
+    .eq('account_id', accountId)
+  if (error) throw new Error(error.message)
+  revalidatePath('/game-day')
+}
+
+export async function updateGameJersey(gameId: string, jerseyColorId: string) {
+  const { accountId } = await requireRole('coach')
+  const { error } = await supabase
+    .from('games')
+    .update({ jersey_color_id: jerseyColorId })
+    .eq('id', gameId)
+    .eq('account_id', accountId)
+  if (error) throw new Error(error.message)
+  revalidatePath('/game-day')
+}
+
+export async function updateGamePool(gameId: string, gameDayPoolId: string) {
+  const { accountId } = await requireRole('coach')
+  const { error } = await supabase
+    .from('games')
+    .update({ game_day_pool_id: gameDayPoolId })
+    .eq('id', gameId)
+    .eq('account_id', accountId)
+  if (error) throw new Error(error.message)
+  revalidatePath('/game-day')
+}
+
+interface GameData {
+  gameDate: string
+  gameTime: string
+  homeTeam: string
+  awayTeam: string
+  field: string
+  locationId: string
+  coachId: string
+  jerseyColorId: string
+  gameFormatId: string
+}
+
+export async function addGame(gameDayPoolId: string, gameDayId: string, data: GameData) {
+  const { accountId } = await requireEditGame()
+  const { error } = await supabase.from('games').insert({
+    game_day_pool_id: gameDayPoolId,
+    account_id: accountId,
+    game_date: data.gameDate,
+    game_time: data.gameTime,
+    home_team: data.homeTeam,
+    away_team: data.awayTeam,
+    field: data.field || null,
+    location_id: data.locationId || null,
+    coach_id: data.coachId || null,
+    jersey_color_id: data.jerseyColorId || null,
+    game_format_id: data.gameFormatId || null,
+  })
+  if (error) throw new Error(error.message)
+  revalidatePath(`/game-day/${gameDayId}`)
+}
+
+export async function updatePoolLead(gameDayPoolId: string, gameDayId: string, coachId: string) {
+  const { accountId } = await requireEditGame()
+  const { error } = await supabase
+    .from('game_day_pools')
+    .update({ lead_coach_id: coachId })
+    .eq('id', gameDayPoolId)
+    .eq('account_id', accountId)
+  if (error) throw new Error(error.message)
+  revalidatePath(`/game-day/${gameDayId}`)
+}
+
+export async function updateGame(gameId: string, gameDayId: string, data: GameData) {
+  const { accountId } = await requireEditGame()
+  const { error } = await supabase
+    .from('games')
+    .update({
+      game_date: data.gameDate,
+      game_time: data.gameTime,
+      home_team: data.homeTeam,
+      away_team: data.awayTeam,
+      field: data.field || null,
+      location_id: data.locationId || null,
+      coach_id: data.coachId || null,
+      jersey_color_id: data.jerseyColorId || null,
+      game_format_id: data.gameFormatId || null,
+    })
+    .eq('id', gameId)
+    .eq('account_id', accountId)
+  if (error) throw new Error(error.message)
+  revalidatePath(`/game-day/${gameDayId}`)
+}
