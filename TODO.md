@@ -2,11 +2,16 @@
 
 ## Manual setup required (you do these in browser)
 
-- [ ] **Supabase: enable Google login** — Supabase dashboard → Authentication → Providers → Google → add Client ID + Secret from Google Cloud Console
-- [ ] **Supabase: enable Facebook login** — Supabase dashboard → Authentication → Providers → Facebook → add App ID + Secret from Facebook Developers
+> Step-by-step instructions live in [docs/guides/manual-setup.md](docs/guides/manual-setup.md).
+> This is just the checklist.
+
+- [ ] **Supabase: enable Google login** — add Client ID + Secret from Google Cloud Console
+- [ ] **Supabase: enable Facebook login** — add App ID + Secret from Facebook Developers
 - [ ] **Google Cloud Console** — add `http://localhost:3000/auth/callback` (dev) and your production URL to Authorized Redirect URIs
 - [ ] **Facebook Developers** — add same redirect URIs to Valid OAuth Redirect URIs
-- [ ] **Change PEP_SECRET** in `.env.local` from the placeholder to something secret before going to production
+
+(The old `PEP_SECRET` is gone — Pep access is now identity-based. See
+[docs/decisions/0003-identity-based-pep.md](docs/decisions/0003-identity-based-pep.md).)
 
 ## Code features
 
@@ -29,15 +34,8 @@
 
 ## Known edge cases / fragile spots
 
-_Added here when something works but is known to be incomplete or untested. Review before shipping._
-
-- **Empty game formats:** If an account has no game formats defined, the Format column in game day tables is hidden entirely and the Format field is hidden in the Add/Edit Game dialog. This is intentional — but if formats are later deleted after games already have `game_format_id` set, those games will show "—" with no way to recover the format name.
-- **Logo upload bucket policies:** The `academy-assets` Supabase Storage bucket has broad authenticated-user write policies. Any authenticated user across any account can overwrite any other account's logo by guessing the path (`logos/{accountId}.png`). Scope policies to `account_id` before production.
-- **Last rostered date:** Fetches all `roster_entries` for all active players in one query. Fine for <500 players but will slow down with large rosters. Consider a DB view or materialized column if it becomes a problem.
-- **Brand colors:** Stored as raw text (any value). If invalid CSS is entered (e.g. `rgb(bad)`) the preview swatch will silently show nothing — no validation or error message.
-- **Group default format and game format deletion:** Deleting a game format that is set as a group's default will null out `groups.default_game_format_id` via `ON DELETE SET NULL`. The group will silently lose its default with no warning shown to the admin.
-- **Sidebar logo:** Fetched fresh on every dashboard navigation (server render). If Supabase Storage URL changes or becomes temporarily unavailable, the logo silently disappears with no fallback beyond initials.
-- **Roster builder save:** `saveRoster` replaces all entries for the game day in a single operation. If two coaches are in the roster builder simultaneously, the last save wins and silently overwrites the other's work.
+_Moved to [docs/reference/gotchas.md](docs/reference/gotchas.md) — that's the home
+for durable "works but fragile" knowledge. Add new fragile spots there, not here._
 
 ## UI Overhaul (planned — not started)
 
