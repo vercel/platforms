@@ -26,6 +26,24 @@ export const getUserAccount = cache(async (): Promise<UserAccount | null> => {
     if (!user) return null
 
     const cookieStore = await cookies()
+
+    // Pep impersonation: a verified system admin operating inside an account via
+    // "Log in as". Grant owner-level access to that account so reads AND writes
+    // (requireRole, server actions) target it — not the admin's own membership.
+    const pepAccountId = cookieStore.get('pep_account_id')?.value
+    if (pepAccountId && (await getSystemAdmin())) {
+      return {
+        userId: user.id,
+        accountId: pepAccountId,
+        role: 'owner',
+        activeRole: 'owner',
+        coachId: null,
+        email: user.email ?? null,
+        displayName: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
+        canEditGames: true,
+      }
+    }
+
     const activeAccountId = cookieStore.get('active_account_id')?.value
 
     let query = adminClient
