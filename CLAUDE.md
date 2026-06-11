@@ -35,6 +35,27 @@ No lint or test scripts are configured. Add shadcn/ui components via `pnpm dlx s
 
 **When in doubt, ask.** If a task could be done in a simple way or a powerful-but-complex way, surface the tradeoff in one sentence and let the owner decide. Don't silently choose complexity.
 
+### Standing constraint: keep the door open to a mobile app
+
+The owner intends to publish a mobile app to the app stores **later**, at the
+**lowest build and maintenance cost** — most likely a PWA or a thin Capacitor
+shell that loads the live web app. **We are not building it now.** The rule for
+all current feature work:
+
+1. **Build mobile-first.** Every page must work and feel good at 375px wide
+   (tap targets ≥44px, no hover-only or right-click-only interactions, no
+   horizontal-scrolling tables). This is the one thing that can't be retrofitted.
+2. **Don't close doors.** If a task would make a future mobile app harder —
+   desktop-only features, hover/right-click dependence, browser-only auth/OAuth
+   redirect changes, removing email/password login, switching the rendering or
+   hosting model, or adding APIs that won't run in an iOS/Android webview —
+   **pause and flag the tradeoff in one sentence before proceeding.** Default to
+   preserving readiness; the owner decides.
+
+Full list of "do / don't / ask" cases:
+[docs/reference/mobile-readiness.md](docs/reference/mobile-readiness.md) ·
+rationale: [docs/decisions/0005-mobile-app-readiness.md](docs/decisions/0005-mobile-app-readiness.md).
+
 ---
 
 ## What This App Is
@@ -56,6 +77,7 @@ This file is the agent entry point and quick reference. Deeper docs live in
 | Why a non-obvious choice was made | `docs/decisions/` (ADRs) |
 | Owner how-tos (setup, deploy, manage admins) | `docs/guides/` |
 | Known fragile spots / edge cases | `docs/reference/gotchas.md` |
+| Mobile-app readiness (future store launch) | `docs/reference/mobile-readiness.md` |
 | Active tasks & roadmap | `TODO.md` |
 
 **Keep docs current — update them in the same PR as the code they describe.**
@@ -67,6 +89,8 @@ Update triggers:
 - Shipped something **intentionally partial or fragile** → add it to `docs/reference/gotchas.md`
 - Made a **non-obvious design decision** → add a new ADR in `docs/decisions/`
 - Changed **setup or deploy** → update the relevant guide in `docs/guides/`
+- Touched **auth redirects, rendering/hosting model, or anything that affects how
+  the app would load in a mobile webview** → re-check `docs/reference/mobile-readiness.md`
 
 ---
 
@@ -217,3 +241,4 @@ management, and "Log in as" impersonation). Full details:
 - **Do not call `requireRole()` from Client Components** — only in Server Actions
 - **Do not add custom infrastructure** (caching layers, background job systems, pub/sub) without explicit approval — prefer Supabase built-ins and Vercel platform features
 - **Do not introduce new dependencies without a clear reason** — document every new package in the commit message
+- **Do not silently make decisions that would complicate a future mobile app** (desktop-only UX, hover/right-click-only interactions, browser-only auth redirects, static-export/hosting changes, webview-incompatible APIs) — flag the tradeoff and let the owner decide. See [docs/reference/mobile-readiness.md](docs/reference/mobile-readiness.md).

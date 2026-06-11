@@ -32,12 +32,16 @@ into this folder for depth.
   permission helpers, system admins, and Pep impersonation (read + write).
 - [gotchas.md](reference/gotchas.md) — known fragile spots and edge cases to
   review before shipping.
+- [mobile-readiness.md](reference/mobile-readiness.md) — standing constraint:
+  keep the app ready for a low-lift mobile/store launch later; what to do, avoid,
+  and flag to the owner.
 
 ### Decisions (ADRs)
 - [0001-service-role-over-rls.md](decisions/0001-service-role-over-rls.md)
 - [0002-groups-renamed-to-pools.md](decisions/0002-groups-renamed-to-pools.md)
 - [0003-identity-based-pep.md](decisions/0003-identity-based-pep.md)
 - [0004-writes-during-impersonation.md](decisions/0004-writes-during-impersonation.md)
+- [0005-mobile-app-readiness.md](decisions/0005-mobile-app-readiness.md)
 
 ## The one rule that keeps this from rotting
 

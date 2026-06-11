@@ -62,3 +62,17 @@ Deliberately deferred until core flows stabilize. When ready:
 - Add Playwright E2E for: login, create game day, add game, build roster, save roster
 - Set up GitHub Actions to run on every push to `main`
 - Smoke test checklist for every feature: (1) happy path, (2) empty state, (3) Pep impersonation still works
+
+## Future — Mobile app (deferred, do NOT start without owner go-ahead)
+
+Goal: publish to the App Store / Play Store later at the lowest build/maintenance
+cost — a PWA or a thin Capacitor shell that loads the live web app. **This is a
+standing constraint on current work, not a task to pick up.** Build mobile-first
+and flag any decision that closes a door. See
+[docs/reference/mobile-readiness.md](docs/reference/mobile-readiness.md) and ADR
+[docs/decisions/0005-mobile-app-readiness.md](docs/decisions/0005-mobile-app-readiness.md).
+
+When the owner decides to take it on, the likely first steps are:
+- [ ] Add PWA basics: web app manifest, icons, `viewport` export, splash screen
+- [ ] Decide PWA vs Capacitor shell
+- [ ] Configure Supabase auth deep-link redirect scheme for the wrapper
