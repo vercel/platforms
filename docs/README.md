@@ -22,6 +22,8 @@ into this folder for depth.
   rename system admins in the Pep panel; how "Log in as" works.
 - [deploying.md](guides/deploying.md) — deploy to Vercel, the environment
   variables you need, and the go-live checklist.
+- [brand-handoff.md](guides/brand-handoff.md) — what to export from Claude design
+  so the brand lands cleanly in the product's design tokens.
 
 ### Reference (developers / agents)
 - [architecture.md](reference/architecture.md) — how the app fits together:
