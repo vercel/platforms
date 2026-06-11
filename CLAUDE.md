@@ -39,9 +39,34 @@ No lint or test scripts are configured. Add shadcn/ui components via `pnpm dlx s
 
 ## What This App Is
 
-A **soccer academy management platform**. Coaches manage players, groups, game days, and rosters. The original subdomain/landing page code has been replaced by this dashboard. The app lives entirely under `app/(dashboard)/`.
+A **soccer academy management platform**. Coaches manage players, pools, game days, and rosters. The original subdomain/landing page code has been replaced by this dashboard. The app lives entirely under `app/(dashboard)/`.
 
 **Outstanding tasks are tracked in `TODO.md`** at the project root — check there before starting new features.
+
+---
+
+## Documentation
+
+This file is the agent entry point and quick reference. Deeper docs live in
+**`docs/`** (see [docs/README.md](docs/README.md) for the index):
+
+| Need | Where |
+|------|-------|
+| How something works in depth (architecture, auth, roles) | `docs/reference/` |
+| Why a non-obvious choice was made | `docs/decisions/` (ADRs) |
+| Owner how-tos (setup, deploy, manage admins) | `docs/guides/` |
+| Known fragile spots / edge cases | `docs/reference/gotchas.md` |
+| Active tasks & roadmap | `TODO.md` |
+
+**Keep docs current — update them in the same PR as the code they describe.**
+Update triggers:
+
+- Changed **auth, roles, or Pep** → update `docs/reference/auth-and-roles.md`
+- Changed the **schema** → update the schema table below; add an ADR if it's a design choice
+- Changed **architecture / routing / data layer** → update `docs/reference/architecture.md`
+- Shipped something **intentionally partial or fragile** → add it to `docs/reference/gotchas.md`
+- Made a **non-obvious design decision** → add a new ADR in `docs/decisions/`
+- Changed **setup or deploy** → update the relevant guide in `docs/guides/`
 
 ---
 
@@ -92,51 +117,33 @@ Top-level tenant is an **account**:
 - RLS is enabled on all tables but currently bypassed (service role key)
 - `getActiveAccountId()` in `lib/account.ts` returns the active account — checks the `pep_account_id` cookie first (Pep impersonation, **only honored when the logged-in user is a verified system admin**), then the real user's `account_members` row
 
-### Authentication
+### Authentication & Authorization
 
-Supabase Auth. Implemented and active.
-
-- **Login page**: `app/login/page.tsx` — Google, Facebook, email/password
-- **OAuth flow**: clicking Google/Facebook hits a route handler → Supabase returns a redirect URL → user goes to provider → redirected back to `/auth/callback`
-- **Callback** (`app/auth/callback/route.ts`): exchanges code for session, then auto-links: if `user.email` matches a `coaches.email` row, creates `account_members` with role `coach`
-- **Logout**: `signOut()` in `app/login/actions.ts`
-- **Pep access**: identity-based. A system admin logs in normally (Supabase), and their email is matched against the `system_admins` table (`getSystemAdmin()` in `lib/auth.ts`). `/pep` requires a logged-in session in middleware; the `/pep` page authorizes via `requireSystemAdmin()`. Impersonation sets the `pep_account_id` cookie while keeping the admin's own Supabase session.
-
-### Authorization (Roles)
-
-Defined in `lib/roles.ts`. Four levels (highest to lowest):
+Supabase Auth (Google, Facebook, email/password). Roles, in `lib/roles.ts`,
+highest to lowest:
 
 | Role | Who it's for |
 |------|-------------|
 | `owner` | Account creator; full access |
 | `admin` | Staff with full operational access |
-| `coach` | Can manage rosters and players for their groups |
+| `coach` | Can manage rosters and players for their pools |
 | `viewer` | Read-only access |
 
-**In server actions**, always call `requireRole` as the first line:
+**In every protected server action, call a guard first** (`lib/auth.ts`):
 ```typescript
-export async function addGroup(...) {
-  await requireRole('admin')  // throws if insufficient role, redirects if not logged in
+export async function addPool(...) {
+  await requireRole('admin')  // throws if role insufficient, redirects if not logged in
   // ...
 }
 ```
+Guards: `requireAuth()`, `requireRole(min)`, `requireEditGame()`,
+`requireSystemAdmin()`. Account context: `getUserAccount()` (cached; also resolves
+Pep impersonation), `getSystemAdmin()`. UI gating: the `can.*` helpers in
+`lib/roles.ts`.
 
-**Auth helpers** (`lib/auth.ts`):
-- `getUserAccount()` — cached per request; returns `{ userId, accountId, role, activeRole, coachId, email, displayName, canEditGames }` or null
-- `requireAuth()` — redirects to `/login` if no session
-- `requireRole(minRole)` — redirects if no session, throws an Error if role is insufficient
-- `getSystemAdmin()` — cached per request; returns the `system_admins` row matching the logged-in user's email, or null
-- `requireSystemAdmin()` — redirects to `/game-day` if the user is not a system admin (used by `/pep`)
-
-**Permission checks** (`lib/roles.ts` → `can.*`):
-```typescript
-can.manageSettings(role)  // admin+
-can.createGameDay(role)   // admin+
-can.manageRosters(role)   // coach+
-can.managePlayers(role)   // coach+
-can.manageMembers(role)   // admin+
-```
-Use these to conditionally show/hide UI elements in Client Components.
+📖 **Full model — OAuth flow, system admins, and Pep impersonation (read + write)
+— is in [docs/reference/auth-and-roles.md](docs/reference/auth-and-roles.md).**
+Owner how-to: [docs/guides/managing-system-admins.md](docs/guides/managing-system-admins.md).
 
 ### Database Schema
 
@@ -193,13 +200,10 @@ Client components call actions inside `startTransition` from `useTransition`.
 
 ### Pep — System Admin Panel
 
-`/pep` is a system admin panel (not a user-facing feature). Access is **identity-based**: a system admin logs in normally, and their email must match a row in the `system_admins` table.
-- No separate login — `requireSystemAdmin()` authorizes the `/pep` page; non-admins are redirected to `/game-day`
-- System admins reach `/pep` via the **Pep** entry in the sidebar context selector (only shown to system admins)
-- Lists all accounts, lets admins create new accounts
-- Manages the `system_admins` list: add (by email + optional name), edit name, remove. The last remaining admin cannot be removed (lockout protection)
-- "Log in as" button sets the `pep_account_id` cookie, redirecting to the dashboard in that account's context
-- Dashboard layout shows an amber "Viewing as [Account]" banner with an Exit button when impersonating
+`/pep` is the identity-based system admin panel (account management, system-admin
+management, and "Log in as" impersonation). Full details:
+[docs/reference/auth-and-roles.md](docs/reference/auth-and-roles.md) ·
+[docs/guides/managing-system-admins.md](docs/guides/managing-system-admins.md).
 
 ---
 
