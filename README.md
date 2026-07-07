@@ -1,10 +1,10 @@
 # Next.js Multi-Tenant Example
 
-A production-ready example of a multi-tenant application built with Next.js 15, featuring custom subdomains for each tenant.
+A production-ready example of a multi-tenant application built with Next.js 16, featuring custom subdomains for each tenant.
 
 ## Features
 
-- ✅ Custom subdomain routing with Next.js middleware
+- ✅ Custom subdomain routing with Next.js proxy
 - ✅ Tenant-specific content and pages
 - ✅ Shared components and layouts across tenants
 - ✅ Redis for tenant data storage
@@ -15,7 +15,7 @@ A production-ready example of a multi-tenant application built with Next.js 15, 
 
 ## Tech Stack
 
-- [Next.js 15](https://nextjs.org/) with App Router
+- [Next.js 16](https://nextjs.org/) with App Router
 - [React 19](https://react.dev/)
 - [Upstash Redis](https://upstash.com/) for data storage
 - [Tailwind 4](https://tailwindcss.com/) for styling
@@ -25,7 +25,7 @@ A production-ready example of a multi-tenant application built with Next.js 15, 
 
 ### Prerequisites
 
-- Node.js 18.17.0 or later
+- Node.js 20.9.0 or later
 - pnpm (recommended) or npm/yarn
 - Upstash Redis account (for production)
 
@@ -68,12 +68,12 @@ A production-ready example of a multi-tenant application built with Next.js 15, 
 This application demonstrates a subdomain-based multi-tenant architecture where:
 
 - Each tenant gets their own subdomain (`tenant.yourdomain.com`)
-- The middleware handles routing requests to the correct tenant
+- The proxy handles routing requests to the correct tenant
 - Tenant data is stored in Redis using a `subdomain:{name}` key pattern
 - The main domain hosts the landing page and admin interface
 - Subdomains are dynamically mapped to tenant-specific content
 
-The middleware (`middleware.ts`) intelligently detects subdomains across various environments (local development, production, and Vercel preview deployments).
+The proxy (`proxy.ts`, the Next.js 16 replacement for `middleware.ts`) intelligently detects subdomains across various environments (local development, production, and Vercel preview deployments).
 
 ## Deployment
 
