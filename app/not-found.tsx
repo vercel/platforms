@@ -44,7 +44,9 @@ export default function NotFound() {
         </p>
         <div className="mt-6">
           <Link
-            href={`${protocol}://${rootDomain}`}
+            href={`${protocol}://${rootDomain}?subdomain=${encodeURIComponent(
+              subdomain ?? ''
+            )}`}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             {subdomain ? `Create ${subdomain}` : `Go to ${rootDomain}`}
