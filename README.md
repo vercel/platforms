@@ -2,6 +2,8 @@
 
 A production-ready example of a multi-tenant application built with Next.js 16, featuring custom subdomains for each tenant.
 
+[TanStack Start version](https://github.com/xiaoyu2er/tanstack-platforms)
+
 ## Features
 
 - ✅ Custom subdomain routing with Next.js proxy
